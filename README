@@ -1,0 +1,26 @@
+This is a replacement buildsystem for Python.  The existing (autotools based)
+buildsystem for Python is overcomplicated and makes cross-compiling very
+difficult.
+
+This cmake-based buildsystem is better because:
+
+  * It's much faster to compile: 7 seconds instead of 58 seconds in my
+    unscientific test.
+  * No compiled program for the target architecture is used in the build
+    itself.  This makes cross-compiling possible.
+  * Same project files for all platforms - there's no need to maintain the
+    unix build separately from four different MSVC builds.
+
+How to use this buildsystem:
+  
+  * Download and extract the Python 2.7.1 source.
+  * Copy all the files in this repository into the Python source directory.
+  * cd bin
+  * cmake ..
+  * make -j10
+  * sudo make install
+
+Note: This branch is for Python version 2.7.1.  Since this buildsystem is
+maintained separately from Python itself it needs to be manually updated
+whenever there is a new release of Python.
+
