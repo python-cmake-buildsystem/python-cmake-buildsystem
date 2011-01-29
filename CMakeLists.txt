@@ -64,8 +64,13 @@ configure_file(cmake/makefile-variables.in
 install(FILES ${CMAKE_BINARY_DIR}/makefile-variables
         DESTINATION lib/${LIBPYTHON}/config/
         RENAME Makefile)
-install(FILES cmake/pyconfig.h
-        DESTINATION include/${LIBPYTHON}/)
+if(UNIX)
+    install(FILES cmake/config-unix/pyconfig.h
+            DESTINATION include/${LIBPYTHON}/)
+elseif(WIN32)
+    install(FILES PC/pyconfig.h
+            DESTINATION include/${LIBPYTHON}/)
+endif(UNIX)
 
 # Useful additional variables that extensions can use.
 if(UNIX AND NOT APPLE)
