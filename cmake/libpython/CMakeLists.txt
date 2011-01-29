@@ -122,12 +122,25 @@ set(LIBPYTHON_SOURCES
     ${CMAKE_SOURCE_DIR}/Python/_warnings.c
 )
 
-add_library(${LIBPYTHON} STATIC ${LIBPYTHON_SOURCES})
-target_link_libraries(${LIBPYTHON}
-    ${CMAKE_THREAD_LIBS_INIT}
-    dl
-    m
-    util
-)
+function (add_libpython name type)
+    add_library(${name} ${type} ${LIBPYTHON_SOURCES})
+    target_link_libraries(${name}
+        ${CMAKE_THREAD_LIBS_INIT}
+        dl
+        m
+        util
+    )
+    set_target_properties(${name} PROPERTIES OUTPUT_NAME ${LIBPYTHON})
+    install(TARGETS ${name}
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+    )
+endfunction (add_libpython)
 
-install(TARGETS ${LIBPYTHON} ARCHIVE DESTINATION lib)
+if (ENABLE_SHARED)
+    add_libpython(libpython-shared SHARED)
+endif (ENABLE_SHARED)
+
+if (ENABLE_STATIC)
+    add_libpython(libpython-static STATIC)
+endif (ENABLE_STATIC)

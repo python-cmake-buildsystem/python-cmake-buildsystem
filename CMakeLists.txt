@@ -30,6 +30,14 @@ find_library(GDBM_COMPAT_LIBRARY gdbm_compat)
 find_path(READLINE_INCLUDE_PATH readline/readline.h)
 find_library(READLINE_LIBRARY readline)
 
+# Options
+option(ENABLE_SHARED "Build a shared libpython library" OFF)
+option(ENABLE_STATIC "Build a static libpython library" ON)
+
+if (NOT ENABLE_SHARED AND NOT ENABLE_STATIC)
+    message(FATAL_ERROR "One or both of ENABLE_SHARED or ENABLE_STATIC must be set")
+endif (NOT ENABLE_SHARED AND NOT ENABLE_STATIC)
+
 include_directories(${CMAKE_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/cmake)
 include_directories(${CMAKE_SOURCE_DIR}/Include)
