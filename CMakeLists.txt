@@ -47,7 +47,6 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -fno-strict-aliasing -fwrapv -Wall -Ws
 add_subdirectory(cmake/pgen)
 add_subdirectory(cmake/libpython)
 add_subdirectory(cmake/python)
-add_subdirectory(cmake/extensions)
 add_subdirectory(cmake/include)
 add_subdirectory(cmake/lib)
 
@@ -59,3 +58,8 @@ install(FILES ${CMAKE_BINARY_DIR}/makefile-variables
         RENAME Makefile)
 install(FILES cmake/pyconfig.h
         DESTINATION include/${LIBPYTHON}/)
+
+set(extensions_enabled "" CACHE INTERNAL "" FORCE)
+set(extensions_disabled "" CACHE INTERNAL "" FORCE)
+add_subdirectory(cmake/extensions)
+show_extension_summary()

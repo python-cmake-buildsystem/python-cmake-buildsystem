@@ -83,70 +83,77 @@ add_python_extension(_testcapi SOURCES _testcapimodule.c)
 add_python_extension(time SOURCES timemodule.c LIBRARIES m)
 add_python_extension(unicodedata SOURCES unicodedata.c)
 
-
-if (BZIP2_FOUND)
-    add_python_extension(bz2 SOURCES bz2module.c LIBRARIES ${BZIP2_LIBRARIES})
-endif (BZIP2_FOUND)
-
-if (CURSES_FOUND)
-    add_python_extension(_curses_panel SOURCES _curses_panel.c LIBRARIES ${CURSES_LIBRARIES})
-    add_python_extension(_curses SOURCES _cursesmodule.c LIBRARIES ${CURSES_LIBRARIES})
-endif (CURSES_FOUND)
-
-if (DB_INCLUDE_PATH AND DB_LIBRARIES)
-    add_python_extension(_bsddb
-        SOURCES _bsddb.c
-        LIBRARIES ${DB_LIBRARIES}
-        INCLUDEDIRS ${DB_INCLUDE_PATH}
-    )
-endif (DB_INCLUDE_PATH AND DB_LIBRARIES)
-
-if (EXPAT_FOUND)
-    add_python_extension(pyexpat
-        SOURCES pyexpat.c
-                expat/xmlparse.c
-                expat/xmlrole.c
-                expat/xmltok.c
-        LIBRARIES ${EXPAT_LIBRARIES}
-    )
-endif (EXPAT_FOUND)
-
-if (GDBM_INCLUDE_PATH AND GDBM_LIBRARY AND GDBM_COMPAT_LIBRARY)
-    add_python_extension(dbm
-        SOURCES dbmmodule.c
-        LIBRARIES ${GDBM_LIBRARY} ${GDBM_COMPAT_LIBRARY}
-        INCLUDEDIRS ${GDBM_INCLUDE_PATH}
-    )
-    add_python_extension(gdbm
-        SOURCES gdbmmodule.c
-        LIBRARIES ${GDBM_LIBRARY}
-        INCLUDEDIRS ${GDBM_INCLUDE_PATH}
-    )
-endif (GDBM_INCLUDE_PATH AND GDBM_LIBRARY AND GDBM_COMPAT_LIBRARY)
-
-if (OPENSSL_FOUND)
-    add_python_extension(_hashlib SOURCES _hashopenssl.c LIBRARIES ${OPENSSL_LIBRARIES})
-    add_python_extension(_ssl SOURCES _ssl.c LIBRARIES ${OPENSSL_LIBRARIES})
-endif (OPENSSL_FOUND)
-
-if (READLINE_INCLUDE_PATH AND READLINE_LIBRARY)
-    add_python_extension(readline
-        SOURCES readline.c
-        LIBRARIES ${READLINE_LIBRARY}
-        INCLUDEDIRS ${READLINE_INCLUDE_PATH}
-    )
-endif (READLINE_INCLUDE_PATH AND READLINE_LIBRARY)
-
-if (TK_FOUND AND TCL_FOUND)
-    add_python_extension(_tkinter
-        SOURCES _tkinter.c tkappinit.c
-        LIBRARIES ${TCL_LIBRARY} ${TK_LIBRARY}
-        INCLUDEDIRS ${TCL_INCLUDE_PATH} ${TK_INCLUDE_PATH}
-    )
-endif (TK_FOUND AND TCL_FOUND)
-
-if (ZLIB_FOUND)
-    add_python_extension(binascii SOURCES binascii.c LIBRARIES ${ZLIB_LIBRARIES})
-    add_python_extension(zlib SOURCES zlibmodule.c LIBRARIES ${ZLIB_LIBRARIES})
-endif (ZLIB_FOUND)
+add_python_extension(bz2
+    REQUIRES BZIP2_FOUND
+    SOURCES bz2module.c
+    LIBRARIES ${BZIP2_LIBRARIES}
+)
+add_python_extension(_curses_panel
+    REQUIRES CURSES_FOUND
+    SOURCES _curses_panel.c
+    LIBRARIES ${CURSES_LIBRARIES}
+)
+add_python_extension(_curses
+    REQUIRES CURSES_FOUND
+    SOURCES _cursesmodule.c
+    LIBRARIES ${CURSES_LIBRARIES}
+)
+add_python_extension(_bsddb
+    REQUIRES DB_INCLUDE_PATH DB_LIBRARIES
+    SOURCES _bsddb.c
+    LIBRARIES ${DB_LIBRARIES}
+    INCLUDEDIRS ${DB_INCLUDE_PATH}
+)
+add_python_extension(pyexpat
+    REQUIRES EXPAT_FOUND
+    SOURCES pyexpat.c
+            expat/xmlparse.c
+            expat/xmlrole.c
+            expat/xmltok.c
+    LIBRARIES ${EXPAT_LIBRARIES}
+)
+add_python_extension(dbm
+    REQUIRES GDBM_INCLUDE_PATH GDBM_LIBRARY GDBM_COMPAT_LIBRARY
+    SOURCES dbmmodule.c
+    LIBRARIES ${GDBM_LIBRARY} ${GDBM_COMPAT_LIBRARY}
+    INCLUDEDIRS ${GDBM_INCLUDE_PATH}
+)
+add_python_extension(gdbm
+    REQUIRES GDBM_INCLUDE_PATH GDBM_LIBRARY GDBM_COMPAT_LIBRARY
+    SOURCES gdbmmodule.c
+    LIBRARIES ${GDBM_LIBRARY}
+    INCLUDEDIRS ${GDBM_INCLUDE_PATH}
+)
+add_python_extension(_hashlib
+    REQUIRES OPENSSL_FOUND
+    SOURCES _hashopenssl.c
+    LIBRARIES ${OPENSSL_LIBRARIES}
+)
+add_python_extension(_ssl
+    REQUIRES OPENSSL_FOUND
+    SOURCES _ssl.c
+    LIBRARIES ${OPENSSL_LIBRARIES}
+)
+add_python_extension(readline
+    REQUIRES READLINE_INCLUDE_PATH READLINE_LIBRARY
+    SOURCES readline.c
+    LIBRARIES ${READLINE_LIBRARY}
+    INCLUDEDIRS ${READLINE_INCLUDE_PATH}
+)
+add_python_extension(_tkinter
+    REQUIRES TK_FOUND TCL_FOUND
+    SOURCES _tkinter.c tkappinit.c
+    LIBRARIES ${TCL_LIBRARY} ${TK_LIBRARY}
+    INCLUDEDIRS ${TCL_INCLUDE_PATH} ${TK_INCLUDE_PATH}
+)
+add_python_extension(binascii
+    REQUIRES ZLIB_FOUND
+    SOURCES binascii.c
+    LIBRARIES ${ZLIB_LIBRARIES}
+)
+add_python_extension(zlib
+    REQUIRES ZLIB_FOUND
+    SOURCES zlibmodule.c
+    LIBRARIES ${ZLIB_LIBRARIES}
+)
 
