@@ -155,6 +155,7 @@ endforeach(ext)
 function (add_libpython name type)
     add_library(${name} ${type} ${LIBPYTHON_SOURCES})
     target_link_libraries(${name}
+        ${builtin_link_libraries}
         ${CMAKE_THREAD_LIBS_INIT}
         dl
         m

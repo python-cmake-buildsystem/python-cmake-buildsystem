@@ -85,6 +85,9 @@ add_python_extension(termios REQUIRES UNIX SOURCES termios.c)
 add_python_extension(linuxaudiodev REQUIRES LINUX SOURCES linuxaudiodev.c)
 add_python_extension(ossaudiodev REQUIRES LINUX SOURCES ossaudiodev.c)
 
+# Windows-only extensions
+add_python_extension(nt REQUIRES WIN32 BUILTIN SOURCES posixmodule.c)
+
 # Multiprocessing is different on unix and windows
 if(UNIX)
     add_python_extension(_multiprocessing

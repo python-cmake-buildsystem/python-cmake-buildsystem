@@ -62,6 +62,9 @@ function(add_python_extension name)
         # This will be compiled into libpython instead of as a separate library
         set(builtin_extensions "${builtin_extensions}${name};" CACHE INTERNAL "" FORCE)
         set(builtin_source "${builtin_source}${absolute_sources};" CACHE INTERNAL "" FORCE)
+        set(builtin_link_libraries "${builtin_link_libraries}${ADD_PYTHON_EXTENSION_LIBRARIES};" CACHE INTERNAL "" FORCE)
+    elseif(WIN32 AND NOT ENABLE_SHARED)
+        # Extensions cannot be built against a static libpython on windows
     else(BUILTIN_${upper_name})
         add_library(${target_name} SHARED ${absolute_sources})
         include_directories(${ADD_PYTHON_EXTENSION_INCLUDEDIRS})

@@ -1,0 +1,109 @@
+--- /home/david/Python-2.7.1/Modules/posixmodule.c	2010-11-26 17:35:50.000000000 +0000
++++ Modules/posixmodule.c	2011-01-29 16:13:03.000000000 +0000
+@@ -133,7 +133,20 @@
+ #else
+ #if defined(PYOS_OS2) && defined(PYCC_GCC) || defined(__VMS)
+ /* Everything needed is defined in PC/os2emx/pyconfig.h or vms/pyconfig.h */
+-#else                   /* all other compilers */
++#else
++#if defined(__MINGW32__)
++#define HAVE_EXECV      1
++#if defined(__USLC__) && defined(__SCO_VERSION__)       /* SCO UDK Compiler */
++#define HAVE_FORK1      1
++#endif
++#define HAVE_GETCWD     1
++#define HAVE_OPENDIR    1
++#define HAVE_PIPE       1
++#ifndef __rtems__
++#define HAVE_POPEN      1
++#endif
++#define HAVE_SYSTEM     1
++#else /* all other compilers */
+ /* Unix functions that the configure script doesn't check for */
+ #define HAVE_EXECV      1
+ #define HAVE_FORK       1
+@@ -155,13 +168,14 @@
+ #define HAVE_SYSTEM     1
+ #define HAVE_WAIT       1
+ #define HAVE_TTYNAME    1
++#endif  /* __MINGW32__ */
+ #endif  /* PYOS_OS2 && PYCC_GCC && __VMS */
+ #endif  /* _MSC_VER */
+ #endif  /* __BORLANDC__ */
+ #endif  /* ! __WATCOMC__ || __QNX__ */
+ #endif /* ! __IBMC__ */
+ 
+-#ifndef _MSC_VER
++#if !defined(_MSC_VER) && !defined(__MINGW32__)
+ 
+ #if defined(__sgi)&&_COMPILER_VERSION>=700
+ /* declare ctermid_r if compiling with MIPSPro 7.x in ANSI C mode
+@@ -213,7 +227,7 @@
+ #endif /* HAVE_LSTAT */
+ #endif /* !HAVE_UNISTD_H */
+ 
+-#endif /* !_MSC_VER */
++#endif /* !_MSC_VER && !__MINGW32__ */
+ 
+ #ifdef HAVE_UTIME_H
+ #include <utime.h>
+@@ -258,7 +272,7 @@
+ #endif
+ #endif
+ 
+-#ifdef _MSC_VER
++#if defined(_MSC_VER) || defined(__MINGW32__)
+ #ifdef HAVE_DIRECT_H
+ #include <direct.h>
+ #endif
+@@ -274,7 +288,7 @@
+ #include <shellapi.h>   /* for ShellExecute() */
+ #define popen   _popen
+ #define pclose  _pclose
+-#endif /* _MSC_VER */
++#endif /* _MSC_VER || __MINGW32__ */
+ 
+ #if defined(PYCC_VACPP) && defined(PYOS_OS2)
+ #include <io.h>
+@@ -8452,7 +8466,7 @@
+ }
+ #endif
+ 
+-#ifdef MS_WINDOWS
++#if defined(MS_WINDOWS) && !defined(__MINGW32__)
+ 
+ PyDoc_STRVAR(win32_urandom__doc__,
+ "urandom(n) -> str\n\n\
+@@ -8948,7 +8962,7 @@
+ #ifdef HAVE_GETLOADAVG
+     {"getloadavg",      posix_getloadavg, METH_NOARGS, posix_getloadavg__doc__},
+ #endif
+- #ifdef MS_WINDOWS
++ #if defined(MS_WINDOWS) && !defined(__MINGW32__)
+     {"urandom", win32_urandom, METH_VARARGS, win32_urandom__doc__},
+  #endif
+  #ifdef __VMS
+@@ -9252,7 +9266,7 @@
+ }
+ 
+ 
+-#if (defined(_MSC_VER) || defined(__WATCOMC__) || defined(__BORLANDC__)) && !defined(__QNX__)
++#if (defined(_MSC_VER) || defined(__WATCOMC__) || defined(__BORLANDC__) || defined(__MINGW32__)) && !defined(__QNX__)
+ #define INITFUNC initnt
+ #define MODNAME "nt"
+ 
+--- /home/david/Python-2.7.1/PC/pyconfig.h	2009-10-24 14:28:38.000000000 +0100
++++ PC/pyconfig.h	2011-01-29 16:03:17.000000000 +0000
+@@ -227,6 +227,12 @@
+ #include <basetsd.h>
+ #endif
+ 
++
++#ifdef __MINGW32__
++#  define HAVE_DIRENT_H
++#endif // __MINGW32__
++
++
+ /* ------------------------------------------------------------------------*/
+ /* The Borland compiler defines __BORLANDC__ */
+ /* XXX These defines are likely incomplete, but should be easy to fix. */
