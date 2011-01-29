@@ -10,6 +10,7 @@ if (ENABLE_SHARED)
     target_link_libraries(python libpython-shared)
 else (ENABLE_SHARED)
     target_link_libraries(python libpython-static)
+    set_target_properties(python PROPERTIES COMPILE_DEFINITIONS Py_NO_ENABLE_SHARED)
 endif (ENABLE_SHARED)
 
 install(TARGETS python RUNTIME DESTINATION bin)

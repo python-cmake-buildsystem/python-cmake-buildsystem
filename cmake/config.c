@@ -1,0 +1,58 @@
+#include "Python.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// Init functions common to all platforms
+extern void init_ast(void);
+extern void init_codecs(void);
+extern void initerrno(void);
+extern void initgc(void);
+extern void initimp(void);
+extern void initsignal(void);
+extern void init_sre(void);
+extern void init_symtable(void);
+extern void initthread(void);
+extern void init_weakref(void);
+extern void initxxsubtype(void);
+extern void initzipimport(void);
+extern void PyMarshal_Init(void);
+extern void _PyWarnings_Init(void);
+
+// Init functions for platform-specific extensions
+#include "platform-config-inits.c"
+
+
+struct _inittab _PyImport_Inittab[] = {
+    // Entries common to all platforms
+    {"_ast", init_ast},
+    {"__builtin__", NULL},
+    {"_codecs", init_codecs},
+    {"errno", initerrno},
+    {"exceptions", NULL},
+    {"gc", initgc},
+    {"imp", initimp},
+    {"__main__", NULL},
+    {"marshal", PyMarshal_Init},
+    {"signal", initsignal},
+    {"_sre", init_sre},
+    {"_symtable", init_symtable},
+    {"sys", NULL},
+    {"thread", initthread},
+    {"_warnings", _PyWarnings_Init},
+    {"_weakref", init_weakref},
+    {"xxsubtype", initxxsubtype},
+    {"zipimport", initzipimport},
+
+    // Entries for platform-specific extensions
+    #include "platform-config-entries.c"
+
+    // Sentinel
+    {0, 0}
+};
+
+
+#ifdef __cplusplus
+}
+#endif

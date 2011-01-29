@@ -3,6 +3,7 @@ add_definitions(-DHAVE_GDBM_DASH_NDBM_H)
 add_definitions(-DUSE_ZLIB_CRC32)
 add_definitions(-DHAVE_EXPAT_CONFIG_H=1)
 add_definitions(-DUSE_PYEXPAT_CAPI)
+add_definitions(-DMODULE_NAME="sqlite3")
 
 add_python_extension(array SOURCES arraymodule.c)
 add_python_extension(audioop SOURCES audioop.c)
@@ -38,10 +39,8 @@ add_python_extension(_ctypes
 add_python_extension(_ctypes_test SOURCES _ctypes/_ctypes_test.c)
 add_python_extension(datetime SOURCES datetimemodule.c timemodule.c LIBRARIES m)
 add_python_extension(_elementtree SOURCES _elementtree.c)
-add_python_extension(fcntl SOURCES fcntlmodule.c)
 add_python_extension(_functools SOURCES _functoolsmodule.c)
 add_python_extension(future_builtins SOURCES future_builtins.c)
-add_python_extension(grp SOURCES grpmodule.c)
 add_python_extension(_heapq SOURCES _heapqmodule.c)
 add_python_extension(_hotshot SOURCES _hotshot.c)
 add_python_extension(_io SOURCES
@@ -55,34 +54,67 @@ add_python_extension(_io SOURCES
 )
 add_python_extension(itertools SOURCES itertoolsmodule.c)
 add_python_extension(_json SOURCES _json.c)
-add_python_extension(linuxaudiodev SOURCES linuxaudiodev.c)
 add_python_extension(_locale SOURCES _localemodule.c)
 add_python_extension(_lsprof SOURCES _lsprof.c rotatingtree.c)
 add_python_extension(math SOURCES _math.c mathmodule.c)
 add_python_extension(mmap SOURCES mmapmodule.c)
 add_python_extension(_multibytecodec SOURCES cjkcodecs/multibytecodec.c)
-add_python_extension(_multiprocessing SOURCES
-    _multiprocessing/multiprocessing.c
-    _multiprocessing/semaphore.c
-    _multiprocessing/socket_connection.c
-)
-add_python_extension(nis SOURCES nismodule.c LIBRARIES nsl)
 add_python_extension(operator SOURCES operator.c)
-add_python_extension(ossaudiodev SOURCES ossaudiodev.c)
 add_python_extension(parser SOURCES parsermodule.c)
 add_python_extension(_random SOURCES _randommodule.c)
-add_python_extension(resource SOURCES resource.c)
 add_python_extension(select SOURCES selectmodule.c)
 add_python_extension(_socket SOURCES socketmodule.c)
-add_python_extension(spwd SOURCES spwdmodule.c)
 add_python_extension(strop SOURCES stropmodule.c)
 add_python_extension(_struct SOURCES _struct.c)
-add_python_extension(syslog SOURCES syslogmodule.c)
-add_python_extension(termios SOURCES termios.c)
 add_python_extension(_testcapi SOURCES _testcapimodule.c)
 add_python_extension(time SOURCES timemodule.c LIBRARIES m)
 add_python_extension(unicodedata SOURCES unicodedata.c)
 
+# UNIX-only extensions
+add_python_extension(fcntl REQUIRES UNIX SOURCES fcntlmodule.c)
+add_python_extension(grp REQUIRES UNIX SOURCES grpmodule.c)
+add_python_extension(nis REQUIRES UNIX SOURCES nismodule.c LIBRARIES nsl)
+add_python_extension(posix REQUIRES UNIX BUILTIN SOURCES posixmodule.c)
+add_python_extension(pwd REQUIRES UNIX BUILTIN SOURCES pwdmodule.c)
+add_python_extension(resource REQUIRES UNIX SOURCES resource.c)
+add_python_extension(spwd REQUIRES UNIX SOURCES spwdmodule.c)
+add_python_extension(syslog REQUIRES UNIX SOURCES syslogmodule.c)
+add_python_extension(termios REQUIRES UNIX SOURCES termios.c)
+
+# Linux-only extensions
+add_python_extension(linuxaudiodev REQUIRES LINUX SOURCES linuxaudiodev.c)
+add_python_extension(ossaudiodev REQUIRES LINUX SOURCES ossaudiodev.c)
+
+# Multiprocessing is different on unix and windows
+if(UNIX)
+    add_python_extension(_multiprocessing
+        SOURCES _multiprocessing/multiprocessing.c
+                _multiprocessing/semaphore.c
+                _multiprocessing/socket_connection.c
+    )
+elseif(WIN32)
+    add_python_extension(_multiprocessing
+        SOURCES _multiprocessing/multiprocessing.c
+                _multiprocessing/semaphore.c
+                _multiprocessing/pipe_connection.c
+                _multiprocessing/socket_connection.c
+                _multiprocessing/win32_functions.c
+        LIBRARIES ws2_32
+    )
+endif(UNIX)
+
+# Extensions that depend on other libraries
+add_python_extension(binascii
+    REQUIRES ZLIB_FOUND
+    SOURCES binascii.c
+    LIBRARIES ${ZLIB_LIBRARIES}
+)
+add_python_extension(_bsddb
+    REQUIRES DB_INCLUDE_PATH DB_LIBRARIES
+    SOURCES _bsddb.c
+    LIBRARIES ${DB_LIBRARIES}
+    INCLUDEDIRS ${DB_INCLUDE_PATH}
+)
 add_python_extension(bz2
     REQUIRES BZIP2_FOUND
     SOURCES bz2module.c
@@ -97,20 +129,6 @@ add_python_extension(_curses
     REQUIRES CURSES_FOUND
     SOURCES _cursesmodule.c
     LIBRARIES ${CURSES_LIBRARIES}
-)
-add_python_extension(_bsddb
-    REQUIRES DB_INCLUDE_PATH DB_LIBRARIES
-    SOURCES _bsddb.c
-    LIBRARIES ${DB_LIBRARIES}
-    INCLUDEDIRS ${DB_INCLUDE_PATH}
-)
-add_python_extension(pyexpat
-    REQUIRES EXPAT_FOUND
-    SOURCES pyexpat.c
-            expat/xmlparse.c
-            expat/xmlrole.c
-            expat/xmltok.c
-    LIBRARIES ${EXPAT_LIBRARIES}
 )
 add_python_extension(dbm
     REQUIRES GDBM_INCLUDE_PATH GDBM_LIBRARY GDBM_COMPAT_LIBRARY
@@ -129,10 +147,13 @@ add_python_extension(_hashlib
     SOURCES _hashopenssl.c
     LIBRARIES ${OPENSSL_LIBRARIES}
 )
-add_python_extension(_ssl
-    REQUIRES OPENSSL_FOUND
-    SOURCES _ssl.c
-    LIBRARIES ${OPENSSL_LIBRARIES}
+add_python_extension(pyexpat
+    REQUIRES EXPAT_FOUND
+    SOURCES pyexpat.c
+            expat/xmlparse.c
+            expat/xmlrole.c
+            expat/xmltok.c
+    LIBRARIES ${EXPAT_LIBRARIES}
 )
 add_python_extension(readline
     REQUIRES READLINE_INCLUDE_PATH READLINE_LIBRARY
@@ -140,16 +161,30 @@ add_python_extension(readline
     LIBRARIES ${READLINE_LIBRARY}
     INCLUDEDIRS ${READLINE_INCLUDE_PATH}
 )
+add_python_extension(_sqlite3
+    REQUIRES SQLITE3_INCLUDE_PATH SQLITE3_LIBRARY
+    SOURCES _sqlite/cache.c
+            _sqlite/connection.c
+            _sqlite/cursor.c
+            _sqlite/microprotocols.c
+            _sqlite/module.c
+            _sqlite/prepare_protocol.c
+            _sqlite/row.c
+            _sqlite/statement.c
+            _sqlite/util.c
+    INCLUDEDIRS ${SQLITE3_INCLUDE_PATH}
+    LIBRARIES ${SQLITE3_LIBRARY}
+)
+add_python_extension(_ssl
+    REQUIRES OPENSSL_FOUND
+    SOURCES _ssl.c
+    LIBRARIES ${OPENSSL_LIBRARIES}
+)
 add_python_extension(_tkinter
     REQUIRES TK_FOUND TCL_FOUND
     SOURCES _tkinter.c tkappinit.c
     LIBRARIES ${TCL_LIBRARY} ${TK_LIBRARY}
     INCLUDEDIRS ${TCL_INCLUDE_PATH} ${TK_INCLUDE_PATH}
-)
-add_python_extension(binascii
-    REQUIRES ZLIB_FOUND
-    SOURCES binascii.c
-    LIBRARIES ${ZLIB_LIBRARIES}
 )
 add_python_extension(zlib
     REQUIRES ZLIB_FOUND

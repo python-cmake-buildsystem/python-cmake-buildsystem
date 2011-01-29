@@ -30,6 +30,9 @@ find_library(GDBM_COMPAT_LIBRARY gdbm_compat)
 find_path(READLINE_INCLUDE_PATH readline/readline.h)
 find_library(READLINE_LIBRARY readline)
 
+find_path(SQLITE3_INCLUDE_PATH sqlite3.h)
+find_library(SQLITE3_LIBRARY sqlite3)
+
 # Options
 option(ENABLE_SHARED "Build a shared libpython library" OFF)
 option(ENABLE_STATIC "Build a static libpython library" ON)
@@ -41,14 +44,19 @@ endif (NOT ENABLE_SHARED AND NOT ENABLE_STATIC)
 include_directories(${CMAKE_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/cmake)
 include_directories(${CMAKE_SOURCE_DIR}/Include)
+include_directories(${CMAKE_SOURCE_DIR}/Python)
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -fno-strict-aliasing -fwrapv -Wall -Wstrict-prototypes")
+if(UNIX)
+    include_directories(${CMAKE_SOURCE_DIR}/cmake/config-unix)
+elseif(WIN32)
+    include_directories(${CMAKE_SOURCE_DIR}/PC)
+endif(UNIX)
 
-add_subdirectory(cmake/pgen)
-add_subdirectory(cmake/libpython)
-add_subdirectory(cmake/python)
-add_subdirectory(cmake/include)
-add_subdirectory(cmake/lib)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-strict-aliasing -fwrapv -Wall -Wstrict-prototypes")
+
+if(NOT WIN32)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+endif(NOT WIN32)
 
 # Install some configuration information
 configure_file(cmake/makefile-variables.in
@@ -59,7 +67,25 @@ install(FILES ${CMAKE_BINARY_DIR}/makefile-variables
 install(FILES cmake/pyconfig.h
         DESTINATION include/${LIBPYTHON}/)
 
+# Useful additional variables that extensions can use.
+if(UNIX AND NOT APPLE)
+    set(LINUX ON)
+else(UNIX AND NOT APPLE)
+    set(LINUX OFF)
+endif(UNIX AND NOT APPLE)
+
+# Add extension modules
+set(builtin_extensions "" CACHE INTERNAL "" FORCE)
+set(builtin_source "" CACHE INTERNAL "" FORCE)
 set(extensions_enabled "" CACHE INTERNAL "" FORCE)
 set(extensions_disabled "" CACHE INTERNAL "" FORCE)
 add_subdirectory(cmake/extensions)
+
+# Add the other subdirectories
+add_subdirectory(cmake/pgen)
+add_subdirectory(cmake/libpython)
+add_subdirectory(cmake/python)
+add_subdirectory(cmake/include)
+add_subdirectory(cmake/lib)
+
 show_extension_summary()

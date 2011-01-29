@@ -1,23 +1,24 @@
 add_definitions(-DPy_BUILD_CORE)
 add_definitions(-DNDEBUG)
 
-add_definitions(-DPREFIX="${CMAKE_INSTALL_PREFIX}")
-add_definitions(-DEXEC_PREFIX="${CMAKE_INSTALL_PREFIX}")
 add_definitions(-DVERSION="${LIBPYTHON_VERSION}")
 add_definitions(-DVPATH="")
 add_definitions(-DPYTHONPATH=":plat-linux2:lib-tk:lib-old")
-add_definitions(-DPLATFORM="linux2")
+
+if(NOT WIN32)
+    add_definitions(-DPREFIX="${CMAKE_INSTALL_PREFIX}")
+    add_definitions(-DEXEC_PREFIX="${CMAKE_INSTALL_PREFIX}")
+    add_definitions(-DPLATFORM="linux2")
+endif(NOT WIN32)
 
 set(LIBPYTHON_SOURCES
+    ${CMAKE_SOURCE_DIR}/cmake/config.c
     ${CMAKE_SOURCE_DIR}/Modules/_codecsmodule.c
-    ${CMAKE_SOURCE_DIR}/Modules/config.c
     ${CMAKE_SOURCE_DIR}/Modules/errnomodule.c
     ${CMAKE_SOURCE_DIR}/Modules/gcmodule.c
     ${CMAKE_SOURCE_DIR}/Modules/getbuildinfo.c
     ${CMAKE_SOURCE_DIR}/Modules/getpath.c
     ${CMAKE_SOURCE_DIR}/Modules/main.c
-    ${CMAKE_SOURCE_DIR}/Modules/posixmodule.c
-    ${CMAKE_SOURCE_DIR}/Modules/pwdmodule.c
     ${CMAKE_SOURCE_DIR}/Modules/signalmodule.c
     ${CMAKE_SOURCE_DIR}/Modules/_sre.c
     ${CMAKE_SOURCE_DIR}/Modules/symtablemodule.c
@@ -84,7 +85,6 @@ set(LIBPYTHON_SOURCES
     ${CMAKE_SOURCE_DIR}/Python/codecs.c
     ${CMAKE_SOURCE_DIR}/Python/compile.c
     ${CMAKE_SOURCE_DIR}/Python/dtoa.c
-    ${CMAKE_SOURCE_DIR}/Python/dynload_shlib.c
     ${CMAKE_SOURCE_DIR}/Python/errors.c
     ${CMAKE_SOURCE_DIR}/Python/formatter_string.c
     ${CMAKE_SOURCE_DIR}/Python/formatter_unicode.c
@@ -120,7 +120,37 @@ set(LIBPYTHON_SOURCES
     ${CMAKE_SOURCE_DIR}/Python/thread.c
     ${CMAKE_SOURCE_DIR}/Python/traceback.c
     ${CMAKE_SOURCE_DIR}/Python/_warnings.c
+    ${builtin_source}
 )
+
+# Platform-specific source files
+if(UNIX)
+    list(APPEND LIBPYTHON_SOURCES
+        ${CMAKE_SOURCE_DIR}/Python/dynload_shlib.c
+    )
+elseif(WIN32)
+    list(APPEND LIBPYTHON_SOURCES
+        ${CMAKE_SOURCE_DIR}/PC/dl_nt.c
+        ${CMAKE_SOURCE_DIR}/PC/getpathp.c
+        ${CMAKE_SOURCE_DIR}/PC/import_nt.c
+        ${CMAKE_SOURCE_DIR}/Python/dynload_win.c
+    )
+endif(UNIX)
+
+# Create the parts of config.c for platform-specific and user-controlled
+# builtin modules.
+set(config_inits_file ${CMAKE_CURRENT_BINARY_DIR}/platform-config-inits.c)
+set(config_entries_file ${CMAKE_CURRENT_BINARY_DIR}/platform-config-entries.c)
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
+file(WRITE "${config_inits_file}" "")
+file(WRITE "${config_entries_file}" "")
+
+foreach(ext ${builtin_extensions})
+    file(APPEND "${config_inits_file}" "extern void init${ext}(void);\n")
+    file(APPEND "${config_entries_file}" "{\"${ext}\", init${ext}},\n")
+endforeach(ext)
+
 
 function (add_libpython name type)
     add_library(${name} ${type} ${LIBPYTHON_SOURCES})
@@ -128,8 +158,12 @@ function (add_libpython name type)
         ${CMAKE_THREAD_LIBS_INIT}
         dl
         m
-        util
     )
+
+    if(UNIX)
+        target_link_libraries(${name} util)
+    endif(UNIX)
+
     set_target_properties(${name} PROPERTIES OUTPUT_NAME ${LIBPYTHON})
     install(TARGETS ${name}
         ARCHIVE DESTINATION lib
@@ -143,4 +177,5 @@ endif (ENABLE_SHARED)
 
 if (ENABLE_STATIC)
     add_libpython(libpython-static STATIC)
+    set_target_properties(libpython-static PROPERTIES COMPILE_DEFINITIONS Py_NO_ENABLE_SHARED)
 endif (ENABLE_STATIC)

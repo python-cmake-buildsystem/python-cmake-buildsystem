@@ -1,0 +1,11 @@
+--- /home/david/Python-2.7.1/Modules/signalmodule.c	2010-11-05 19:55:02.000000000 +0000
++++ Modules/signalmodule.c	2011-01-29 15:20:12.000000000 +0000
+@@ -7,7 +7,7 @@
+ #include "intrcheck.h"
+ 
+ #ifdef MS_WINDOWS
+-#include <Windows.h>
++#include <windows.h>
+ #ifdef HAVE_PROCESS_H
+ #include <process.h>
+ #endif
