@@ -123,8 +123,8 @@ function(add_python_extension name)
         endif(ADD_PYTHON_EXTENSION_DEFINITIONS)
 
         install(TARGETS ${target_name}
-                LIBRARY DESTINATION ${PYTHONHOME}/lib-dynload
-                RUNTIME DESTINATION ${PYTHONHOME}/lib-dynload)
+                LIBRARY DESTINATION ${DYNLOAD}
+                RUNTIME DESTINATION ${DYNLOAD})
     endif(BUILTIN_${upper_name})
 endfunction(add_python_extension)
 

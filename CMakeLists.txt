@@ -75,7 +75,8 @@ else(UNIX AND NOT APPLE)
     set(LINUX OFF)
 endif(UNIX AND NOT APPLE)
 
-set(PYTHONHOME "${LIBDIR}/${LIBPYTHON}")
+set(PYTHONHOME "lib/${LIBPYTHON}")
+set(DYNLOAD "${LIBDIR}/${LIBPYTHON}/lib-dynload")
 
 # Add extension modules
 set(builtin_extensions "" CACHE INTERNAL "" FORCE)
