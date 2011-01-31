@@ -173,8 +173,8 @@ function (add_libpython name type)
     endif(builtin_definitions)
 
     install(TARGETS ${name}
-        ARCHIVE DESTINATION lib
-        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION ${LIBDIR}
+        LIBRARY DESTINATION ${LIBDIR}
     )
 endfunction (add_libpython)
 

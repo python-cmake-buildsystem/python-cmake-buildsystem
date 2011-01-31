@@ -11,6 +11,22 @@ include(cmake/Assembler.cmake)
 include(cmake/ParseArguments.cmake)
 include(cmake/Extensions.cmake)
 
+# Options
+option(ENABLE_SHARED "Build a shared libpython library" OFF)
+option(ENABLE_STATIC "Build a static libpython library" ON)
+option(USE_LIB64 "Search for dependencies and install to prefix/lib64 instead of prefix/lib" OFF)
+
+if (NOT ENABLE_SHARED AND NOT ENABLE_STATIC)
+    message(FATAL_ERROR "One or both of ENABLE_SHARED or ENABLE_STATIC must be set")
+endif (NOT ENABLE_SHARED AND NOT ENABLE_STATIC)
+
+if (USE_LIB64)
+    set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS ON)
+    set(LIBDIR "lib64")
+else (USE_LIB64)
+    set(LIBDIR "lib")
+endif (USE_LIB64)
+
 # Find any dependencies
 find_package(BZip2)
 find_package(Curses)
@@ -33,14 +49,7 @@ find_library(READLINE_LIBRARY readline)
 find_path(SQLITE3_INCLUDE_PATH sqlite3.h)
 find_library(SQLITE3_LIBRARY sqlite3)
 
-# Options
-option(ENABLE_SHARED "Build a shared libpython library" OFF)
-option(ENABLE_STATIC "Build a static libpython library" ON)
-
-if (NOT ENABLE_SHARED AND NOT ENABLE_STATIC)
-    message(FATAL_ERROR "One or both of ENABLE_SHARED or ENABLE_STATIC must be set")
-endif (NOT ENABLE_SHARED AND NOT ENABLE_STATIC)
-
+# Set include directories
 include_directories(${CMAKE_SOURCE_DIR})
 include_directories(${CMAKE_SOURCE_DIR}/cmake)
 include_directories(${CMAKE_SOURCE_DIR}/Include)
@@ -52,25 +61,12 @@ elseif(WIN32)
     include_directories(${CMAKE_SOURCE_DIR}/PC)
 endif(UNIX)
 
+# Set cflags used by all components
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-strict-aliasing -fwrapv -Wall -Wstrict-prototypes")
 
 if(NOT WIN32)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
 endif(NOT WIN32)
-
-# Install some configuration information
-configure_file(cmake/makefile-variables.in
-               ${CMAKE_BINARY_DIR}/makefile-variables)
-install(FILES ${CMAKE_BINARY_DIR}/makefile-variables
-        DESTINATION lib/${LIBPYTHON}/config/
-        RENAME Makefile)
-if(UNIX)
-    install(FILES cmake/config-unix/pyconfig.h
-            DESTINATION include/${LIBPYTHON}/)
-elseif(WIN32)
-    install(FILES PC/pyconfig.h
-            DESTINATION include/${LIBPYTHON}/)
-endif(UNIX)
 
 # Useful additional variables that extensions can use.
 if(UNIX AND NOT APPLE)
@@ -78,6 +74,8 @@ if(UNIX AND NOT APPLE)
 else(UNIX AND NOT APPLE)
     set(LINUX OFF)
 endif(UNIX AND NOT APPLE)
+
+set(PYTHONHOME "${LIBDIR}/${LIBPYTHON}")
 
 # Add extension modules
 set(builtin_extensions "" CACHE INTERNAL "" FORCE)
@@ -97,3 +95,17 @@ add_subdirectory(cmake/include)
 add_subdirectory(cmake/lib)
 
 show_extension_summary()
+
+# Install some configuration information
+configure_file(cmake/makefile-variables.in
+               ${CMAKE_BINARY_DIR}/makefile-variables)
+install(FILES ${CMAKE_BINARY_DIR}/makefile-variables
+        DESTINATION ${PYTHONHOME}/config/
+        RENAME Makefile)
+if(UNIX)
+    install(FILES cmake/config-unix/pyconfig.h
+            DESTINATION include/${LIBPYTHON}/)
+elseif(WIN32)
+    install(FILES PC/pyconfig.h
+            DESTINATION include/${LIBPYTHON}/)
+endif(UNIX)
