@@ -142,6 +142,7 @@ endif(UNIX)
 set(config_inits_file ${CMAKE_CURRENT_BINARY_DIR}/platform-config-inits.c)
 set(config_entries_file ${CMAKE_CURRENT_BINARY_DIR}/platform-config-entries.c)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
+include_directories(${builtin_includedirs})
 
 file(WRITE "${config_inits_file}" "")
 file(WRITE "${config_entries_file}" "")
@@ -166,6 +167,11 @@ function (add_libpython name type)
     endif(UNIX)
 
     set_target_properties(${name} PROPERTIES OUTPUT_NAME ${LIBPYTHON})
+
+    if(builtin_definitions)
+        set_target_properties(${name} PROPERTIES COMPILE_DEFINITIONS "${builtin_definitions}")
+    endif(builtin_definitions)
+
     install(TARGETS ${name}
         ARCHIVE DESTINATION lib
         LIBRARY DESTINATION lib

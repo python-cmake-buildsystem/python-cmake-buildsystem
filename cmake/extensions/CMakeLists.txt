@@ -1,10 +1,3 @@
-add_definitions(-DWITH_APPINIT=1)
-add_definitions(-DHAVE_GDBM_DASH_NDBM_H)
-add_definitions(-DUSE_ZLIB_CRC32)
-add_definitions(-DHAVE_EXPAT_CONFIG_H=1)
-add_definitions(-DUSE_PYEXPAT_CAPI)
-add_definitions(-DMODULE_NAME="sqlite3")
-
 add_python_extension(array SOURCES arraymodule.c)
 add_python_extension(audioop SOURCES audioop.c)
 add_python_extension(_bisect SOURCES _bisectmodule.c)
@@ -38,7 +31,6 @@ add_python_extension(_ctypes
 )
 add_python_extension(_ctypes_test SOURCES _ctypes/_ctypes_test.c)
 add_python_extension(datetime SOURCES datetimemodule.c timemodule.c LIBRARIES m)
-add_python_extension(_elementtree SOURCES _elementtree.c)
 add_python_extension(_functools SOURCES _functoolsmodule.c)
 add_python_extension(future_builtins SOURCES future_builtins.c)
 add_python_extension(_heapq SOURCES _heapqmodule.c)
@@ -110,6 +102,7 @@ endif(UNIX)
 add_python_extension(binascii
     REQUIRES ZLIB_FOUND
     SOURCES binascii.c
+    DEFINITIONS USE_ZLIB_CRC32
     LIBRARIES ${ZLIB_LIBRARIES}
 )
 add_python_extension(_bsddb
@@ -136,12 +129,21 @@ add_python_extension(_curses
 add_python_extension(dbm
     REQUIRES GDBM_INCLUDE_PATH GDBM_LIBRARY GDBM_COMPAT_LIBRARY
     SOURCES dbmmodule.c
+    DEFINITIONS HAVE_GDBM_DASH_NDBM_H
     LIBRARIES ${GDBM_LIBRARY} ${GDBM_COMPAT_LIBRARY}
     INCLUDEDIRS ${GDBM_INCLUDE_PATH}
+)
+add_python_extension(_elementtree
+    REQUIRES EXPAT_FOUND
+    SOURCES _elementtree.c
+    DEFINITIONS HAVE_EXPAT_CONFIG_H=1 USE_PYEXPAT_CAPI
+    LIBRARIES ${EXPAT_LIBRARIES}
+    INCLUDEDIRS ${EXPAT_INCLUDE_DIRS}
 )
 add_python_extension(gdbm
     REQUIRES GDBM_INCLUDE_PATH GDBM_LIBRARY GDBM_COMPAT_LIBRARY
     SOURCES gdbmmodule.c
+    DEFINITIONS HAVE_GDBM_DASH_NDBM_H
     LIBRARIES ${GDBM_LIBRARY}
     INCLUDEDIRS ${GDBM_INCLUDE_PATH}
 )
@@ -156,7 +158,9 @@ add_python_extension(pyexpat
             expat/xmlparse.c
             expat/xmlrole.c
             expat/xmltok.c
+    DEFINITIONS HAVE_EXPAT_CONFIG_H=1 USE_PYEXPAT_CAPI
     LIBRARIES ${EXPAT_LIBRARIES}
+    INCLUDEDIRS ${EXPAT_INCLUDE_DIRS}
 )
 add_python_extension(readline
     REQUIRES READLINE_INCLUDE_PATH READLINE_LIBRARY
@@ -175,6 +179,7 @@ add_python_extension(_sqlite3
             _sqlite/row.c
             _sqlite/statement.c
             _sqlite/util.c
+    DEFINITIONS MODULE_NAME="sqlite3"
     INCLUDEDIRS ${SQLITE3_INCLUDE_PATH}
     LIBRARIES ${SQLITE3_LIBRARY}
 )
@@ -186,6 +191,7 @@ add_python_extension(_ssl
 add_python_extension(_tkinter
     REQUIRES TK_FOUND TCL_FOUND
     SOURCES _tkinter.c tkappinit.c
+    DEFINITIONS WITH_APPINIT=1
     LIBRARIES ${TCL_LIBRARY} ${TK_LIBRARY}
     INCLUDEDIRS ${TCL_INCLUDE_PATH} ${TK_INCLUDE_PATH}
 )
@@ -194,4 +200,3 @@ add_python_extension(zlib
     SOURCES zlibmodule.c
     LIBRARIES ${ZLIB_LIBRARIES}
 )
-

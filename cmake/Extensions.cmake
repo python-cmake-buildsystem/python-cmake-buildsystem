@@ -1,6 +1,45 @@
+# This function adds a python extension to the buildsystem.
+#
+# Usage:
+#
+# add_python_extension(
+#     extension_name
+#     SOURCES source1.c source2.c ...
+#     [ REQUIRES variable1 variable2 ... ]
+#     [ DEFINITIONS define1 define2 ... ]
+#     [ LIBRARIES lib1 lib2 ... ]
+#     [ INCLUDEDIRS dir1 dir2 ... ]
+#     [ BUILTIN ]
+# )
+#
+# extension_name: the name of the library without any .so extension.
+# SOURCES:     a list of filenames realtive to the Modules/ directory that make
+#              up this extension.
+# REQUIRES:    this extension will not be built unless all the variables listed
+#              here evaluate to true.  You should include any variables you use
+#              in the LIBRARIES and INCLUDEDIRS sections.
+# DEFINITIONS: an optional list of definitions to pass to the compiler while
+#              building this module.  Do not include the -D prefix.
+# LIBRARIES:   an optional list of additional libraries.
+# INCLUDEDIRS: an optional list of additional include directories.
+# BUILTIN:     if this is set the module will be compiled statically into
+#              libpython by default.  The user can still override by setting
+#              BUILTIN_[extension_name]=OFF.
+#
+# Two user-settable options are created for each extension added:
+# ENABLE_[extension_name]   defaults to ON.  If set to OFF the extension will
+#                           not be added at all.
+# BUILTIN_[extension_name]  defaults to OFF unless BUILTIN is set when calling
+#                           add_python_extension.  Adds the extension source
+#                           files to libpython instead of compiling a separate
+#                           library.
+# These options convert the extension_name to upper case first and remove any
+# leading underscores.  So add_python_extension(_foo ...) will create the
+# options ENABLE_FOO and BUILTIN_FOO.
+
 function(add_python_extension name)
     parse_arguments(ADD_PYTHON_EXTENSION
-        "REQUIRES;SOURCES;LIBRARIES;INCLUDEDIRS"
+        "REQUIRES;SOURCES;DEFINITIONS;LIBRARIES;INCLUDEDIRS"
         "BUILTIN"
         ${ARGN}
     )
@@ -63,6 +102,8 @@ function(add_python_extension name)
         set(builtin_extensions "${builtin_extensions}${name};" CACHE INTERNAL "" FORCE)
         set(builtin_source "${builtin_source}${absolute_sources};" CACHE INTERNAL "" FORCE)
         set(builtin_link_libraries "${builtin_link_libraries}${ADD_PYTHON_EXTENSION_LIBRARIES};" CACHE INTERNAL "" FORCE)
+        set(builtin_includedirs "${builtin_includedirs}${ADD_PYTHON_EXTENSION_INCLUDEDIRS};" CACHE INTERNAL "" FORCE)
+        set(builtin_definitions "${builtin_definitions}${ADD_PYTHON_EXTENSION_DEFINITIONS};" CACHE INTERNAL "" FORCE)
     elseif(WIN32 AND NOT ENABLE_SHARED)
         # Extensions cannot be built against a static libpython on windows
     else(BUILTIN_${upper_name})
@@ -70,11 +111,16 @@ function(add_python_extension name)
         include_directories(${ADD_PYTHON_EXTENSION_INCLUDEDIRS})
         target_link_libraries(${target_name} ${ADD_PYTHON_EXTENSION_LIBRARIES})
 
-        # Turn off the "lib" prefix
+        # Turn off the "lib" prefix and add any compiler definitions
         set_target_properties(${target_name} PROPERTIES
             OUTPUT_NAME "${name}"
             PREFIX ""
         )
+
+        if(ADD_PYTHON_EXTENSION_DEFINITIONS)
+            set_target_properties(${target_name} PROPERTIES
+                COMPILE_DEFINITIONS "${ADD_PYTHON_EXTENSION_DEFINITIONS}")
+        endif(ADD_PYTHON_EXTENSION_DEFINITIONS)
 
         install(TARGETS ${target_name}
                 LIBRARY DESTINATION lib/${LIBPYTHON}/lib-dynload
