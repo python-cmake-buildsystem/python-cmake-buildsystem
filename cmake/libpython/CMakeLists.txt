@@ -3,7 +3,7 @@ add_definitions(-DNDEBUG)
 
 add_definitions(-DVERSION="${LIBPYTHON_VERSION}")
 add_definitions(-DVPATH="")
-add_definitions(-DPYTHONPATH=":plat-linux2:lib-tk:lib-old")
+add_definitions(-DPYTHONPATH="${EXTRA_PYTHONPATH}::plat-linux2:lib-tk:lib-old")
 
 if(NOT WIN32)
     add_definitions(-DPREFIX="${CMAKE_INSTALL_PREFIX}")

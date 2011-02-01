@@ -27,6 +27,9 @@ else (USE_LIB64)
     set(LIBDIR "lib")
 endif (USE_LIB64)
 
+set(EXTRA_PYTHONPATH "" CACHE STRING
+    "A colon (:) separated list of extra paths to add to the PYTHONPATH")
+
 # Find any dependencies
 find_package(BZip2)
 find_package(Curses)
