@@ -2,7 +2,7 @@ VERSION=	${LIBPYTHON}
 srcdir=		.
 
 CC=		${CMAKE_C_COMPILER} -pthread
-CXX=		${CMAKE_XXC_COMPILER} -pthread
+CXX=		${CMAKE_CXX_COMPILER} -pthread
 MAINCC=		${CMAKE_C_COMPILER} -pthread
 LINKCC=		${CMAKE_C_COMPILER} -pthread
 AR=		${CMAKE_AR}
