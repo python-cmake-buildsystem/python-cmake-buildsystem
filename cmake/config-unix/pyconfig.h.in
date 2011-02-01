@@ -995,7 +995,7 @@
 #define SIZEOF_LONG_LONG 8
 
 /* The size of `off_t', as computed by sizeof. */
-#define SIZEOF_OFF_T 8
+#define SIZEOF_OFF_T ${CMAKE_SIZEOF_VOID_P}
 
 /* The size of `pid_t', as computed by sizeof. */
 #define SIZEOF_PID_T 4
@@ -1007,10 +1007,10 @@
 #define SIZEOF_SHORT 2
 
 /* The size of `size_t', as computed by sizeof. */
-#define SIZEOF_SIZE_T 8
+#define SIZEOF_SIZE_T ${CMAKE_SIZEOF_VOID_P}
 
 /* The size of `time_t', as computed by sizeof. */
-#define SIZEOF_TIME_T 8
+#define SIZEOF_TIME_T ${CMAKE_SIZEOF_VOID_P}
 
 /* The size of `uintptr_t', as computed by sizeof. */
 #define SIZEOF_UINTPTR_T ${CMAKE_SIZEOF_VOID_P}
@@ -1066,7 +1066,7 @@
 /* #undef USE_TOOLBOX_OBJECT_GLUE */
 
 /* Define if a va_list is an array of some kind */
-#define VA_LIST_IS_ARRAY 1
+/* undef VA_LIST_IS_ARRAY */
 
 /* Define if you want SIGFPE handled (see Include/pyfpe.h). */
 /* #undef WANT_SIGFPE_HANDLER */
