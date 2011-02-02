@@ -59,7 +59,9 @@ include_directories(${CMAKE_SOURCE_DIR}/Include)
 include_directories(${CMAKE_SOURCE_DIR}/Python)
 
 if(UNIX)
-    include_directories(${CMAKE_SOURCE_DIR}/cmake/config-unix)
+    configure_file(${CMAKE_SOURCE_DIR}/cmake/config-unix/pyconfig.h.in
+                   ${CMAKE_BINARY_DIR}/cmake/config-unix/pyconfig.h)
+    include_directories(${CMAKE_BINARY_DIR}/cmake/config-unix)
 elseif(WIN32)
     include_directories(${CMAKE_SOURCE_DIR}/PC)
 endif(UNIX)
@@ -107,7 +109,7 @@ install(FILES ${CMAKE_BINARY_DIR}/makefile-variables
         DESTINATION ${PYTHONHOME}/config/
         RENAME Makefile)
 if(UNIX)
-    install(FILES cmake/config-unix/pyconfig.h
+    install(FILES ${CMAKE_BINARY_DIR}/cmake/config-unix/pyconfig.h
             DESTINATION include/${LIBPYTHON}/)
 elseif(WIN32)
     install(FILES PC/pyconfig.h
