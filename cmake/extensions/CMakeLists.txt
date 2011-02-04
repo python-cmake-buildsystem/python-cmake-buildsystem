@@ -53,6 +53,14 @@ add_python_extension(mmap SOURCES mmapmodule.c)
 add_python_extension(_multibytecodec SOURCES cjkcodecs/multibytecodec.c)
 add_python_extension(operator SOURCES operator.c)
 add_python_extension(parser SOURCES parsermodule.c)
+add_python_extension(pyexpat
+    SOURCES pyexpat.c
+            expat/xmlparse.c
+            expat/xmlrole.c
+            expat/xmltok.c
+    DEFINITIONS HAVE_EXPAT_CONFIG_H=1 USE_PYEXPAT_CAPI
+    INCLUDEDIRS ${CMAKE_SOURCE_DIR}/Modules/expat
+)
 add_python_extension(_random SOURCES _randommodule.c)
 add_python_extension(select SOURCES selectmodule.c)
 add_python_extension(_socket SOURCES socketmodule.c)
@@ -151,16 +159,6 @@ add_python_extension(_hashlib
     REQUIRES OPENSSL_FOUND
     SOURCES _hashopenssl.c
     LIBRARIES ${OPENSSL_LIBRARIES}
-)
-add_python_extension(pyexpat
-    REQUIRES EXPAT_FOUND
-    SOURCES pyexpat.c
-            expat/xmlparse.c
-            expat/xmlrole.c
-            expat/xmltok.c
-    DEFINITIONS HAVE_EXPAT_CONFIG_H=1 USE_PYEXPAT_CAPI
-    LIBRARIES ${EXPAT_LIBRARIES}
-    INCLUDEDIRS ${EXPAT_INCLUDE_DIRS}
 )
 add_python_extension(readline
     REQUIRES READLINE_INCLUDE_PATH READLINE_LIBRARY CURSES_FOUND
