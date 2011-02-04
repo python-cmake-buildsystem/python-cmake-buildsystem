@@ -127,6 +127,18 @@ else(EXPAT_FOUND)
     )
 endif(EXPAT_FOUND)
 
+# If openssl is NOT available then build some other hash implementations
+if(OPENSSL_FOUND)
+    set(OPENSSL_NOT_FOUND OFF)
+else(OPENSSL_FOUND)
+    set(OPENSSL_NOT_FOUND ON)
+endif(OPENSSL_FOUND)
+
+add_python_extension(_md5 REQUIRES OPENSSL_NOT_FOUND SOURCES md5.c md5module.c)
+add_python_extension(_sha REQUIRES OPENSSL_NOT_FOUND SOURCES shamodule.c)
+add_python_extension(_sha256 REQUIRES OPENSSL_NOT_FOUND SOURCES sha256module.c)
+add_python_extension(_sha512 REQUIRES OPENSSL_NOT_FOUND SOURCES sha512module.c)
+
 # Extensions that depend on other libraries
 add_python_extension(binascii
     REQUIRES ZLIB_FOUND
