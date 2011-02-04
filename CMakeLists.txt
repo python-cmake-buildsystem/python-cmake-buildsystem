@@ -33,6 +33,7 @@ set(EXTRA_PYTHONPATH "" CACHE STRING
 # Find any dependencies
 find_package(BZip2)
 find_package(Curses)
+find_package(EXPAT)
 find_package(OpenSSL)
 find_package(TCL)
 find_package(Threads)

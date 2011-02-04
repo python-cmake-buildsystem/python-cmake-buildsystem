@@ -53,14 +53,6 @@ add_python_extension(mmap SOURCES mmapmodule.c)
 add_python_extension(_multibytecodec SOURCES cjkcodecs/multibytecodec.c)
 add_python_extension(operator SOURCES operator.c)
 add_python_extension(parser SOURCES parsermodule.c)
-add_python_extension(pyexpat
-    SOURCES pyexpat.c
-            expat/xmlparse.c
-            expat/xmlrole.c
-            expat/xmltok.c
-    DEFINITIONS HAVE_EXPAT_CONFIG_H=1 USE_PYEXPAT_CAPI
-    INCLUDEDIRS ${CMAKE_SOURCE_DIR}/Modules/expat
-)
 add_python_extension(_random SOURCES _randommodule.c)
 add_python_extension(select SOURCES selectmodule.c)
 add_python_extension(_socket SOURCES socketmodule.c)
@@ -106,6 +98,35 @@ elseif(WIN32)
     )
 endif(UNIX)
 
+# Build expat using the system expat if it's installed, otherwise use the
+# builtin version.
+if(EXPAT_FOUND)
+    add_python_extension(pyexpat
+        SOURCES pyexpat.c
+        LIBRARIES ${EXPAT_LIBRARIES}
+        INCLUDEDIRS ${EXPAT_INCLUDE_DIRS}
+    )
+    add_python_extension(_elementtree
+        SOURCES _elementtree.c
+        LIBRARIES ${EXPAT_LIBRARIES}
+        INCLUDEDIRS ${EXPAT_INCLUDE_DIRS}
+    )
+else(EXPAT_FOUND)
+    add_python_extension(pyexpat
+        SOURCES pyexpat.c
+                expat/xmlparse.c
+                expat/xmlrole.c
+                expat/xmltok.c
+        DEFINITIONS HAVE_EXPAT_CONFIG_H=1
+        INCLUDEDIRS ${CMAKE_SOURCE_DIR}/Modules/expat
+    )
+    add_python_extension(_elementtree
+        SOURCES _elementtree.c
+        DEFINITIONS HAVE_EXPAT_CONFIG_H=1 USE_PYEXPAT_CAPI
+        INCLUDEDIRS ${CMAKE_SOURCE_DIR}/Modules/expat
+    )
+endif(EXPAT_FOUND)
+
 # Extensions that depend on other libraries
 add_python_extension(binascii
     REQUIRES ZLIB_FOUND
@@ -140,13 +161,6 @@ add_python_extension(dbm
     DEFINITIONS HAVE_GDBM_DASH_NDBM_H
     LIBRARIES ${GDBM_LIBRARY} ${GDBM_COMPAT_LIBRARY}
     INCLUDEDIRS ${GDBM_INCLUDE_PATH}
-)
-add_python_extension(_elementtree
-    REQUIRES EXPAT_FOUND
-    SOURCES _elementtree.c
-    DEFINITIONS HAVE_EXPAT_CONFIG_H=1 USE_PYEXPAT_CAPI
-    LIBRARIES ${EXPAT_LIBRARIES}
-    INCLUDEDIRS ${EXPAT_INCLUDE_DIRS}
 )
 add_python_extension(gdbm
     REQUIRES GDBM_INCLUDE_PATH GDBM_LIBRARY GDBM_COMPAT_LIBRARY
