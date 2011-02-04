@@ -166,7 +166,11 @@ function (add_libpython name type)
         target_link_libraries(${name} util)
     endif(UNIX)
 
-    set_target_properties(${name} PROPERTIES OUTPUT_NAME ${LIBPYTHON})
+    set_target_properties(${name} PROPERTIES
+        OUTPUT_NAME ${LIBPYTHON}
+        ARCHIVE_OUTPUT_DIRECTORY "libpython_static"
+        LIBRARY_OUTPUT_DIRECTORY "libpython_shared"
+    )
 
     if(builtin_definitions)
         set_target_properties(${name} PROPERTIES COMPILE_DEFINITIONS "${builtin_definitions}")
