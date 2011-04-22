@@ -54,8 +54,6 @@ add_python_extension(_multibytecodec SOURCES cjkcodecs/multibytecodec.c)
 add_python_extension(operator SOURCES operator.c)
 add_python_extension(parser SOURCES parsermodule.c)
 add_python_extension(_random SOURCES _randommodule.c)
-add_python_extension(select SOURCES selectmodule.c)
-add_python_extension(_socket SOURCES socketmodule.c)
 add_python_extension(strop SOURCES stropmodule.c)
 add_python_extension(_struct SOURCES _struct.c)
 add_python_extension(_testcapi SOURCES _testcapimodule.c)
@@ -97,6 +95,27 @@ elseif(WIN32)
         LIBRARIES ws2_32
     )
 endif(UNIX)
+
+# Select needs winsock on Windows
+if(WIN32)
+    add_python_extension(select SOURCES selectmodule.c LIBRARIES ws2_32)
+else(WIN32)
+    add_python_extension(select SOURCES selectmodule.c)
+endif(WIN32)
+
+# Socket is different on Windows
+if (WIN32)
+    add_python_extension(_socket
+        SOURCES socketmodule.c
+        DEFINITIONS EAI_ADDRFAMILY
+                    HAVE_SOCKADDR_STORAGE
+                    HAVE_ADDRINFO
+        LIBRARIES ws2_32
+    )
+else(WIN32)
+    add_python_extension(_socket SOURCES socketmodule.c)
+endif(WIN32)
+
 
 # Build expat using the system expat if it's installed, otherwise use the
 # builtin version.

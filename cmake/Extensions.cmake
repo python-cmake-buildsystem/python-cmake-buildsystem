@@ -111,6 +111,13 @@ function(add_python_extension name)
         include_directories(${ADD_PYTHON_EXTENSION_INCLUDEDIRS})
         target_link_libraries(${target_name} ${ADD_PYTHON_EXTENSION_LIBRARIES})
 
+        if(WIN32)
+            list(APPEND ADD_PYTHON_EXTENSION_DEFINITIONS Py_NO_ENABLE_SHARED)
+            target_link_libraries(${target_name} libpython-shared)
+            set_target_properties(${target_name} PROPERTIES
+                LINK_FLAGS -Wl,--enable-auto-import)
+        endif(WIN32)
+
         # Turn off the "lib" prefix and add any compiler definitions
         set_target_properties(${target_name} PROPERTIES
             OUTPUT_NAME "${name}"

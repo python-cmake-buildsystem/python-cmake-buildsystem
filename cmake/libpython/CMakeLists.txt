@@ -17,7 +17,6 @@ set(LIBPYTHON_SOURCES
     ${CMAKE_SOURCE_DIR}/Modules/errnomodule.c
     ${CMAKE_SOURCE_DIR}/Modules/gcmodule.c
     ${CMAKE_SOURCE_DIR}/Modules/getbuildinfo.c
-    ${CMAKE_SOURCE_DIR}/Modules/getpath.c
     ${CMAKE_SOURCE_DIR}/Modules/main.c
     ${CMAKE_SOURCE_DIR}/Modules/signalmodule.c
     ${CMAKE_SOURCE_DIR}/Modules/_sre.c
@@ -89,7 +88,6 @@ set(LIBPYTHON_SOURCES
     ${CMAKE_SOURCE_DIR}/Python/formatter_string.c
     ${CMAKE_SOURCE_DIR}/Python/formatter_unicode.c
     ${CMAKE_SOURCE_DIR}/Python/frozen.c
-    ${CMAKE_SOURCE_DIR}/Python/frozenmain.c
     ${CMAKE_SOURCE_DIR}/Python/future.c
     ${CMAKE_SOURCE_DIR}/Python/getargs.c
     ${CMAKE_SOURCE_DIR}/Python/getcompiler.c
@@ -127,6 +125,7 @@ set(LIBPYTHON_SOURCES
 if(UNIX)
     list(APPEND LIBPYTHON_SOURCES
         ${CMAKE_SOURCE_DIR}/Python/dynload_shlib.c
+        ${CMAKE_SOURCE_DIR}/Modules/getpath.c
     )
 elseif(WIN32)
     list(APPEND LIBPYTHON_SOURCES
@@ -177,6 +176,7 @@ function (add_libpython name type)
     endif(builtin_definitions)
 
     install(TARGETS ${name}
+        RUNTIME DESTINATION bin
         ARCHIVE DESTINATION ${LIBDIR}
         LIBRARY DESTINATION ${LIBDIR}
     )
