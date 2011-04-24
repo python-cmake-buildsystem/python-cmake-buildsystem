@@ -81,7 +81,12 @@ else(UNIX AND NOT APPLE)
 endif(UNIX AND NOT APPLE)
 
 set(PYTHONHOME "${LIBDIR}/${LIBPYTHON}")
-set(DYNLOAD "${LIBDIR}/${LIBPYTHON}/lib-dynload")
+
+if(WIN32)
+    set(DYNLOAD "pyd")
+else(WIN32)
+    set(DYNLOAD "${LIBDIR}/${LIBPYTHON}/lib-dynload")
+endif(WIN32)
 
 # Add extension modules
 set(builtin_extensions "" CACHE INTERNAL "" FORCE)

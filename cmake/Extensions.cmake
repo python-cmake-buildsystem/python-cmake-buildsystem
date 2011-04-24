@@ -115,7 +115,9 @@ function(add_python_extension name)
             list(APPEND ADD_PYTHON_EXTENSION_DEFINITIONS Py_NO_ENABLE_SHARED)
             target_link_libraries(${target_name} libpython-shared)
             set_target_properties(${target_name} PROPERTIES
-                LINK_FLAGS -Wl,--enable-auto-import)
+                LINK_FLAGS -Wl,--enable-auto-import
+                SUFFIX .pyd
+            )
         endif(WIN32)
 
         # Turn off the "lib" prefix and add any compiler definitions
