@@ -8517,3 +8517,22 @@ index 0000000..7489dab
 +	/* End of DW_CFA_xxx CFI instructions.  */
 +	.align 4
 +.LEFDE5:
+--- a/Modules/_ctypes/callproc.c.old	2011-04-25 22:31:55.239558348 +0000
++++ b/Modules/_ctypes/callproc.c	2011-04-25 22:32:13.390364916 +0000
+@@ -771,7 +771,7 @@
+     ffi_cif cif;
+     int cc;
+ #ifdef MS_WIN32
+-    int delta;
++    int delta = 0;
+ #ifndef DONT_USE_SEH
+     DWORD dwExceptionCode = 0;
+     EXCEPTION_RECORD record;
+@@ -822,7 +822,6 @@
+ #ifndef DONT_USE_SEH
+     __try {
+ #endif
+-        delta =
+ #endif
+                 ffi_call(&cif, (void *)pProc, resmem, avalues);
+ #ifdef MS_WIN32
