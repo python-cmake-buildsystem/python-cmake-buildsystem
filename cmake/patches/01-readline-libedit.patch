@@ -1,0 +1,30 @@
+--- Python-2.7.1/Modules/readline.c	2012-06-12 13:11:22.196147749 +0100
++++ python-cmake-buildsystem/Modules/readline.c	2012-06-12 13:10:50.823145298 +0100
+@@ -28,8 +28,15 @@
+ 
+ /* GNU readline definitions */
+ #undef HAVE_CONFIG_H /* Else readline/chardefs.h includes strings.h */
+-#include <readline/readline.h>
+-#include <readline/history.h>
++
++#ifdef USE_LIBEDIT
++#  include <editline/readline.h>
++#else
++#  include <readline/readline.h>
++#  include <readline/history.h>
++#  define HAVE_RL_COMPLETION_SUPPRESS_APPEND
++#  define HAVE_RL_CATCH_SIGNAL
++#endif
+ 
+ #ifdef HAVE_RL_COMPLETION_MATCHES
+ #define completion_matches(x, y) \
+@@ -963,7 +970,9 @@
+             PyEval_SaveThread();
+ #endif
+             if (s < 0) {
++#ifndef USE_LIBEDIT
+                 rl_free_line_state();
++#endif
+                 rl_cleanup_after_signal();
+                 rl_callback_handler_remove();
+                 *signal = 1;

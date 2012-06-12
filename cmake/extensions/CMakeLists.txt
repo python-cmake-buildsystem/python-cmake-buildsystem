@@ -264,3 +264,8 @@ add_python_extension(zlib
     SOURCES zlibmodule.c
     LIBRARIES ${ZLIB_LIBRARIES}
 )
+
+if (USE_LIBEDIT)
+    set_target_properties(extension_readline PROPERTIES
+        COMPILE_DEFINITIONS "USE_LIBEDIT")
+endif()
