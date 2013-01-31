@@ -112,6 +112,7 @@ set(LIBPYTHON_SOURCES
     ${CMAKE_SOURCE_DIR}/Python/pystrtod.c
     ${CMAKE_SOURCE_DIR}/Python/Python-ast.c
     ${CMAKE_SOURCE_DIR}/Python/pythonrun.c
+    ${CMAKE_SOURCE_DIR}/Python/random.c
     ${CMAKE_SOURCE_DIR}/Python/structmember.c
     ${CMAKE_SOURCE_DIR}/Python/symtable.c
     ${CMAKE_SOURCE_DIR}/Python/sysmodule.c
