@@ -16,6 +16,17 @@ foreach(file ${libfiles})
 
     if(NOT is_platform_file OR is_matching_platform_file)
         get_filename_component(path ${file} PATH)
+
+        # Copy lib files to build tree
+        file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/cmake/python/Lib/${path})
+        file(COPY ${libdir}/${file} DESTINATION ${CMAKE_BINARY_DIR}/cmake/python/Lib/${path})
+
+        # Install
         install(FILES ${libdir}/${file} DESTINATION ${PYTHONHOME}/${path})
+
     endif(NOT is_platform_file OR is_matching_platform_file)
 endforeach(file)
+
+# Setup landmark allowing to run the interpreter from a build tree. See 'getpath.c' for details.
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/cmake/python/Modules)
+file(WRITE ${CMAKE_BINARY_DIR}/cmake/python/Modules/Setup "")
