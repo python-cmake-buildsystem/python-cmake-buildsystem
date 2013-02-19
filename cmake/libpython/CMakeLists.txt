@@ -1,16 +1,6 @@
 add_definitions(-DPy_BUILD_CORE)
 add_definitions(-DNDEBUG)
 
-add_definitions(-DVERSION="${LIBPYTHON_VERSION}")
-add_definitions(-DVPATH="")
-add_definitions(-DPYTHONPATH="${EXTRA_PYTHONPATH}::plat-linux2:lib-tk:lib-old")
-
-if(NOT WIN32)
-    add_definitions(-DPREFIX="${CMAKE_INSTALL_PREFIX}")
-    add_definitions(-DEXEC_PREFIX="${CMAKE_INSTALL_PREFIX}")
-    add_definitions(-DPLATFORM="linux2")
-endif(NOT WIN32)
-
 set(LIBPYTHON_SOURCES
     ${CMAKE_SOURCE_DIR}/cmake/config.c
     ${CMAKE_SOURCE_DIR}/Modules/_codecsmodule.c
@@ -126,18 +116,39 @@ if(WITH_THREAD)
     ${CMAKE_SOURCE_DIR}/Python/thread.c
     )
 endif()
+
+set_property(
+    SOURCE ${CMAKE_SOURCE_DIR}/Python/getplatform.c
+    PROPERTY COMPILE_DEFINITIONS
+        PLATFORM="${PY_PLATFORM}"
+    )
+
 # Platform-specific source files
 if(UNIX)
     list(APPEND LIBPYTHON_SOURCES
         ${CMAKE_SOURCE_DIR}/Python/dynload_shlib.c
         ${CMAKE_SOURCE_DIR}/Modules/getpath.c
     )
+    set_property(
+        SOURCE ${CMAKE_SOURCE_DIR}/Modules/getpath.c
+        PROPERTY COMPILE_DEFINITIONS
+            PREFIX="${CMAKE_INSTALL_PREFIX}"
+            EXEC_PREFIX="${CMAKE_INSTALL_PREFIX}"
+            VERSION="${PY_MAJOR_VERSION}.${PY_MINOR_VERSION}"
+            VPATH="."
+            PYTHONPATH="${EXTRA_PYTHONPATH}:plat-${PY_PLATFORM}"
+      )
 elseif(WIN32)
     list(APPEND LIBPYTHON_SOURCES
         ${CMAKE_SOURCE_DIR}/PC/dl_nt.c
         ${CMAKE_SOURCE_DIR}/PC/getpathp.c
         ${CMAKE_SOURCE_DIR}/PC/import_nt.c
         ${CMAKE_SOURCE_DIR}/Python/dynload_win.c
+    )
+    set_property(
+        SOURCE ${CMAKE_SOURCE_DIR}/Modules/getpathp.c
+        PROPERTY COMPILE_DEFINITIONS
+            PYTHONPATH="${EXTRA_PYTHONPATH}:plat-${PY_PLATFORM}"
     )
 endif(UNIX)
 

@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 2.8.6)
 
+set(PY_MAJOR_VERSION 2)
+set(PY_MINOR_VERSION 7)
+set(PY_PATCH_VERSION 3)
+
 # This is the major version number of Python
-set(LIBPYTHON_VERSION 2.7)
+set(LIBPYTHON_VERSION ${PY_MAJOR_VERSION}.${PY_MINOR_VERSION})
 set(LIBPYTHON python${LIBPYTHON_VERSION})
 
 # Include helper functions
