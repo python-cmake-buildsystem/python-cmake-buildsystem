@@ -88,7 +88,7 @@ else(WIN32)
 endif(WIN32)
 
 # Socket is different on Windows
-if (WIN32)
+if(WIN32)
     add_python_extension(_socket
         SOURCES socketmodule.c
         DEFINITIONS EAI_ADDRFAMILY
@@ -265,7 +265,7 @@ add_python_extension(zlib
     LIBRARIES ${ZLIB_LIBRARIES}
 )
 
-if (USE_LIBEDIT)
+if(USE_LIBEDIT)
     set_target_properties(extension_readline PROPERTIES
         COMPILE_DEFINITIONS "USE_LIBEDIT")
 endif()
