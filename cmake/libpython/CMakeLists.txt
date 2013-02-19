@@ -153,7 +153,7 @@ foreach(ext ${builtin_extensions})
 endforeach(ext)
 
 
-function (add_libpython name type)
+function(add_libpython name type)
     add_library(${name} ${type} ${LIBPYTHON_SOURCES})
     target_link_libraries(${name}
         ${builtin_link_libraries}
@@ -181,13 +181,13 @@ function (add_libpython name type)
         ARCHIVE DESTINATION ${LIBDIR}
         LIBRARY DESTINATION ${LIBDIR}
     )
-endfunction (add_libpython)
+endfunction(add_libpython)
 
-if (ENABLE_SHARED)
+if(ENABLE_SHARED)
     add_libpython(libpython-shared SHARED)
-endif (ENABLE_SHARED)
+endif(ENABLE_SHARED)
 
-if (ENABLE_STATIC)
+if(ENABLE_STATIC)
     add_libpython(libpython-static STATIC)
     set_target_properties(libpython-static PROPERTIES COMPILE_DEFINITIONS Py_NO_ENABLE_SHARED)
-endif (ENABLE_STATIC)
+endif(ENABLE_STATIC)
