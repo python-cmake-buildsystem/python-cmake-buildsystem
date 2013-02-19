@@ -21,7 +21,6 @@ set(LIBPYTHON_SOURCES
     ${CMAKE_SOURCE_DIR}/Modules/signalmodule.c
     ${CMAKE_SOURCE_DIR}/Modules/_sre.c
     ${CMAKE_SOURCE_DIR}/Modules/symtablemodule.c
-    ${CMAKE_SOURCE_DIR}/Modules/threadmodule.c
     ${CMAKE_SOURCE_DIR}/Modules/_weakref.c
     ${CMAKE_SOURCE_DIR}/Modules/xxsubtype.c
     ${CMAKE_SOURCE_DIR}/Modules/zipimport.c
@@ -116,12 +115,17 @@ set(LIBPYTHON_SOURCES
     ${CMAKE_SOURCE_DIR}/Python/structmember.c
     ${CMAKE_SOURCE_DIR}/Python/symtable.c
     ${CMAKE_SOURCE_DIR}/Python/sysmodule.c
-    ${CMAKE_SOURCE_DIR}/Python/thread.c
     ${CMAKE_SOURCE_DIR}/Python/traceback.c
     ${CMAKE_SOURCE_DIR}/Python/_warnings.c
     ${builtin_source}
 )
 
+if(WITH_THREAD)
+  list(APPEND LIBPYTHON_SOURCES
+    ${CMAKE_SOURCE_DIR}/Modules/threadmodule.c
+    ${CMAKE_SOURCE_DIR}/Python/thread.c
+    )
+endif()
 # Platform-specific source files
 if(UNIX)
     list(APPEND LIBPYTHON_SOURCES
@@ -157,10 +161,12 @@ function(add_libpython name type)
     add_library(${name} ${type} ${LIBPYTHON_SOURCES})
     target_link_libraries(${name}
         ${builtin_link_libraries}
-        ${CMAKE_THREAD_LIBS_INIT}
         dl
         m
     )
+    if(WITH_THREAD)
+        target_link_libraries(${name} ${CMAKE_THREAD_LIBS_INIT})
+    endif(WITH_THREAD)
 
     if(UNIX)
         target_link_libraries(${name} util)

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 2.8.6)
 
 # This is the major version number of Python
 set(LIBPYTHON_VERSION 2.7)
@@ -14,6 +14,17 @@ option(ENABLE_SHARED "Build a shared libpython library" OFF)
 option(ENABLE_STATIC "Build a static libpython library" ON)
 option(USE_LIB64 "Search for dependencies and install to prefix/lib64 instead of prefix/lib" OFF)
 option(USE_LIBEDIT "Use libedit instead of readline" OFF)
+option(WITH_TSC "profile with the Pentium timestamp counter" OFF)
+option(ENABLE_IPV6 "Enable IP v6" ON)
+option(WITH_DOC_STRINGS "Enable if you want documentation strings in extension modules" ON)
+option(Py_USING_UNICODE "Enable unicode support" ON)
+set(Py_DEBUG OFF) # TODO - Build debugging interpreter
+option(WITH_PYMALLOC "Define if you want to compile in Python-specific mallocs" ON)
+option(HAVE_LARGEFILE_SUPPORT "Large file support" ON)
+option(WITH_THREAD "Compile in rudimentary thread support" ON)
+
+# Proceed to the configure checks
+include(cmake/ConfigureChecks.cmake)
 
 if(NOT ENABLE_SHARED AND NOT ENABLE_STATIC)
     message(FATAL_ERROR "One or both of ENABLE_SHARED or ENABLE_STATIC must be set")
@@ -35,7 +46,9 @@ find_package(Curses)
 find_package(EXPAT)
 find_package(OpenSSL)
 find_package(TCL)
-find_package(Threads)
+if(WITH_THREAD)
+  find_package(Threads)
+endif()
 find_package(ZLIB)
 
 find_path(DB_INCLUDE_PATH db.h)
