@@ -1,15 +1,13 @@
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.3)
 
 # This is the major version number of Python
 set(LIBPYTHON_VERSION 2.7)
 set(LIBPYTHON python${LIBPYTHON_VERSION})
 
-cmake_policy(SET CMP0011 NEW)
-
 # Include helper functions
 include(cmake/Assembler.cmake)
-include(cmake/ParseArguments.cmake)
 include(cmake/Extensions.cmake)
+include(CMakeParseArguments)
 
 # Options
 option(ENABLE_SHARED "Build a shared libpython library" OFF)

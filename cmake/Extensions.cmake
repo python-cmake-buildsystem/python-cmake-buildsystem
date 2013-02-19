@@ -38,11 +38,15 @@
 # options ENABLE_FOO and BUILTIN_FOO.
 
 function(add_python_extension name)
-    parse_arguments(ADD_PYTHON_EXTENSION
-        "REQUIRES;SOURCES;DEFINITIONS;LIBRARIES;INCLUDEDIRS"
-        "BUILTIN"
-        ${ARGN}
-    )
+    set(options BUILTIN)
+    set(oneValueArgs)
+    set(multiValueArgs REQUIRES SOURCES DEFINITIONS LIBRARIES INCLUDEDIRS)
+    cmake_parse_arguments(ADD_PYTHON_EXTENSION
+      "${options}"
+      "${oneValueArgs}"
+      "${multiValueArgs}"
+      ${ARGN}
+      )
 
     # Remove _ from the beginning of the name.
     string(REGEX REPLACE "^_" "" pretty_name "${name}")
