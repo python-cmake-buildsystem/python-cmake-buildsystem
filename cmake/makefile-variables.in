@@ -17,7 +17,7 @@ INSTALL_SCRIPT= /usr/bin/install -c
 INSTALL_DATA=	/usr/bin/install -c -m 644
 INSTALL_SHARED= /usr/bin/install -c -m 555
 
-OPT=            ${CMAKE_C_FLAGS} -DNDEBUG
+OPT=			${CMAKE_C_FLAGS} -DNDEBUG
 CFLAGS=		${CMAKE_C_FLAGS}
 CPPFLAGS=	${CMAKE_C_FLAGS}
 LDFLAGS=	
