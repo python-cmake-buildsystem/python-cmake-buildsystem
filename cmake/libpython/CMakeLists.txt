@@ -182,6 +182,10 @@ function(add_libpython name type)
     if(UNIX)
         target_link_libraries(${name} util)
     endif(UNIX)
+    
+    if(APPLE)
+        set_target_properties(${name} PROPERTIES LINK_FLAGS -Wl,-undefined,dynamic_lookup)
+    endif(APPLE)
 
     set_target_properties(${name} PROPERTIES
         OUTPUT_NAME ${LIBPYTHON}

@@ -123,6 +123,13 @@ function(add_python_extension name)
                 SUFFIX .pyd
             )
         endif(WIN32)
+        
+        if(APPLE)
+            set_target_properties(${target_name} PROPERTIES
+                LINK_FLAGS -Wl,-undefined,dynamic_lookup
+                SUFFIX .so
+                )
+        endif(APPLE)
 
         # Turn off the "lib" prefix and add any compiler definitions
         set_target_properties(${target_name} PROPERTIES

@@ -24,7 +24,6 @@ option(WITH_DOC_STRINGS "Enable if you want documentation strings in extension m
 option(Py_USING_UNICODE "Enable unicode support" ON)
 set(Py_DEBUG OFF) # TODO - Build debugging interpreter
 option(WITH_PYMALLOC "Define if you want to compile in Python-specific mallocs" ON)
-option(HAVE_LARGEFILE_SUPPORT "Large file support" ON)
 option(WITH_THREAD "Compile in rudimentary thread support" ON)
 
 # Proceed to the configure checks

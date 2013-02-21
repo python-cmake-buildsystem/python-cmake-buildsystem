@@ -1,7 +1,7 @@
 add_python_extension(array SOURCES arraymodule.c)
 add_python_extension(audioop SOURCES audioop.c)
 add_python_extension(_bisect SOURCES _bisectmodule.c)
-add_python_extension(cmath SOURCES _math.c cmathmodule.c LIBRARIES m)
+add_python_extension(cmath REQUIRES HAVE_LIBM SOURCES _math.c cmathmodule.c LIBRARIES m)
 add_python_extension(_codecs_cn SOURCES cjkcodecs/_codecs_cn.c)
 add_python_extension(_codecs_hk SOURCES cjkcodecs/_codecs_hk.c)
 add_python_extension(_codecs_iso2022 SOURCES cjkcodecs/_codecs_iso2022.c)
@@ -10,11 +10,11 @@ add_python_extension(_codecs_kr SOURCES cjkcodecs/_codecs_kr.c)
 add_python_extension(_codecs_tw SOURCES cjkcodecs/_codecs_tw.c)
 add_python_extension(_collections SOURCES _collectionsmodule.c)
 add_python_extension(cPickle SOURCES cPickle.c)
-add_python_extension(crypt SOURCES cryptmodule.c LIBRARIES crypt)
+add_python_extension(crypt REQUIRES HAVE_LIBCRYPT SOURCES cryptmodule.c LIBRARIES crypt)
 add_python_extension(cStringIO SOURCES cStringIO.c)
 add_python_extension(_csv SOURCES _csv.c)
 add_python_extension(_ctypes_test SOURCES _ctypes/_ctypes_test.c)
-add_python_extension(datetime SOURCES datetimemodule.c timemodule.c LIBRARIES m)
+add_python_extension(datetime REQUIRES HAVE_LIBM SOURCES datetimemodule.c timemodule.c LIBRARIES m)
 add_python_extension(_functools SOURCES _functoolsmodule.c)
 add_python_extension(future_builtins SOURCES future_builtins.c)
 add_python_extension(_heapq SOURCES _heapqmodule.c)
@@ -41,17 +41,17 @@ add_python_extension(_random SOURCES _randommodule.c)
 add_python_extension(strop SOURCES stropmodule.c)
 add_python_extension(_struct SOURCES _struct.c)
 add_python_extension(_testcapi SOURCES _testcapimodule.c)
-add_python_extension(time SOURCES timemodule.c LIBRARIES m)
+add_python_extension(time REQUIRES HAVE_LIBM SOURCES timemodule.c LIBRARIES m)
 add_python_extension(unicodedata SOURCES unicodedata.c)
 
 # UNIX-only extensions
 add_python_extension(fcntl REQUIRES UNIX SOURCES fcntlmodule.c)
 add_python_extension(grp REQUIRES UNIX SOURCES grpmodule.c)
-add_python_extension(nis REQUIRES UNIX SOURCES nismodule.c LIBRARIES nsl)
+add_python_extension(nis REQUIRES UNIX HAVE_LIBNSL SOURCES nismodule.c LIBRARIES nsl)
 add_python_extension(posix REQUIRES UNIX BUILTIN SOURCES posixmodule.c)
 add_python_extension(pwd REQUIRES UNIX BUILTIN SOURCES pwdmodule.c)
 add_python_extension(resource REQUIRES UNIX SOURCES resource.c)
-add_python_extension(spwd REQUIRES UNIX SOURCES spwdmodule.c)
+add_python_extension(spwd REQUIRES UNIX HAVE_GETSPNAM HAVE_GETSPENT SOURCES spwdmodule.c)
 add_python_extension(syslog REQUIRES UNIX SOURCES syslogmodule.c)
 add_python_extension(termios REQUIRES UNIX SOURCES termios.c)
 
@@ -119,22 +119,42 @@ if(WIN32)
         DEFINITIONS X86_WIN32
     )
 else(WIN32)
-    add_python_extension(_ctypes
-        SOURCES _ctypes/_ctypes.c
-                _ctypes/callbacks.c
-                _ctypes/callproc.c
-                _ctypes/cfield.c
-                _ctypes/libffi/src/closures.c
-                _ctypes/libffi/src/dlmalloc.c
-                _ctypes/libffi/src/x86/ffi.c
-                _ctypes/libffi/src/x86/ffi64.c
-                _ctypes/libffi/src/prep_cif.c
-                _ctypes/stgdict.c
-                _ctypes/libffi/src/x86/sysv.S
-                _ctypes/libffi/src/x86/unix64.S
-        INCLUDEDIRS ${CMAKE_SOURCE_DIR}/Modules/_ctypes/libffi/src/x86
-                    ${CMAKE_SOURCE_DIR}/Modules/_ctypes/libffi/include
-    )
+    if(APPLE)
+        # TODO - Jc:02/20/2013
+        #add_python_extension(_ctypes
+        #    SOURCES _ctypes/_ctypes.c
+        #            _ctypes/callbacks.c
+        #            _ctypes/callproc.c
+        #            _ctypes/cfield.c
+        #            _ctypes/libffi_osx/src/closures.c
+        #            _ctypes/libffi_osx/src/dlmalloc.c
+        #            _ctypes/libffi_osx/x86/ffi.c
+        #            _ctypes/libffi_osx/x86/ffi64.c
+        #            _ctypes/libffi_osx/src/prep_cif.c
+        #            _ctypes/stgdict.c
+        #            _ctypes/libffi_osx/x86/sysv.S
+        #            _ctypes/libffi_osx/x86/darwin64.S
+        #    INCLUDEDIRS ${CMAKE_SOURCE_DIR}/Modules/_ctypes/libffi/src/x86
+        #                ${CMAKE_SOURCE_DIR}/Modules/_ctypes/libffi/include
+        #)
+    else(APPLE)
+        add_python_extension(_ctypes
+            SOURCES _ctypes/_ctypes.c
+                    _ctypes/callbacks.c
+                    _ctypes/callproc.c
+                    _ctypes/cfield.c
+                    _ctypes/libffi/src/closures.c
+                    _ctypes/libffi/src/dlmalloc.c
+                    _ctypes/libffi/src/x86/ffi.c
+                    _ctypes/libffi/src/x86/ffi64.c
+                    _ctypes/libffi/src/prep_cif.c
+                    _ctypes/stgdict.c
+                    _ctypes/libffi/src/x86/sysv.S
+                    _ctypes/libffi/src/x86/unix64.S
+            INCLUDEDIRS ${CMAKE_SOURCE_DIR}/Modules/_ctypes/libffi/src/x86
+                        ${CMAKE_SOURCE_DIR}/Modules/_ctypes/libffi/include
+        )
+    endif(APPLE)
 endif(WIN32)
 
 

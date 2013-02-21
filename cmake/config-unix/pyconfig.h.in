@@ -96,13 +96,13 @@
 #cmakedefine HAVE_BROKEN_PTHREAD_SIGMASK
 
 /* define to 1 if your sem_getvalue is broken. */
-/* #undef HAVE_BROKEN_SEM_GETVALUE */
+#cmakedefine HAVE_BROKEN_SEM_GETVALUE 1
 
 /* Define this if you have the type _Bool. */
 #cmakedefine HAVE_C99_BOOL 1
 
 /* Define to 1 if you have the 'chflags' function. */
-#cmakedefine HAVE_CHFLAGS
+#cmakedefine HAVE_CHFLAGS 1
 
 /* Define to 1 if you have the `chown' function. */
 #cmakedefine HAVE_CHOWN 1
@@ -185,7 +185,7 @@
 #cmakedefine HAVE_DYNAMIC_LOADING 1
 
 /* Define if you have the 'epoll' functions. */
-#define HAVE_EPOLL 1
+#cmakedefine HAVE_EPOLL 1
 
 /* Define to 1 if you have the `erf' function. */
 #cmakedefine HAVE_ERF 1
@@ -327,10 +327,10 @@
 #cmakedefine HAVE_GETPWENT 1
 
 /* Define to 1 if you have the `getresgid' function. */
-#define HAVE_GETRESGID 1
+#cmakedefine HAVE_GETRESGID 1
 
 /* Define to 1 if you have the `getresuid' function. */
-#define HAVE_GETRESUID 1
+#cmakedefine HAVE_GETRESUID 1
 
 /* Define to 1 if you have the `getsid' function. */
 #cmakedefine HAVE_GETSID 1
@@ -381,7 +381,7 @@
 #cmakedefine HAVE_KILLPG 1
 
 /* Define if you have the 'kqueue' functions. */
-/* #undef HAVE_KQUEUE */
+#cmakedefine HAVE_KQUEUE 1
 
 /* Define to 1 if you have the <langinfo.h> header file. */
 #cmakedefine HAVE_LANGINFO_H 1
@@ -396,7 +396,7 @@
 #cmakedefine HAVE_LCHFLAGS 1
 
 /* Define to 1 if you have the `lchmod' function. */
-/* #undef HAVE_LCHMOD */
+#cmakedefine HAVE_LCHMOD 1
 
 /* Define to 1 if you have the `lchown' function. */
 #cmakedefine HAVE_LCHOWN 1
@@ -432,10 +432,10 @@
 #cmakedefine HAVE_LINUX_NETLINK_H 1
 
 /* Define to 1 if you have the <linux/tipc.h> header file. */
-#define HAVE_LINUX_TIPC_H 1
+#cmakedefine HAVE_LINUX_TIPC_H 1
 
 /* Define to 1 if you have the `log1p' function. */
-#define HAVE_LOG1P 1
+#cmakedefine HAVE_LOG1P 1
 
 /* Define this if you have the type long double. */
 #define HAVE_LONG_DOUBLE 1
@@ -483,7 +483,7 @@
 #cmakedefine HAVE_OPENPTY 1
 
 /* Define if compiling using MacOS X 10.5 SDK or later. */
-/* #undef HAVE_OSX105_SDK */
+#cmakedefine HAVE_OSX105_SDK 1
 
 /* Define to 1 if you have the `pathconf' function. */
 #cmakedefine HAVE_PATHCONF 1
@@ -729,10 +729,10 @@
 #cmakedefine HAVE_SYS_DIR_H 1
 
 /* Define to 1 if you have the <sys/epoll.h> header file. */
-#define HAVE_SYS_EPOLL_H 1
+#cmakedefine HAVE_SYS_EPOLL_H 1
 
 /* Define to 1 if you have the <sys/event.h> header file. */
-/* #undef HAVE_SYS_EVENT_H */
+#cmakedefine HAVE_SYS_EVENT_H 1
 
 /* Define to 1 if you have the <sys/file.h> header file. */
 #cmakedefine HAVE_SYS_FILE_H 1
@@ -863,7 +863,7 @@
 #cmakedefine HAVE_USABLE_WCHAR_T 1
 
 /* Define to 1 if you have the <util.h> header file. */
-/* #undef HAVE_UTIL_H */
+#cmakedefine HAVE_UTIL_H 1
 
 /* Define to 1 if you have the `utimes' function. */
 #cmakedefine HAVE_UTIMES 1
@@ -968,7 +968,7 @@
 #cmakedefine SETPGRP_HAVE_ARG
 
 /* Define this to be extension of shared libraries (including the dot!). */
-#define SHLIB_EXT "@CMAKE_SHARED_LIBRARY_SUFFIX@"
+#define SHLIB_EXT "@CMAKE_SHARED_MODULE_SUFFIX@"
 
 /* Define if i>>j for signed int i does not extend the sign bit when i < 0 */
 #cmakedefine SIGNED_RIGHT_SHIFT_ZERO_FILLS

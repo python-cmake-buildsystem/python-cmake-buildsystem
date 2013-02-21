@@ -39,6 +39,7 @@ check_include_files(io.h HAVE_IO_H)
 check_include_files(langinfo.h HAVE_LANGINFO_H)
 check_include_files(libintl.h HAVE_LIBINTL_H)
 check_include_files(libutil.h HAVE_LIBUTIL_H)
+check_include_files(linux/tipc.h HAVE_LINUX_TIPC_H)
 check_include_files(locale.h HAVE_LOCALE_H)
 
 check_include_files(sys/socket.h HAVE_SYS_SOCKET_H)
@@ -71,6 +72,8 @@ check_include_files(stropts.h HAVE_STROPTS_H)
 check_include_files(sysexits.h HAVE_SYSEXITS_H)
 check_include_files(sys/audioio.h HAVE_SYS_AUDIOIO_H)
 check_include_files(sys/bsdtty.h HAVE_SYS_BSDTTY_H)
+check_include_files(sys/epoll.h HAVE_SYS_EPOLL_H)
+check_include_files(sys/event.h HAVE_SYS_EVENT_H)
 check_include_files(sys/file.h HAVE_SYS_FILE_H)
 check_include_files(sys/loadavg.h HAVE_SYS_LOADAVG_H)
 check_include_files(sys/lock.h HAVE_SYS_LOCK_H)
@@ -96,6 +99,7 @@ check_include_files(termios.h HAVE_TERMIOS_H)
 check_include_files(term.h HAVE_TERM_H)
 check_include_files(thread.h HAVE_THREAD_H)
 check_include_files(unistd.h HAVE_UNISTD_H)
+check_include_files(util.h HAVE_UTIL_H)
 check_include_files(utime.h HAVE_UTIME_H)
 check_include_files(wchar.h HAVE_WCHAR_H)
 check_include_files("stdlib.h;stdarg.h;string.h;float.h" STDC_HEADERS)
@@ -107,12 +111,14 @@ find_file(HAVE_DEV_PTC  NAMES /dev/ptc  PATHS / NO_DEFAULT_PATH)
 message(STATUS "ptmx: ${HAVE_DEV_PTMX} ptc: ${HAVE_DEV_PTC}")
 
 find_library(HAVE_LIBCURSES curses)
+find_library(HAVE_LIBCRYPT crypt)
 find_library(HAVE_LIBDL dl)
 find_library(HAVE_LIBDLD dld)
 find_library(HAVE_LIBIEEE ieee)
 find_library(HAVE_LIBINTL intl)
 find_library(HAVE_LIBM m)
 find_library(HAVE_LIBNCURSES ncurses)
+find_library(HAVE_LIBNSL nsl)
 find_library(HAVE_LIBPTHREAD pthread)
 find_library(HAVE_LIBREADLINE readline)
 find_library(HAVE_LIBRESOLV resolv)
@@ -125,7 +131,36 @@ if(WITH_THREAD)
   endif()
 endif()
 
-set(CMAKE_REQUIRED_DEFINITIONS -D_FILE_OFFSET_BITS=64 -D_GNU_SOURCE=1 -D_BSD_TYPES=1 -DNETBSD_SOURCE=1 -D__BSD_VISIBLE=1)
+set(_FILE_OFFSET_BITS 64)
+set(_LARGEFILE_SOURCE 1)
+
+set(__BSD_VISIBLE 1)
+set(_BSD_TYPES 1)
+set(__EXTENSIONS__ 1)
+set(_GNU_SOURCE 1)
+set(_NETBSD_SOURCE 1)
+
+if(CMAKE_SYSTEM MATCHES OpenBSD)
+  set(_BSD_SOURCE 1)
+endif(CMAKE_SYSTEM MATCHES OpenBSD)
+
+set(define_xopen_source 1)
+if(APPLE)
+  set(define_xopen_source 0)
+endif()
+
+if(define_xopen_source)
+  set(_XOPEN_SOURCE 600)
+  set(_XOPEN_SOURCE_EXTENDED 1)
+  set(_POSIX_C_SOURCE 200112L)
+endif()
+
+set(CMAKE_REQUIRED_DEFINITIONS 
+  -D_FILE_OFFSET_BITS=${_FILE_OFFSET_BITS}
+  -D_GNU_SOURCE=${_GNU_SOURCE}
+  -D_BSD_TYPES=${_BSD_TYPES}
+  -DNETBSD_SOURCE=${_NETBSD_SOURCE}
+  -D__BSD_VISIBLE=${__BSD_VISIBLE})
 set(CMAKE_EXTRA_INCLUDE_FILES stdio.h)
 
 add_cond(CMAKE_REQUIRED_LIBRARIES HAVE_LIBM m)
@@ -153,19 +188,6 @@ check_type_size(wchar_t SIZEOF_WCHAR_T)
 check_type_size(_Bool SIZEOF__BOOL)
 set(HAVE_C99_BOOL ${SIZEOF__BOOL})
 
-set(_LARGEFILE_SOURCE 1)
-set(_FILE_OFFSET_BITS 64)
-
-set(_NETBSD_SOURCE 1)
-set(__BSD_VISIBLE 1)
-set(_BSD_SOURCE 1)
-set(_BSD_TYPES 1)
-set(__EXTENSIONS__ 1)
-set(_GNU_SOURCE 1)
-set(_XOPEN_SOURCE 600)
-set(_XOPEN_SOURCE_EXTENDED 1)
-set(_POSIX_C_SOURCE 200112L)
-
 set(AIX_GENUINE_CPLUSPLUS 0)
 
 set(WITH_DYLD 0)
@@ -175,9 +197,19 @@ if(APPLE)
   set(WITH_NEXT_FRAMEWORK 1)
 endif(APPLE)
 
+if(HAVE_LONG_LONG)
+  if(SIZEOF_OFF_T GREATER SIZEOF_LONG
+      AND (SIZEOF_LONG_LONG GREATER SIZEOF_OFF_T OR SIZEOF_LONG_LONG EQUAL SIZEOF_OFF_T))      
+      set(HAVE_LARGEFILE_SUPPORT 1)
+  endif()
+  
+endif(HAVE_LONG_LONG)
+
 
 set(CFG_HEADERS )
 
+add_cond(CFG_HEADERS HAVE_SYS_EPOLL_H sys/epoll.h)
+add_cond(CFG_HEADERS HAVE_SYS_EVENT_H sys/event.h)
 add_cond(CFG_HEADERS HAVE_SYS_TYPES_H sys/types.h)
 add_cond(CFG_HEADERS HAVE_SYS_TIME_H sys/time.h)
 add_cond(CFG_HEADERS HAVE_SYS_FILE_H sys/file.h)
@@ -197,9 +229,11 @@ add_cond(CFG_HEADERS HAVE_SHADOW_H shadow.h)
 add_cond(CFG_HEADERS HAVE_LOCALE_H locale.h)
 add_cond(CFG_HEADERS HAVE_LIBINTL_H libintl.h)
 add_cond(CFG_HEADERS HAVE_FCNTL_H fcntl.h)
+add_cond(CFG_HEADERS HAVE_PTY_H pty.h)
 add_cond(CFG_HEADERS HAVE_SIGNAL_H signal.h)
 add_cond(CFG_HEADERS HAVE_STDLIB_H stdlib.h)
 add_cond(CFG_HEADERS HAVE_STRING_H string.h)
+add_cond(CFG_HEADERS HAVE_UTIL_H util.h)
 add_cond(CFG_HEADERS HAVE_UNISTD_H unistd.h)
 add_cond(CFG_HEADERS HAVE_UTIME_H utime.h)
 add_cond(CFG_HEADERS HAVE_WCHAR_H wchar.h)
@@ -221,6 +255,7 @@ check_symbol_exists(confstr      "${CFG_HEADERS}" HAVE_CONFSTR)
 check_symbol_exists(ctermid      "${CFG_HEADERS}" HAVE_CTERMID)
 check_symbol_exists(ctermid_r    "${CFG_HEADERS}" HAVE_CTERMID_R)
 check_symbol_exists(dup2         "${CFG_HEADERS}" HAVE_DUP2)
+check_symbol_exists(epoll        "${CFG_HEADERS}" HAVE_EPOLL)
 check_symbol_exists(execv        "${CFG_HEADERS}" HAVE_EXECV)
 check_symbol_exists(fchdir       "${CFG_HEADERS}" HAVE_FCHDIR)
 check_symbol_exists(fchmod       "${CFG_HEADERS}" HAVE_FCHMOD)
@@ -249,6 +284,8 @@ check_symbol_exists(getpgrp      "${CFG_HEADERS}" HAVE_GETPGRP)
 check_symbol_exists(getpid       "${CFG_HEADERS}" HAVE_GETPID)
 check_symbol_exists(getpriority  "${CFG_HEADERS}" HAVE_GETPRIORITY)
 check_symbol_exists(getpwent     "${CFG_HEADERS}" HAVE_GETPWENT)
+check_symbol_exists(getresgid    "${CFG_HEADERS}" HAVE_GETRESGID)
+check_symbol_exists(getresuid    "${CFG_HEADERS}" HAVE_GETRESUID)
 check_symbol_exists(getsid       "${CFG_HEADERS}" HAVE_GETSID)
 check_symbol_exists(getspent     "${CFG_HEADERS}" HAVE_GETSPENT)
 check_symbol_exists(getspnam     "${CFG_HEADERS}" HAVE_GETSPNAM)
@@ -257,7 +294,9 @@ check_symbol_exists(getwd        "${CFG_HEADERS}" HAVE_GETWD)
 check_symbol_exists(hypot        "${CFG_HEADERS}" HAVE_HYPOT)
 check_symbol_exists(kill         "${CFG_HEADERS}" HAVE_KILL)
 check_symbol_exists(killpg       "${CFG_HEADERS}" HAVE_KILLPG)
+check_symbol_exists(kqueue       "${CFG_HEADERS}" HAVE_KQUEUE)
 check_symbol_exists(lchflags     "${CFG_HEADERS}" HAVE_LCHFLAGS)
+check_symbol_exists(lchmod       "${CFG_HEADERS}" HAVE_LCHMOD)
 check_symbol_exists(lchown       "${CFG_HEADERS}" HAVE_LCHOWN)
 check_symbol_exists(link         "${CFG_HEADERS}" HAVE_LINK)
 check_symbol_exists(lstat        "${CFG_HEADERS}" HAVE_LSTAT)
@@ -587,7 +626,7 @@ else(NOT HAVE_STRUCT_TM_TM_ZONE)
   set(HAVE_TZNAME 0)
 endif(NOT HAVE_STRUCT_TM_TM_ZONE)
 
-check_type_exists("struct tm" sys/time.h TM_IN_SYS_TIME)
+check_type_exists("struct tm" "sys/time.h" TM_IN_SYS_TIME)
 
 check_c_source_compiles("#include <sys/time.h>\n int main() {gettimeofday((struct timeval*)0,(struct timezone*)0);}" GETTIMEOFDAY_WITH_TZ)
 
@@ -694,6 +733,66 @@ check_symbol_exists(pthread_sigmask "${CFG_HEADERS}" HAVE_PTHREAD_SIGMASK)
 
 set(CFG_HEADERS ${CFG_HEADERS_SAVE})
 cmake_pop_check_state()
+
+# For multiprocessing module, check that sem_open
+# actually works.  For FreeBSD versions <= 7.2,
+# the kernel module that provides POSIX semaphores
+# isn't loaded by default, so an attempt to call
+# sem_open results in a 'Signal 12' error.
+set(check_src ${PROJECT_BINARY_DIR}/ac_cv_posix_semaphores_enabled.c)
+file(WRITE ${check_src} "#include <unistd.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <semaphore.h>
+#include <sys/stat.h>
+
+int main(void) {
+  sem_t *a = sem_open("/autoconf", O_CREAT, S_IRUSR|S_IWUSR, 0);
+  if (a == SEM_FAILED) {
+    perror("sem_open");
+    return 1;
+  }
+  sem_close(a);
+  sem_unlink("/autoconf");
+  return 0;
+}
+")
+python_platform_test_run(
+  POSIX_SEMAPHORES_NOT_ENABLED
+  "Checking whether POSIX semaphores are enabled"
+  ${check_src}
+  DIRECT
+  )
+
+# Multiprocessing check for broken sem_getvalue
+set(check_src ${PROJECT_BINARY_DIR}/ac_cv_broken_sem_getvalue.c)
+file(WRITE ${check_src} "#include <unistd.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <semaphore.h>
+#include <sys/stat.h>
+
+int main(void){
+  sem_t *a = sem_open("/autocftw", O_CREAT, S_IRUSR|S_IWUSR, 0);
+  int count;
+  int res;
+  if(a==SEM_FAILED){
+    perror("sem_open");
+    return 1;
+
+  }
+  res = sem_getvalue(a, &count);
+  sem_close(a);
+  sem_unlink("/autocftw");
+  return res==-1 ? 1 : 0;
+}
+")
+python_platform_test_run(
+  HAVE_BROKEN_SEM_GETVALUE
+  "Checking for broken sem_getvalue"
+  ${check_src}
+  INVERT
+  )
 
 if(CMAKE_SYSTEM MATCHES BlueGene)
   # Todo: Display message
@@ -926,6 +1025,20 @@ if(ZLIB_FOUND)
 endif(ZLIB_FOUND)
 
 ############################################
+
+set(HAVE_OSX105_SDK 0)
+if(APPLE)
+  # Check for OSX 10.5 SDK or later
+  set(check_src ${PROJECT_BINARY_DIR}/have_osx105_sdk.c)
+  file(WRITE ${check_src} "#include <Carbon/Carbon.h>
+int main(int argc, char* argv[]){FSIORefNum fRef = 0; return 0;}")
+  python_platform_test(
+    HAVE_OSX105_SDK
+    "Checking for OSX 10.5 SDK or later"
+    ${check_src}
+    DIRECT
+    )
+endif(APPLE)
 
 # setup the python platform
 set(PY_PLATFORM generic)
