@@ -90,10 +90,10 @@
 #cmakedefine HAVE_BROKEN_POLL 1
 
 /* Define if the Posix semaphores do not work on your system */
-#cmakedefine HAVE_BROKEN_POSIX_SEMAPHORES
+#cmakedefine HAVE_BROKEN_POSIX_SEMAPHORES 1
 
 /* Define if pthread_sigmask() does not work on your system. */
-#cmakedefine HAVE_BROKEN_PTHREAD_SIGMASK
+#cmakedefine HAVE_BROKEN_PTHREAD_SIGMASK 1
 
 /* define to 1 if your sem_getvalue is broken. */
 #cmakedefine HAVE_BROKEN_SEM_GETVALUE 1
@@ -1133,7 +1133,7 @@
 #define _DARWIN_C_SOURCE 1
 
 /* This must be set to 64 on some systems to enable large file support. */
-#cmakedefine _FILE_OFFSET_BITS @_FILE_OFFSET_BITS@ 
+#cmakedefine _FILE_OFFSET_BITS @_FILE_OFFSET_BITS@
 
 /* Define on Linux to activate all library features */
 #cmakedefine _GNU_SOURCE 1
