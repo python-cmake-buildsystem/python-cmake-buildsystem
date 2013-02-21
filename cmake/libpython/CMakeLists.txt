@@ -110,6 +110,10 @@ set(LIBPYTHON_SOURCES
     ${builtin_source}
 )
 
+foreach(filename class complex float int method string type unicode weakref)
+    set_property(SOURCE ${CMAKE_SOURCE_DIR}/Objects/${filename}object.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
+endforeach()
+
 if(WITH_THREAD)
   list(APPEND LIBPYTHON_SOURCES
     ${CMAKE_SOURCE_DIR}/Modules/threadmodule.c
@@ -129,6 +133,11 @@ if(UNIX)
         ${CMAKE_SOURCE_DIR}/Python/dynload_shlib.c
         ${CMAKE_SOURCE_DIR}/Modules/getpath.c
     )
+    set_property(
+        SOURCE ${CMAKE_SOURCE_DIR}/Modules/getpath.c
+        PROPERTY COMPILE_FLAGS
+            -Wno-deprecated-declarations
+        )
     set_property(
         SOURCE ${CMAKE_SOURCE_DIR}/Modules/getpath.c
         PROPERTY COMPILE_DEFINITIONS

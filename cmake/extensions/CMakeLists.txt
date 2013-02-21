@@ -15,6 +15,9 @@ add_python_extension(cStringIO SOURCES cStringIO.c)
 add_python_extension(_csv SOURCES _csv.c)
 add_python_extension(_ctypes_test SOURCES _ctypes/_ctypes_test.c)
 add_python_extension(datetime REQUIRES HAVE_LIBM SOURCES datetimemodule.c timemodule.c LIBRARIES m)
+if(ENABLE_DATETIME)
+    set_property(SOURCE ${CMAKE_SOURCE_DIR}/Modules/datetimemodule.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
+endif()
 add_python_extension(_functools SOURCES _functoolsmodule.c)
 add_python_extension(future_builtins SOURCES future_builtins.c)
 add_python_extension(_heapq SOURCES _heapqmodule.c)
@@ -69,6 +72,9 @@ if(UNIX)
                 _multiprocessing/semaphore.c
                 _multiprocessing/socket_connection.c
     )
+    if(ENABLE_MULTIPROCESSING)
+        set_property(SOURCE ${CMAKE_SOURCE_DIR}/Modules/semaphore.c PROPERTY COMPILE_FLAGS -Wimplicit-function-declaration)
+    endif()
 elseif(WIN32)
     add_python_extension(_multiprocessing
         SOURCES _multiprocessing/multiprocessing.c
@@ -246,6 +252,9 @@ add_python_extension(_hashlib
     SOURCES _hashopenssl.c
     LIBRARIES ${OPENSSL_LIBRARIES}
 )
+if(ENABLE_HASHLIB)
+    set_property(SOURCE ${CMAKE_SOURCE_DIR}/Modules/_hashopenssl.c PROPERTY COMPILE_FLAGS -Wno-deprecated-declarations)
+endif()
 add_python_extension(readline
     REQUIRES READLINE_INCLUDE_PATH READLINE_LIBRARY CURSES_FOUND
     SOURCES readline.c
@@ -267,6 +276,9 @@ add_python_extension(_sqlite3
     INCLUDEDIRS ${SQLITE3_INCLUDE_PATH}
     LIBRARIES ${SQLITE3_LIBRARY}
 )
+if(ENABLE_SQLITE3)
+    set_property(SOURCE ${CMAKE_SOURCE_DIR}/Modules/_sqlite/module.c PROPERTY COMPILE_FLAGS -Wno-deprecated-declarations)
+endif()
 add_python_extension(_ssl
     REQUIRES OPENSSL_FOUND
     SOURCES _ssl.c
