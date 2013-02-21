@@ -121,13 +121,14 @@ find_library(HAVE_LIBINTL intl)
 find_library(HAVE_LIBM m)
 find_library(HAVE_LIBNCURSES ncurses)
 find_library(HAVE_LIBNSL nsl)
-find_library(HAVE_LIBPTHREAD pthread)
 find_library(HAVE_LIBREADLINE readline)
 find_library(HAVE_LIBTERMCAP termcap)
 find_library(HAVE_LIBUTIL    util)
 
-if(WITH_THREAD) 
-  if(HAVE_LIBPTHREAD)
+if(WITH_THREAD)
+  set(CMAKE_HAVE_PTHREAD_H ${HAVE_PTHREAD_H}) # Skip checking for header a second time.
+  find_package(Threads)
+  if(CMAKE_HAVE_LIBC_CREATE)
     set(_REENTRANT 1)
   endif()
 endif()
@@ -642,7 +643,7 @@ set(HAVE_PTH 0) # GNU PTH threads
 
 set(HAVE_PTHREAD_DESTRUCTOR 0) # for Solaris 2.6
 add_cond(CFG_HEADERS  HAVE_PTHREAD_H  pthread.h)
-add_cond(CMAKE_REQUIRED_LIBRARIES  HAVE_LIBPTHREAD  ${HAVE_LIBPTHREAD})
+add_cond(CMAKE_REQUIRED_LIBRARIES  CMAKE_USE_PTHREADS_INIT  "${CMAKE_THREAD_LIBS_INIT}")
 
 check_symbol_exists(pthread_init "${CFG_HEADERS}" HAVE_PTHREAD_INIT)
 check_symbol_exists(pthread_sigmask "${CFG_HEADERS}" HAVE_PTHREAD_SIGMASK)
