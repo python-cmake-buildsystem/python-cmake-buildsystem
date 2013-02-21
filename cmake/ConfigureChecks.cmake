@@ -913,6 +913,20 @@ else(HAVE_SYS_TIME_H AND HAVE_SYS_SELECT_H)
 endif(HAVE_SYS_TIME_H AND HAVE_SYS_SELECT_H)
 
 
+# Check for broken unsetenv
+set(check_src ${PROJECT_BINARY_DIR}/have_broken_unsetenv.c)
+file(WRITE ${check_src} "#include <stdlib.h>
+int main() {
+  int res = unsetenv(\"DUMMY\");
+}
+")
+python_platform_test(
+  HAVE_BROKEN_UNSETENV
+  "Checking for broken unsetenv"
+  ${check_src}
+  INVERT
+  )
+
 ##########################################################
 
 find_package(ZLIB)
