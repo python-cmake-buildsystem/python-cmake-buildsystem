@@ -647,14 +647,7 @@ add_cond(CMAKE_REQUIRED_LIBRARIES  HAVE_LIBPTHREAD  ${HAVE_LIBPTHREAD})
 check_symbol_exists(pthread_init "${CFG_HEADERS}" HAVE_PTHREAD_INIT)
 check_symbol_exists(pthread_sigmask "${CFG_HEADERS}" HAVE_PTHREAD_SIGMASK)
 
-set(CFG_HEADERS ${CFG_HEADERS_SAVE})
-cmake_pop_check_state()
-
-# For multiprocessing module, check that sem_open
-# actually works.  For FreeBSD versions <= 7.2,
-# the kernel module that provides POSIX semaphores
-# isn't loaded by default, so an attempt to call
-# sem_open results in a 'Signal 12' error.
+# For multiprocessing module, check that sem_open actually works.
 set(check_src ${PROJECT_BINARY_DIR}/ac_cv_posix_semaphores_enabled.c)
 file(WRITE ${check_src} "#include <unistd.h>
 #include <fcntl.h>
@@ -663,13 +656,13 @@ file(WRITE ${check_src} "#include <unistd.h>
 #include <sys/stat.h>
 
 int main(void) {
-  sem_t *a = sem_open("/autoconf", O_CREAT, S_IRUSR|S_IWUSR, 0);
+  sem_t *a = sem_open(\"/autoconf\", O_CREAT, S_IRUSR|S_IWUSR, 0);
   if (a == SEM_FAILED) {
-    perror("sem_open");
+    perror(\"sem_open\");
     return 1;
   }
   sem_close(a);
-  sem_unlink("/autoconf");
+  sem_unlink(\"/autoconf\");
   return 0;
 }
 ")
@@ -681,7 +674,7 @@ python_platform_test_run(
   )
 
 # Multiprocessing check for broken sem_getvalue
-set(check_src ${PROJECT_BINARY_DIR}/ac_cv_broken_sem_getvalue.c)
+set(check_src ${PROJECT_BINARY_DIR}/have_broken_sem_getvalue.c)
 file(WRITE ${check_src} "#include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -689,17 +682,17 @@ file(WRITE ${check_src} "#include <unistd.h>
 #include <sys/stat.h>
 
 int main(void){
-  sem_t *a = sem_open("/autocftw", O_CREAT, S_IRUSR|S_IWUSR, 0);
+  sem_t *a = sem_open(\"/autocftw\", O_CREAT, S_IRUSR|S_IWUSR, 0);
   int count;
   int res;
   if(a==SEM_FAILED){
-    perror("sem_open");
+    perror(\"sem_open\");
     return 1;
 
   }
   res = sem_getvalue(a, &count);
   sem_close(a);
-  sem_unlink("/autocftw");
+  sem_unlink(\"/autocftw\");
   return res==-1 ? 1 : 0;
 }
 ")
@@ -709,6 +702,9 @@ python_platform_test_run(
   ${check_src}
   INVERT
   )
+
+set(CFG_HEADERS ${CFG_HEADERS_SAVE})
+cmake_pop_check_state()
 
 if(CMAKE_SYSTEM MATCHES BlueGene)
   # Todo: Display message
