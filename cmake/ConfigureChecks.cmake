@@ -8,6 +8,7 @@ include(CheckFunctionExists)
 include(CheckSymbolExists)
 include(CheckVariableExists)
 include(cmake/CheckTypeExists.cmake)
+include(cmake/PlatformTest.cmake)
 
 if(WIN32)
   # From PC/pyconfig.h: 
@@ -374,103 +375,6 @@ check_struct_has_member("struct stat" st_rdev    "${CFG_HEADERS}"    HAVE_STRUCT
 # Check for various properties of floating point
 #
 #######################################################################
-
-macro(python_platform_test var description srcfile invert)
-  IF("${var}_COMPILED" MATCHES "^${var}_COMPILED$")
-    message(STATUS "${description}")
-    try_compile(${var}_COMPILED
-      ${CMAKE_CURRENT_BINARY_DIR}
-      ${srcfile}
-      # OUTPUT_VARIABLE OUTPUT # Do NOT use to make cross-compiling easier
-      )
-    if(${invert} MATCHES INVERT)
-      if(${var}_COMPILED)
-        message(STATUS "${description} - no")
-      else(${var}_COMPILED)
-        message(STATUS "${description} - yes")
-      endif(${var}_COMPILED)
-    else()
-      if(${var}_COMPILED)
-        message(STATUS "${description} - yes")
-      else()
-        message(STATUS "${description} - no")
-      endif()
-    endif()
-  endif()
-  if(${invert} MATCHES INVERT)
-    if(${var}_COMPILED)
-      SET(${var} 0)
-    else()
-      SET(${var} 1)
-    endif()
-  else()
-    if(${var}_COMPILED)
-      SET(${var} 1)
-    else()
-      SET(${var} 0)
-    endif()
-  endif()
-endmacro()
-
-macro(python_platform_test_run var description srcfile invert)
-  if("${var}" MATCHES "^${var}$")
-    message(STATUS "${description}")
-    try_run(${var} ${var}_COMPILED
-      ${CMAKE_CURRENT_BINARY_DIR}
-      ${srcfile}
-      # OUTPUT_VARIABLE OUTPUT # Do NOT use to make cross-compiling easier
-      )
-
-    # Note that ${var} will be a 0 return value on success.
-    if(NOT ${var}_COMPILED)
-      set(${var} -1 CACHE INTERNAL "${description} failed to compile.")
-    endif()
-
-    if(${invert} MATCHES INVERT)
-      if(${var}_COMPILED)
-        if(${var})
-          message(STATUS "${description} - yes")
-        else()
-          message(STATUS "${description} - no")
-        endif()
-      else()
-        message(STATUS "${description} - failed to compile")
-      endif()
-    else()
-      if(${var}_COMPILED)
-        if(${var})
-          message(STATUS "${description} - no")
-        else()
-          message(STATUS "${description} - yes")
-        endif(${var})
-      else()
-        message(STATUS "${description} - failed to compile")
-      endif()
-    endif()
-  endif()
-
-  if(${invert} MATCHES INVERT)
-    if(${var}_COMPILED)
-      if(${var})
-        SET(${var} 1)
-      else()
-        SET(${var} 0)
-      endif()
-    else()
-      SET(${var} 1)
-    endif()
-  else()
-    if(${var}_COMPILED)
-      if(${var})
-        SET(${var} 0)
-      else()
-        SET(${var} 1)
-      endif()
-    else()
-      SET(${var} 0)
-    endif()
-  endif()
-endmacro()
 
 # Check whether C doubles are little-endian IEEE 754 binary64
 set(check_src ${PROJECT_BINARY_DIR}/ac_cv_little_endian_double.c)
