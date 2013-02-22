@@ -181,15 +181,15 @@ function(add_libpython name type)
     add_library(${name} ${type} ${LIBPYTHON_SOURCES})
     target_link_libraries(${name}
         ${builtin_link_libraries}
-        dl
-        m
+        ${HAVE_LIBDL}
+        ${HAVE_LIBM}
     )
     if(WITH_THREAD)
         target_link_libraries(${name} ${CMAKE_THREAD_LIBS_INIT})
     endif(WITH_THREAD)
 
     if(UNIX)
-        target_link_libraries(${name} util)
+        target_link_libraries(${name} ${HAVE_LIBUTIL})
     endif(UNIX)
     
     if(APPLE)
