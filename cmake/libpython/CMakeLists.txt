@@ -110,9 +110,11 @@ set(LIBPYTHON_SOURCES
     ${builtin_source}
 )
 
-foreach(filename class complex float int method string type unicode weakref)
-    set_property(SOURCE ${CMAKE_SOURCE_DIR}/Objects/${filename}object.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
-endforeach()
+if(UNIX)
+    foreach(filename class complex float int method string type unicode weakref)
+        set_property(SOURCE ${CMAKE_SOURCE_DIR}/Objects/${filename}object.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
+    endforeach()
+endif(UNIX)
 
 if(WITH_THREAD)
   list(APPEND LIBPYTHON_SOURCES
