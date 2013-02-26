@@ -16,6 +16,9 @@ project(Python${PY_MAJOR_VERSION}${PY_MINOR_VERSION})
 # This is the major version number of Python
 set(LIBPYTHON_VERSION ${PY_MAJOR_VERSION}.${PY_MINOR_VERSION})
 set(LIBPYTHON python${LIBPYTHON_VERSION})
+if(MSVC)
+    set(LIBPYTHON python${PY_MAJOR_VERSION}${PY_MINOR_VERSION})
+endif(MSVC)
 
 # Include helper functions
 include(cmake/Assembler.cmake)
