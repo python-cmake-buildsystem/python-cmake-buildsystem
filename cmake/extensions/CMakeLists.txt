@@ -108,22 +108,24 @@ endif(WIN32)
 
 # ctypes is different on Windows
 if(WIN32)
-    add_python_extension(_ctypes
-        SOURCES _ctypes/_ctypes.c
-                _ctypes/callbacks.c
-                _ctypes/callproc.c
-                _ctypes/cfield.c
-                _ctypes/libffi_mingw/closures.c
-                _ctypes/libffi_mingw/debug.c
-                _ctypes/libffi_mingw/prep_cif.c
-                _ctypes/libffi_mingw/raw_api.c
-                _ctypes/libffi_mingw/x86/ffi.c
-                _ctypes/libffi_mingw/x86/win32.S
-                _ctypes/stgdict.c
-        INCLUDEDIRS ${CMAKE_SOURCE_DIR}/Modules/_ctypes/libffi/src/x86
-                    ${CMAKE_SOURCE_DIR}/Modules/_ctypes/libffi/include
-        DEFINITIONS X86_WIN32
-    )
+    if(MINGW)
+		add_python_extension(_ctypes
+			SOURCES _ctypes/_ctypes.c
+					_ctypes/callbacks.c
+					_ctypes/callproc.c
+					_ctypes/cfield.c
+					_ctypes/libffi_mingw/closures.c
+					_ctypes/libffi_mingw/debug.c
+					_ctypes/libffi_mingw/prep_cif.c
+					_ctypes/libffi_mingw/raw_api.c
+					_ctypes/libffi_mingw/x86/ffi.c
+					_ctypes/libffi_mingw/x86/win32.S
+					_ctypes/stgdict.c
+			INCLUDEDIRS ${CMAKE_SOURCE_DIR}/Modules/_ctypes/libffi/src/x86
+						${CMAKE_SOURCE_DIR}/Modules/_ctypes/libffi/include
+			DEFINITIONS X86_WIN32
+		)
+    endif(MINGW)
 else(WIN32)
     if(APPLE)
         # TODO - Jc:02/20/2013
