@@ -116,7 +116,7 @@ function(add_python_extension name)
         target_link_libraries(${target_name} ${ADD_PYTHON_EXTENSION_LIBRARIES})
 
         if(WIN32)
-            list(APPEND ADD_PYTHON_EXTENSION_DEFINITIONS Py_NO_ENABLE_SHARED)
+            #list(APPEND ADD_PYTHON_EXTENSION_DEFINITIONS Py_NO_ENABLE_SHARED)
             target_link_libraries(${target_name} libpython-shared)
             if(MINGW)
                 set_target_properties(${target_name} PROPERTIES
