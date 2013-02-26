@@ -115,22 +115,22 @@ endif(WIN32)
 # ctypes is different on Windows
 if(WIN32)
     if(MINGW)
-		add_python_extension(_ctypes
-			SOURCES _ctypes/_ctypes.c
-					_ctypes/callbacks.c
-					_ctypes/callproc.c
-					_ctypes/cfield.c
-					_ctypes/libffi_mingw/closures.c
-					_ctypes/libffi_mingw/debug.c
-					_ctypes/libffi_mingw/prep_cif.c
-					_ctypes/libffi_mingw/raw_api.c
-					_ctypes/libffi_mingw/x86/ffi.c
-					_ctypes/libffi_mingw/x86/win32.S
-					_ctypes/stgdict.c
-			INCLUDEDIRS ${CMAKE_SOURCE_DIR}/Modules/_ctypes/libffi/src/x86
-						${CMAKE_SOURCE_DIR}/Modules/_ctypes/libffi/include
-			DEFINITIONS X86_WIN32
-		)
+    add_python_extension(_ctypes
+        SOURCES _ctypes/_ctypes.c
+                _ctypes/callbacks.c
+                _ctypes/callproc.c
+                _ctypes/cfield.c
+                _ctypes/libffi_mingw/closures.c
+                _ctypes/libffi_mingw/debug.c
+                _ctypes/libffi_mingw/prep_cif.c
+                _ctypes/libffi_mingw/raw_api.c
+                _ctypes/libffi_mingw/x86/ffi.c
+                _ctypes/libffi_mingw/x86/win32.S
+                _ctypes/stgdict.c
+        INCLUDEDIRS ${CMAKE_SOURCE_DIR}/Modules/_ctypes/libffi/src/x86
+                    ${CMAKE_SOURCE_DIR}/Modules/_ctypes/libffi/include
+        DEFINITIONS X86_WIN32
+      )
     endif(MINGW)
 else(WIN32)
     if(APPLE)
@@ -187,7 +187,7 @@ if(EXPAT_FOUND)
     )
 else(EXPAT_FOUND)
     set(_pyexpat_definitions )
-	if(MSVC)
+    if(MSVC)
         set(_pyexpat_definitions PYEXPAT_EXPORTS HAVE_EXPAT_H XML_NS XML_DTD BYTEORDER=1234 XML_CONTEXT_BYTES=1024 XML_STATIC HAVE_MEMMOVE)
     endif(MSVC)
     add_python_extension(pyexpat
@@ -198,10 +198,10 @@ else(EXPAT_FOUND)
         DEFINITIONS ${_pyexpat_definitions} #HAVE_EXPAT_CONFIG_H=1
         INCLUDEDIRS ${CMAKE_SOURCE_DIR}/Modules/expat
     )
-	set(_elementtree_definitions)
-	if(MSVC)
-	    set(_elementtree_definitions XML_NS XML_DTD BYTEORDER=1234 XML_CONTEXT_BYTES=1024 USE_PYEXPAT_CAPI XML_STATIC HAVE_MEMMOVE)
-	endif()
+    set(_elementtree_definitions)
+    if(MSVC)
+        set(_elementtree_definitions XML_NS XML_DTD BYTEORDER=1234 XML_CONTEXT_BYTES=1024 USE_PYEXPAT_CAPI XML_STATIC HAVE_MEMMOVE)
+    endif()
     add_python_extension(_elementtree
         SOURCES _elementtree.c
         DEFINITIONS ${_elementtree_definitions} #USE_PYEXPAT_CAPI HAVE_EXPAT_CONFIG_H=1

@@ -117,18 +117,18 @@ if(UNIX)
 endif(UNIX)
 
 if(WITH_THREAD)
-  list(APPEND LIBPYTHON_SOURCES
-    ${CMAKE_SOURCE_DIR}/Modules/threadmodule.c
-    ${CMAKE_SOURCE_DIR}/Python/thread.c
+    list(APPEND LIBPYTHON_SOURCES
+        ${CMAKE_SOURCE_DIR}/Modules/threadmodule.c
+        ${CMAKE_SOURCE_DIR}/Python/thread.c
     )
 endif()
 
 if(UNIX OR MINGW)
-	set_property(
-		SOURCE ${CMAKE_SOURCE_DIR}/Python/getplatform.c
-		PROPERTY COMPILE_DEFINITIONS
-			PLATFORM="${PY_PLATFORM}"
-		)
+    set_property(
+        SOURCE ${CMAKE_SOURCE_DIR}/Python/getplatform.c
+        PROPERTY COMPILE_DEFINITIONS
+            PLATFORM="${PY_PLATFORM}"
+    )
 endif(UNIX OR MINGW)
 
 # Platform-specific source files

@@ -42,11 +42,11 @@ function(add_python_extension name)
     set(oneValueArgs)
     set(multiValueArgs REQUIRES SOURCES DEFINITIONS LIBRARIES INCLUDEDIRS)
     cmake_parse_arguments(ADD_PYTHON_EXTENSION
-      "${options}"
-      "${oneValueArgs}"
-      "${multiValueArgs}"
-      ${ARGN}
-      )
+        "${options}"
+        "${oneValueArgs}"
+        "${multiValueArgs}"
+        ${ARGN}
+        )
 
     # Remove _ from the beginning of the name.
     string(REGEX REPLACE "^_" "" pretty_name "${name}")
@@ -118,11 +118,11 @@ function(add_python_extension name)
         if(WIN32)
             list(APPEND ADD_PYTHON_EXTENSION_DEFINITIONS Py_NO_ENABLE_SHARED)
             target_link_libraries(${target_name} libpython-shared)
-			if(MINGW)
-			    set_target_properties(${target_name} PROPERTIES
-					LINK_FLAGS -Wl,--enable-auto-import
-				)
-			endif(MINGW)
+            if(MINGW)
+                set_target_properties(${target_name} PROPERTIES
+                    LINK_FLAGS -Wl,--enable-auto-import
+                )
+            endif(MINGW)
             set_target_properties(${target_name} PROPERTIES
                 SUFFIX .pyd
             )
@@ -132,7 +132,7 @@ function(add_python_extension name)
             set_target_properties(${target_name} PROPERTIES
                 LINK_FLAGS -Wl,-undefined,dynamic_lookup
                 SUFFIX .so
-                )
+            )
         endif(APPLE)
 
         # Turn off the "lib" prefix and add any compiler definitions
