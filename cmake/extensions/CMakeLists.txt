@@ -180,17 +180,25 @@ if(EXPAT_FOUND)
         INCLUDEDIRS ${EXPAT_INCLUDE_DIRS}
     )
 else(EXPAT_FOUND)
+    set(_pyexpat_definitions )
+	if(MSVC)
+        set(_pyexpat_definitions PYEXPAT_EXPORTS HAVE_EXPAT_H XML_NS XML_DTD BYTEORDER=1234 XML_CONTEXT_BYTES=1024 XML_STATIC HAVE_MEMMOVE)
+    endif(MSVC)
     add_python_extension(pyexpat
         SOURCES pyexpat.c
                 expat/xmlparse.c
                 expat/xmlrole.c
                 expat/xmltok.c
-        DEFINITIONS HAVE_EXPAT_CONFIG_H=1
+        DEFINITIONS ${_pyexpat_definitions} #HAVE_EXPAT_CONFIG_H=1
         INCLUDEDIRS ${CMAKE_SOURCE_DIR}/Modules/expat
     )
+	set(_elementtree_definitions)
+	if(MSVC)
+	    set(_elementtree_definitions XML_NS XML_DTD BYTEORDER=1234 XML_CONTEXT_BYTES=1024 USE_PYEXPAT_CAPI XML_STATIC HAVE_MEMMOVE)
+	endif()
     add_python_extension(_elementtree
         SOURCES _elementtree.c
-        DEFINITIONS HAVE_EXPAT_CONFIG_H=1 USE_PYEXPAT_CAPI
+        DEFINITIONS ${_elementtree_definitions} #USE_PYEXPAT_CAPI HAVE_EXPAT_CONFIG_H=1
         INCLUDEDIRS ${CMAKE_SOURCE_DIR}/Modules/expat
     )
 endif(EXPAT_FOUND)
