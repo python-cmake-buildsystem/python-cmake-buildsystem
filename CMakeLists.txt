@@ -4,6 +4,12 @@ set(PY_MAJOR_VERSION 2)
 set(PY_MINOR_VERSION 7)
 set(PY_PATCH_VERSION 3)
 
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_CONFIGURATION_TYPES Release CACHE STRING "Release configuration" FORCE)
+    set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
+    # Set the possible values of build type for cmake-gui
+    set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Release")
+endif()
 
 project(Python${PY_MAJOR_VERSION}${PY_MINOR_VERSION})
 
