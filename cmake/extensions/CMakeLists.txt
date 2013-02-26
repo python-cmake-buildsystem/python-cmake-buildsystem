@@ -1,3 +1,9 @@
+
+set(MSVC_BUILTIN )
+if(MSVC)
+    set(MSVC_BUILTIN BUILTIN)
+endif(MSVC)
+
 add_python_extension(array SOURCES arraymodule.c)
 add_python_extension(audioop SOURCES audioop.c)
 add_python_extension(_bisect SOURCES _bisectmodule.c)
@@ -22,7 +28,7 @@ add_python_extension(_functools SOURCES _functoolsmodule.c)
 add_python_extension(future_builtins SOURCES future_builtins.c)
 add_python_extension(_heapq SOURCES _heapqmodule.c)
 add_python_extension(_hotshot SOURCES _hotshot.c)
-add_python_extension(_io SOURCES
+add_python_extension(_io ${MSVC_BUILTIN} SOURCES
     _io/_iomodule.c
     _io/bufferedio.c
     _io/bytesio.c
@@ -35,11 +41,11 @@ add_python_extension(itertools SOURCES itertoolsmodule.c)
 add_python_extension(_json SOURCES _json.c)
 add_python_extension(_locale SOURCES _localemodule.c)
 add_python_extension(_lsprof SOURCES _lsprof.c rotatingtree.c)
-add_python_extension(math SOURCES _math.c mathmodule.c)
-add_python_extension(mmap SOURCES mmapmodule.c)
+add_python_extension(math ${MSVC_BUILTIN} SOURCES _math.c mathmodule.c)
+add_python_extension(mmap ${MSVC_BUILTIN} SOURCES mmapmodule.c)
 add_python_extension(_multibytecodec SOURCES cjkcodecs/multibytecodec.c)
 add_python_extension(operator SOURCES operator.c)
-add_python_extension(parser SOURCES parsermodule.c)
+add_python_extension(parser ${MSVC_BUILTIN} SOURCES parsermodule.c)
 add_python_extension(_random SOURCES _randommodule.c)
 add_python_extension(strop SOURCES stropmodule.c)
 add_python_extension(_struct SOURCES _struct.c)
