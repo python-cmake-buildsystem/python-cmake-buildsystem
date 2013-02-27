@@ -149,7 +149,7 @@ if(UNIX)
             EXEC_PREFIX="${CMAKE_INSTALL_PREFIX}"
             VERSION="${PY_MAJOR_VERSION}.${PY_MINOR_VERSION}"
             VPATH="."
-            PYTHONPATH="${EXTRA_PYTHONPATH}:plat-${PY_PLATFORM}"
+            PYTHONPATH="${EXTRA_PYTHONPATH}:lib-dynload:plat-${PY_PLATFORM}"
       )
 elseif(WIN32)
     list(APPEND LIBPYTHON_SOURCES
@@ -213,7 +213,7 @@ function(add_libpython name type)
 
     install(TARGETS ${name}
         RUNTIME DESTINATION bin
-        ARCHIVE DESTINATION ${LIBDIR}
+        ARCHIVE DESTINATION ${ARCHIVEDIR}
         LIBRARY DESTINATION ${LIBDIR}
     )
 endfunction(add_libpython)

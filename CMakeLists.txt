@@ -45,6 +45,9 @@ if(NOT ENABLE_SHARED AND NOT ENABLE_STATIC)
     message(FATAL_ERROR "One or both of ENABLE_SHARED or ENABLE_STATIC must be set")
 endif(NOT ENABLE_SHARED AND NOT ENABLE_STATIC)
 
+set(BINDIR "bin")
+set(ARCHIVEDIR "libs")
+
 if(USE_LIB64)
     set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS ON)
     set(LIBDIR "lib64")
@@ -89,8 +92,8 @@ include_directories(${CMAKE_SOURCE_DIR}/Python)
 
 if(UNIX)
     configure_file(${CMAKE_SOURCE_DIR}/cmake/config-unix/pyconfig.h.in
-                   ${CMAKE_BINARY_DIR}/cmake/config-unix/pyconfig.h)
-    include_directories(${CMAKE_BINARY_DIR}/cmake/config-unix)
+                   ${CMAKE_BINARY_DIR}/${BINDIR}/pyconfig.h)
+    include_directories(${CMAKE_BINARY_DIR}/${BINDIR})
 elseif(WIN32)
     include_directories(${CMAKE_SOURCE_DIR}/PC)
 endif(UNIX)
@@ -142,14 +145,16 @@ add_subdirectory(cmake/lib)
 
 show_extension_summary()
 
-# Install some configuration information
-configure_file(cmake/makefile-variables.in
-               ${CMAKE_BINARY_DIR}/makefile-variables)
-install(FILES ${CMAKE_BINARY_DIR}/makefile-variables
-        DESTINATION ${PYTHONHOME}/config/
-        RENAME Makefile)
 if(UNIX)
-    install(FILES ${CMAKE_BINARY_DIR}/cmake/config-unix/pyconfig.h
+    # Install some configuration information
+    configure_file(cmake/makefile-variables.in
+                   ${CMAKE_BINARY_DIR}/${BINDIR}/Makefile)
+    install(FILES ${CMAKE_BINARY_DIR}/${BINDIR}/Makefile
+            DESTINATION ${PYTHONHOME}/config/
+            RENAME Makefile)
+endif(UNIX)
+if(UNIX)
+    install(FILES ${CMAKE_BINARY_DIR}/${BINDIR}/pyconfig.h
             DESTINATION include/${LIBPYTHON}/)
 elseif(WIN32)
     install(FILES PC/pyconfig.h

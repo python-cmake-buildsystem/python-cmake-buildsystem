@@ -3,6 +3,10 @@ set(PYTHON_SOURCES
 )
 
 add_executable(python ${PYTHON_SOURCES})
+set_property(
+    TARGET python
+    PROPERTY RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${BINDIR}
+    )
 
 # Link against the shared libpython if it was built, otherwise use the static
 # version.

@@ -18,8 +18,8 @@ foreach(file ${libfiles})
         get_filename_component(path ${file} PATH)
 
         # Copy lib files to build tree
-        file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/cmake/python/Lib/${path})
-        file(COPY ${libdir}/${file} DESTINATION ${CMAKE_BINARY_DIR}/cmake/python/Lib/${path})
+        file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/${PYTHONHOME}/${path})
+        file(COPY ${libdir}/${file} DESTINATION ${CMAKE_BINARY_DIR}/${PYTHONHOME}/${path})
 
         # Install
         install(FILES ${libdir}/${file} DESTINATION ${PYTHONHOME}/${path})
@@ -28,5 +28,8 @@ foreach(file ${libfiles})
 endforeach(file)
 
 # Setup landmark allowing to run the interpreter from a build tree. See 'getpath.c' for details.
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/cmake/python/Modules)
-file(WRITE ${CMAKE_BINARY_DIR}/cmake/python/Modules/Setup "")
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/${BINDIR}/Modules)
+file(WRITE ${CMAKE_BINARY_DIR}/${BINDIR}/Modules/Setup "")
+
+# See "is_python_build()" in sysconfig.py
+file(WRITE ${CMAKE_BINARY_DIR}/${BINDIR}/Modules/Setup.local "")
