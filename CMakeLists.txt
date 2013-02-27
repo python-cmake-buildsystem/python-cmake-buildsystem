@@ -45,6 +45,8 @@ if(NOT ENABLE_SHARED AND NOT ENABLE_STATIC)
     message(FATAL_ERROR "One or both of ENABLE_SHARED or ENABLE_STATIC must be set")
 endif(NOT ENABLE_SHARED AND NOT ENABLE_STATIC)
 
+set(SRC_DIR ${CMAKE_SOURCE_DIR})
+
 set(BINDIR "bin")           # Contains the python executable
 set(ARCHIVEDIR "libs")      # Contains the static (*.a) and import libraries (*.lib)
 
@@ -96,17 +98,16 @@ find_path(SQLITE3_INCLUDE_PATH sqlite3.h)
 find_library(SQLITE3_LIBRARY sqlite3)
 
 # Set include directories
-include_directories(${CMAKE_SOURCE_DIR})
-include_directories(${CMAKE_SOURCE_DIR}/cmake)
-include_directories(${CMAKE_SOURCE_DIR}/Include)
-include_directories(${CMAKE_SOURCE_DIR}/Python)
+include_directories(cmake)
+include_directories(${SRC_DIR}/Include)
+include_directories(${SRC_DIR}/Python)
 
 if(UNIX)
-    configure_file(${CMAKE_SOURCE_DIR}/cmake/config-unix/pyconfig.h.in
+    configure_file(cmake/config-unix/pyconfig.h.in
                    ${CMAKE_BINARY_DIR}/${BINDIR}/pyconfig.h)
     include_directories(${CMAKE_BINARY_DIR}/${BINDIR})
 elseif(WIN32)
-    include_directories(${CMAKE_SOURCE_DIR}/PC)
+    include_directories(${SRC_DIR}/PC)
 endif(UNIX)
 
 # Set cflags used by all components

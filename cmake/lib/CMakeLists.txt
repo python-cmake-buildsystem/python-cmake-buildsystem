@@ -1,6 +1,6 @@
 # Install all the python module source from Lib/
 
-set(libdir ${CMAKE_SOURCE_DIR}/Lib)
+set(libdir ${SRC_DIR}/Lib)
 file(GLOB_RECURSE libfiles RELATIVE ${libdir} "${libdir}/*")
 
 if(UNIX)
