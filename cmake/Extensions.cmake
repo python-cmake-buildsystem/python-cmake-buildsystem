@@ -137,8 +137,9 @@ function(add_python_extension name)
 
         # Turn off the "lib" prefix and add any compiler definitions
         set_target_properties(${target_name} PROPERTIES
-            ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/libs
+            ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${ARCHIVEDIR}
             LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${DYNLOAD}
+            RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${DYNLOAD}
             OUTPUT_NAME "${name}"
             PREFIX ""
         )
