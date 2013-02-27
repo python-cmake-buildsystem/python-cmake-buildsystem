@@ -38,11 +38,15 @@
 # options ENABLE_FOO and BUILTIN_FOO.
 
 function(add_python_extension name)
-    parse_arguments(ADD_PYTHON_EXTENSION
-        "REQUIRES;SOURCES;DEFINITIONS;LIBRARIES;INCLUDEDIRS"
-        "BUILTIN"
+    set(options BUILTIN)
+    set(oneValueArgs)
+    set(multiValueArgs REQUIRES SOURCES DEFINITIONS LIBRARIES INCLUDEDIRS)
+    cmake_parse_arguments(ADD_PYTHON_EXTENSION
+        "${options}"
+        "${oneValueArgs}"
+        "${multiValueArgs}"
         ${ARGN}
-    )
+        )
 
     # Remove _ from the beginning of the name.
     string(REGEX REPLACE "^_" "" pretty_name "${name}")
@@ -112,16 +116,30 @@ function(add_python_extension name)
         target_link_libraries(${target_name} ${ADD_PYTHON_EXTENSION_LIBRARIES})
 
         if(WIN32)
-            list(APPEND ADD_PYTHON_EXTENSION_DEFINITIONS Py_NO_ENABLE_SHARED)
+            #list(APPEND ADD_PYTHON_EXTENSION_DEFINITIONS Py_NO_ENABLE_SHARED)
             target_link_libraries(${target_name} libpython-shared)
+            if(MINGW)
+                set_target_properties(${target_name} PROPERTIES
+                    LINK_FLAGS -Wl,--enable-auto-import
+                )
+            endif(MINGW)
             set_target_properties(${target_name} PROPERTIES
-                LINK_FLAGS -Wl,--enable-auto-import
                 SUFFIX .pyd
             )
         endif(WIN32)
+        
+        if(APPLE)
+            set_target_properties(${target_name} PROPERTIES
+                LINK_FLAGS -Wl,-undefined,dynamic_lookup
+                SUFFIX .so
+            )
+        endif(APPLE)
 
         # Turn off the "lib" prefix and add any compiler definitions
         set_target_properties(${target_name} PROPERTIES
+            ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${ARCHIVEDIR}
+            LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${DYNLOAD}
+            RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${DYNLOAD}
             OUTPUT_NAME "${name}"
             PREFIX ""
         )
@@ -132,6 +150,7 @@ function(add_python_extension name)
         endif(ADD_PYTHON_EXTENSION_DEFINITIONS)
 
         install(TARGETS ${target_name}
+                ARCHIVE DESTINATION ${ARCHIVEDIR}
                 LIBRARY DESTINATION ${DYNLOAD}
                 RUNTIME DESTINATION ${DYNLOAD})
     endif(BUILTIN_${upper_name})

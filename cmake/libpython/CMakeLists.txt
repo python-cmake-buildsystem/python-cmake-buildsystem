@@ -1,16 +1,6 @@
 add_definitions(-DPy_BUILD_CORE)
 add_definitions(-DNDEBUG)
 
-add_definitions(-DVERSION="${LIBPYTHON_VERSION}")
-add_definitions(-DVPATH="")
-add_definitions(-DPYTHONPATH="${EXTRA_PYTHONPATH}::plat-linux2:lib-tk:lib-old")
-
-if(NOT WIN32)
-    add_definitions(-DPREFIX="${CMAKE_INSTALL_PREFIX}")
-    add_definitions(-DEXEC_PREFIX="${CMAKE_INSTALL_PREFIX}")
-    add_definitions(-DPLATFORM="linux2")
-endif(NOT WIN32)
-
 set(LIBPYTHON_SOURCES
     ${CMAKE_SOURCE_DIR}/cmake/config.c
     ${CMAKE_SOURCE_DIR}/Modules/_codecsmodule.c
@@ -21,7 +11,6 @@ set(LIBPYTHON_SOURCES
     ${CMAKE_SOURCE_DIR}/Modules/signalmodule.c
     ${CMAKE_SOURCE_DIR}/Modules/_sre.c
     ${CMAKE_SOURCE_DIR}/Modules/symtablemodule.c
-    ${CMAKE_SOURCE_DIR}/Modules/threadmodule.c
     ${CMAKE_SOURCE_DIR}/Modules/_weakref.c
     ${CMAKE_SOURCE_DIR}/Modules/xxsubtype.c
     ${CMAKE_SOURCE_DIR}/Modules/zipimport.c
@@ -116,11 +105,31 @@ set(LIBPYTHON_SOURCES
     ${CMAKE_SOURCE_DIR}/Python/structmember.c
     ${CMAKE_SOURCE_DIR}/Python/symtable.c
     ${CMAKE_SOURCE_DIR}/Python/sysmodule.c
-    ${CMAKE_SOURCE_DIR}/Python/thread.c
     ${CMAKE_SOURCE_DIR}/Python/traceback.c
     ${CMAKE_SOURCE_DIR}/Python/_warnings.c
     ${builtin_source}
 )
+
+if(UNIX)
+    foreach(filename class complex float int method string type unicode weakref)
+        set_property(SOURCE ${CMAKE_SOURCE_DIR}/Objects/${filename}object.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
+    endforeach()
+endif(UNIX)
+
+if(WITH_THREAD)
+    list(APPEND LIBPYTHON_SOURCES
+        ${CMAKE_SOURCE_DIR}/Modules/threadmodule.c
+        ${CMAKE_SOURCE_DIR}/Python/thread.c
+    )
+endif()
+
+if(UNIX OR MINGW)
+    set_property(
+        SOURCE ${CMAKE_SOURCE_DIR}/Python/getplatform.c
+        PROPERTY COMPILE_DEFINITIONS
+            PLATFORM="${PY_PLATFORM}"
+    )
+endif(UNIX OR MINGW)
 
 # Platform-specific source files
 if(UNIX)
@@ -128,12 +137,43 @@ if(UNIX)
         ${CMAKE_SOURCE_DIR}/Python/dynload_shlib.c
         ${CMAKE_SOURCE_DIR}/Modules/getpath.c
     )
+    set_property(
+        SOURCE ${CMAKE_SOURCE_DIR}/Modules/getpath.c
+        PROPERTY COMPILE_FLAGS
+            -Wno-deprecated-declarations
+        )
+    set_property(
+        SOURCE ${CMAKE_SOURCE_DIR}/Modules/getpath.c
+        PROPERTY COMPILE_DEFINITIONS
+            PREFIX="${CMAKE_INSTALL_PREFIX}"
+            EXEC_PREFIX="${CMAKE_INSTALL_PREFIX}"
+            VERSION="${PY_MAJOR_VERSION}.${PY_MINOR_VERSION}"
+            VPATH="."
+            PYTHONPATH="${EXTRA_PYTHONPATH}:lib-dynload:plat-${PY_PLATFORM}"
+      )
 elseif(WIN32)
     list(APPEND LIBPYTHON_SOURCES
         ${CMAKE_SOURCE_DIR}/PC/dl_nt.c
         ${CMAKE_SOURCE_DIR}/PC/getpathp.c
         ${CMAKE_SOURCE_DIR}/PC/import_nt.c
         ${CMAKE_SOURCE_DIR}/Python/dynload_win.c
+    )
+    string(REPLACE "/" "\\\\" PYTHONHOME_ESCAPED ${PYTHONHOME})
+    string(REPLACE "/" "\\\\" DYNLOAD_ESCAPED ${DYNLOAD})
+    set(PYTHONPATH "${EXTRA_PYTHONPATH}")
+    set(PYTHONPATH "${PYTHONPATH};.\\\\${PYTHONHOME_ESCAPED}")
+    set(PYTHONPATH "${PYTHONPATH};.\\\\${DYNLOAD_ESCAPED}")
+    set(PYTHONPATH "${PYTHONPATH};.\\\\${DYNLOAD_ESCAPED}\\\\${CMAKE_CFG_INTDIR}")
+    set(PYTHONPATH "${PYTHONPATH};.\\\\${PYTHONHOME_ESCAPED}\\\\plat-${PY_PLATFORM}")
+    set_property(
+        SOURCE ${CMAKE_SOURCE_DIR}/PC/getpathp.c
+        PROPERTY COMPILE_DEFINITIONS
+            LANDMARK="${PYTHONHOME_ESCAPED}\\\\os.py"
+            PYTHONPATH="${PYTHONPATH}"
+    )
+    set_property(
+        SOURCE ${SRC_DIR}/PC/dl_nt.c
+        PROPERTY COMPILE_DEFINITIONS Py_ENABLE_SHARED
     )
 endif(UNIX)
 
@@ -153,23 +193,29 @@ foreach(ext ${builtin_extensions})
 endforeach(ext)
 
 
-function (add_libpython name type)
+function(add_libpython name type)
     add_library(${name} ${type} ${LIBPYTHON_SOURCES})
     target_link_libraries(${name}
         ${builtin_link_libraries}
-        ${CMAKE_THREAD_LIBS_INIT}
-        dl
-        m
+        ${HAVE_LIBDL}
+        ${HAVE_LIBM}
     )
+    if(WITH_THREAD)
+        target_link_libraries(${name} ${CMAKE_THREAD_LIBS_INIT})
+    endif(WITH_THREAD)
 
     if(UNIX)
-        target_link_libraries(${name} util)
+        target_link_libraries(${name} ${HAVE_LIBUTIL})
     endif(UNIX)
+    
+    if(APPLE)
+        set_target_properties(${name} PROPERTIES LINK_FLAGS -Wl,-undefined,dynamic_lookup)
+    endif(APPLE)
 
     set_target_properties(${name} PROPERTIES
         OUTPUT_NAME ${LIBPYTHON}
-        ARCHIVE_OUTPUT_DIRECTORY "libpython_static"
-        LIBRARY_OUTPUT_DIRECTORY "libpython_shared"
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_LIBDIR}
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_LIBDIR}
     )
 
     if(builtin_definitions)
@@ -177,17 +223,23 @@ function (add_libpython name type)
     endif(builtin_definitions)
 
     install(TARGETS ${name}
-        RUNTIME DESTINATION bin
-        ARCHIVE DESTINATION ${LIBDIR}
-        LIBRARY DESTINATION ${LIBDIR}
+        ARCHIVE DESTINATION ${LIBPYTHON_ARCHIVEDIR}
+        LIBRARY DESTINATION ${LIBPYTHON_LIBDIR}
+        RUNTIME DESTINATION ${LIBPYTHON_LIBDIR}
     )
-endfunction (add_libpython)
+endfunction(add_libpython)
 
-if (ENABLE_SHARED)
+if(ENABLE_SHARED)
     add_libpython(libpython-shared SHARED)
-endif (ENABLE_SHARED)
+    set_target_properties(libpython-shared PROPERTIES
+        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}
+    )
+endif(ENABLE_SHARED)
 
-if (ENABLE_STATIC)
+if(ENABLE_STATIC)
     add_libpython(libpython-static STATIC)
-    set_target_properties(libpython-static PROPERTIES COMPILE_DEFINITIONS Py_NO_ENABLE_SHARED)
-endif (ENABLE_STATIC)
+    set_target_properties(libpython-static PROPERTIES
+        COMPILE_DEFINITIONS Py_NO_ENABLE_SHARED
+        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_STATIC_ARCHIVEDIR}
+    )
+endif(ENABLE_STATIC)
