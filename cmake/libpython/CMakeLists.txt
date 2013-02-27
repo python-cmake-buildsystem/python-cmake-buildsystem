@@ -123,11 +123,13 @@ if(WITH_THREAD)
     )
 endif()
 
-set_property(
-    SOURCE ${CMAKE_SOURCE_DIR}/Python/getplatform.c
-    PROPERTY COMPILE_DEFINITIONS
-        PLATFORM="${PY_PLATFORM}"
-    )
+if(UNIX OR MINGW)
+	set_property(
+		SOURCE ${CMAKE_SOURCE_DIR}/Python/getplatform.c
+		PROPERTY COMPILE_DEFINITIONS
+			PLATFORM="${PY_PLATFORM}"
+		)
+endif(UNIX OR MINGW)
 
 # Platform-specific source files
 if(UNIX)
