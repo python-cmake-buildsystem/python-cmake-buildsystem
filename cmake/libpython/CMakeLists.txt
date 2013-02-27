@@ -171,6 +171,10 @@ elseif(WIN32)
             LANDMARK="${PYTHONHOME_ESCAPED}\\\\os.py"
             PYTHONPATH="${PYTHONPATH}"
     )
+    set_property(
+        SOURCE ${SRC_DIR}/PC/dl_nt.c
+        PROPERTY COMPILE_DEFINITIONS Py_ENABLE_SHARED
+    )
 endif(UNIX)
 
 # Create the parts of config.c for platform-specific and user-controlled
