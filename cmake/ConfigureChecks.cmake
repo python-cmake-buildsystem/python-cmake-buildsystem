@@ -970,6 +970,22 @@ int main(int argc, char* argv[]){FSIORefNum fRef = 0; return 0;}")
     )
 endif(APPLE)
 
+# todo 
+set(ENABLE_IPV6 1)
+set(HAVE_UCS4_TCL 0)
+set(HAVE_PROTOTYPES 1)
+set(PTHREAD_SYSTEM_SCHED_SUPPORTED 1)
+set(HAVE_WORKING_TZSET 1)
+set(HAVE_DECL_TZNAME 0) # no test in python sources
+set(HAVE_DEVICE_MACROS ${HAVE_MAKEDEV})
+
+set(HAVE_GETHOSTBYNAME_R 0)
+set(HAVE_GETHOSTBYNAME_R_3_ARG 0)
+set(HAVE_GETHOSTBYNAME_R_5_ARG 0)
+set(HAVE_GETHOSTBYNAME_R_6_ARG 0)
+
+endif(WIN32)
+
 # setup the python platform
 set(PY_PLATFORM generic)
 
@@ -1012,19 +1028,3 @@ endif(CMAKE_SYSTEM MATCHES UnixWare)
 if(CMAKE_SYSTEM MATCHES Windows)
   set(PY_PLATFORM win32)
 endif(CMAKE_SYSTEM MATCHES Windows)
-
-# todo 
-set(ENABLE_IPV6 1)
-set(HAVE_UCS4_TCL 0)
-set(HAVE_PROTOTYPES 1)
-set(PTHREAD_SYSTEM_SCHED_SUPPORTED 1)
-set(HAVE_WORKING_TZSET 1)
-set(HAVE_DECL_TZNAME 0) # no test in python sources
-set(HAVE_DEVICE_MACROS ${HAVE_MAKEDEV})
-
-set(HAVE_GETHOSTBYNAME_R 0)
-set(HAVE_GETHOSTBYNAME_R_3_ARG 0)
-set(HAVE_GETHOSTBYNAME_R_5_ARG 0)
-set(HAVE_GETHOSTBYNAME_R_6_ARG 0)
-
-endif(WIN32)
