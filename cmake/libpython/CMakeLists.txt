@@ -158,11 +158,13 @@ elseif(WIN32)
         ${CMAKE_SOURCE_DIR}/PC/import_nt.c
         ${CMAKE_SOURCE_DIR}/Python/dynload_win.c
     )
+    string(REPLACE "/" "\\\\" PYTHONHOME_ESCAPED ${PYTHONHOME})
+    string(REPLACE "/" "\\\\" DYNLOAD_ESCAPED ${DYNLOAD})
     set_property(
         SOURCE ${CMAKE_SOURCE_DIR}/PC/getpathp.c
         PROPERTY COMPILE_DEFINITIONS
-            LANDMARK="lib\\\\${LIBPYTHON}\\\\os.py"
-            PYTHONPATH="${EXTRA_PYTHONPATH}:plat-${PY_PLATFORM}"
+            LANDMARK="${PYTHONHOME_ESCAPED}\\\\os.py"
+            PYTHONPATH="${EXTRA_PYTHONPATH};.\\\\${PYTHONHOME_ESCAPED}\\\\;.\\\\${PYTHONHOME_ESCAPED}\\\\plat-${PY_PLATFORM}"
     )
 endif(UNIX)
 
