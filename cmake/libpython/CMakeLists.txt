@@ -157,8 +157,9 @@ elseif(WIN32)
         ${CMAKE_SOURCE_DIR}/Python/dynload_win.c
     )
     set_property(
-        SOURCE ${CMAKE_SOURCE_DIR}/Modules/getpathp.c
+        SOURCE ${CMAKE_SOURCE_DIR}/PC/getpathp.c
         PROPERTY COMPILE_DEFINITIONS
+            LANDMARK="lib\\\\${LIBPYTHON}\\\\os.py"
             PYTHONPATH="${EXTRA_PYTHONPATH}:plat-${PY_PLATFORM}"
     )
 endif(UNIX)
