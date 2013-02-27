@@ -160,11 +160,16 @@ elseif(WIN32)
     )
     string(REPLACE "/" "\\\\" PYTHONHOME_ESCAPED ${PYTHONHOME})
     string(REPLACE "/" "\\\\" DYNLOAD_ESCAPED ${DYNLOAD})
+    set(PYTHONPATH "${EXTRA_PYTHONPATH}")
+    set(PYTHONPATH "${PYTHONPATH};.\\\\${PYTHONHOME_ESCAPED}")
+    set(PYTHONPATH "${PYTHONPATH};.\\\\${DYNLOAD_ESCAPED}")
+    set(PYTHONPATH "${PYTHONPATH};.\\\\${DYNLOAD_ESCAPED}\\\\${CMAKE_CFG_INTDIR}")
+    set(PYTHONPATH "${PYTHONPATH};.\\\\${PYTHONHOME_ESCAPED}\\\\plat-${PY_PLATFORM}")
     set_property(
         SOURCE ${CMAKE_SOURCE_DIR}/PC/getpathp.c
         PROPERTY COMPILE_DEFINITIONS
             LANDMARK="${PYTHONHOME_ESCAPED}\\\\os.py"
-            PYTHONPATH="${EXTRA_PYTHONPATH};.\\\\${PYTHONHOME_ESCAPED}\\\\;.\\\\${PYTHONHOME_ESCAPED}\\\\plat-${PY_PLATFORM}"
+            PYTHONPATH="${PYTHONPATH}"
     )
 endif(UNIX)
 
@@ -205,8 +210,8 @@ function(add_libpython name type)
 
     set_target_properties(${name} PROPERTIES
         OUTPUT_NAME ${LIBPYTHON}
-        ARCHIVE_OUTPUT_DIRECTORY "libpython_static"
-        LIBRARY_OUTPUT_DIRECTORY "libpython_shared"
+        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_LIBDIR}
+        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_LIBDIR}
     )
 
     if(builtin_definitions)
@@ -214,17 +219,23 @@ function(add_libpython name type)
     endif(builtin_definitions)
 
     install(TARGETS ${name}
-        RUNTIME DESTINATION bin
-        ARCHIVE DESTINATION ${ARCHIVEDIR}
-        LIBRARY DESTINATION ${LIBDIR}
+        ARCHIVE DESTINATION ${LIBPYTHON_ARCHIVEDIR}
+        LIBRARY DESTINATION ${LIBPYTHON_LIBDIR}
+        RUNTIME DESTINATION ${LIBPYTHON_LIBDIR}
     )
 endfunction(add_libpython)
 
 if(ENABLE_SHARED)
     add_libpython(libpython-shared SHARED)
+    set_target_properties(libpython-shared PROPERTIES
+        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}
+    )
 endif(ENABLE_SHARED)
 
 if(ENABLE_STATIC)
     add_libpython(libpython-static STATIC)
-    set_target_properties(libpython-static PROPERTIES COMPILE_DEFINITIONS Py_NO_ENABLE_SHARED)
+    set_target_properties(libpython-static PROPERTIES
+        COMPILE_DEFINITIONS Py_NO_ENABLE_SHARED
+        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_STATIC_ARCHIVEDIR}
+    )
 endif(ENABLE_STATIC)

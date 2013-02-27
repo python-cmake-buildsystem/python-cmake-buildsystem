@@ -45,15 +45,26 @@ if(NOT ENABLE_SHARED AND NOT ENABLE_STATIC)
     message(FATAL_ERROR "One or both of ENABLE_SHARED or ENABLE_STATIC must be set")
 endif(NOT ENABLE_SHARED AND NOT ENABLE_STATIC)
 
-set(BINDIR "bin")
-set(ARCHIVEDIR "libs")
+set(BINDIR "bin")           # Contains the python executable
+set(ARCHIVEDIR "libs")      # Contains the static (*.a) and import libraries (*.lib)
 
+# Library directory used to compose PYTHONHOME
 if(USE_LIB64)
     set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS ON)
     set(LIBDIR "lib64")
 else(USE_LIB64)
     set(LIBDIR "lib")
 endif(USE_LIB64)
+
+# Directories specific to 'libpython'
+set(LIBPYTHON_LIBDIR ${LIBDIR})
+set(LIBPYTHON_ARCHIVEDIR ${LIBDIR})
+set(LIBPYTHON_STATIC_ARCHIVEDIR ${LIBDIR})
+if(WIN32)
+    set(LIBPYTHON_LIBDIR ${BINDIR})
+    set(LIBPYTHON_ARCHIVEDIR ${ARCHIVEDIR})
+    set(LIBPYTHON_STATIC_ARCHIVEDIR static-${ARCHIVEDIR})
+endif()
 
 set(EXTRA_PYTHONPATH "" CACHE STRING
     "A colon (:) separated list of extra paths to add to the PYTHONPATH")
