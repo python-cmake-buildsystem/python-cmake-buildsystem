@@ -229,17 +229,17 @@ function(add_libpython name type)
     )
 endfunction(add_libpython)
 
-if(ENABLE_SHARED)
+if(BUILD_SHARED)
     add_libpython(libpython-shared SHARED)
     set_target_properties(libpython-shared PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}
     )
-endif(ENABLE_SHARED)
+endif(BUILD_SHARED)
 
-if(ENABLE_STATIC)
+if(BUILD_STATIC)
     add_libpython(libpython-static STATIC)
     set_target_properties(libpython-static PROPERTIES
         COMPILE_DEFINITIONS Py_NO_ENABLE_SHARED
         ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_STATIC_ARCHIVEDIR}
     )
-endif(ENABLE_STATIC)
+endif(BUILD_STATIC)
