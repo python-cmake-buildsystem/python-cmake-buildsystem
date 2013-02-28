@@ -603,10 +603,10 @@
 #cmakedefine HAVE_SETREGID 1
 
 /* Define to 1 if you have the `setresgid' function. */
-#define HAVE_SETRESGID 1
+#cmakedefine HAVE_SETRESGID 1
 
 /* Define to 1 if you have the `setresuid' function. */
-#define HAVE_SETRESUID 1
+#cmakedefine HAVE_SETRESUID 1
 
 /* Define to 1 if you have the `setreuid' function. */
 #cmakedefine HAVE_SETREUID 1
