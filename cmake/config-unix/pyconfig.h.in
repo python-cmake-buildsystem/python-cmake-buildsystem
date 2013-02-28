@@ -564,16 +564,16 @@
 #cmakedefine HAVE_SELECT 1
 
 /* Define to 1 if you have the `sem_getvalue' function. */
-#define HAVE_SEM_GETVALUE 1
+#cmakedefine HAVE_SEM_GETVALUE 1
 
 /* Define to 1 if you have the `sem_open' function. */
-#define HAVE_SEM_OPEN 1
+#cmakedefine HAVE_SEM_OPEN 1
 
 /* Define to 1 if you have the `sem_timedwait' function. */
-#define HAVE_SEM_TIMEDWAIT 1
+#cmakedefine HAVE_SEM_TIMEDWAIT 1
 
 /* Define to 1 if you have the `sem_unlink' function. */
-#define HAVE_SEM_UNLINK 1
+#cmakedefine HAVE_SEM_UNLINK 1
 
 /* Define to 1 if you have the `setegid' function. */
 #cmakedefine HAVE_SETEGID 1

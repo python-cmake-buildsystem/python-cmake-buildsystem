@@ -71,6 +71,7 @@ check_include_files(pthread.h HAVE_PTHREAD_H)
 check_include_files(pty.h HAVE_PTY_H)
 check_include_files(pwd.h HAVE_PWD_H)
 check_include_files(readline/readline.h HAVE_READLINE_READLINE_H)
+check_include_files(semaphore.h HAVE_SEMAPHORE_H)
 check_include_files(shadow.h HAVE_SHADOW_H)
 check_include_files(signal.h HAVE_SIGNAL_H)
 check_include_files(stdint.h HAVE_STDINT_H)
@@ -650,6 +651,12 @@ add_cond(CMAKE_REQUIRED_LIBRARIES  CMAKE_USE_PTHREADS_INIT  "${CMAKE_THREAD_LIBS
 
 check_symbol_exists(pthread_init "${CFG_HEADERS}" HAVE_PTHREAD_INIT)
 check_symbol_exists(pthread_sigmask "${CFG_HEADERS}" HAVE_PTHREAD_SIGMASK)
+
+add_cond(CFG_HEADERS  HAVE_SEMAPHORE_H  semaphore.h)
+check_symbol_exists(sem_getvalue "${CFG_HEADERS}" HAVE_SEM_GETVALUE)
+check_symbol_exists(sem_open "${CFG_HEADERS}" HAVE_SEM_OPEN)
+check_symbol_exists(sem_timedwait "${CFG_HEADERS}" HAVE_SEM_TIMEDWAIT)
+check_symbol_exists(sem_unlink "${CFG_HEADERS}" HAVE_SEM_UNLINK)
 
 # For multiprocessing module, check that sem_open actually works.
 set(check_src ${PROJECT_BINARY_DIR}/ac_cv_posix_semaphores_enabled.c)
