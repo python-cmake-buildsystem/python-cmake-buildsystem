@@ -2,7 +2,7 @@ add_definitions(-DPy_BUILD_CORE)
 add_definitions(-DNDEBUG)
 
 set(LIBPYTHON_SOURCES
-    ${CMAKE_SOURCE_DIR}/cmake/config.c
+    ${CMAKE_BINARY_DIR}/cmake/config.c
     ${SRC_DIR}/Modules/_codecsmodule.c
     ${SRC_DIR}/Modules/errnomodule.c
     ${SRC_DIR}/Modules/gcmodule.c
@@ -179,18 +179,20 @@ endif(UNIX)
 
 # Create the parts of config.c for platform-specific and user-controlled
 # builtin modules.
-set(config_inits_file ${CMAKE_CURRENT_BINARY_DIR}/platform-config-inits.c)
-set(config_entries_file ${CMAKE_CURRENT_BINARY_DIR}/platform-config-entries.c)
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
 include_directories(${builtin_includedirs})
 
-file(WRITE "${config_inits_file}" "")
-file(WRITE "${config_entries_file}" "")
-
+set(config_inits "")
+set(config_entries "")
 foreach(ext ${builtin_extensions})
-    file(APPEND "${config_inits_file}" "extern void init${ext}(void);\n")
-    file(APPEND "${config_entries_file}" "{\"${ext}\", init${ext}},\n")
+    set(config_inits "${config_inits}extern void init${ext}(void);\n")
+    set(config_entries "${config_entries}    {\"${ext}\", init${ext}},\n")
 endforeach(ext)
+
+configure_file(
+    ${CMAKE_SOURCE_DIR}/cmake/config.c.in
+    ${CMAKE_BINARY_DIR}/cmake/config.c
+    )
 
 
 function(add_libpython name type)
