@@ -1115,6 +1115,53 @@ python_platform_test(
   INVERT
   )
 
+if(HAVE_LONG_LONG)
+  # Checking for %lld and %llu printf() format support
+  set(check_src ${PROJECT_BINARY_DIR}/ac_cv_have_long_long_format.c)
+  file(WRITE ${check_src} "#include <stdio.h>
+#include <stddef.h>
+#include <string.h>
+
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+
+int main()
+{
+    char buffer[256];
+
+    if (sprintf(buffer, \"%lld\", (long long)123) < 0)
+        return 1;
+    if (strcmp(buffer, \"123\"))
+        return 1;
+
+    if (sprintf(buffer, \"%lld\", (long long)-123) < 0)
+        return 1;
+    if (strcmp(buffer, \"-123\"))
+        return 1;
+
+    if (sprintf(buffer, \"%llu\", (unsigned long long)123) < 0)
+        return 1;
+    if (strcmp(buffer, \"123\"))
+        return 1;
+
+    return 0;
+}
+")
+  cmake_push_check_state()
+  add_cond(CMAKE_REQUIRED_DEFINITIONS HAVE_SYS_TYPES_H "-DHAVE_SYS_TYPES_H")
+  python_platform_test_run(
+    HAVE_LONG_LONG_FORMAT
+    "Checking for %lld and %llu printf() format support"
+    ${check_src}
+    DIRECT
+    )
+  cmake_pop_check_state()
+  if(HAVE_LONG_LONG_FORMAT)
+    set(PY_FORMAT_LONG_LONG "ll")
+  endif(HAVE_LONG_LONG_FORMAT)
+endif(HAVE_LONG_LONG)
+
 ##########################################################
 
 find_package(ZLIB)

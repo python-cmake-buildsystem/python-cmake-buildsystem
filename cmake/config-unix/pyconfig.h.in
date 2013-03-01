@@ -944,7 +944,7 @@
 /* #undef PYLONG_BITS_IN_DIGIT */
 
 /* Define to printf format modifier for long long type */
-#define PY_FORMAT_LONG_LONG "ll"
+#cmakedefine PY_FORMAT_LONG_LONG "@PY_FORMAT_LONG_LONG@"
 
 /* Define to printf format modifier for Py_ssize_t */
 #define PY_FORMAT_SIZE_T "z"
