@@ -617,10 +617,81 @@ add_cond(CFG_HEADERS HAVE_NETDB_H netdb.h)
 add_cond(CFG_HEADERS HAVE_NETINET_IN_H netinet/in.h)
 add_cond(CFG_HEADERS HAVE_ARPA_INET_H arpa/inet.h)
 
+check_symbol_exists(gethostbyname_r "${CFG_HEADERS}" HAVE_GETHOSTBYNAME_R)
+if(HAVE_GETHOSTBYNAME_R)
+
+  # Checking gethostbyname_r with 6 args
+  set(check_src ${PROJECT_BINARY_DIR}/have_gethostbyname_r_6_arg.c)
+  file(WRITE ${check_src} "int main() {
+    char *name;
+    struct hostent *he, *res;
+    char buffer[2048];
+    int buflen = 2048;
+    int h_errnop;
+
+    (void) gethostbyname_r(name, he, buffer, buflen, &res, &h_errnop);
+    return 0;
+}
+")
+  python_platform_test(
+    HAVE_GETHOSTBYNAME_R_6_ARG
+    "Checking gethostbyname_r with 6 args"
+    ${check_src}
+    DIRECT
+    )
+  if(HAVE_GETHOSTBYNAME_R_6_ARG)
+    set(HAVE_GETHOSTBYNAME_R 1)
+  else(HAVE_GETHOSTBYNAME_R_6_ARG)
+    # Checking gethostbyname_r with 5 args
+    set(check_src ${PROJECT_BINARY_DIR}/have_gethostbyname_r_5_arg.c)
+    file(WRITE ${check_src} "int main() {
+    char *name;
+    struct hostent *he;
+    char buffer[2048];
+    int buflen = 2048;
+    int h_errnop;
+
+    (void) gethostbyname_r(name, he, buffer, buflen, &h_errnop)
+    return 0;
+}
+")
+    python_platform_test(
+      HAVE_GETHOSTBYNAME_R_5_ARG
+      "Checking gethostbyname_r with 5 args"
+      ${check_src}
+      DIRECT
+      )
+    if(HAVE_GETHOSTBYNAME_R_5_ARG)
+      set(HAVE_GETHOSTBYNAME_R 1)
+    else(HAVE_GETHOSTBYNAME_R_5_ARG)
+      # Checking gethostbyname_r with 5 args
+      set(check_src ${PROJECT_BINARY_DIR}/have_gethostbyname_r_3_arg.c)
+      file(WRITE ${check_src} "int main() {
+    char *name;
+    struct hostent *he;
+    struct hostent_data data;
+
+    (void) gethostbyname_r(name, he, &data);
+    return 0;
+}
+")
+      python_platform_test(
+        HAVE_GETHOSTBYNAME_R_3_ARG
+        "Checking gethostbyname_r with 3 args"
+        ${check_src}
+        DIRECT
+        )
+      if(HAVE_GETHOSTBYNAME_R_3_ARG)
+        set(HAVE_GETHOSTBYNAME_R 1)
+      endif(HAVE_GETHOSTBYNAME_R_3_ARG)
+    endif()
+  endif(HAVE_GETHOSTBYNAME_R_6_ARG)
+else(HAVE_GETHOSTBYNAME_R)
+  check_symbol_exists(gethostbyname   "${CFG_HEADERS}" HAVE_GETHOSTBYNAME)
+endif(HAVE_GETHOSTBYNAME_R)
+
 check_symbol_exists(gai_strerror    "${CFG_HEADERS}" HAVE_GAI_STRERROR)
 check_symbol_exists(getaddrinfo     "${CFG_HEADERS}" HAVE_GETADDRINFO)
-check_symbol_exists(gethostbyname   "${CFG_HEADERS}" HAVE_GETHOSTBYNAME)
-#check_symbol_exists(gethostbyname_r "${CFG_HEADERS}" HAVE_GETHOSTBYNAME_R) # see end of file
 check_symbol_exists(getnameinfo     "${CFG_HEADERS}" HAVE_GETNAMEINFO)
 check_symbol_exists(getpeername     "${CFG_HEADERS}" HAVE_GETPEERNAME)
 check_symbol_exists(hstrerror       "${CFG_HEADERS}" HAVE_HSTRERROR)
@@ -993,11 +1064,6 @@ set(PTHREAD_SYSTEM_SCHED_SUPPORTED 1)
 set(HAVE_WORKING_TZSET 1)
 set(HAVE_DECL_TZNAME 0) # no test in python sources
 set(HAVE_DEVICE_MACROS ${HAVE_MAKEDEV})
-
-set(HAVE_GETHOSTBYNAME_R 0)
-set(HAVE_GETHOSTBYNAME_R_3_ARG 0)
-set(HAVE_GETHOSTBYNAME_R_5_ARG 0)
-set(HAVE_GETHOSTBYNAME_R_6_ARG 0)
 
 endif(WIN32)
 
