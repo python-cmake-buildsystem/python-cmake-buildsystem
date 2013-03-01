@@ -959,6 +959,17 @@ else(NOT volatile_WORKS)
   set(volatile 0)
 endif(NOT volatile_WORKS)
 
+
+# Check for prototypes
+set(check_src ${PROJECT_BINARY_DIR}/have_prototypes.c)
+file(WRITE ${check_src} "int foo(int x) { return 0; } int main() { return foo(10); }")
+python_platform_test(
+  HAVE_PROTOTYPES
+  "Checking for prototypes"
+  ${check_src}
+  DIRECT
+  )
+
 if(HAVE_STDARG_PROTOTYPES)
    set(vaargsHeader "stdarg.h")
 else(HAVE_STDARG_PROTOTYPES)
@@ -1137,7 +1148,6 @@ endif(APPLE)
 
 # todo 
 set(HAVE_UCS4_TCL 0)
-set(HAVE_PROTOTYPES 1)
 set(PTHREAD_SYSTEM_SCHED_SUPPORTED 1)
 set(HAVE_DEVICE_MACROS ${HAVE_MAKEDEV})
 
