@@ -10,6 +10,7 @@ include(CheckSymbolExists)
 include(CheckVariableExists)
 include(cmake/CheckTypeExists.cmake)
 include(cmake/PlatformTest.cmake)
+include(TestBigEndian)
 
 if(WIN32)
   # From PC/pyconfig.h: 
@@ -178,6 +179,8 @@ add_cond(CMAKE_REQUIRED_LIBRARIES HAVE_LIBM m)
 add_cond(CMAKE_REQUIRED_LIBRARIES HAVE_LIBINTL intl)
 add_cond(CMAKE_REQUIRED_LIBRARIES HAVE_LIBUTIL util)
 add_cond(CMAKE_EXTRA_INCLUDE_FILES HAVE_WCHAR_H wchar.h)
+
+TEST_BIG_ENDIAN(WORDS_BIGENDIAN)
 
 check_type_size(double SIZEOF_DOUBLE)
 check_type_size(float SIZEOF_FLOAT)
