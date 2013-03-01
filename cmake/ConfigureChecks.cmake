@@ -548,8 +548,10 @@ set(HAVE_TM_ZONE ${HAVE_STRUCT_TM_TM_ZONE})
 
 if(NOT HAVE_STRUCT_TM_TM_ZONE)
   check_variable_exists(tzname HAVE_TZNAME)
+  check_symbol_exists(tzname "time.h" HAVE_DECL_TZNAME)
 else(NOT HAVE_STRUCT_TM_TM_ZONE)
   set(HAVE_TZNAME 0)
+  set(HAVE_DECL_TZNAME 0)
 endif(NOT HAVE_STRUCT_TM_TM_ZONE)
 
 check_type_exists("struct tm" "sys/time.h" TM_IN_SYS_TIME)
@@ -1061,7 +1063,6 @@ set(HAVE_UCS4_TCL 0)
 set(HAVE_PROTOTYPES 1)
 set(PTHREAD_SYSTEM_SCHED_SUPPORTED 1)
 set(HAVE_WORKING_TZSET 1)
-set(HAVE_DECL_TZNAME 0) # no test in python sources
 set(HAVE_DEVICE_MACROS ${HAVE_MAKEDEV})
 
 endif(WIN32)
