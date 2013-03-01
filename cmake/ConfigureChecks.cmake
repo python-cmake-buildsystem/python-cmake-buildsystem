@@ -1057,7 +1057,6 @@ int main(int argc, char* argv[]){FSIORefNum fRef = 0; return 0;}")
 endif(APPLE)
 
 # todo 
-set(ENABLE_IPV6 1)
 set(HAVE_UCS4_TCL 0)
 set(HAVE_PROTOTYPES 1)
 set(PTHREAD_SYSTEM_SCHED_SUPPORTED 1)
