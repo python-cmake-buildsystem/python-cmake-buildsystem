@@ -575,7 +575,12 @@ else(NOT HAVE_STRUCT_TM_TM_ZONE)
   set(HAVE_DECL_TZNAME 0)
 endif(NOT HAVE_STRUCT_TM_TM_ZONE)
 
-check_type_exists("struct tm" "sys/time.h" TM_IN_SYS_TIME)
+check_type_exists("struct tm" "time.h" TM_IN_TIME)
+if(TM_IN_TIME)
+  set(TM_IN_SYS_TIME 0)
+else(TM_IN_TIME)
+  set(TM_IN_SYS_TIME 1)
+endif(TM_IN_TIME)
 check_c_source_compiles("#include <sys/types.h>\n #include <sys/time.h>\n #include <time.h>\n int main() {if ((struct tm *) 0) return 0;}" TIME_WITH_SYS_TIME)
 check_c_source_compiles("#include <sys/types.h>\n #include <sys/select.h>\n #include <sys/time.h>\n int main(){return 0;}" SYS_SELECT_WITH_SYS_TIME)
 
