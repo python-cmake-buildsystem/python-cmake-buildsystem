@@ -84,7 +84,7 @@
 #cmakedefine HAVE_BROKEN_NICE 1
 
 /* Define if the system reports an invalid PIPE_BUF value. */
-/* #undef HAVE_BROKEN_PIPE_BUF */
+#cmakedefine HAVE_BROKEN_PIPE_BUF
 
 /* Define if poll() sets errno on invalid file descriptors. */
 #cmakedefine HAVE_BROKEN_POLL 1

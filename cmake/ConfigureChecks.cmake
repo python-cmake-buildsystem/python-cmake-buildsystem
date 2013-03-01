@@ -1143,6 +1143,12 @@ python_platform_test(
   INVERT
   )
 
+# Define if the system reports an invalid PIPE_BUF value.
+set(HAVE_BROKEN_PIPE_BUF 0)
+if(CMAKE_SYSTEM MATCHES AIX)
+  set(HAVE_BROKEN_PIPE_BUF 1)
+endif(CMAKE_SYSTEM MATCHES AIX)
+
 if(HAVE_LONG_LONG)
   # Checking for %lld and %llu printf() format support
   set(check_src ${PROJECT_BINARY_DIR}/ac_cv_have_long_long_format.c)
