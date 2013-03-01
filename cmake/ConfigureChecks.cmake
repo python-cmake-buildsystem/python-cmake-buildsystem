@@ -1031,10 +1031,9 @@ check_c_source_compiles("
         int main() {f(NULL);} "
         HAVE_ATTRIBUTE_FORMAT_PARSETUPLE)
 
-set(CMAKE_REQUIRED_INCLUDES ${CFG_HEADERS})
 check_c_source_compiles("#include <unistd.h>\n int main() {getpgrp(0);}" GETPGRP_HAVE_ARG)
 
-check_c_source_runs("int main() {
+check_c_source_runs("#include <unistd.h>\n int main() {
         int val1 = nice(1); 
         if (val1 != -1 && val1 == nice(2)) exit(0);
         exit(1);}" HAVE_BROKEN_NICE)
