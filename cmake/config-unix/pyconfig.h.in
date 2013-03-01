@@ -38,7 +38,7 @@
 #cmakedefine ENABLE_IPV6 1
 
 /* Define if flock needs to be linked with bsd library. */
-/* #undef FLOCK_NEEDS_LIBBSD */
+#cmakedefine FLOCK_NEEDS_LIBBSD
 
 /* Define if getpgrp() must be called as getpgrp(0). */
 #cmakedefine GETPGRP_HAVE_ARG 1
