@@ -403,7 +403,7 @@ check_symbol_exists(wcscoll      "${CFG_HEADERS}" HAVE_WCSCOLL)
 check_symbol_exists(_getpty      "${CFG_HEADERS}" HAVE__GETPTY)
 
 check_struct_has_member("struct stat" st_mtim.tv_nsec "${CFG_HEADERS}" HAVE_STAT_TV_NSEC)
-check_struct_has_member("struct stat" st_mtimensec "${CFG_HEADERS}"    HAVE_STAT_TV_NSEC2)
+check_struct_has_member("struct stat" st_mtimespec.tv_nsec "${CFG_HEADERS}"    HAVE_STAT_TV_NSEC2)
 check_struct_has_member("struct stat" st_birthtime "${CFG_HEADERS}"    HAVE_STRUCT_STAT_ST_BIRTHTIME)
 check_struct_has_member("struct stat" st_blksize "${CFG_HEADERS}"    HAVE_STRUCT_STAT_ST_BLKSIZE)
 check_struct_has_member("struct stat" st_blocks  "${CFG_HEADERS}"    HAVE_STRUCT_STAT_ST_BLOCKS)
@@ -725,7 +725,7 @@ endif(NOT HAVE_INET_ATON)
 check_symbol_exists(inet_pton       "${CFG_HEADERS}" HAVE_INET_PTON)
 
 check_type_exists("struct addrinfo" "${CFG_HEADERS}" HAVE_ADDRINFO)
-check_struct_has_member(sockaddr sa_len "${CFG_HEADERS}" HAVE_SOCKADDR_SA_LEN )
+check_struct_has_member("struct sockaddr" sa_len "${CFG_HEADERS}" HAVE_SOCKADDR_SA_LEN )
 check_type_exists("struct sockaddr_storage" "${CFG_HEADERS}" HAVE_SOCKADDR_STORAGE)
 
 set(CFG_HEADERS ${CFG_HEADERS_SAVE})
