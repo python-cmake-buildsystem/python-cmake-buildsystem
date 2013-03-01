@@ -441,7 +441,7 @@
 #cmakedefine HAVE_LOG1P 1
 
 /* Define this if you have the type long double. */
-#define HAVE_LONG_DOUBLE 1
+#cmakedefine HAVE_LONG_DOUBLE 1
 
 /* Define this if you have the type long long. */
 #cmakedefine HAVE_LONG_LONG 1
@@ -992,7 +992,7 @@
 #cmakedefine SIZEOF_LONG @SIZEOF_LONG@
 
 /* The size of `long double', as computed by sizeof. */
-#define SIZEOF_LONG_DOUBLE 16
+#cmakedefine SIZEOF_LONG_DOUBLE @SIZEOF_LONG_DOUBLE@
 
 /* The size of `long long', as computed by sizeof. */
 #cmakedefine SIZEOF_LONG_LONG @SIZEOF_LONG_LONG@
@@ -1001,7 +1001,7 @@
 #cmakedefine SIZEOF_OFF_T @SIZEOF_OFF_T@
 
 /* The size of `pid_t', as computed by sizeof. */
-#define SIZEOF_PID_T 4
+#cmakedefine SIZEOF_PID_T @SIZEOF_PID_T@
 
 /* The size of `pthread_t', as computed by sizeof. */
 #cmakedefine SIZEOF_PTHREAD_T @SIZEOF_PTHREAD_T@
