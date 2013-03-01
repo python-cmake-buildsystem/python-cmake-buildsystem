@@ -648,7 +648,7 @@
 #cmakedefine HAVE_SOCKETPAIR 1
 
 /* Define to 1 if you have the <spawn.h> header file. */
-#define HAVE_SPAWN_H 1
+#cmakedefine HAVE_SPAWN_H 1
 
 /* Define if your compiler provides ssize_t */
 #cmakedefine HAVE_SSIZE_T 1
