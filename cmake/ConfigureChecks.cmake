@@ -762,7 +762,7 @@ python_platform_test_run(
   POSIX_SEMAPHORES_NOT_ENABLED
   "Checking whether POSIX semaphores are enabled"
   ${check_src}
-  DIRECT
+  INVERT
   )
 
 # Multiprocessing check for broken sem_getvalue
