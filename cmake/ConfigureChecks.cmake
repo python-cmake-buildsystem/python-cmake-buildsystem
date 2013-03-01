@@ -1162,6 +1162,56 @@ int main()
   endif(HAVE_LONG_LONG_FORMAT)
 endif(HAVE_LONG_LONG)
 
+
+# Checking for %zd printf() format support
+set(check_src ${PROJECT_BINARY_DIR}/ac_cv_have_size_t_format.c)
+file(WRITE ${check_src} "#include <stdio.h>
+#include <stddef.h>
+#include <string.h>
+
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+
+#ifdef HAVE_SSIZE_T
+typedef ssize_t Py_ssize_t;
+#elif SIZEOF_VOID_P == SIZEOF_LONG
+typedef long Py_ssize_t;
+#else
+typedef int Py_ssize_t;
+#endif
+
+int main()
+{
+    char buffer[256];
+    if(sprintf(buffer, \"%zd\", (size_t)123) < 0)
+        return 1;
+    if (strcmp(buffer, \"123\"))
+        return 1;
+    if (sprintf(buffer, \"%zd\", (Py_ssize_t)-123) < 0)
+        return 1;
+    if (strcmp(buffer, \"-123\"))
+        return 1;
+    return 0;
+}
+")
+cmake_push_check_state()
+add_cond(CMAKE_REQUIRED_DEFINITIONS HAVE_SYS_TYPES_H "-DHAVE_SYS_TYPES_H")
+add_cond(CMAKE_REQUIRED_DEFINITIONS HAVE_SSIZE_T "-DHAVE_SSIZE_T")
+add_cond(CMAKE_REQUIRED_DEFINITIONS SIZEOF_VOID_P "-DSIZEOF_VOID_P=${SIZEOF_VOID_P}")
+add_cond(CMAKE_REQUIRED_DEFINITIONS SIZEOF_LONG "-DSIZEOF_LONG=${SIZEOF_LONG}")
+python_platform_test_run(
+  HAVE_SIZE_T_FORMAT
+  "Checking for %zd printf() format support()"
+  ${check_src}
+  DIRECT
+  )
+cmake_pop_check_state()
+if(HAVE_SIZE_T_FORMAT)
+  set(PY_FORMAT_SIZE_T "z")
+endif(HAVE_SIZE_T_FORMAT)
+
+
 ##########################################################
 
 find_package(ZLIB)

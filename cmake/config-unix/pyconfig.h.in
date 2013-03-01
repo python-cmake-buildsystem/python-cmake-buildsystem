@@ -947,7 +947,7 @@
 #cmakedefine PY_FORMAT_LONG_LONG "@PY_FORMAT_LONG_LONG@"
 
 /* Define to printf format modifier for Py_ssize_t */
-#define PY_FORMAT_SIZE_T "z"
+#cmakedefine PY_FORMAT_SIZE_T "@PY_FORMAT_SIZE_T@"
 
 /* Define as the integral type used for Unicode representation. */
 #cmakedefine PY_UNICODE_TYPE @PY_UNICODE_TYPE@
