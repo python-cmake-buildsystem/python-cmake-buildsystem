@@ -360,7 +360,7 @@
 #cmakedefine HAVE_HYPOT 1
 
 /* Define to 1 if you have the <ieeefp.h> header file. */
-/* #undef HAVE_IEEEFP_H */
+#cmakedefine HAVE_IEEEFP_H
 
 /* Define if you have the 'inet_aton' function. */
 #cmakedefine HAVE_INET_ATON 1
