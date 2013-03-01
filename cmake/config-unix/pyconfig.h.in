@@ -297,7 +297,7 @@
 #cmakedefine HAVE_GETHOSTBYNAME_R_6_ARG 1
 
 /* Define to 1 if you have the `getitimer' function. */
-#define HAVE_GETITIMER 1
+#cmakedefine HAVE_GETITIMER 1
 
 /* Define to 1 if you have the `getloadavg' function. */
 #cmakedefine HAVE_GETLOADAVG 1
@@ -588,7 +588,7 @@
 #cmakedefine HAVE_SETGROUPS 1
 
 /* Define to 1 if you have the `setitimer' function. */
-#define HAVE_SETITIMER 1
+#cmakedefine HAVE_SETITIMER 1
 
 /* Define to 1 if you have the `setlocale' function. */
 #cmakedefine HAVE_SETLOCALE 1
