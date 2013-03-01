@@ -576,6 +576,8 @@ else(NOT HAVE_STRUCT_TM_TM_ZONE)
 endif(NOT HAVE_STRUCT_TM_TM_ZONE)
 
 check_type_exists("struct tm" "sys/time.h" TM_IN_SYS_TIME)
+check_c_source_compiles("#include <sys/types.h>\n #include <sys/time.h>\n #include <time.h>\n int main() {if ((struct tm *) 0) return 0;}" TIME_WITH_SYS_TIME)
+check_c_source_compiles("#include <sys/types.h>\n #include <sys/select.h>\n #include <sys/time.h>\n int main(){return 0;}" SYS_SELECT_WITH_SYS_TIME)
 
 check_c_source_compiles("#include <sys/time.h>\n int main() {gettimeofday((struct timeval*)0,(struct timezone*)0);}" GETTIMEOFDAY_WITH_TZ)
 
@@ -1045,19 +1047,6 @@ check_c_source_runs(" #include <poll.h>
     else if (poll_test == 0 && poll_struct.revents != POLLNVAL) { exit(0); }
     else { exit(1); } }" 
     HAVE_BROKEN_POLL)
-
-if(HAVE_SYS_TIME_H)
-  check_include_files("sys/time.h;time.h" TIME_WITH_SYS_TIME)
-else(HAVE_SYS_TIME_H)
-  set(TIME_WITH_SYS_TIME 0)
-endif(HAVE_SYS_TIME_H)
-
-if(HAVE_SYS_TIME_H AND HAVE_SYS_SELECT_H)
-  check_include_files("sys/select.h;sys/time.h" SYS_SELECT_WITH_SYS_TIME)
-else(HAVE_SYS_TIME_H AND HAVE_SYS_SELECT_H)
-  set(SYS_SELECT_WITH_SYS_TIME 0)
-endif(HAVE_SYS_TIME_H AND HAVE_SYS_SELECT_H)
-
 
 
 # Check tzset(3) exists and works like we expect it to
