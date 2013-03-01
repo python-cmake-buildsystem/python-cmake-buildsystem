@@ -982,6 +982,20 @@ else(NOT_VA_LIST_IS_ARRAY)
   set(VA_LIST_IS_ARRAY 1)
 endif(NOT_VA_LIST_IS_ARRAY)
 
+# Check whether char is unsigned
+set(check_src ${PROJECT_BINARY_DIR}/ac_cv_c_char_unsigned.c)
+file(WRITE ${check_src} "int main() { static int test_array [1 - 2 * !( ((char) -1) < 0 )];
+test_array [0] = 0; return test_array [0]; return 0; }")
+python_platform_test(
+  HAVE_C_CHAR_UNSIGNED
+  "Checking whether char is unsigned"
+  ${check_src}
+  INVERT
+  )
+if(HAVE_C_CHAR_UNSIGNED AND NOT CMAKE_C_COMPILER_ID MATCHES "^GNU$")
+  set(__CHAR_UNSIGNED__ 1)
+endif(HAVE_C_CHAR_UNSIGNED AND NOT CMAKE_C_COMPILER_ID MATCHES "^GNU$")
+
 
 #######################################################################
 #

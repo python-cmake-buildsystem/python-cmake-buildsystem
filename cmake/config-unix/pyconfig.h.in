@@ -1190,7 +1190,7 @@
 
 /* Define to 1 if type `char' is unsigned and you are not using gcc.  */
 #ifndef __CHAR_UNSIGNED__
-# undef __CHAR_UNSIGNED__
+#cmakedefine __CHAR_UNSIGNED__
 #endif
 
 /* Defined on Solaris to see additional function prototypes. */
