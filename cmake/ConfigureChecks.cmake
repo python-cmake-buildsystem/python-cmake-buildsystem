@@ -63,6 +63,7 @@ set(LINUX_NETLINK_HEADERS ${LINUX_NETLINK_HEADERS} linux/netlink.h)
 check_include_files("${LINUX_NETLINK_HEADERS}" HAVE_LINUX_NETLINK_H)
 
 check_include_files(memory.h HAVE_MEMORY_H)
+check_include_files(minix/config.h HAVE_MINIX_CONFIG_H)
 check_include_files(ncurses.h HAVE_NCURSES_H)
 check_include_files(netdb.h HAVE_NETDB_H)
 check_include_files(netinet/in.h HAVE_NETINET_IN_H)
@@ -152,6 +153,12 @@ set(_GNU_SOURCE 1)
 set(_NETBSD_SOURCE 1)
 set(_DARWIN_C_SOURCE 1)
 
+if(HAVE_MINIX_CONFIG_H)
+  set(_POSIX_SOURCE 1)
+  set(_POSIX_1_SOURCE 2)
+  set(_MINIX 1)
+endif()
+
 if(CMAKE_SYSTEM MATCHES OpenBSD)
   set(_BSD_SOURCE 1)
 endif(CMAKE_SYSTEM MATCHES OpenBSD)
@@ -173,6 +180,13 @@ set(CMAKE_REQUIRED_DEFINITIONS
   -D_BSD_TYPES=${_BSD_TYPES}
   -DNETBSD_SOURCE=${_NETBSD_SOURCE}
   -D__BSD_VISIBLE=${__BSD_VISIBLE})
+if(HAVE_MINIX_CONFIG_H)
+  list(APPEND CMAKE_REQUIRED_DEFINITIONS
+    -D_POSIX_SOURCE=${_POSIX_SOURCE}
+    -D_POSIX_1_SOURCE=${_POSIX_1_SOURCE}
+    -D_MINIX=${_MINIX}
+    )
+endif(HAVE_MINIX_CONFIG_H)
 set(CMAKE_EXTRA_INCLUDE_FILES stdio.h)
 
 add_cond(CMAKE_REQUIRED_LIBRARIES HAVE_LIBM m)
