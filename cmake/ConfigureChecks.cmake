@@ -150,7 +150,7 @@ if(WITH_THREAD)
   set(CMAKE_HAVE_PTHREAD_H ${HAVE_PTHREAD_H}) # Skip checking for header a second time.
   find_package(Threads)
   if(CMAKE_HAVE_LIBC_CREATE)
-    set(_REENTRANT 1)
+    set_required_def(_REENTRANT 1)
   endif()
 endif()
 
