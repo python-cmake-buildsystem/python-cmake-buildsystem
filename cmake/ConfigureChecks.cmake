@@ -154,9 +154,6 @@ if(WITH_THREAD)
   endif()
 endif()
 
-set(_FILE_OFFSET_BITS 64)
-set(_LARGEFILE_SOURCE 1)
-
 set(__EXTENSIONS__ 1)
 
 set_required_def(_GNU_SOURCE 1)       # Define on Linux to activate all library features
@@ -192,6 +189,19 @@ else()
   message(STATUS "Checking for XOPEN_SOURCE - no")
 endif()
 
+
+message(STATUS "Checking for Large File Support")
+set(use_lfs 1)  # Consider disabling "lfs" if porting to Solaris (2.6 to 9) with gcc 2.95.
+                # See associated test in configure.in
+if(use_lfs)
+  message(STATUS "Checking for Large File Support - yes")
+  if(CMAKE_SYSTEM MATCHES AIX)
+    set_required_def(_LARGE_FILES 1)        # This must be defined on AIX systems to enable large file support.
+  endif()
+  set_required_def(_LARGEFILE_SOURCE 1)     # This must be defined on some systems to enable large file support.
+  set_required_def(_FILE_OFFSET_BITS 64)    # This must be set to 64 on some systems to enable large file support.
+else()
+  message(STATUS "Checking for Large File Support - no")
 endif()
 
 set(CMAKE_EXTRA_INCLUDE_FILES stdio.h)

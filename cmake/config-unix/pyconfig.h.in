@@ -1142,7 +1142,7 @@
 #cmakedefine _LARGEFILE_SOURCE @_LARGEFILE_SOURCE@
 
 /* This must be defined on AIX systems to enable large file support. */
-/* #undef _LARGE_FILES */
+#cmakedefine _LARGE_FILES
 
 /* Define to 1 if on MINIX. */
 #cmakedefine _MINIX
