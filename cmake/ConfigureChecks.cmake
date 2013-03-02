@@ -154,8 +154,6 @@ if(WITH_THREAD)
   endif()
 endif()
 
-set(__EXTENSIONS__ 1)
-
 set_required_def(_GNU_SOURCE 1)       # Define on Linux to activate all library features
 set_required_def(_NETBSD_SOURCE 1)    # Define on NetBSD to activate all library features
 set_required_def(__BSD_VISIBLE 1)     # Define on FreeBSD to activate all library features
@@ -165,6 +163,9 @@ set_required_def(_DARWIN_C_SOURCE 1)  # Define on Darwin to activate all library
 set_required_def(_ALL_SOURCE 1)       # Enable extensions on AIX 3, Interix.
 set_required_def(_POSIX_PTHREAD_SEMANTICS 1) # Enable threading extensions on Solaris.
 set_required_def(_TANDEM_SOURCE 1)    # Enable extensions on HP NonStop.
+
+set_required_def(__EXTENSIONS__ 1)    # Defined on Solaris to see additional function prototypes.
+
 
 if(HAVE_MINIX_CONFIG_H)
   set_required_def(_POSIX_SOURCE 1)   # Define to 1 if you need to in order for 'stat' and other things to work.

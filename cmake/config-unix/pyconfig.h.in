@@ -1061,7 +1061,7 @@
 #endif
 /* Enable general extensions on Solaris.  */
 #ifndef __EXTENSIONS__
-# define __EXTENSIONS__ 1
+#cmakedefine __EXTENSIONS__ 1
 #endif
 
 
