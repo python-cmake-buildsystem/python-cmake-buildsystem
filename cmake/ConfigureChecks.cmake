@@ -170,13 +170,130 @@ if(HAVE_MINIX_CONFIG_H)
 endif()
 
 message(STATUS "Checking for XOPEN_SOURCE")
+
+# Some systems cannot stand _XOPEN_SOURCE being defined at all; they
+# disable features if it is defined, without any means to access these
+# features as extensions. For these systems, we skip the definition of
+# _XOPEN_SOURCE. Before adding a system to the list to gain access to
+# some feature, make sure there is no alternative way to access this
+# feature. Also, when using wildcards, make sure you have verified the
+# need for not defining _XOPEN_SOURCE on all systems matching the
+# wildcard, and that the wildcard does not include future systems
+# (which may remove their limitations).
 set(define_xopen_source 1)
 
-if(CMAKE_SYSTEM MATCHES OpenBSD)
-  set(_BSD_SOURCE 1)
-endif(CMAKE_SYSTEM MATCHES OpenBSD)
+# On OpenBSD, select(2) is not available if _XOPEN_SOURCE is defined,
+# even though select is a POSIX function. Reported by J. Ribbens.
+# Reconfirmed for OpenBSD 3.3 by Zachary Hamm, for 3.4 by Jason Ish.
+# In addition, Stefan Krah confirms that issue #1244610 exists through
+# OpenBSD 4.6, but is fixed in 4.7.
+if(CMAKE_SYSTEM MATCHES "OpenBSD\\-2\\."
+   OR CMAKE_SYSTEM MATCHES "OpenBSD\\-3\\."
+   OR CMAKE_SYSTEM MATCHES "OpenBSD\\-4\\.[0-6]$")
 
-if(APPLE)
+  #OpenBSD/2.* | OpenBSD/3.* | OpenBSD/4.@<:@0123456@:>@
+
+  set(define_xopen_source 0)
+
+  # OpenBSD undoes our definition of __BSD_VISIBLE if _XOPEN_SOURCE is
+  # also defined. This can be overridden by defining _BSD_SOURCE
+  # As this has a different meaning on Linux, only define it on OpenBSD
+  set_required_def(_BSD_SOURCE 1)     # Define on OpenBSD to activate all library features
+
+elseif(CMAKE_SYSTEM MATCHES OpenBSD)
+
+  # OpenBSD/*
+
+  # OpenBSD undoes our definition of __BSD_VISIBLE if _XOPEN_SOURCE is
+  # also defined. This can be overridden by defining _BSD_SOURCE
+  # As this has a different meaning on Linux, only define it on OpenBSD
+  set_required_def(_BSD_SOURCE 1)     # Define on OpenBSD to activate all library features
+
+elseif(CMAKE_SYSTEM MATCHES "NetBSD\\-1\\.5$"
+       OR CMAKE_SYSTEM MATCHES "NetBSD\\-1\\.5\\."
+       OR CMAKE_SYSTEM MATCHES "NetBSD\\-1\\.6$"
+       OR CMAKE_SYSTEM MATCHES "NetBSD\\-1\\.6\\."
+       OR CMAKE_SYSTEM MATCHES "NetBSD\\-1\\.6[A-S]$")
+
+  # NetBSD/1.5 | NetBSD/1.5.* | NetBSD/1.6 | NetBSD/1.6.* | NetBSD/1.6@<:@A-S@:>@
+
+  # Defining _XOPEN_SOURCE on NetBSD version prior to the introduction of
+  # _NETBSD_SOURCE disables certain features (eg. setgroups). Reported by
+  # Marc Recht
+  set(define_xopen_source 0)
+
+elseif(CMAKE_SYSTEM MATCHES SunOS)
+
+  # SunOS/*)
+
+  # From the perspective of Solaris, _XOPEN_SOURCE is not so much a
+  # request to enable features supported by the standard as a request
+  # to disable features not supported by the standard.  The best way
+  # for Python to use Solaris is simply to leave _XOPEN_SOURCE out
+  # entirely and define __EXTENSIONS__ instead.
+
+  set(define_xopen_source 0)
+
+elseif(CMAKE_SYSTEM MATCHES "OpenUNIX\\-8\\.0\\.0$"
+       OR CMAKE_SYSTEM MATCHES "UnixWare\\-7\\.1\\.[0-4]$")
+
+  # OpenUNIX/8.0.0| UnixWare/7.1.@<:@0-4@:>@
+
+  # On UnixWare 7, u_long is never defined with _XOPEN_SOURCE,
+  # but used in /usr/include/netinet/tcp.h. Reported by Tim Rice.
+  # Reconfirmed for 7.1.4 by Martin v. Loewis.
+
+  set(define_xopen_source 0)
+
+elseif(CMAKE_SYSTEM MATCHES "SCO_SV\\-3\\.2$")
+
+  # SCO_SV/3.2
+
+  # On OpenServer 5, u_short is never defined with _XOPEN_SOURCE,
+  # but used in struct sockaddr.sa_family. Reported by Tim Rice.
+
+  set(define_xopen_source 0)
+
+elseif(CMAKE_SYSTEM MATCHES "FreeBSD\\-4\\.")
+
+  # FreeBSD/4.*
+
+  # On FreeBSD 4, the math functions C89 does not cover are never defined
+  # with _XOPEN_SOURCE and __BSD_VISIBLE does not re-enable them.
+
+  set(define_xopen_source 0)
+
+elseif(CMAKE_SYSTEM MATCHES "Darwin\\-[6789]\\."
+       OR CMAKE_SYSTEM MATCHES "Darwin\\-1[0-9]\\.")
+
+  # Darwin/@<:@6789@:>@.*)
+  # Darwin/1@<:@0-9@:>@.*
+
+  # On MacOS X 10.2, a bug in ncurses.h means that it craps out if
+  # _XOPEN_EXTENDED_SOURCE is defined. Apparently, this is fixed in 10.3, which
+  # identifies itself as Darwin/7.*
+  # On Mac OS X 10.4, defining _POSIX_C_SOURCE or _XOPEN_SOURCE
+  # disables platform specific features beyond repair.
+  # On Mac OS X 10.3, defining _POSIX_C_SOURCE or _XOPEN_SOURCE
+  # has no effect, don't bother defining them
+
+  set(define_xopen_source 0)
+
+elseif(CMAKE_SYSTEM MATCHES "AIX\\-4$"
+       OR CMAKE_SYSTEM MATCHES "AIX\\-5\\.1$")
+  # On AIX 4 and 5.1, mbstate_t is defined only when _XOPEN_SOURCE == 500 but
+  # used in wcsnrtombs() and mbsnrtowcs() even if _XOPEN_SOURCE is not defined
+  # or has another value. By not (re)defining it, the defaults come in place.
+
+  set(define_xopen_source 0)
+
+elseif(CMAKE_SYSTEM MATCHES "QNX\\-6\\.3\\.2$")
+
+  # QNX/6.3.2
+
+  # On QNX 6.3.2, defining _XOPEN_SOURCE prevents netdb.h from
+  # defining NI_NUMERICHOST.
+
   set(define_xopen_source 0)
 endif()
 
