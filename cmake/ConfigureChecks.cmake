@@ -12,6 +12,9 @@ include(cmake/CheckTypeExists.cmake)
 include(cmake/PlatformTest.cmake)
 include(TestBigEndian)
 
+message(STATUS "The system name is ${CMAKE_SYSTEM_NAME}")
+message(STATUS "The system version is ${CMAKE_SYSTEM_VERSION}")
+
 if(WIN32)
   # From PC/pyconfig.h: 
   #  This is a manually maintained version used for the Watcom,
