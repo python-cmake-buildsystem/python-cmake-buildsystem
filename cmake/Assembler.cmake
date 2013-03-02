@@ -4,10 +4,10 @@ macro(add_assembler ADD_ASSEMBLER_OUTPUTVAR ADD_ASSEMBLER_FILE)
     get_filename_component(ADD_ASSEMBLER_NAME_WE ${ADD_ASSEMBLER_FILE} NAME_WE)
 
     # We're going to create an .o file in the binary directory
-    set(ADD_ASSEMBLER_OUTPUT "${CMAKE_BINARY_DIR}/${ADD_ASSEMBLER_PATH}/${ADD_ASSEMBLER_NAME_WE}.o")
+    set(ADD_ASSEMBLER_OUTPUT "${CMAKE_BINARY_DIR}/CMakeBuild/${ADD_ASSEMBLER_PATH}/${ADD_ASSEMBLER_NAME_WE}.o")
 
     # Make sure the parent directory exists
-    file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/${ADD_ASSEMBLER_PATH}/")
+    file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/CMakeBuild/${ADD_ASSEMBLER_PATH}/")
 
     # Build up a list of cflags to pass to gcc.
     # Start with the normal cmake ones.

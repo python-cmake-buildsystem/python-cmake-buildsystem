@@ -183,14 +183,14 @@ set(builtin_includedirs "" CACHE INTERNAL "" FORCE)
 set(builtin_definitions "" CACHE INTERNAL "" FORCE)
 set(extensions_enabled "" CACHE INTERNAL "" FORCE)
 set(extensions_disabled "" CACHE INTERNAL "" FORCE)
-add_subdirectory(cmake/extensions)
+add_subdirectory(cmake/extensions CMakeBuild/extensions)
 
 # Add the other subdirectories
-add_subdirectory(cmake/pgen)
-add_subdirectory(cmake/libpython)
-add_subdirectory(cmake/python)
-add_subdirectory(cmake/include)
-add_subdirectory(cmake/lib)
+add_subdirectory(cmake/pgen CMakeBuild/pgen)
+add_subdirectory(cmake/libpython CMakeBuild/libpython)
+add_subdirectory(cmake/python CMakeBuild/python)
+add_subdirectory(cmake/include CMakeBuild/include)
+add_subdirectory(cmake/lib CMakeBuild/lib)
 
 show_extension_summary()
 

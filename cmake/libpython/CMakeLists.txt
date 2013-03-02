@@ -2,7 +2,7 @@ add_definitions(-DPy_BUILD_CORE)
 add_definitions(-DNDEBUG)
 
 set(LIBPYTHON_SOURCES
-    ${CMAKE_BINARY_DIR}/cmake/config.c
+    ${CMAKE_BINARY_DIR}/CMakeFiles/config.c
     ${SRC_DIR}/Modules/_codecsmodule.c
     ${SRC_DIR}/Modules/errnomodule.c
     ${SRC_DIR}/Modules/gcmodule.c
@@ -191,7 +191,7 @@ endforeach(ext)
 
 configure_file(
     ${CMAKE_SOURCE_DIR}/cmake/config.c.in
-    ${CMAKE_BINARY_DIR}/cmake/config.c
+    ${CMAKE_BINARY_DIR}/CMakeFiles/config.c
     )
 
 
