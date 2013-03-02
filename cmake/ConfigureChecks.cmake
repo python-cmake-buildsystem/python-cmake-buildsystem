@@ -558,7 +558,7 @@ check_struct_has_member("struct stat" st_rdev    "${CFG_HEADERS}"    HAVE_STRUCT
 #######################################################################
 
 # Check whether C doubles are little-endian IEEE 754 binary64
-set(check_src ${PROJECT_BINARY_DIR}/ac_cv_little_endian_double.c)
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_little_endian_double.c)
 file(WRITE ${check_src} "#include <string.h>
 int main() {
     double x = 9006104071832581.0;
@@ -576,7 +576,7 @@ python_platform_test_run(
   )
 
 # Check whether C doubles are big-endian IEEE 754 binary64
-set(check_src ${PROJECT_BINARY_DIR}/ac_cv_big_endian_double.c)
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_big_endian_double.c)
 file(WRITE ${check_src} "#include <string.h>
 int main() {
     double x = 9006104071832581.0;
@@ -594,7 +594,7 @@ python_platform_test_run(
   )
 
 # Check whether C doubles are ARM mixed-endian IEEE 754 binary64
-set(check_src ${PROJECT_BINARY_DIR}/ac_cv_mixed_endian_double.c)
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_mixed_endian_double.c)
 file(WRITE ${check_src} "#include <string.h>
 int main() {
     double x = 9006104071832581.0;
@@ -612,7 +612,7 @@ python_platform_test_run(
   )
 
 # Check whether we can use gcc inline assembler to get and set x87 control word
-set(check_src ${PROJECT_BINARY_DIR}/have_gcc_asm_for_x87.c)
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_gcc_asm_for_x87.c)
 file(WRITE ${check_src} "int main() {
   unsigned short cw;
   __asm__ __volatile__ (\"fnstcw %0\" : \"=m\" (cw));
@@ -627,7 +627,7 @@ python_platform_test(
   )
 
 # Check for x87-style double rounding
-set(check_src ${PROJECT_BINARY_DIR}/ac_cv_x87_double_rounding.c)
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_x87_double_rounding.c)
 file(WRITE ${check_src} "#include <stdlib.h>
 #include <math.h>
 int main() {
@@ -663,7 +663,7 @@ python_platform_test_run(
 cmake_push_check_state()
 
 # Check whether tanh preserves the sign of zero
-set(check_src ${PROJECT_BINARY_DIR}/ac_cv_tanh_preserves_zero_sign.c)
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_tanh_preserves_zero_sign.c)
 file(WRITE ${check_src} "#include <math.h>
 #include <stdlib.h>
 int main() {
@@ -789,7 +789,7 @@ check_symbol_exists(gethostbyname_r "${CFG_HEADERS}" HAVE_GETHOSTBYNAME_R)
 if(HAVE_GETHOSTBYNAME_R)
 
   # Checking gethostbyname_r with 6 args
-  set(check_src ${PROJECT_BINARY_DIR}/have_gethostbyname_r_6_arg.c)
+  set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_gethostbyname_r_6_arg.c)
   file(WRITE ${check_src} "int main() {
     char *name;
     struct hostent *he, *res;
@@ -811,7 +811,7 @@ if(HAVE_GETHOSTBYNAME_R)
     set(HAVE_GETHOSTBYNAME_R 1)
   else(HAVE_GETHOSTBYNAME_R_6_ARG)
     # Checking gethostbyname_r with 5 args
-    set(check_src ${PROJECT_BINARY_DIR}/have_gethostbyname_r_5_arg.c)
+    set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_gethostbyname_r_5_arg.c)
     file(WRITE ${check_src} "int main() {
     char *name;
     struct hostent *he;
@@ -833,7 +833,7 @@ if(HAVE_GETHOSTBYNAME_R)
       set(HAVE_GETHOSTBYNAME_R 1)
     else(HAVE_GETHOSTBYNAME_R_5_ARG)
       # Checking gethostbyname_r with 5 args
-      set(check_src ${PROJECT_BINARY_DIR}/have_gethostbyname_r_3_arg.c)
+      set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_gethostbyname_r_3_arg.c)
       file(WRITE ${check_src} "int main() {
     char *name;
     struct hostent *he;
@@ -909,7 +909,7 @@ check_symbol_exists(sem_timedwait "${CFG_HEADERS}" HAVE_SEM_TIMEDWAIT)
 check_symbol_exists(sem_unlink "${CFG_HEADERS}" HAVE_SEM_UNLINK)
 
 # For multiprocessing module, check that sem_open actually works.
-set(check_src ${PROJECT_BINARY_DIR}/ac_cv_posix_semaphores_enabled.c)
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_posix_semaphores_enabled.c)
 file(WRITE ${check_src} "#include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -935,7 +935,7 @@ python_platform_test_run(
   )
 
 # Multiprocessing check for broken sem_getvalue
-set(check_src ${PROJECT_BINARY_DIR}/have_broken_sem_getvalue.c)
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_broken_sem_getvalue.c)
 file(WRITE ${check_src} "#include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -1130,7 +1130,7 @@ endif(NOT volatile_WORKS)
 
 
 # Check for prototypes
-set(check_src ${PROJECT_BINARY_DIR}/have_prototypes.c)
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_prototypes.c)
 file(WRITE ${check_src} "int foo(int x) { return 0; } int main() { return foo(10); }")
 python_platform_test(
   HAVE_PROTOTYPES
@@ -1152,7 +1152,7 @@ else(NOT_VA_LIST_IS_ARRAY)
 endif(NOT_VA_LIST_IS_ARRAY)
 
 # Check whether char is unsigned
-set(check_src ${PROJECT_BINARY_DIR}/ac_cv_c_char_unsigned.c)
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_c_char_unsigned.c)
 file(WRITE ${check_src} "int main() { static int test_array [1 - 2 * !( ((char) -1) < 0 )];
 test_array [0] = 0; return test_array [0]; return 0; }")
 python_platform_test(
@@ -1195,7 +1195,7 @@ check_c_source_runs(" #include <poll.h>
 
 
 # Check tzset(3) exists and works like we expect it to
-set(check_src ${PROJECT_BINARY_DIR}/ac_cv_working_tzset.c)
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_working_tzset.c)
 file(WRITE ${check_src} "#include <stdlib.h>
 #include <time.h>
 #include <string.h>
@@ -1271,7 +1271,7 @@ python_platform_test_run(
 cmake_pop_check_state()
 
 # Check for broken unsetenv
-set(check_src ${PROJECT_BINARY_DIR}/have_broken_unsetenv.c)
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_broken_unsetenv.c)
 file(WRITE ${check_src} "#include <stdlib.h>
 int main() {
   int res = unsetenv(\"DUMMY\");
@@ -1292,7 +1292,7 @@ endif(CMAKE_SYSTEM MATCHES AIX)
 
 if(HAVE_LONG_LONG)
   # Checking for %lld and %llu printf() format support
-  set(check_src ${PROJECT_BINARY_DIR}/ac_cv_have_long_long_format.c)
+  set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_have_long_long_format.c)
   file(WRITE ${check_src} "#include <stdio.h>
 #include <stddef.h>
 #include <string.h>
@@ -1339,7 +1339,7 @@ endif(HAVE_LONG_LONG)
 
 
 # Checking for %zd printf() format support
-set(check_src ${PROJECT_BINARY_DIR}/ac_cv_have_size_t_format.c)
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_have_size_t_format.c)
 file(WRITE ${check_src} "#include <stdio.h>
 #include <stddef.h>
 #include <string.h>
@@ -1407,7 +1407,7 @@ endif(ZLIB_FOUND)
 set(HAVE_OSX105_SDK 0)
 if(APPLE)
   # Check for OSX 10.5 SDK or later
-  set(check_src ${PROJECT_BINARY_DIR}/have_osx105_sdk.c)
+  set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_osx105_sdk.c)
   file(WRITE ${check_src} "#include <Carbon/Carbon.h>
 int main(int argc, char* argv[]){FSIORefNum fRef = 0; return 0;}")
   python_platform_test(
