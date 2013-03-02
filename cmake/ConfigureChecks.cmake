@@ -162,6 +162,9 @@ set_required_def(__BSD_VISIBLE 1)     # Define on FreeBSD to activate all librar
 set_required_def(_BSD_TYPES 1)        # Define on Irix to enable u_int
 set_required_def(_DARWIN_C_SOURCE 1)  # Define on Darwin to activate all library features
 
+set_required_def(_ALL_SOURCE 1)       # Enable extensions on AIX 3, Interix.
+set_required_def(_POSIX_PTHREAD_SEMANTICS 1) # Enable threading extensions on Solaris.
+set_required_def(_TANDEM_SOURCE 1)    # Enable extensions on HP NonStop.
 
 if(HAVE_MINIX_CONFIG_H)
   set_required_def(_POSIX_SOURCE 1)   # Define to 1 if you need to in order for 'stat' and other things to work.
