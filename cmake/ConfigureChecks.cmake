@@ -28,6 +28,14 @@ macro(ADD_COND var cond item)
   endif(${cond})
 endmacro(ADD_COND)
 
+set(CMAKE_REQUIRED_DEFINITIONS )
+
+# Convenient macro allowing to conditonally update CMAKE_REQUIRED_DEFINITIONS
+macro(set_required_def var value)
+  set(${var} ${value})
+  list(APPEND CMAKE_REQUIRED_DEFINITIONS "-D${var}=${value}")
+endmacro(set_required_def)
+
 # Emulate AC_HEADER_DIRENT
 check_include_files(dirent.h HAVE_DIRENT_H)
 if(NOT HAVE_DIRENT_H)
@@ -149,47 +157,43 @@ endif()
 set(_FILE_OFFSET_BITS 64)
 set(_LARGEFILE_SOURCE 1)
 
-set(__BSD_VISIBLE 1)
-set(_BSD_TYPES 1)
 set(__EXTENSIONS__ 1)
-set(_GNU_SOURCE 1)
-set(_NETBSD_SOURCE 1)
-set(_DARWIN_C_SOURCE 1)
+
+set_required_def(_GNU_SOURCE 1)       # Define on Linux to activate all library features
+set_required_def(_NETBSD_SOURCE 1)    # Define on NetBSD to activate all library features
+set_required_def(__BSD_VISIBLE 1)     # Define on FreeBSD to activate all library features
+set_required_def(_BSD_TYPES 1)        # Define on Irix to enable u_int
+set_required_def(_DARWIN_C_SOURCE 1)  # Define on Darwin to activate all library features
+
 
 if(HAVE_MINIX_CONFIG_H)
-  set(_POSIX_SOURCE 1)
-  set(_POSIX_1_SOURCE 2)
-  set(_MINIX 1)
+  set_required_def(_POSIX_SOURCE 1)   # Define to 1 if you need to in order for 'stat' and other things to work.
+  set_required_def(_POSIX_1_SOURCE 2) # Define to 2 if the system does not provide POSIX.1 features except with this defined.
+  set_required_def(_MINIX 1)          # Define to 1 if on MINIX.
 endif()
+
+message(STATUS "Checking for XOPEN_SOURCE")
+set(define_xopen_source 1)
 
 if(CMAKE_SYSTEM MATCHES OpenBSD)
   set(_BSD_SOURCE 1)
 endif(CMAKE_SYSTEM MATCHES OpenBSD)
 
-set(define_xopen_source 1)
 if(APPLE)
   set(define_xopen_source 0)
 endif()
 
 if(define_xopen_source)
-  set(_XOPEN_SOURCE 600)
-  set(_XOPEN_SOURCE_EXTENDED 1)
-  set(_POSIX_C_SOURCE 200112L)
+  message(STATUS "Checking for XOPEN_SOURCE - yes")
+  set_required_def(_XOPEN_SOURCE 600)        # Define to the level of X/Open that your system supports
+  set_required_def(_XOPEN_SOURCE_EXTENDED 1) # Define to activate Unix95-and-earlier features
+  set_required_def(_POSIX_C_SOURCE 200112L)  # Define to activate features from IEEE Stds 1003.1-2001
+else()
+  message(STATUS "Checking for XOPEN_SOURCE - no")
 endif()
 
-set(CMAKE_REQUIRED_DEFINITIONS 
-  -D_FILE_OFFSET_BITS=${_FILE_OFFSET_BITS}
-  -D_GNU_SOURCE=${_GNU_SOURCE}
-  -D_BSD_TYPES=${_BSD_TYPES}
-  -DNETBSD_SOURCE=${_NETBSD_SOURCE}
-  -D__BSD_VISIBLE=${__BSD_VISIBLE})
-if(HAVE_MINIX_CONFIG_H)
-  list(APPEND CMAKE_REQUIRED_DEFINITIONS
-    -D_POSIX_SOURCE=${_POSIX_SOURCE}
-    -D_POSIX_1_SOURCE=${_POSIX_1_SOURCE}
-    -D_MINIX=${_MINIX}
-    )
-endif(HAVE_MINIX_CONFIG_H)
+endif()
+
 set(CMAKE_EXTRA_INCLUDE_FILES stdio.h)
 
 add_cond(CMAKE_REQUIRED_LIBRARIES HAVE_LIBM m)
