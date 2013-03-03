@@ -222,7 +222,10 @@ function(add_libpython name type)
         set_target_properties(${name} PROPERTIES COMPILE_DEFINITIONS "${builtin_definitions}")
     endif(builtin_definitions)
 
-    install(TARGETS ${name}
+    # Export target
+    set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS ${name})
+
+    install(TARGETS ${name} EXPORT PythonTargets
         ARCHIVE DESTINATION ${LIBPYTHON_ARCHIVEDIR}
         LIBRARY DESTINATION ${LIBPYTHON_LIBDIR}
         RUNTIME DESTINATION ${LIBPYTHON_LIBDIR}

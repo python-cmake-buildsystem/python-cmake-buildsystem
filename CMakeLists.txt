@@ -90,8 +90,10 @@ if(NOT ENABLE_SHARED AND NOT ENABLE_STATIC)
 endif(NOT ENABLE_SHARED AND NOT ENABLE_STATIC)
 
 # Install tree directory
+set(CONFIG_INSTALL_DIR share/${LIBPYTHON})
 set(INCLUDE_INSTALL_DIR include/${LIBPYTHON})
 # Build tree directory
+set(CONFIG_BUILD_DIR ${CMAKE_BINARY_DIR}/${CONFIG_INSTALL_DIR})
 set(INCLUDE_BUILD_DIR ${SRC_DIR}/Include)
 
 set(BINDIR "bin")           # Contains the python executable
@@ -189,6 +191,9 @@ endif(UNIX AND NOT APPLE)
 set(PYTHONHOME "${LIBDIR}/${LIBPYTHON}")
 set(DYNLOAD "${PYTHONHOME}/lib-dynload")
 
+# Clear PythonTargets.cmake
+file(WRITE ${CONFIG_BUILD_DIR}/PythonTargets.cmake "")
+
 # Add extension modules
 set(builtin_extensions "" CACHE INTERNAL "" FORCE)
 set(builtin_source "" CACHE INTERNAL "" FORCE)
@@ -217,3 +222,7 @@ if(UNIX)
             RENAME Makefile)
 endif(UNIX)
 
+get_property(PYTHON_TARGETS GLOBAL PROPERTY PYTHON_TARGETS)
+export(TARGETS ${PYTHON_TARGETS} APPEND FILE ${CONFIG_BUILD_DIR}/PythonTargets.cmake)
+
+install(EXPORT PythonTargets FILE PythonTargets.cmake DESTINATION ${CONFIG_INSTALL_DIR})

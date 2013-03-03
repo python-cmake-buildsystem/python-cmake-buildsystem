@@ -17,4 +17,7 @@ else(ENABLE_SHARED)
     set_target_properties(python PROPERTIES COMPILE_DEFINITIONS Py_NO_ENABLE_SHARED)
 endif(ENABLE_SHARED)
 
-install(TARGETS python RUNTIME DESTINATION bin)
+# Export target
+set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS python)
+
+install(TARGETS python EXPORT PythonTargets RUNTIME DESTINATION ${BINDIR} COMPONENT Runtime)
