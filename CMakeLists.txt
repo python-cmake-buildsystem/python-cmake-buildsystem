@@ -222,7 +222,54 @@ if(UNIX)
             RENAME Makefile)
 endif(UNIX)
 
+
+if(HAVE_CONFIGURE_PACKAGE_CONFIG_FILE AND HAVE_WRITE_BASIC_PACKAGE_VERSION_FILE)
+
+# Configure 'PythonConfig.cmake' for a build tree
+set(CONFIG_DIR_CONFIG ${CONFIG_BUILD_DIR})
+set(INCLUDE_DIR_CONFIG ${INCLUDE_BUILD_DIR})
+set(PYTHON_CONFIG_CODE "####### Expanded from \@PYTHON_CONFIG_CODE\@ #######\n")
+set(PYTHON_CONFIG_CODE "${PYTHON_CONFIG_CODE}list(APPEND PYTHON_INCLUDE_DIR \"${PYCONFIG_BUILD_DIR}\")\n")
+set(PYTHON_CONFIG_CODE "${PYTHON_CONFIG_CODE}##################################################")
+set(python_config ${CONFIG_BUILD_DIR}/PythonConfig.cmake)
+configure_package_config_file(
+    cmake/PythonConfig.cmake.in
+    ${python_config}
+    INSTALL_DESTINATION ${CMAKE_BINARY_DIR}
+    PATH_VARS CONFIG_DIR_CONFIG INCLUDE_DIR_CONFIG
+    NO_CHECK_REQUIRED_COMPONENTS_MACRO
+)
+
+# Configure 'PythonConfig.cmake' for an install tree
+set(CONFIG_DIR_CONFIG ${CONFIG_INSTALL_DIR})
+set(INCLUDE_DIR_CONFIG ${INCLUDE_INSTALL_DIR})
+set(PYTHON_CONFIG_CODE "")
+set(python_install_config ${CMAKE_BINARY_DIR}/CMakeFiles/PythonConfig.cmake)
+configure_package_config_file(
+    cmake/PythonConfig.cmake.in
+    ${python_install_config}
+    INSTALL_DESTINATION ${CMAKE_INSTALL_PREFIX}/${CONFIG_INSTALL_DIR}
+    PATH_VARS CONFIG_DIR_CONFIG INCLUDE_DIR_CONFIG
+    NO_CHECK_REQUIRED_COMPONENTS_MACRO
+)
+
+# Configure 'PythonTargets.cmake' and 'PythonConfigVersion.cmake
 get_property(PYTHON_TARGETS GLOBAL PROPERTY PYTHON_TARGETS)
 export(TARGETS ${PYTHON_TARGETS} APPEND FILE ${CONFIG_BUILD_DIR}/PythonTargets.cmake)
 
+set(python_config_version ${CONFIG_BUILD_DIR}/PythonConfigVersion.cmake)
+write_basic_package_version_file(
+    ${python_config_version}
+    VERSION ${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}
+    COMPATIBILITY SameMajorVersion
+)
+
+# Install 'PythonTargets.cmake', 'PythonConfig.cmake' and 'PythonConfigVersion.cmake
 install(EXPORT PythonTargets FILE PythonTargets.cmake DESTINATION ${CONFIG_INSTALL_DIR})
+
+install(
+    FILES ${python_install_config} ${python_config_version}
+    DESTINATION ${CONFIG_INSTALL_DIR} COMPONENT Development
+)
+
+endif(HAVE_CONFIGURE_PACKAGE_CONFIG_FILE AND HAVE_WRITE_BASIC_PACKAGE_VERSION_FILE)

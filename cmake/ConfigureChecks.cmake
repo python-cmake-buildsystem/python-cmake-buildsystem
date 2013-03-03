@@ -8,8 +8,13 @@ include(CheckFunctionExists)
 include(CheckLibraryExists)
 include(CheckSymbolExists)
 include(CheckVariableExists)
+include(cmake/CheckCMakeCommandExists.cmake)
 include(cmake/CheckTypeExists.cmake)
 include(cmake/PlatformTest.cmake)
+
+include(CMakePackageConfigHelpers OPTIONAL)
+check_cmake_command_exists("configure_package_config_file")
+check_cmake_command_exists("write_basic_package_version_file")
 
 if(WIN32)
   # From PC/pyconfig.h: 
