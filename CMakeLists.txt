@@ -89,6 +89,11 @@ if(NOT ENABLE_SHARED AND NOT ENABLE_STATIC)
     message(FATAL_ERROR "One or both of ENABLE_SHARED or ENABLE_STATIC must be set")
 endif(NOT ENABLE_SHARED AND NOT ENABLE_STATIC)
 
+# Install tree directory
+set(INCLUDE_INSTALL_DIR include/${LIBPYTHON})
+# Build tree directory
+set(INCLUDE_BUILD_DIR ${SRC_DIR}/Include)
+
 set(BINDIR "bin")           # Contains the python executable
 set(ARCHIVEDIR "libs")      # Contains the static (*.a) and import libraries (*.lib)
 
@@ -157,9 +162,9 @@ install(FILES ${PYCONFIG_BUILD_DIR}/pyconfig.h
 
 # Set include directories
 include_directories(cmake)
-include_directories(${SRC_DIR}/Include)
-include_directories(${SRC_DIR}/Python)
+include_directories(${INCLUDE_BUILD_DIR})
 include_directories(${PYCONFIG_BUILD_DIR})
+include_directories(${SRC_DIR}/Python)
 
 # Set cflags used by all components
 if(UNIX)
