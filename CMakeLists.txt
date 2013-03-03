@@ -139,18 +139,27 @@ endif()
 find_path(SQLITE3_INCLUDE_PATH sqlite3.h)
 find_library(SQLITE3_LIBRARY sqlite3)
 
+# Configure 'pyconfig.h'
+if(UNIX)
+    set(PYCONFIG_BUILD_DIR ${CMAKE_BINARY_DIR}/${BINDIR})
+    configure_file(cmake/config-unix/pyconfig.h.in
+                   ${PYCONFIG_BUILD_DIR}/pyconfig.h)
+elseif(WIN32)
+    set(PYCONFIG_BUILD_DIR ${SRC_DIR}/PC) # In a windows build tree, 'pyconfig.h' is NOT required to
+                                          # live along side the python executable.
+                                          # See function '_init_posix()' and '_init_non_posix()'
+                                          # in 'Lib/sysconfig.py'
+endif(UNIX)
+
+# Install 'pyconfig.h'
+install(FILES ${PYCONFIG_BUILD_DIR}/pyconfig.h
+        DESTINATION include/${LIBPYTHON}/)
+
 # Set include directories
 include_directories(cmake)
 include_directories(${SRC_DIR}/Include)
 include_directories(${SRC_DIR}/Python)
-
-if(UNIX)
-    configure_file(cmake/config-unix/pyconfig.h.in
-                   ${CMAKE_BINARY_DIR}/${BINDIR}/pyconfig.h)
-    include_directories(${CMAKE_BINARY_DIR}/${BINDIR})
-elseif(WIN32)
-    include_directories(${SRC_DIR}/PC)
-endif(UNIX)
+include_directories(${PYCONFIG_BUILD_DIR})
 
 # Set cflags used by all components
 if(UNIX)
@@ -202,10 +211,4 @@ if(UNIX)
             DESTINATION ${PYTHONHOME}/config/
             RENAME Makefile)
 endif(UNIX)
-if(UNIX)
-    install(FILES ${CMAKE_BINARY_DIR}/${BINDIR}/pyconfig.h
-            DESTINATION include/${LIBPYTHON}/)
-elseif(WIN32)
-    install(FILES PC/pyconfig.h
-            DESTINATION include/${LIBPYTHON}/)
-endif(UNIX)
+
