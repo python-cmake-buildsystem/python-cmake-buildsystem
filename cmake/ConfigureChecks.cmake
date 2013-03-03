@@ -895,8 +895,11 @@ set(HAVE_PTH 0) # GNU PTH threads
 set(HAVE_PTHREAD_DESTRUCTOR 0) # for Solaris 2.6
 add_cond(CFG_HEADERS  HAVE_PTHREAD_H  pthread.h)
 add_cond(CMAKE_REQUIRED_LIBRARIES  CMAKE_USE_PTHREADS_INIT  "${CMAKE_THREAD_LIBS_INIT}")
-
-check_symbol_exists(pthread_init "${CFG_HEADERS}" HAVE_PTHREAD_INIT)
+if(APPLE)
+  set(HAVE_PTHREAD_INIT ${CMAKE_USE_PTHREADS_INIT}) # See commit message for explanation.
+else()
+  check_symbol_exists(pthread_init "${CFG_HEADERS}" HAVE_PTHREAD_INIT)
+endif()
 check_symbol_exists(pthread_sigmask "${CFG_HEADERS}" HAVE_PTHREAD_SIGMASK)
 
 add_cond(CFG_HEADERS  HAVE_SEMAPHORE_H  semaphore.h)
