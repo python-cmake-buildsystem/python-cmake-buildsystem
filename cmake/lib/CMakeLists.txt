@@ -28,8 +28,8 @@ foreach(file ${libfiles})
 endforeach(file)
 
 # Setup landmark allowing to run the interpreter from a build tree. See 'getpath.c' for details.
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/${BINDIR}/Modules)
-file(WRITE ${CMAKE_BINARY_DIR}/${BINDIR}/Modules/Setup "")
+file(MAKE_DIRECTORY ${BIN_BUILD_DIR}/Modules)
+file(WRITE ${BIN_BUILD_DIR}/Modules/Setup "")
 
 # See "is_python_build()" in sysconfig.py
-file(WRITE ${CMAKE_BINARY_DIR}/${BINDIR}/Modules/Setup.local "")
+file(WRITE ${BIN_BUILD_DIR}/Modules/Setup.local "")

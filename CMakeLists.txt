@@ -90,13 +90,14 @@ if(NOT ENABLE_SHARED AND NOT ENABLE_STATIC)
 endif(NOT ENABLE_SHARED AND NOT ENABLE_STATIC)
 
 # Install tree directory
+set(BIN_INSTALL_DIR bin)                         # Contains the python executable
 set(CONFIG_INSTALL_DIR share/${LIBPYTHON})
 set(INCLUDE_INSTALL_DIR include/${LIBPYTHON})
 # Build tree directory
+set(BIN_BUILD_DIR ${CMAKE_BINARY_DIR}/bin)
 set(CONFIG_BUILD_DIR ${CMAKE_BINARY_DIR}/${CONFIG_INSTALL_DIR})
 set(INCLUDE_BUILD_DIR ${SRC_DIR}/Include)
 
-set(BINDIR "bin")           # Contains the python executable
 set(ARCHIVEDIR "libs")      # Contains the static (*.a) and import libraries (*.lib)
 
 # Library directory used to compose PYTHONHOME
@@ -112,7 +113,7 @@ set(LIBPYTHON_LIBDIR ${LIBDIR})
 set(LIBPYTHON_ARCHIVEDIR ${LIBDIR})
 set(LIBPYTHON_STATIC_ARCHIVEDIR ${LIBDIR})
 if(WIN32)
-    set(LIBPYTHON_LIBDIR ${BINDIR})
+    set(LIBPYTHON_LIBDIR ${BIN_INSTALL_DIR})
     set(LIBPYTHON_ARCHIVEDIR ${ARCHIVEDIR})
     set(LIBPYTHON_STATIC_ARCHIVEDIR static-${ARCHIVEDIR})
 endif()
@@ -148,7 +149,7 @@ find_library(SQLITE3_LIBRARY sqlite3)
 
 # Configure 'pyconfig.h'
 if(UNIX)
-    set(PYCONFIG_BUILD_DIR ${CMAKE_BINARY_DIR}/${BINDIR})
+    set(PYCONFIG_BUILD_DIR ${BIN_BUILD_DIR})
     configure_file(cmake/config-unix/pyconfig.h.in
                    ${PYCONFIG_BUILD_DIR}/pyconfig.h)
 elseif(WIN32)
@@ -216,8 +217,8 @@ show_extension_summary()
 if(UNIX)
     # Install some configuration information
     configure_file(cmake/makefile-variables.in
-                   ${CMAKE_BINARY_DIR}/${BINDIR}/Makefile)
-    install(FILES ${CMAKE_BINARY_DIR}/${BINDIR}/Makefile
+                   ${BIN_BUILD_DIR}/Makefile)
+    install(FILES ${BIN_BUILD_DIR}/Makefile
             DESTINATION ${PYTHONHOME}/config/
             RENAME Makefile)
 endif(UNIX)
