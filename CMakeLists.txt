@@ -89,24 +89,26 @@ if(NOT ENABLE_SHARED AND NOT ENABLE_STATIC)
     message(FATAL_ERROR "One or both of ENABLE_SHARED or ENABLE_STATIC must be set")
 endif(NOT ENABLE_SHARED AND NOT ENABLE_STATIC)
 
+# Set PYTHONHOME
+set(LIBDIR "lib")
+if(USE_LIB64)
+    set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS ON)
+    set(LIBDIR "lib64")
+endif()
+set(PYTHONHOME "${LIBDIR}/${LIBPYTHON}")
+
 # Install tree directory
 set(BIN_INSTALL_DIR bin)                         # Contains the python executable
 set(CONFIG_INSTALL_DIR share/${LIBPYTHON})
+set(EXTENSION_INSTALL_DIR ${PYTHONHOME}/lib-dynload)
 set(INCLUDE_INSTALL_DIR include/${LIBPYTHON})
 # Build tree directory
 set(BIN_BUILD_DIR ${CMAKE_BINARY_DIR}/bin)
 set(CONFIG_BUILD_DIR ${CMAKE_BINARY_DIR}/${CONFIG_INSTALL_DIR})
+set(EXTENSION_BUILD_DIR ${CMAKE_BINARY_DIR}/${EXTENSION_INSTALL_DIR})
 set(INCLUDE_BUILD_DIR ${SRC_DIR}/Include)
 
 set(ARCHIVEDIR "libs")      # Contains the static (*.a) and import libraries (*.lib)
-
-# Library directory used to compose PYTHONHOME
-if(USE_LIB64)
-    set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS ON)
-    set(LIBDIR "lib64")
-else(USE_LIB64)
-    set(LIBDIR "lib")
-endif(USE_LIB64)
 
 # Directories specific to 'libpython'
 set(LIBPYTHON_LIBDIR ${LIBDIR})
@@ -188,9 +190,6 @@ if(UNIX AND NOT APPLE)
 else(UNIX AND NOT APPLE)
     set(LINUX OFF)
 endif(UNIX AND NOT APPLE)
-
-set(PYTHONHOME "${LIBDIR}/${LIBPYTHON}")
-set(DYNLOAD "${PYTHONHOME}/lib-dynload")
 
 # Clear PythonTargets.cmake
 file(WRITE ${CONFIG_BUILD_DIR}/PythonTargets.cmake "")
