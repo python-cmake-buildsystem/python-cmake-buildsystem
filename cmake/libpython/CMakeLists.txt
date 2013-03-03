@@ -147,7 +147,7 @@ if(UNIX)
         PROPERTY COMPILE_DEFINITIONS
             PREFIX="${CMAKE_INSTALL_PREFIX}"
             EXEC_PREFIX="${CMAKE_INSTALL_PREFIX}"
-            VERSION="${PY_MAJOR_VERSION}.${PY_MINOR_VERSION}"
+            VERSION="${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}"
             VPATH="."
             PYTHONPATH="${EXTRA_PYTHONPATH}:lib-dynload:plat-${PY_PLATFORM}"
       )

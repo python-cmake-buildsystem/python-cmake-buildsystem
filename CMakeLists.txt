@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 2.8.6)
 
-set(PY_MAJOR_VERSION 2)
-set(PY_MINOR_VERSION 7)
-set(PY_PATCH_VERSION 3)
+set(PY_VERSION_MAJOR 2)
+set(PY_VERSION_MINOR 7)
+set(PY_VERSION_PATCH 3)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_CONFIGURATION_TYPES Release CACHE STRING "Release configuration" FORCE)
@@ -11,13 +11,13 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Release")
 endif()
 
-project(Python${PY_MAJOR_VERSION}${PY_MINOR_VERSION} C)
+project(Python${PY_VERSION_MAJOR}${PY_VERSION_MINOR} C)
 
 # This is the major version number of Python
-set(LIBPYTHON_VERSION ${PY_MAJOR_VERSION}.${PY_MINOR_VERSION})
+set(LIBPYTHON_VERSION ${PY_VERSION_MAJOR}.${PY_VERSION_MINOR})
 set(LIBPYTHON python${LIBPYTHON_VERSION})
 if(MSVC)
-    set(LIBPYTHON python${PY_MAJOR_VERSION}${PY_MINOR_VERSION})
+    set(LIBPYTHON python${PY_VERSION_MAJOR}${PY_VERSION_MINOR})
 endif(MSVC)
 
 # Include helper functions
@@ -46,8 +46,8 @@ elseif(NOT "${SRC_DIR}" STREQUAL "" AND EXISTS ${SRC_DIR}/${_landmark})
     # Do nothing - SRC_DIR is already set.
 else()
     foreach(dirname
-        cpython-${PY_MAJOR_VERSION}.${PY_MINOR_VERSION}.${PY_PATCH_VERSION}
-        Python-${PY_MAJOR_VERSION}.${PY_MINOR_VERSION}.${PY_PATCH_VERSION}
+        cpython-${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}
+        Python-${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}
     )
         set(SRC_DIR "${CMAKE_CURRENT_BINARY_DIR}/../${dirname}")
         if(EXISTS ${SRC_DIR}/${_landmark})
@@ -69,8 +69,8 @@ if(NOT EXISTS ${SRC_DIR}/${_landmark})
     message(FATAL_ERROR "Failed to locate python source.
 The searched locations were:
    <CMAKE_CURRENT_BINARY_DIR>
-   <CMAKE_CURRENT_BINARY_DIR>/../cpython-${PY_MAJOR_VERSION}.${PY_MINOR_VERSION}.${PY_PATCH_VERSION}
-   <CMAKE_CURRENT_BINARY_DIR>/../Python-${PY_MAJOR_VERSION}.${PY_MINOR_VERSION}.${PY_PATCH_VERSION}
+   <CMAKE_CURRENT_BINARY_DIR>/../cpython-${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}
+   <CMAKE_CURRENT_BINARY_DIR>/../Python-${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}
    <SRC_DIR>
 You could try to:
   1) download ${_download_link}
