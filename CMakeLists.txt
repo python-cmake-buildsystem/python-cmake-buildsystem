@@ -223,6 +223,11 @@ if(UNIX)
     install(FILES ${BIN_BUILD_DIR}/Makefile
             DESTINATION ${PYTHONHOME}/config/
             RENAME Makefile)
+
+    # Utility scripts
+    install(FILES ${SRC_DIR}/install-sh ${SRC_DIR}/Modules/makesetup
+            DESTINATION ${PYTHONHOME}/config/)
+
 endif(UNIX)
 
 
