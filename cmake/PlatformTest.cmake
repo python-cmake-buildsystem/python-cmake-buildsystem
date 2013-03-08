@@ -1,5 +1,8 @@
-
-include(CMakeExpandImportedTargets)
+if(CMAKE_VERSION VERSION_GREATER 2.8.7)
+  include(CMakeExpandImportedTargets)
+else()
+  include(${CMAKE_SOURCE_DIR}/cmake/CMakeExpandImportedTargets.cmake)
+endif()
 
 macro(python_platform_test var description srcfile invert)
   IF("${var}_COMPILED" MATCHES "^${var}_COMPILED$")
