@@ -22,7 +22,7 @@ add_python_extension(_csv SOURCES _csv.c)
 add_python_extension(_ctypes_test SOURCES _ctypes/_ctypes_test.c)
 add_python_extension(datetime REQUIRES HAVE_LIBM SOURCES datetimemodule.c timemodule.c LIBRARIES m)
 if(ENABLE_DATETIME)
-    set_property(SOURCE ${CMAKE_SOURCE_DIR}/Modules/datetimemodule.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
+    set_property(SOURCE ${SRC_DIR}/Modules/datetimemodule.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
 endif()
 add_python_extension(_functools ${MSVC_BUILTIN} SOURCES _functoolsmodule.c)
 add_python_extension(future_builtins SOURCES future_builtins.c)
@@ -79,7 +79,7 @@ if(UNIX)
                 _multiprocessing/socket_connection.c
     )
     if(ENABLE_MULTIPROCESSING)
-        set_property(SOURCE ${CMAKE_SOURCE_DIR}/Modules/semaphore.c PROPERTY COMPILE_FLAGS -Wimplicit-function-declaration)
+        set_property(SOURCE ${SRC_DIR}/Modules/semaphore.c PROPERTY COMPILE_FLAGS -Wimplicit-function-declaration)
     endif()
 elseif(WIN32)
     add_python_extension(_multiprocessing
@@ -127,8 +127,8 @@ if(WIN32)
                 _ctypes/libffi_mingw/x86/ffi.c
                 _ctypes/libffi_mingw/x86/win32.S
                 _ctypes/stgdict.c
-        INCLUDEDIRS ${CMAKE_SOURCE_DIR}/Modules/_ctypes/libffi/src/x86
-                    ${CMAKE_SOURCE_DIR}/Modules/_ctypes/libffi/include
+        INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi/src/x86
+                    ${SRC_DIR}/Modules/_ctypes/libffi/include
         DEFINITIONS X86_WIN32
       )
     endif(MINGW)
@@ -148,8 +148,8 @@ else(WIN32)
         #            _ctypes/stgdict.c
         #            _ctypes/libffi_osx/x86/sysv.S
         #            _ctypes/libffi_osx/x86/darwin64.S
-        #    INCLUDEDIRS ${CMAKE_SOURCE_DIR}/Modules/_ctypes/libffi/src/x86
-        #                ${CMAKE_SOURCE_DIR}/Modules/_ctypes/libffi/include
+        #    INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi/src/x86
+        #                ${SRC_DIR}/Modules/_ctypes/libffi/include
         #)
     else(APPLE)
         add_python_extension(_ctypes
@@ -165,8 +165,8 @@ else(WIN32)
                     _ctypes/stgdict.c
                     _ctypes/libffi/src/x86/sysv.S
                     _ctypes/libffi/src/x86/unix64.S
-            INCLUDEDIRS ${CMAKE_SOURCE_DIR}/Modules/_ctypes/libffi/src/x86
-                        ${CMAKE_SOURCE_DIR}/Modules/_ctypes/libffi/include
+            INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi/src/x86
+                        ${SRC_DIR}/Modules/_ctypes/libffi/include
         )
     endif(APPLE)
 endif(WIN32)
@@ -196,7 +196,7 @@ else(EXPAT_FOUND)
                 expat/xmlrole.c
                 expat/xmltok.c
         DEFINITIONS ${_pyexpat_definitions} #HAVE_EXPAT_CONFIG_H=1
-        INCLUDEDIRS ${CMAKE_SOURCE_DIR}/Modules/expat
+        INCLUDEDIRS ${SRC_DIR}/Modules/expat
     )
     set(_elementtree_definitions)
     if(MSVC)
@@ -205,7 +205,7 @@ else(EXPAT_FOUND)
     add_python_extension(_elementtree
         SOURCES _elementtree.c
         DEFINITIONS ${_elementtree_definitions} #USE_PYEXPAT_CAPI HAVE_EXPAT_CONFIG_H=1
-        INCLUDEDIRS ${CMAKE_SOURCE_DIR}/Modules/expat
+        INCLUDEDIRS ${SRC_DIR}/Modules/expat
     )
 endif(EXPAT_FOUND)
 
@@ -269,7 +269,7 @@ add_python_extension(_hashlib
     LIBRARIES ${OPENSSL_LIBRARIES}
 )
 if(ENABLE_HASHLIB AND UNIX)
-    set_property(SOURCE ${CMAKE_SOURCE_DIR}/Modules/_hashopenssl.c PROPERTY COMPILE_FLAGS -Wno-deprecated-declarations)
+    set_property(SOURCE ${SRC_DIR}/Modules/_hashopenssl.c PROPERTY COMPILE_FLAGS -Wno-deprecated-declarations)
 endif()
 add_python_extension(readline
     REQUIRES READLINE_INCLUDE_PATH READLINE_LIBRARY CURSES_FOUND
@@ -293,7 +293,7 @@ add_python_extension(_sqlite3
     LIBRARIES ${SQLITE3_LIBRARY}
 )
 if(ENABLE_SQLITE3 AND UNIX)
-    set_property(SOURCE ${CMAKE_SOURCE_DIR}/Modules/_sqlite/module.c PROPERTY COMPILE_FLAGS -Wno-deprecated-declarations)
+    set_property(SOURCE ${SRC_DIR}/Modules/_sqlite/module.c PROPERTY COMPILE_FLAGS -Wno-deprecated-declarations)
 endif()
 add_python_extension(_ssl
     REQUIRES OPENSSL_FOUND

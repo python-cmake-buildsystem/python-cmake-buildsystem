@@ -4,23 +4,23 @@ add_definitions(-DPy_BUILD_CORE)
 add_definitions(-DNDEBUG)
 
 set(PGEN_SOURCES
-    ${CMAKE_SOURCE_DIR}/Objects/obmalloc.c
-    ${CMAKE_SOURCE_DIR}/Parser/acceler.c
-    ${CMAKE_SOURCE_DIR}/Parser/bitset.c
-    ${CMAKE_SOURCE_DIR}/Parser/firstsets.c
-    ${CMAKE_SOURCE_DIR}/Parser/grammar1.c
-    ${CMAKE_SOURCE_DIR}/Parser/grammar.c
-    ${CMAKE_SOURCE_DIR}/Parser/listnode.c
-    ${CMAKE_SOURCE_DIR}/Parser/metagrammar.c
-    ${CMAKE_SOURCE_DIR}/Parser/node.c
-    ${CMAKE_SOURCE_DIR}/Parser/parser.c
-    ${CMAKE_SOURCE_DIR}/Parser/parsetok.c
-    ${CMAKE_SOURCE_DIR}/Parser/pgen.c
-    ${CMAKE_SOURCE_DIR}/Parser/pgenmain.c
-    ${CMAKE_SOURCE_DIR}/Parser/printgrammar.c
-    ${CMAKE_SOURCE_DIR}/Parser/tokenizer_pgen.c
-    ${CMAKE_SOURCE_DIR}/Python/mysnprintf.c
-    ${CMAKE_SOURCE_DIR}/Python/pyctype.c
+    ${SRC_DIR}/Objects/obmalloc.c
+    ${SRC_DIR}/Parser/acceler.c
+    ${SRC_DIR}/Parser/bitset.c
+    ${SRC_DIR}/Parser/firstsets.c
+    ${SRC_DIR}/Parser/grammar1.c
+    ${SRC_DIR}/Parser/grammar.c
+    ${SRC_DIR}/Parser/listnode.c
+    ${SRC_DIR}/Parser/metagrammar.c
+    ${SRC_DIR}/Parser/node.c
+    ${SRC_DIR}/Parser/parser.c
+    ${SRC_DIR}/Parser/parsetok.c
+    ${SRC_DIR}/Parser/pgen.c
+    ${SRC_DIR}/Parser/pgenmain.c
+    ${SRC_DIR}/Parser/printgrammar.c
+    ${SRC_DIR}/Parser/tokenizer_pgen.c
+    ${SRC_DIR}/Python/mysnprintf.c
+    ${SRC_DIR}/Python/pyctype.c
 )
 
 add_executable(pgen ${PGEN_SOURCES})
