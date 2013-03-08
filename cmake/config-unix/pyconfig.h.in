@@ -48,7 +48,7 @@
 #cmakedefine GETTIMEOFDAY_NO_TZ 1
 
 /* Define to 1 if you have the `acosh' function. */
-#define HAVE_ACOSH 1
+#cmakedefine HAVE_ACOSH 1
 
 /* struct addrinfo (netdb.h) */
 #cmakedefine HAVE_ADDRINFO 1
@@ -145,15 +145,15 @@
 
 /* Define to 1 if you have the declaration of `isfinite', and to 0 if you
    don't. */
-#define HAVE_DECL_ISFINITE 1
+#cmakedefine HAVE_DECL_ISFINITE 1
 
 /* Define to 1 if you have the declaration of `isinf', and to 0 if you don't.
    */
-#define HAVE_DECL_ISINF 1
+#cmakedefine HAVE_DECL_ISINF 1
 
 /* Define to 1 if you have the declaration of `isnan', and to 0 if you don't.
    */
-#define HAVE_DECL_ISNAN 1
+#cmakedefine HAVE_DECL_ISNAN 1
 
 /* Define to 1 if you have the declaration of `tzname', and to 0 if you don't.
    */
@@ -814,7 +814,7 @@
 #cmakedefine HAVE_TERM_H 1
 
 /* Define to 1 if you have the `tgamma' function. */
-#define HAVE_TGAMMA 1
+#cmakedefine HAVE_TGAMMA 1
 
 /* Define to 1 if you have the <thread.h> header file. */
 #cmakedefine HAVE_THREAD_H 1
@@ -1035,7 +1035,7 @@
 #cmakedefine SYS_SELECT_WITH_SYS_TIME 1
 
 /* Define if tanh(-0.) is -0., or if platform doesn't have signed zeros */
-#define TANH_PRESERVES_ZERO_SIGN 1
+#cmakedefine TANH_PRESERVES_ZERO_SIGN 1
 
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #cmakedefine TIME_WITH_SYS_TIME 1
