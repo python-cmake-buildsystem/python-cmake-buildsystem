@@ -21,7 +21,7 @@ extern void PyMarshal_Init(void);
 extern void _PyWarnings_Init(void);
 
 // Init functions for platform-specific extensions
-#include "platform-config-inits.c"
+@config_inits@
 
 
 struct _inittab _PyImport_Inittab[] = {
@@ -46,7 +46,7 @@ struct _inittab _PyImport_Inittab[] = {
     {"zipimport", initzipimport},
 
     // Entries for platform-specific extensions
-    #include "platform-config-entries.c"
+@config_entries@
 
     // Sentinel
     {0, 0}

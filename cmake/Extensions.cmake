@@ -97,7 +97,7 @@ function(add_python_extension name)
         if(${ext} STREQUAL ".S")
             add_assembler(absolute_sources Modules/${source} ${ADD_PYTHON_EXTENSION_INCLUDEDIRS})
         else(${ext} STREQUAL ".S")
-            list(APPEND absolute_sources ${CMAKE_SOURCE_DIR}/Modules/${source})
+            list(APPEND absolute_sources ${SRC_DIR}/Modules/${source})
         endif(${ext} STREQUAL ".S")
     endforeach(source)
 
@@ -138,8 +138,8 @@ function(add_python_extension name)
         # Turn off the "lib" prefix and add any compiler definitions
         set_target_properties(${target_name} PROPERTIES
             ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${ARCHIVEDIR}
-            LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${DYNLOAD}
-            RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${DYNLOAD}
+            LIBRARY_OUTPUT_DIRECTORY ${EXTENSION_BUILD_DIR}
+            RUNTIME_OUTPUT_DIRECTORY ${EXTENSION_BUILD_DIR}
             OUTPUT_NAME "${name}"
             PREFIX ""
         )
@@ -151,8 +151,8 @@ function(add_python_extension name)
 
         install(TARGETS ${target_name}
                 ARCHIVE DESTINATION ${ARCHIVEDIR}
-                LIBRARY DESTINATION ${DYNLOAD}
-                RUNTIME DESTINATION ${DYNLOAD})
+                LIBRARY DESTINATION ${EXTENSION_INSTALL_DIR}
+                RUNTIME DESTINATION ${EXTENSION_INSTALL_DIR})
     endif(BUILTIN_${upper_name})
 endfunction(add_python_extension)
 

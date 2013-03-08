@@ -2,130 +2,130 @@ add_definitions(-DPy_BUILD_CORE)
 add_definitions(-DNDEBUG)
 
 set(LIBPYTHON_SOURCES
-    ${CMAKE_SOURCE_DIR}/cmake/config.c
-    ${CMAKE_SOURCE_DIR}/Modules/_codecsmodule.c
-    ${CMAKE_SOURCE_DIR}/Modules/errnomodule.c
-    ${CMAKE_SOURCE_DIR}/Modules/gcmodule.c
-    ${CMAKE_SOURCE_DIR}/Modules/getbuildinfo.c
-    ${CMAKE_SOURCE_DIR}/Modules/main.c
-    ${CMAKE_SOURCE_DIR}/Modules/signalmodule.c
-    ${CMAKE_SOURCE_DIR}/Modules/_sre.c
-    ${CMAKE_SOURCE_DIR}/Modules/symtablemodule.c
-    ${CMAKE_SOURCE_DIR}/Modules/_weakref.c
-    ${CMAKE_SOURCE_DIR}/Modules/xxsubtype.c
-    ${CMAKE_SOURCE_DIR}/Modules/zipimport.c
-    ${CMAKE_SOURCE_DIR}/Objects/abstract.c
-    ${CMAKE_SOURCE_DIR}/Objects/boolobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/bufferobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/bytearrayobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/bytes_methods.c
-    ${CMAKE_SOURCE_DIR}/Objects/capsule.c
-    ${CMAKE_SOURCE_DIR}/Objects/cellobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/classobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/cobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/codeobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/complexobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/descrobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/dictobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/enumobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/exceptions.c
-    ${CMAKE_SOURCE_DIR}/Objects/fileobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/floatobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/frameobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/funcobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/genobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/intobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/iterobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/listobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/longobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/memoryobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/methodobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/moduleobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/object.c
-    ${CMAKE_SOURCE_DIR}/Objects/obmalloc.c
-    ${CMAKE_SOURCE_DIR}/Objects/rangeobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/setobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/sliceobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/stringobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/structseq.c
-    ${CMAKE_SOURCE_DIR}/Objects/tupleobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/typeobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/unicodectype.c
-    ${CMAKE_SOURCE_DIR}/Objects/unicodeobject.c
-    ${CMAKE_SOURCE_DIR}/Objects/weakrefobject.c
-    ${CMAKE_SOURCE_DIR}/Parser/acceler.c
-    ${CMAKE_SOURCE_DIR}/Parser/bitset.c
-    ${CMAKE_SOURCE_DIR}/Parser/firstsets.c
-    ${CMAKE_SOURCE_DIR}/Parser/grammar1.c
-    ${CMAKE_SOURCE_DIR}/Parser/grammar.c
-    ${CMAKE_SOURCE_DIR}/Parser/listnode.c
-    ${CMAKE_SOURCE_DIR}/Parser/metagrammar.c
-    ${CMAKE_SOURCE_DIR}/Parser/myreadline.c
-    ${CMAKE_SOURCE_DIR}/Parser/node.c
-    ${CMAKE_SOURCE_DIR}/Parser/parser.c
-    ${CMAKE_SOURCE_DIR}/Parser/parsetok.c
-    ${CMAKE_SOURCE_DIR}/Parser/pgen.c
-    ${CMAKE_SOURCE_DIR}/Parser/tokenizer.c
-    ${CMAKE_SOURCE_DIR}/Python/asdl.c
-    ${CMAKE_SOURCE_DIR}/Python/ast.c
-    ${CMAKE_SOURCE_DIR}/Python/bltinmodule.c
-    ${CMAKE_SOURCE_DIR}/Python/ceval.c
-    ${CMAKE_SOURCE_DIR}/Python/codecs.c
-    ${CMAKE_SOURCE_DIR}/Python/compile.c
-    ${CMAKE_SOURCE_DIR}/Python/dtoa.c
-    ${CMAKE_SOURCE_DIR}/Python/errors.c
-    ${CMAKE_SOURCE_DIR}/Python/formatter_string.c
-    ${CMAKE_SOURCE_DIR}/Python/formatter_unicode.c
-    ${CMAKE_SOURCE_DIR}/Python/frozen.c
-    ${CMAKE_SOURCE_DIR}/Python/future.c
-    ${CMAKE_SOURCE_DIR}/Python/getargs.c
-    ${CMAKE_SOURCE_DIR}/Python/getcompiler.c
-    ${CMAKE_SOURCE_DIR}/Python/getcopyright.c
-    ${CMAKE_SOURCE_DIR}/Python/getopt.c
-    ${CMAKE_SOURCE_DIR}/Python/getplatform.c
-    ${CMAKE_SOURCE_DIR}/Python/getversion.c
-    ${CMAKE_SOURCE_DIR}/Python/graminit.c
-    ${CMAKE_SOURCE_DIR}/Python/import.c
-    ${CMAKE_SOURCE_DIR}/Python/importdl.c
-    ${CMAKE_SOURCE_DIR}/Python/marshal.c
-    ${CMAKE_SOURCE_DIR}/Python/modsupport.c
-    ${CMAKE_SOURCE_DIR}/Python/mysnprintf.c
-    ${CMAKE_SOURCE_DIR}/Python/mystrtoul.c
-    ${CMAKE_SOURCE_DIR}/Python/peephole.c
-    ${CMAKE_SOURCE_DIR}/Python/pyarena.c
-    ${CMAKE_SOURCE_DIR}/Python/pyctype.c
-    ${CMAKE_SOURCE_DIR}/Python/pyfpe.c
-    ${CMAKE_SOURCE_DIR}/Python/pymath.c
-    ${CMAKE_SOURCE_DIR}/Python/pystate.c
-    ${CMAKE_SOURCE_DIR}/Python/pystrcmp.c
-    ${CMAKE_SOURCE_DIR}/Python/pystrtod.c
-    ${CMAKE_SOURCE_DIR}/Python/Python-ast.c
-    ${CMAKE_SOURCE_DIR}/Python/pythonrun.c
-    ${CMAKE_SOURCE_DIR}/Python/random.c
-    ${CMAKE_SOURCE_DIR}/Python/structmember.c
-    ${CMAKE_SOURCE_DIR}/Python/symtable.c
-    ${CMAKE_SOURCE_DIR}/Python/sysmodule.c
-    ${CMAKE_SOURCE_DIR}/Python/traceback.c
-    ${CMAKE_SOURCE_DIR}/Python/_warnings.c
+    ${CMAKE_BINARY_DIR}/CMakeFiles/config.c
+    ${SRC_DIR}/Modules/_codecsmodule.c
+    ${SRC_DIR}/Modules/errnomodule.c
+    ${SRC_DIR}/Modules/gcmodule.c
+    ${SRC_DIR}/Modules/getbuildinfo.c
+    ${SRC_DIR}/Modules/main.c
+    ${SRC_DIR}/Modules/signalmodule.c
+    ${SRC_DIR}/Modules/_sre.c
+    ${SRC_DIR}/Modules/symtablemodule.c
+    ${SRC_DIR}/Modules/_weakref.c
+    ${SRC_DIR}/Modules/xxsubtype.c
+    ${SRC_DIR}/Modules/zipimport.c
+    ${SRC_DIR}/Objects/abstract.c
+    ${SRC_DIR}/Objects/boolobject.c
+    ${SRC_DIR}/Objects/bufferobject.c
+    ${SRC_DIR}/Objects/bytearrayobject.c
+    ${SRC_DIR}/Objects/bytes_methods.c
+    ${SRC_DIR}/Objects/capsule.c
+    ${SRC_DIR}/Objects/cellobject.c
+    ${SRC_DIR}/Objects/classobject.c
+    ${SRC_DIR}/Objects/cobject.c
+    ${SRC_DIR}/Objects/codeobject.c
+    ${SRC_DIR}/Objects/complexobject.c
+    ${SRC_DIR}/Objects/descrobject.c
+    ${SRC_DIR}/Objects/dictobject.c
+    ${SRC_DIR}/Objects/enumobject.c
+    ${SRC_DIR}/Objects/exceptions.c
+    ${SRC_DIR}/Objects/fileobject.c
+    ${SRC_DIR}/Objects/floatobject.c
+    ${SRC_DIR}/Objects/frameobject.c
+    ${SRC_DIR}/Objects/funcobject.c
+    ${SRC_DIR}/Objects/genobject.c
+    ${SRC_DIR}/Objects/intobject.c
+    ${SRC_DIR}/Objects/iterobject.c
+    ${SRC_DIR}/Objects/listobject.c
+    ${SRC_DIR}/Objects/longobject.c
+    ${SRC_DIR}/Objects/memoryobject.c
+    ${SRC_DIR}/Objects/methodobject.c
+    ${SRC_DIR}/Objects/moduleobject.c
+    ${SRC_DIR}/Objects/object.c
+    ${SRC_DIR}/Objects/obmalloc.c
+    ${SRC_DIR}/Objects/rangeobject.c
+    ${SRC_DIR}/Objects/setobject.c
+    ${SRC_DIR}/Objects/sliceobject.c
+    ${SRC_DIR}/Objects/stringobject.c
+    ${SRC_DIR}/Objects/structseq.c
+    ${SRC_DIR}/Objects/tupleobject.c
+    ${SRC_DIR}/Objects/typeobject.c
+    ${SRC_DIR}/Objects/unicodectype.c
+    ${SRC_DIR}/Objects/unicodeobject.c
+    ${SRC_DIR}/Objects/weakrefobject.c
+    ${SRC_DIR}/Parser/acceler.c
+    ${SRC_DIR}/Parser/bitset.c
+    ${SRC_DIR}/Parser/firstsets.c
+    ${SRC_DIR}/Parser/grammar1.c
+    ${SRC_DIR}/Parser/grammar.c
+    ${SRC_DIR}/Parser/listnode.c
+    ${SRC_DIR}/Parser/metagrammar.c
+    ${SRC_DIR}/Parser/myreadline.c
+    ${SRC_DIR}/Parser/node.c
+    ${SRC_DIR}/Parser/parser.c
+    ${SRC_DIR}/Parser/parsetok.c
+    ${SRC_DIR}/Parser/pgen.c
+    ${SRC_DIR}/Parser/tokenizer.c
+    ${SRC_DIR}/Python/asdl.c
+    ${SRC_DIR}/Python/ast.c
+    ${SRC_DIR}/Python/bltinmodule.c
+    ${SRC_DIR}/Python/ceval.c
+    ${SRC_DIR}/Python/codecs.c
+    ${SRC_DIR}/Python/compile.c
+    ${SRC_DIR}/Python/dtoa.c
+    ${SRC_DIR}/Python/errors.c
+    ${SRC_DIR}/Python/formatter_string.c
+    ${SRC_DIR}/Python/formatter_unicode.c
+    ${SRC_DIR}/Python/frozen.c
+    ${SRC_DIR}/Python/future.c
+    ${SRC_DIR}/Python/getargs.c
+    ${SRC_DIR}/Python/getcompiler.c
+    ${SRC_DIR}/Python/getcopyright.c
+    ${SRC_DIR}/Python/getopt.c
+    ${SRC_DIR}/Python/getplatform.c
+    ${SRC_DIR}/Python/getversion.c
+    ${SRC_DIR}/Python/graminit.c
+    ${SRC_DIR}/Python/import.c
+    ${SRC_DIR}/Python/importdl.c
+    ${SRC_DIR}/Python/marshal.c
+    ${SRC_DIR}/Python/modsupport.c
+    ${SRC_DIR}/Python/mysnprintf.c
+    ${SRC_DIR}/Python/mystrtoul.c
+    ${SRC_DIR}/Python/peephole.c
+    ${SRC_DIR}/Python/pyarena.c
+    ${SRC_DIR}/Python/pyctype.c
+    ${SRC_DIR}/Python/pyfpe.c
+    ${SRC_DIR}/Python/pymath.c
+    ${SRC_DIR}/Python/pystate.c
+    ${SRC_DIR}/Python/pystrcmp.c
+    ${SRC_DIR}/Python/pystrtod.c
+    ${SRC_DIR}/Python/Python-ast.c
+    ${SRC_DIR}/Python/pythonrun.c
+    ${SRC_DIR}/Python/random.c
+    ${SRC_DIR}/Python/structmember.c
+    ${SRC_DIR}/Python/symtable.c
+    ${SRC_DIR}/Python/sysmodule.c
+    ${SRC_DIR}/Python/traceback.c
+    ${SRC_DIR}/Python/_warnings.c
     ${builtin_source}
 )
 
 if(UNIX)
     foreach(filename class complex float int method string type unicode weakref)
-        set_property(SOURCE ${CMAKE_SOURCE_DIR}/Objects/${filename}object.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
+        set_property(SOURCE ${SRC_DIR}/Objects/${filename}object.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
     endforeach()
 endif(UNIX)
 
 if(WITH_THREAD)
     list(APPEND LIBPYTHON_SOURCES
-        ${CMAKE_SOURCE_DIR}/Modules/threadmodule.c
-        ${CMAKE_SOURCE_DIR}/Python/thread.c
+        ${SRC_DIR}/Modules/threadmodule.c
+        ${SRC_DIR}/Python/thread.c
     )
 endif()
 
 if(UNIX OR MINGW)
     set_property(
-        SOURCE ${CMAKE_SOURCE_DIR}/Python/getplatform.c
+        SOURCE ${SRC_DIR}/Python/getplatform.c
         PROPERTY COMPILE_DEFINITIONS
             PLATFORM="${PY_PLATFORM}"
     )
@@ -134,39 +134,39 @@ endif(UNIX OR MINGW)
 # Platform-specific source files
 if(UNIX)
     list(APPEND LIBPYTHON_SOURCES
-        ${CMAKE_SOURCE_DIR}/Python/dynload_shlib.c
-        ${CMAKE_SOURCE_DIR}/Modules/getpath.c
+        ${SRC_DIR}/Python/dynload_shlib.c
+        ${SRC_DIR}/Modules/getpath.c
     )
     set_property(
-        SOURCE ${CMAKE_SOURCE_DIR}/Modules/getpath.c
+        SOURCE ${SRC_DIR}/Modules/getpath.c
         PROPERTY COMPILE_FLAGS
             -Wno-deprecated-declarations
         )
     set_property(
-        SOURCE ${CMAKE_SOURCE_DIR}/Modules/getpath.c
+        SOURCE ${SRC_DIR}/Modules/getpath.c
         PROPERTY COMPILE_DEFINITIONS
             PREFIX="${CMAKE_INSTALL_PREFIX}"
             EXEC_PREFIX="${CMAKE_INSTALL_PREFIX}"
-            VERSION="${PY_MAJOR_VERSION}.${PY_MINOR_VERSION}"
+            VERSION="${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}"
             VPATH="."
             PYTHONPATH="${EXTRA_PYTHONPATH}:lib-dynload:plat-${PY_PLATFORM}"
       )
 elseif(WIN32)
     list(APPEND LIBPYTHON_SOURCES
-        ${CMAKE_SOURCE_DIR}/PC/dl_nt.c
-        ${CMAKE_SOURCE_DIR}/PC/getpathp.c
-        ${CMAKE_SOURCE_DIR}/PC/import_nt.c
-        ${CMAKE_SOURCE_DIR}/Python/dynload_win.c
+        ${SRC_DIR}/PC/dl_nt.c
+        ${SRC_DIR}/PC/getpathp.c
+        ${SRC_DIR}/PC/import_nt.c
+        ${SRC_DIR}/Python/dynload_win.c
     )
     string(REPLACE "/" "\\\\" PYTHONHOME_ESCAPED ${PYTHONHOME})
-    string(REPLACE "/" "\\\\" DYNLOAD_ESCAPED ${DYNLOAD})
+    string(REPLACE "/" "\\\\" EXTENSION_INSTALL_DIR_ESCAPED ${EXTENSION_INSTALL_DIR})
     set(PYTHONPATH "${EXTRA_PYTHONPATH}")
     set(PYTHONPATH "${PYTHONPATH};.\\\\${PYTHONHOME_ESCAPED}")
-    set(PYTHONPATH "${PYTHONPATH};.\\\\${DYNLOAD_ESCAPED}")
-    set(PYTHONPATH "${PYTHONPATH};.\\\\${DYNLOAD_ESCAPED}\\\\${CMAKE_CFG_INTDIR}")
+    set(PYTHONPATH "${PYTHONPATH};.\\\\${EXTENSION_INSTALL_DIR_ESCAPED}")
+    set(PYTHONPATH "${PYTHONPATH};.\\\\${EXTENSION_INSTALL_DIR_ESCAPED}\\\\${CMAKE_CFG_INTDIR}")
     set(PYTHONPATH "${PYTHONPATH};.\\\\${PYTHONHOME_ESCAPED}\\\\plat-${PY_PLATFORM}")
     set_property(
-        SOURCE ${CMAKE_SOURCE_DIR}/PC/getpathp.c
+        SOURCE ${SRC_DIR}/PC/getpathp.c
         PROPERTY COMPILE_DEFINITIONS
             LANDMARK="${PYTHONHOME_ESCAPED}\\\\os.py"
             PYTHONPATH="${PYTHONPATH}"
@@ -179,18 +179,20 @@ endif(UNIX)
 
 # Create the parts of config.c for platform-specific and user-controlled
 # builtin modules.
-set(config_inits_file ${CMAKE_CURRENT_BINARY_DIR}/platform-config-inits.c)
-set(config_entries_file ${CMAKE_CURRENT_BINARY_DIR}/platform-config-entries.c)
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
 include_directories(${builtin_includedirs})
 
-file(WRITE "${config_inits_file}" "")
-file(WRITE "${config_entries_file}" "")
-
+set(config_inits "")
+set(config_entries "")
 foreach(ext ${builtin_extensions})
-    file(APPEND "${config_inits_file}" "extern void init${ext}(void);\n")
-    file(APPEND "${config_entries_file}" "{\"${ext}\", init${ext}},\n")
+    set(config_inits "${config_inits}extern void init${ext}(void);\n")
+    set(config_entries "${config_entries}    {\"${ext}\", init${ext}},\n")
 endforeach(ext)
+
+configure_file(
+    ${CMAKE_SOURCE_DIR}/cmake/config.c.in
+    ${CMAKE_BINARY_DIR}/CMakeFiles/config.c
+    )
 
 
 function(add_libpython name type)
@@ -218,7 +220,10 @@ function(add_libpython name type)
         set_target_properties(${name} PROPERTIES COMPILE_DEFINITIONS "${builtin_definitions}")
     endif(builtin_definitions)
 
-    install(TARGETS ${name}
+    # Export target
+    set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS ${name})
+
+    install(TARGETS ${name} EXPORT PythonTargets
         ARCHIVE DESTINATION ${LIBPYTHON_ARCHIVEDIR}
         LIBRARY DESTINATION ${LIBPYTHON_LIBDIR}
         RUNTIME DESTINATION ${LIBPYTHON_LIBDIR}

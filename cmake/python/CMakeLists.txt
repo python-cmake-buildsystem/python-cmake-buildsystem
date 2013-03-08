@@ -1,11 +1,11 @@
 set(PYTHON_SOURCES
-    ${CMAKE_SOURCE_DIR}/Modules/python.c
+    ${SRC_DIR}/Modules/python.c
 )
 
 add_executable(python ${PYTHON_SOURCES})
 set_property(
     TARGET python
-    PROPERTY RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${BINDIR}
+    PROPERTY RUNTIME_OUTPUT_DIRECTORY ${BIN_BUILD_DIR}
     )
 
 # Link against the shared libpython if it was built, otherwise use the static
@@ -17,4 +17,7 @@ else(BUILD_SHARED)
     set_target_properties(python PROPERTIES COMPILE_DEFINITIONS Py_NO_ENABLE_SHARED)
 endif(BUILD_SHARED)
 
-install(TARGETS python RUNTIME DESTINATION bin)
+# Export target
+set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS python)
+
+install(TARGETS python EXPORT PythonTargets RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT Runtime)
