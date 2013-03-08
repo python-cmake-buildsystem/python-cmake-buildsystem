@@ -26,8 +26,8 @@ include(cmake/Extensions.cmake)
 include(CMakeParseArguments)
 
 # Options
-option(ENABLE_SHARED "Build a shared libpython library" OFF)
-option(ENABLE_STATIC "Build a static libpython library" ON)
+option(BUILD_SHARED "Build a shared libpython library" OFF)
+option(BUILD_STATIC "Build a static libpython library" ON)
 option(USE_LIB64 "Search for dependencies and install to prefix/lib64 instead of prefix/lib" OFF)
 option(USE_LIBEDIT "Use libedit instead of readline" OFF)
 option(WITH_TSC "profile with the Pentium timestamp counter" OFF)
@@ -41,9 +41,9 @@ option(WITH_THREAD "Compile in rudimentary thread support" ON)
 # Proceed to the configure checks
 include(cmake/ConfigureChecks.cmake)
 
-if(NOT ENABLE_SHARED AND NOT ENABLE_STATIC)
-    message(FATAL_ERROR "One or both of ENABLE_SHARED or ENABLE_STATIC must be set")
-endif(NOT ENABLE_SHARED AND NOT ENABLE_STATIC)
+if(NOT BUILD_SHARED AND NOT BUILD_STATIC)
+    message(FATAL_ERROR "One or both of BUILD_SHARED or BUILD_STATIC must be set")
+endif(NOT BUILD_SHARED AND NOT BUILD_STATIC)
 
 set(BINDIR "bin")           # Contains the python executable
 set(ARCHIVEDIR "libs")      # Contains the static (*.a) and import libraries (*.lib)

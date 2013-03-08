@@ -33,8 +33,8 @@ CMake options:
     CMAKE_INSTALL_PREFIX=<path>   (defaults to /usr/local)
       Path in which to install Python.
 
-    ENABLE_SHARED=ON|OFF          (defaults to OFF)
-    ENABLE_STATIC=ON|OFF          (defaults to ON)
+    BUILD_SHARED=ON|OFF          (defaults to OFF)
+    BUILD_STATIC=ON|OFF          (defaults to ON)
       Build libpython as a shared library (.so or .dll) or a static library
       (.a).  At least one of these options must be set to ON - if they are both
       set to ON then the Python executable will be linked against the shared

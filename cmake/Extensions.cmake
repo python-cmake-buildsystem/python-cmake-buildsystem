@@ -108,7 +108,7 @@ function(add_python_extension name)
         set(builtin_link_libraries "${builtin_link_libraries}${ADD_PYTHON_EXTENSION_LIBRARIES};" CACHE INTERNAL "" FORCE)
         set(builtin_includedirs "${builtin_includedirs}${ADD_PYTHON_EXTENSION_INCLUDEDIRS};" CACHE INTERNAL "" FORCE)
         set(builtin_definitions "${builtin_definitions}${ADD_PYTHON_EXTENSION_DEFINITIONS};" CACHE INTERNAL "" FORCE)
-    elseif(WIN32 AND NOT ENABLE_SHARED)
+    elseif(WIN32 AND NOT BUILD_SHARED)
         # Extensions cannot be built against a static libpython on windows
     else(BUILTIN_${upper_name})
         add_library(${target_name} SHARED ${absolute_sources})
