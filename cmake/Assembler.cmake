@@ -25,9 +25,9 @@ macro(add_assembler ADD_ASSEMBLER_OUTPUTVAR ADD_ASSEMBLER_FILE)
     add_custom_command(
         OUTPUT ${ADD_ASSEMBLER_OUTPUT}
         COMMAND ${CMAKE_C_COMPILER} ${ADD_ASSEMBLER_CFLAGS}
-                -c ${CMAKE_SOURCE_DIR}/${ADD_ASSEMBLER_FILE}
+                -c ${SRC_DIR}/${ADD_ASSEMBLER_FILE}
                 -o ${ADD_ASSEMBLER_OUTPUT}
-        DEPENDS ${CMAKE_SOURCE_DIR}/${ADD_ASSEMBLER_FILE}
+        DEPENDS ${SRC_DIR}/${ADD_ASSEMBLER_FILE}
     )
 
     # Link this .o in the target.

@@ -97,7 +97,7 @@ function(add_python_extension name)
         if(${ext} STREQUAL ".S")
             add_assembler(absolute_sources Modules/${source} ${ADD_PYTHON_EXTENSION_INCLUDEDIRS})
         else(${ext} STREQUAL ".S")
-            list(APPEND absolute_sources ${CMAKE_SOURCE_DIR}/Modules/${source})
+            list(APPEND absolute_sources ${SRC_DIR}/Modules/${source})
         endif(${ext} STREQUAL ".S")
     endforeach(source)
 

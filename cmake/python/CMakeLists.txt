@@ -1,5 +1,5 @@
 set(PYTHON_SOURCES
-    ${CMAKE_SOURCE_DIR}/Modules/python.c
+    ${SRC_DIR}/Modules/python.c
 )
 
 add_executable(python ${PYTHON_SOURCES})
