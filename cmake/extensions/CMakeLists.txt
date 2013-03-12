@@ -222,10 +222,13 @@ add_python_extension(_sha256 REQUIRES OPENSSL_NOT_FOUND SOURCES sha256module.c)
 add_python_extension(_sha512 REQUIRES OPENSSL_NOT_FOUND SOURCES sha512module.c)
 
 # Extensions that depend on other libraries
+set(BINASCII_DEFINITIONS "")
+if(ZLIB_LIBRARIES)
+  list(APPEND BINASCII_DEFINITIONS USE_ZLIB_CRC32)
+endif()
 add_python_extension(binascii
-    REQUIRES ZLIB_FOUND
     SOURCES binascii.c
-    DEFINITIONS USE_ZLIB_CRC32
+    DEFINITIONS ${BINASCII_DEFINITIONS}
     LIBRARIES ${ZLIB_LIBRARIES}
 )
 add_python_extension(_bsddb
