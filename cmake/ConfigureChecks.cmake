@@ -16,9 +16,58 @@ include(TestBigEndian)
 message(STATUS "The system name is ${CMAKE_SYSTEM_NAME}")
 message(STATUS "The system version is ${CMAKE_SYSTEM_VERSION}")
 
+# Find any dependencies
+if(USE_SYSTEM_Curses)
+    find_package(Curses)
+endif()
+
+if(USE_SYSTEM_EXPAT)
+    find_package(EXPAT)
+endif()
+
+if(USE_SYSTEM_OpenSSL)
+    find_package(OpenSSL)
+endif()
+
+if(USE_SYSTEM_TCL)
+    find_package(TCL)
+endif()
+
+if(USE_SYSTEM_ZLIB)
+    find_package(ZLIB)
+endif()
+
+if(USE_SYSTEM_DB)
+    find_path(DB_INCLUDE_PATH db.h)
+    find_library(DB_LIBRARY NAMES db-4.8)
+endif()
+
+if(USE_SYSTEM_GDBM)
+    find_path(GDBM_INCLUDE_PATH gdbm-ndbm.h)
+    find_library(GDBM_LIBRARY gdbm)
+    find_library(GDBM_COMPAT_LIBRARY gdbm_compat)
+endif()
+
+if(USE_SYSTEM_READLINE)
+    if(USE_LIBEDIT)
+        find_path(READLINE_INCLUDE_PATH editline/readline.h)
+        find_library(READLINE_LIBRARY edit)
+    else()
+        find_path(READLINE_INCLUDE_PATH readline/readline.h)
+        find_library(READLINE_LIBRARY readline)
+    endif()
+endif()
+
+if(USE_SYSTEM_READLINE)
+    find_path(SQLITE3_INCLUDE_PATH sqlite3.h)
+    find_library(SQLITE3_LIBRARY sqlite3)
+endif()
+
+
 include(CMakePackageConfigHelpers OPTIONAL)
 check_cmake_command_exists("configure_package_config_file")
 check_cmake_command_exists("write_basic_package_version_file")
+
 
 if(WIN32)
   # From PC/pyconfig.h: 
@@ -1396,18 +1445,17 @@ endif(HAVE_SIZE_T_FORMAT)
 
 ##########################################################
 
-find_package(ZLIB)
-if(ZLIB_FOUND)
+if(ZLIB_LIBRARIES)
   cmake_push_check_state()
   set(CFG_HEADERS_SAVE ${CFG_HEADERS})
 
   set(CFG_HEADERS ${CFG_HEADERS} zlib.h)
-  add_cond(CMAKE_REQUIRED_LIBRARIES ZLIB_FOUND ${ZLIB_LIBRARIES})
+  add_cond(CMAKE_REQUIRED_LIBRARIES ZLIB_LIBRARIES ${ZLIB_LIBRARIES})
   check_symbol_exists(inflateCopy      "${CFG_HEADERS}" HAVE_ZLIB_COPY)
 
   set(CFG_HEADERS ${CFG_HEADERS_SAVE})
   cmake_pop_check_state()
-endif(ZLIB_FOUND)
+endif(ZLIB_LIBRARIES)
 
 ############################################
 

@@ -23,13 +23,29 @@ endif(MSVC)
 # Include helper functions
 include(cmake/Assembler.cmake)
 include(cmake/Extensions.cmake)
+include(CMakeDependentOption)
 include(CMakeParseArguments)
 
 # Options
 option(BUILD_SHARED "Build a shared libpython library" OFF)
 option(BUILD_STATIC "Build a static libpython library" ON)
 option(USE_LIB64 "Search for dependencies and install to prefix/lib64 instead of prefix/lib" OFF)
-option(USE_LIBEDIT "Use libedit instead of readline" OFF)
+
+option(USE_SYSTEM_LIBRARIES "Use system libraries" ON)
+
+cmake_dependent_option(USE_SYSTEM_Curses "Use system Curse" ON "USE_SYSTEM_LIBRARIES" OFF)
+cmake_dependent_option(USE_SYSTEM_EXPAT "Use system EXPAT" ON "USE_SYSTEM_LIBRARIES" OFF)
+cmake_dependent_option(USE_SYSTEM_OpenSSL "Use system OpenSSL" ON "USE_SYSTEM_LIBRARIES" OFF)
+cmake_dependent_option(USE_SYSTEM_TCL "Use system TCL" ON "USE_SYSTEM_LIBRARIES" OFF)
+cmake_dependent_option(USE_SYSTEM_ZLIB "Use system ZLIB" ON "USE_SYSTEM_LIBRARIES" OFF)
+cmake_dependent_option(USE_SYSTEM_DB "Use system DB" ON "USE_SYSTEM_LIBRARIES" OFF)
+cmake_dependent_option(USE_SYSTEM_GDBM "Use system GDBM" ON "USE_SYSTEM_LIBRARIES" OFF)
+cmake_dependent_option(USE_SYSTEM_READLINE "Use system READLINE" ON "USE_SYSTEM_LIBRARIES" OFF)
+cmake_dependent_option(USE_SYSTEM_SQLITE3 "Use system SQLITE3" ON "USE_SYSTEM_LIBRARIES" OFF)
+
+cmake_dependent_option(USE_LIBEDIT "Use libedit instead of readline" OFF
+                       "USE_SYSTEM_READLINE" OFF)
+
 option(WITH_TSC "profile with the Pentium timestamp counter" OFF)
 option(ENABLE_IPV6 "Enable IP v6" ON)
 option(WITH_DOC_STRINGS "Enable if you want documentation strings in extension modules" ON)
@@ -81,7 +97,6 @@ If you already downloaded the source, you could try to re-configure this project
 endif()
 message(STATUS "SRC_DIR: ${SRC_DIR}")
 
-
 # Proceed to the configure checks
 include(cmake/ConfigureChecks.cmake)
 
@@ -122,32 +137,6 @@ endif()
 
 set(EXTRA_PYTHONPATH "" CACHE STRING
     "A colon (:) separated list of extra paths to add to the PYTHONPATH")
-
-# Find any dependencies
-find_package(BZip2)
-find_package(Curses)
-find_package(EXPAT)
-find_package(OpenSSL)
-find_package(TCL)
-find_package(ZLIB)
-
-find_path(DB_INCLUDE_PATH db.h)
-find_library(DB_LIBRARY NAMES db-4.8)
-
-find_path(GDBM_INCLUDE_PATH gdbm-ndbm.h)
-find_library(GDBM_LIBRARY gdbm)
-find_library(GDBM_COMPAT_LIBRARY gdbm_compat)
-
-if(USE_LIBEDIT)
-    find_path(READLINE_INCLUDE_PATH editline/readline.h)
-    find_library(READLINE_LIBRARY edit)
-else()
-    find_path(READLINE_INCLUDE_PATH readline/readline.h)
-    find_library(READLINE_LIBRARY readline)
-endif()
-
-find_path(SQLITE3_INCLUDE_PATH sqlite3.h)
-find_library(SQLITE3_LIBRARY sqlite3)
 
 # Configure 'pyconfig.h'
 if(UNIX)

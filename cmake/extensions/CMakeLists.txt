@@ -174,7 +174,7 @@ endif(WIN32)
 
 # Build expat using the system expat if it's installed, otherwise use the
 # builtin version.
-if(EXPAT_FOUND)
+if(EXPAT_LIBRARIES AND EXPAT_INCLUDE_DIRS)
     add_python_extension(pyexpat
         SOURCES pyexpat.c
         LIBRARIES ${EXPAT_LIBRARIES}
@@ -185,36 +185,38 @@ if(EXPAT_FOUND)
         LIBRARIES ${EXPAT_LIBRARIES}
         INCLUDEDIRS ${EXPAT_INCLUDE_DIRS}
     )
-else(EXPAT_FOUND)
-    set(_pyexpat_definitions )
-    if(MSVC)
-        set(_pyexpat_definitions PYEXPAT_EXPORTS HAVE_EXPAT_H XML_NS XML_DTD BYTEORDER=1234 XML_CONTEXT_BYTES=1024 XML_STATIC HAVE_MEMMOVE)
-    endif(MSVC)
+else(EXPAT_LIBRARIES AND EXPAT_INCLUDE_DIRS)
+    set(_pyexpat_definitions XML_STATIC)
+    if(UNIX)
+        list(APPEND _pyexpat_definitions HAVE_EXPAT_CONFIG_H)
+    elseif(MSVC)
+        list(APPEND _pyexpat_definitions COMPILED_FROM_DSP)
+    endif(UNIX)
     add_python_extension(pyexpat
         SOURCES pyexpat.c
                 expat/xmlparse.c
                 expat/xmlrole.c
                 expat/xmltok.c
-        DEFINITIONS ${_pyexpat_definitions} #HAVE_EXPAT_CONFIG_H=1
+        DEFINITIONS ${_pyexpat_definitions}
         INCLUDEDIRS ${SRC_DIR}/Modules/expat
     )
-    set(_elementtree_definitions)
+    set(_elementtree_definitions USE_PYEXPAT_CAPI)
     if(MSVC)
-        set(_elementtree_definitions XML_NS XML_DTD BYTEORDER=1234 XML_CONTEXT_BYTES=1024 USE_PYEXPAT_CAPI XML_STATIC HAVE_MEMMOVE)
+        list(APPEND _elementtree_definitions COMPILED_FROM_DSP)
     endif()
     add_python_extension(_elementtree
         SOURCES _elementtree.c
-        DEFINITIONS ${_elementtree_definitions} #USE_PYEXPAT_CAPI HAVE_EXPAT_CONFIG_H=1
+        DEFINITIONS ${_elementtree_definitions}
         INCLUDEDIRS ${SRC_DIR}/Modules/expat
     )
-endif(EXPAT_FOUND)
+endif(EXPAT_LIBRARIES AND EXPAT_INCLUDE_DIRS)
 
 # If openssl is NOT available then build some other hash implementations
-if(OPENSSL_FOUND)
+if(OPENSSL_LIBRARIES)
     set(OPENSSL_NOT_FOUND OFF)
-else(OPENSSL_FOUND)
+else(OPENSSL_LIBRARIES)
     set(OPENSSL_NOT_FOUND ON)
-endif(OPENSSL_FOUND)
+endif(OPENSSL_LIBRARIES)
 
 add_python_extension(_md5 REQUIRES OPENSSL_NOT_FOUND SOURCES md5.c md5module.c)
 add_python_extension(_sha REQUIRES OPENSSL_NOT_FOUND SOURCES shamodule.c)
@@ -222,13 +224,13 @@ add_python_extension(_sha256 REQUIRES OPENSSL_NOT_FOUND SOURCES sha256module.c)
 add_python_extension(_sha512 REQUIRES OPENSSL_NOT_FOUND SOURCES sha512module.c)
 
 # Extensions that depend on other libraries
-set(BINASCII_DEFINITIONS "")
+set(binascii_DEFINITIONS "")
 if(ZLIB_LIBRARIES)
-  list(APPEND BINASCII_DEFINITIONS USE_ZLIB_CRC32)
+  list(APPEND binascii_DEFINITIONS USE_ZLIB_CRC32)
 endif()
 add_python_extension(binascii
     SOURCES binascii.c
-    DEFINITIONS ${BINASCII_DEFINITIONS}
+    DEFINITIONS ${binascii_DEFINITIONS}
     LIBRARIES ${ZLIB_LIBRARIES}
 )
 add_python_extension(_bsddb
@@ -238,17 +240,17 @@ add_python_extension(_bsddb
     INCLUDEDIRS ${DB_INCLUDE_PATH}
 )
 add_python_extension(bz2
-    REQUIRES BZIP2_FOUND
+    REQUIRES BZIP2_LIBRARIES
     SOURCES bz2module.c
     LIBRARIES ${BZIP2_LIBRARIES}
 )
 add_python_extension(_curses_panel
-    REQUIRES CURSES_FOUND
+    REQUIRES CURSES_LIBRARIES
     SOURCES _curses_panel.c
     LIBRARIES ${CURSES_LIBRARIES}
 )
 add_python_extension(_curses
-    REQUIRES CURSES_FOUND
+    REQUIRES CURSES_LIBRARIES
     SOURCES _cursesmodule.c
     LIBRARIES ${CURSES_LIBRARIES}
 )
@@ -267,7 +269,7 @@ add_python_extension(gdbm
     INCLUDEDIRS ${GDBM_INCLUDE_PATH}
 )
 add_python_extension(_hashlib
-    REQUIRES OPENSSL_FOUND
+    REQUIRES OPENSSL_LIBRARIES
     SOURCES _hashopenssl.c
     LIBRARIES ${OPENSSL_LIBRARIES}
 )
@@ -275,7 +277,7 @@ if(ENABLE_HASHLIB AND UNIX)
     set_property(SOURCE ${SRC_DIR}/Modules/_hashopenssl.c PROPERTY COMPILE_FLAGS -Wno-deprecated-declarations)
 endif()
 add_python_extension(readline
-    REQUIRES READLINE_INCLUDE_PATH READLINE_LIBRARY CURSES_FOUND
+    REQUIRES READLINE_INCLUDE_PATH READLINE_LIBRARY CURSES_LIBRARIES
     SOURCES readline.c
     LIBRARIES ${READLINE_LIBRARY} ${CURSES_LIBRARIES}
     INCLUDEDIRS ${READLINE_INCLUDE_PATH}
@@ -299,19 +301,19 @@ if(ENABLE_SQLITE3 AND UNIX)
     set_property(SOURCE ${SRC_DIR}/Modules/_sqlite/module.c PROPERTY COMPILE_FLAGS -Wno-deprecated-declarations)
 endif()
 add_python_extension(_ssl
-    REQUIRES OPENSSL_FOUND
+    REQUIRES OPENSSL_LIBRARIES
     SOURCES _ssl.c
     LIBRARIES ${OPENSSL_LIBRARIES}
 )
 add_python_extension(_tkinter
-    REQUIRES TK_FOUND TCL_FOUND
+    REQUIRES TCL_LIBRARY TK_LIBRARY TCL_INCLUDE_PATH TK_INCLUDE_PATH
     SOURCES _tkinter.c tkappinit.c
     DEFINITIONS WITH_APPINIT=1
     LIBRARIES ${TCL_LIBRARY} ${TK_LIBRARY}
     INCLUDEDIRS ${TCL_INCLUDE_PATH} ${TK_INCLUDE_PATH}
 )
 add_python_extension(zlib
-    REQUIRES ZLIB_FOUND
+    REQUIRES ZLIB_LIBRARIES
     SOURCES zlibmodule.c
     LIBRARIES ${ZLIB_LIBRARIES}
 )
