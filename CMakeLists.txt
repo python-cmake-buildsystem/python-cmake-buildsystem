@@ -15,10 +15,10 @@ project(Python${PY_VERSION_MAJOR}${PY_VERSION_MINOR} C)
 
 # This is the major version number of Python
 set(LIBPYTHON_VERSION ${PY_VERSION_MAJOR}.${PY_VERSION_MINOR})
-set(LIBPYTHON python${LIBPYTHON_VERSION})
 if(MSVC)
-    set(LIBPYTHON python${PY_VERSION_MAJOR}${PY_VERSION_MINOR})
+    set(LIBPYTHON_VERSION ${PY_VERSION_MAJOR}${PY_VERSION_MINOR})
 endif(MSVC)
+set(LIBPYTHON python${LIBPYTHON_VERSION})
 
 # Include helper functions
 include(cmake/Assembler.cmake)
@@ -203,12 +203,35 @@ add_subdirectory(cmake/lib CMakeBuild/lib)
 show_extension_summary()
 
 if(UNIX)
-    # Install some configuration information
+
+    # python.pc
+    configure_file(cmake/python.pc.in
+                  ${CMAKE_BINARY_DIR}/Misc/python-${LIBPYTHON_VERSION}.pc @ONLY)
+    configure_file(cmake/python.pc.in
+                  ${CMAKE_BINARY_DIR}/Misc/python-${PY_VERSION_MAJOR}.pc @ONLY)
+    configure_file(cmake/python.pc.in
+                  ${CMAKE_BINARY_DIR}/Misc/python.pc @ONLY)
+    install(FILES
+                ${CMAKE_BINARY_DIR}/Misc/python-${LIBPYTHON_VERSION}.pc
+                ${CMAKE_BINARY_DIR}/Misc/python-${PY_VERSION_MAJOR}.pc
+                ${CMAKE_BINARY_DIR}/Misc/python.pc
+            DESTINATION lib/pkgconfig)
+
+    # Makefile
+    set(MAKEFILE_LDSHARED_FLAGS "-shared")
+    if(APPLE)
+        set(MAKEFILE_LDSHARED_FLAGS "-dynamiclib -headerpad_max_install_names -undefined dynamic_lookup")
+    endif(APPLE)
     configure_file(cmake/makefile-variables.in
-                   ${BIN_BUILD_DIR}/Makefile)
+                   ${BIN_BUILD_DIR}/Makefile @ONLY)
     install(FILES ${BIN_BUILD_DIR}/Makefile
             DESTINATION ${PYTHONHOME}/config/
             RENAME Makefile)
+
+    # Utility scripts
+    install(FILES ${SRC_DIR}/install-sh ${SRC_DIR}/Modules/makesetup
+            DESTINATION ${PYTHONHOME}/config/)
+
 endif(UNIX)
 
 
