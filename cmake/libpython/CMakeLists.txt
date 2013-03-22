@@ -235,6 +235,15 @@ if(BUILD_SHARED)
     set_target_properties(libpython-shared PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}
     )
+    if(APPLE)
+        # HACK For python <= 2.7.3, this fix link error related to undefined _environ symbol and
+        #      is equivalent to solution implemented in commit http://hg.python.org/cpython/rev/864b983
+        #      The property is set here because source file properties can't be in one directory
+        #      and used to build a target in an other directory.
+        set_property(
+            SOURCE ${SRC_DIR}/Modules/posixmodule.c
+            PROPERTY COMPILE_DEFINITIONS WITH_NEXT_FRAMEWORK)
+    endif(APPLE)
 endif(BUILD_SHARED)
 
 if(BUILD_STATIC)
