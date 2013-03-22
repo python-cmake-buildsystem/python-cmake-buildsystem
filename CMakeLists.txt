@@ -218,8 +218,12 @@ if(UNIX)
             DESTINATION lib/pkgconfig)
 
     # Makefile
+    set(MAKEFILE_LDSHARED_FLAGS "-shared")
+    if(APPLE)
+        set(MAKEFILE_LDSHARED_FLAGS "-dynamiclib -headerpad_max_install_names -undefined dynamic_lookup")
+    endif(APPLE)
     configure_file(cmake/makefile-variables.in
-                   ${BIN_BUILD_DIR}/Makefile)
+                   ${BIN_BUILD_DIR}/Makefile @ONLY)
     install(FILES ${BIN_BUILD_DIR}/Makefile
             DESTINATION ${PYTHONHOME}/config/
             RENAME Makefile)
