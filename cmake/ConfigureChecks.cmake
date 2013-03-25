@@ -70,6 +70,8 @@ check_cmake_command_exists("write_basic_package_version_file")
 
 
 if(WIN32)
+  set(M_LIBRARIES )
+  set(HAVE_LIBM 1)
   # From PC/pyconfig.h: 
   #  This is a manually maintained version used for the Watcom,
   #  Borland and Microsoft Visual C++ compilers.  It is a
@@ -194,6 +196,7 @@ find_library(HAVE_LIBDL dl)
 find_library(HAVE_LIBDLD dld)
 find_library(HAVE_LIBINTL intl)
 find_library(HAVE_LIBM m)
+set(M_LIBRARIES ${HAVE_LIBM})
 find_library(HAVE_LIBNCURSES ncurses)
 find_library(HAVE_LIBNSL nsl)
 find_library(HAVE_LIBREADLINE readline)

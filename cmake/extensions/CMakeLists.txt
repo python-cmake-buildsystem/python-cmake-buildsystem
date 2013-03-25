@@ -7,7 +7,7 @@ endif(MSVC)
 add_python_extension(array SOURCES arraymodule.c)
 add_python_extension(audioop SOURCES audioop.c)
 add_python_extension(_bisect SOURCES _bisectmodule.c)
-add_python_extension(cmath REQUIRES HAVE_LIBM SOURCES _math.c cmathmodule.c LIBRARIES m)
+add_python_extension(cmath REQUIRES HAVE_LIBM SOURCES _math.c cmathmodule.c LIBRARIES ${M_LIBRARIES})
 add_python_extension(_codecs_cn SOURCES cjkcodecs/_codecs_cn.c)
 add_python_extension(_codecs_hk SOURCES cjkcodecs/_codecs_hk.c)
 add_python_extension(_codecs_iso2022 SOURCES cjkcodecs/_codecs_iso2022.c)
@@ -20,8 +20,8 @@ add_python_extension(crypt REQUIRES HAVE_LIBCRYPT SOURCES cryptmodule.c LIBRARIE
 add_python_extension(cStringIO SOURCES cStringIO.c)
 add_python_extension(_csv SOURCES _csv.c)
 add_python_extension(_ctypes_test SOURCES _ctypes/_ctypes_test.c)
-add_python_extension(datetime REQUIRES HAVE_LIBM SOURCES datetimemodule.c timemodule.c LIBRARIES m)
-if(ENABLE_DATETIME)
+add_python_extension(datetime REQUIRES HAVE_LIBM SOURCES datetimemodule.c timemodule.c LIBRARIES ${M_LIBRARIES})
+if(ENABLE_DATETIME AND UNIX)
     set_property(SOURCE ${SRC_DIR}/Modules/datetimemodule.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
 endif()
 add_python_extension(_functools ${MSVC_BUILTIN} SOURCES _functoolsmodule.c)
@@ -50,7 +50,7 @@ add_python_extension(_random SOURCES _randommodule.c)
 add_python_extension(strop SOURCES stropmodule.c)
 add_python_extension(_struct SOURCES _struct.c)
 add_python_extension(_testcapi SOURCES _testcapimodule.c)
-add_python_extension(time REQUIRES HAVE_LIBM SOURCES timemodule.c LIBRARIES m)
+add_python_extension(time REQUIRES HAVE_LIBM SOURCES timemodule.c LIBRARIES ${M_LIBRARIES})
 add_python_extension(unicodedata SOURCES unicodedata.c)
 
 # UNIX-only extensions
@@ -69,7 +69,15 @@ add_python_extension(linuxaudiodev REQUIRES LINUX SOURCES linuxaudiodev.c)
 add_python_extension(ossaudiodev REQUIRES LINUX SOURCES ossaudiodev.c)
 
 # Windows-only extensions
+add_python_extension(_msi
+    REQUIRES WIN32 BUILTIN
+    SOURCES ${SRC_DIR}/PC/_msi.c
+    LIBRARIES fci.lib msi.lib rpcrt4.lib
+)
+add_python_extension(msvcrt REQUIRES MSVC BUILTIN SOURCES ${SRC_DIR}/PC/msvcrtmodule.c)
 add_python_extension(nt REQUIRES WIN32 BUILTIN SOURCES posixmodule.c)
+add_python_extension(_subprocess REQUIRES WIN32 BUILTIN SOURCES ${SRC_DIR}/PC/_subprocess.c)
+add_python_extension(_winreg REQUIRES WIN32 BUILTIN SOURCES ${SRC_DIR}/PC/_winreg.c)
 
 # Multiprocessing is different on unix and windows
 if(UNIX)

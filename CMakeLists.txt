@@ -117,6 +117,9 @@ set(BIN_INSTALL_DIR bin)                         # Contains the python executabl
 set(CONFIG_INSTALL_DIR share/${LIBPYTHON})
 set(EXTENSION_INSTALL_DIR ${PYTHONHOME}/lib-dynload)
 set(INCLUDE_INSTALL_DIR include/${LIBPYTHON})
+if(MSVC)
+    set(INCLUDE_INSTALL_DIR include)
+endif(MSVC)
 # Build tree directory
 set(BIN_BUILD_DIR ${CMAKE_BINARY_DIR}/bin)
 set(CONFIG_BUILD_DIR ${CMAKE_BINARY_DIR}/${CONFIG_INSTALL_DIR})
@@ -152,7 +155,7 @@ endif(UNIX)
 
 # Install 'pyconfig.h'
 install(FILES ${PYCONFIG_BUILD_DIR}/pyconfig.h
-        DESTINATION include/${LIBPYTHON}/)
+        DESTINATION ${INCLUDE_INSTALL_DIR}/)
 
 # Set include directories
 include_directories(cmake)
