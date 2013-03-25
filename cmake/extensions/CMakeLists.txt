@@ -69,6 +69,7 @@ add_python_extension(linuxaudiodev REQUIRES LINUX SOURCES linuxaudiodev.c)
 add_python_extension(ossaudiodev REQUIRES LINUX SOURCES ossaudiodev.c)
 
 # Windows-only extensions
+add_python_extension(msvcrt REQUIRES MSVC BUILTIN SOURCES ${SRC_DIR}/PC/msvcrtmodule.c)
 add_python_extension(nt REQUIRES WIN32 BUILTIN SOURCES posixmodule.c)
 
 # Multiprocessing is different on unix and windows
