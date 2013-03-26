@@ -269,9 +269,10 @@ add_python_extension(gdbm
     INCLUDEDIRS ${GDBM_INCLUDE_PATH}
 )
 add_python_extension(_hashlib
-    REQUIRES OPENSSL_LIBRARIES
+    REQUIRES OPENSSL_INCLUDE_DIR OPENSSL_LIBRARIES
     SOURCES _hashopenssl.c
     LIBRARIES ${OPENSSL_LIBRARIES}
+    INCLUDEDIRS ${OPENSSL_INCLUDE_DIR}
 )
 if(ENABLE_HASHLIB AND UNIX)
     set_property(SOURCE ${SRC_DIR}/Modules/_hashopenssl.c PROPERTY COMPILE_FLAGS -Wno-deprecated-declarations)
@@ -300,10 +301,15 @@ add_python_extension(_sqlite3
 if(ENABLE_SQLITE3 AND UNIX)
     set_property(SOURCE ${SRC_DIR}/Modules/_sqlite/module.c PROPERTY COMPILE_FLAGS -Wno-deprecated-declarations)
 endif()
+set(_ssl_LIBRARIES ${OPENSSL_LIBRARIES})
+if(WIN32)
+    list(APPEND _ssl_LIBRARIES ws2_32)
+endif()
 add_python_extension(_ssl
-    REQUIRES OPENSSL_LIBRARIES
+    REQUIRES OPENSSL_INCLUDE_DIR OPENSSL_LIBRARIES
     SOURCES _ssl.c
-    LIBRARIES ${OPENSSL_LIBRARIES}
+    LIBRARIES ${_ssl_LIBRARIES}
+    INCLUDEDIRS ${OPENSSL_INCLUDE_DIR}
 )
 add_python_extension(_tkinter
     REQUIRES TCL_LIBRARY TK_LIBRARY TCL_INCLUDE_PATH TK_INCLUDE_PATH
