@@ -105,12 +105,18 @@ if(NOT BUILD_SHARED AND NOT BUILD_STATIC)
 endif(NOT BUILD_SHARED AND NOT BUILD_STATIC)
 
 # Set PYTHONHOME
-set(LIBDIR "lib")
+set(LIBDIR "Lib") # See Lib/distutils/sysconfig.py - function 'get_python_lib'
+if(UNIX)
+    set(LIBDIR "lib")
+endif()
 if(USE_LIB64)
     set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS ON)
     set(LIBDIR "lib64")
 endif()
-set(PYTHONHOME "${LIBDIR}/${LIBPYTHON}")
+set(PYTHONHOME "${LIBDIR}")
+if(UNIX)
+    set(PYTHONHOME "${PYTHONHOME}/${LIBPYTHON}")
+endif()
 
 # Install tree directory
 set(BIN_INSTALL_DIR bin)                         # Contains the python executable
