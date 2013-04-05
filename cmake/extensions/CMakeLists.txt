@@ -64,6 +64,13 @@ add_python_extension(spwd REQUIRES UNIX HAVE_GETSPNAM HAVE_GETSPENT SOURCES spwd
 add_python_extension(syslog REQUIRES UNIX SOURCES syslogmodule.c)
 add_python_extension(termios REQUIRES UNIX SOURCES termios.c)
 
+# MacOSX-only extensions
+add_python_extension(_scproxy
+    REQUIRES APPLE HAVE_LIBSYSTEMCONFIGURATION
+    SOURCES ${SRC_DIR}/Mac/Modules/_scproxy.c
+    LIBRARIES ${HAVE_LIBSYSTEMCONFIGURATION}
+)
+
 # Linux-only extensions
 add_python_extension(linuxaudiodev REQUIRES LINUX SOURCES linuxaudiodev.c)
 add_python_extension(ossaudiodev REQUIRES LINUX SOURCES ossaudiodev.c)

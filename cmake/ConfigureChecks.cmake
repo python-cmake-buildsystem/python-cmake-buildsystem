@@ -203,6 +203,10 @@ find_library(HAVE_LIBREADLINE readline)
 find_library(HAVE_LIBTERMCAP termcap)
 find_library(HAVE_LIBUTIL    util)
 
+if(APPLE)
+  find_library(HAVE_LIBSYSTEMCONFIGURATION SystemConfiguration)
+endif(APPLE)
+
 if(WITH_THREAD)
   set(CMAKE_HAVE_PTHREAD_H ${HAVE_PTHREAD_H}) # Skip checking for header a second time.
   find_package(Threads)
