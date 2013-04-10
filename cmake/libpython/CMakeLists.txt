@@ -152,6 +152,14 @@ if(UNIX)
             PYTHONPATH="${EXTRA_PYTHONPATH}:lib-dynload:plat-${PY_PLATFORM}"
       )
 elseif(WIN32)
+    # HACK To workaround limitation in escaping logic of CMake, the pythonpath
+    #      separator is conditionally set depending of the version of Visual Studio.
+    #      See http://cmake.org/Bug/view.php?id=14073
+    if("${MSVC_VERSION}" VERSION_GREATER "1599")
+      set(PATHSEP "%3B")
+    else()
+      set(PATHSEP ";")
+    endif()
     list(APPEND LIBPYTHON_SOURCES
         ${SRC_DIR}/PC/dl_nt.c
         ${SRC_DIR}/PC/getpathp.c
@@ -161,10 +169,10 @@ elseif(WIN32)
     string(REPLACE "/" "\\\\" PYTHONHOME_ESCAPED ${PYTHONHOME})
     string(REPLACE "/" "\\\\" EXTENSION_INSTALL_DIR_ESCAPED ${EXTENSION_INSTALL_DIR})
     set(PYTHONPATH "${EXTRA_PYTHONPATH}")
-    set(PYTHONPATH "${PYTHONPATH};.\\\\${PYTHONHOME_ESCAPED}")
-    set(PYTHONPATH "${PYTHONPATH};.\\\\${EXTENSION_INSTALL_DIR_ESCAPED}")
-    set(PYTHONPATH "${PYTHONPATH};.\\\\${EXTENSION_INSTALL_DIR_ESCAPED}\\\\${CMAKE_CFG_INTDIR}")
-    set(PYTHONPATH "${PYTHONPATH};.\\\\${PYTHONHOME_ESCAPED}\\\\plat-${PY_PLATFORM}")
+    set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${PYTHONHOME_ESCAPED}")
+    set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${EXTENSION_INSTALL_DIR_ESCAPED}")
+    set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${EXTENSION_INSTALL_DIR_ESCAPED}\\\\${CMAKE_CFG_INTDIR}")
+    set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${PYTHONHOME_ESCAPED}\\\\plat-${PY_PLATFORM}")
     set_property(
         SOURCE ${SRC_DIR}/PC/getpathp.c
         PROPERTY COMPILE_DEFINITIONS
