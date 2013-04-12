@@ -25,6 +25,7 @@ include(cmake/Assembler.cmake)
 include(cmake/Extensions.cmake)
 include(CMakeDependentOption)
 include(CMakeParseArguments)
+include(CTest)
 
 # Options
 option(BUILD_SHARED "Build a shared libpython library" OFF)
