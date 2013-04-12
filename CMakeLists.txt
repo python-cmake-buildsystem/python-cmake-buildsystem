@@ -244,6 +244,19 @@ if(UNIX)
 
 endif(UNIX)
 
+if(BUILD_TESTING)
+    set(EXTRATESTOPTS -v)
+    set(TESTOPTS -l ${EXTRATESTOPTS})
+    set(TESTPROG ${CMAKE_BINARY_DIR}/${PYTHONHOME}/test/regrtest.py)
+    set(TESTPYTHONOPTS )
+    set(TESTPYTHON $<TARGET_FILE:python> -Wd -3 -E -tt ${TESTPYTHONOPTS})
+
+    include(cmake/UnitTests.cmake)
+    foreach(unittest ${unittests})
+      add_test(NAME ${unittest} COMMAND ${TESTPYTHON} ${TESTPROG} ${TESTOPTS} ${unittest})
+    endforeach(unittest)
+endif(BUILD_TESTING)
+
 
 if(HAVE_CONFIGURE_PACKAGE_CONFIG_FILE AND HAVE_WRITE_BASIC_PACKAGE_VERSION_FILE)
 
