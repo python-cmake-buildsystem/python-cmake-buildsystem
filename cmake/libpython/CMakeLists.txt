@@ -142,6 +142,10 @@ if(UNIX)
         PROPERTY COMPILE_FLAGS
             -Wno-deprecated-declarations
         )
+    set(PYTHONPATH "${EXTRA_PYTHONPATH}:lib-dynload:plat-${PY_PLATFORM}")
+    if(ENABLE_TKINTER)
+        set(PYTHONPATH "${PYTHONPATH}:lib-tk")
+    endif(ENABLE_TKINTER)
     set_property(
         SOURCE ${SRC_DIR}/Modules/getpath.c
         PROPERTY COMPILE_DEFINITIONS
@@ -149,7 +153,7 @@ if(UNIX)
             EXEC_PREFIX="${CMAKE_INSTALL_PREFIX}"
             VERSION="${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}"
             VPATH="."
-            PYTHONPATH="${EXTRA_PYTHONPATH}:lib-dynload:plat-${PY_PLATFORM}"
+            PYTHONPATH="${PYTHONPATH}"
       )
 elseif(WIN32)
     # HACK To workaround limitation in escaping logic of CMake, the pythonpath
@@ -173,6 +177,9 @@ elseif(WIN32)
     set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${EXTENSION_INSTALL_DIR_ESCAPED}")
     set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${EXTENSION_INSTALL_DIR_ESCAPED}\\\\${CMAKE_CFG_INTDIR}")
     set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${PYTHONHOME_ESCAPED}\\\\plat-${PY_PLATFORM}")
+    if(ENABLE_TKINTER)
+        set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${PYTHONHOME_ESCAPED}\\\\lib-tk")
+    endif(ENABLE_TKINTER)
     set_property(
         SOURCE ${SRC_DIR}/PC/getpathp.c
         PROPERTY COMPILE_DEFINITIONS
