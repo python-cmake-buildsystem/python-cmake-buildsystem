@@ -35,6 +35,7 @@ endif()
 
 if(USE_SYSTEM_ZLIB)
     find_package(ZLIB)
+    include_directories(BEFORE ${ZLIB_INCLUDE_DIRS} )
 endif()
 
 if(USE_SYSTEM_DB)
