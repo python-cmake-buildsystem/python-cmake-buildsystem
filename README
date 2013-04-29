@@ -111,8 +111,8 @@ CMake options:
     USE_SYSTEM_ZLIB=ON|OFF        (defaults to ON)
       If set to OFF, no attempt to detect ZLIB libraries will be done.
       Associated python extensions are: BINASCII, ZLIB
-      Following CMake variables can manually be set: ZLIB_LIBRARIES
-      If ZLIB_LIBRARIES is found, extensions [BINASCII] will be built with ZLIB_CRC32
+      Following CMake variables can manually be set: ZLIB_LIBRARIES, ZLIB_INCLUDE_DIR
+      If [ZLIB_LIBRARIES, ZLIB_INCLUDE_DIR] are found, extensions [BINASCII] will be built with ZLIB_CRC32
 
     USE_SYSTEM_DB=ON|OFF          (defaults to ON)
       If set to OFF, no attempt to detect DB libraries will be done.

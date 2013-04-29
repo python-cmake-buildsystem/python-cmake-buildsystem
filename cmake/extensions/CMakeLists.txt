@@ -239,14 +239,18 @@ add_python_extension(_sha256 REQUIRES OPENSSL_NOT_FOUND SOURCES sha256module.c)
 add_python_extension(_sha512 REQUIRES OPENSSL_NOT_FOUND SOURCES sha512module.c)
 
 # Extensions that depend on other libraries
+set(binascii_REQUIRES "")
 set(binascii_DEFINITIONS "")
 if(ZLIB_LIBRARIES)
+  list(APPEND binascii_REQUIRES ZLIB_INCLUDE_DIR)
   list(APPEND binascii_DEFINITIONS USE_ZLIB_CRC32)
 endif()
 add_python_extension(binascii
+    REQUIRES ${binascii_REQUIRES}
     SOURCES binascii.c
     DEFINITIONS ${binascii_DEFINITIONS}
     LIBRARIES ${ZLIB_LIBRARIES}
+    INCLUDEDIRS ${ZLIB_INCLUDE_DIR}
 )
 add_python_extension(_bsddb
     REQUIRES DB_INCLUDE_PATH DB_LIBRARIES
@@ -334,9 +338,10 @@ add_python_extension(_tkinter
     INCLUDEDIRS ${TCL_INCLUDE_PATH} ${TK_INCLUDE_PATH}
 )
 add_python_extension(zlib
-    REQUIRES ZLIB_LIBRARIES
+    REQUIRES ZLIB_LIBRARIES ZLIB_INCLUDE_DIR
     SOURCES zlibmodule.c
     LIBRARIES ${ZLIB_LIBRARIES}
+    INCLUDEDIRS ${ZLIB_INCLUDE_DIR}
 )
 
 if(USE_LIBEDIT)
