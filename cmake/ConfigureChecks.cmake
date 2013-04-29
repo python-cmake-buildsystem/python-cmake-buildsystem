@@ -1452,18 +1452,18 @@ endif(HAVE_SIZE_T_FORMAT)
 
 ##########################################################
 
-if(ZLIB_LIBRARIES)
+if(ZLIB_LIBRARY)
   cmake_push_check_state()
   set(CFG_HEADERS_SAVE ${CFG_HEADERS})
 
   set(CFG_HEADERS ${CFG_HEADERS} zlib.h)
   add_cond(CMAKE_REQUIRED_INCLUDES ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIR})
-  add_cond(CMAKE_REQUIRED_LIBRARIES ZLIB_LIBRARIES ${ZLIB_LIBRARIES})
+  add_cond(CMAKE_REQUIRED_LIBRARIES ZLIB_LIBRARY ${ZLIB_LIBRARY})
   check_symbol_exists(inflateCopy      "${CFG_HEADERS}" HAVE_ZLIB_COPY)
 
   set(CFG_HEADERS ${CFG_HEADERS_SAVE})
   cmake_pop_check_state()
-endif(ZLIB_LIBRARIES)
+endif(ZLIB_LIBRARY)
 
 ############################################
 
