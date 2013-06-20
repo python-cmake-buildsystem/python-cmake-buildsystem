@@ -13,7 +13,7 @@ This cmake-based buildsystem is better because:
 
 How to use this buildsystem:
 
-  * Download and extract the Python 2.7.1 source.
+  * Download and extract the Python 2.7.3 source.
   * Copy all the files in this repository into the Python source directory.
   * mkdir bin
   * cd bin
