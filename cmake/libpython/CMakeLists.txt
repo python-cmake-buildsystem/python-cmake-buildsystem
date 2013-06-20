@@ -159,10 +159,12 @@ elseif(WIN32)
     # HACK To workaround limitation in escaping logic of CMake, the pythonpath
     #      separator is conditionally set depending of the version of Visual Studio.
     #      See http://cmake.org/Bug/view.php?id=14073
-    if("${MSVC_VERSION}" VERSION_GREATER "1599")
-      set(PATHSEP "%3B")
+    if( ("${MSVC_VERSION}" VERSION_GREATER "1599") AND ("${CMAKE_GENERATOR}" MATCHES "^Visual Studio") )
+        set(PATHSEP "%3B")
+    elseif( (${MSVC}) AND ("${CMAKE_GENERATOR}" MATCHES "^Ninja") )
+        set(PATHSEP "\;")
     else()
-      set(PATHSEP ";")
+        set(PATHSEP ";")
     endif()
     list(APPEND LIBPYTHON_SOURCES
         ${SRC_DIR}/PC/dl_nt.c
@@ -180,11 +182,12 @@ elseif(WIN32)
     if(ENABLE_TKINTER)
         set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${PYTHONHOME_ESCAPED}\\\\lib-tk")
     endif(ENABLE_TKINTER)
+    
     set_property(
         SOURCE ${SRC_DIR}/PC/getpathp.c
         PROPERTY COMPILE_DEFINITIONS
             LANDMARK="${PYTHONHOME_ESCAPED}\\\\os.py"
-            PYTHONPATH="${PYTHONPATH}"
+            "PYTHONPATH=\"${PYTHONPATH}\""
     )
     set_property(
         SOURCE ${SRC_DIR}/PC/dl_nt.c
