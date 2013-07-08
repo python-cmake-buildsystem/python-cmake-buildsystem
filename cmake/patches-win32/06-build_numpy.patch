@@ -1,0 +1,14 @@
+diff --git "a/build0\\Python-2.7.3/Lib/distutils/msvc9compiler.py" "b/build\\Python-2.7.3/Lib/distutils/msvc9compiler.py"
+index 7ec9b92..f982eb1 100644
+--- "a/build0\\Python-2.7.3/Lib/distutils/msvc9compiler.py"
++++ "b/build\\Python-2.7.3/Lib/distutils/msvc9compiler.py"
+@@ -658,7 +658,8 @@ class MSVCCompiler(CCompiler) :
+             # will still consider the DLL up-to-date, but it will not have a
+             # manifest.  Maybe we should link to a temp file?  OTOH, that
+             # implies a build environment error that shouldn't go undetected.
+-            mfinfo = self.manifest_get_embed_info(target_desc, ld_args)
++       #     mfinfo = self.manifest_get_embed_info(target_desc, ld_args)
++            mfinfo = None
+             if mfinfo is not None:
+                 mffilename, mfid = mfinfo
+                 out_arg = '-outputresource:%s;%s' % (output_filename, mfid)
