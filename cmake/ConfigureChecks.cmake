@@ -1371,7 +1371,7 @@ int main()
     HAVE_LONG_LONG_FORMAT
     "Checking for %lld and %llu printf() format support"
     ${check_src}
-    DIRECT
+    INVERT
     )
   cmake_pop_check_state()
   if(HAVE_LONG_LONG_FORMAT)
@@ -1401,7 +1401,7 @@ typedef int Py_ssize_t;
 int main()
 {
     char buffer[256];
-    if(sprintf(buffer, \"%zd\", (size_t)123) < 0)
+    if(sprintf(buffer, \"%zu\", (size_t)123) < 0)
         return 1;
     if (strcmp(buffer, \"123\"))
         return 1;
@@ -1419,9 +1419,9 @@ add_cond(CMAKE_REQUIRED_DEFINITIONS SIZEOF_VOID_P "-DSIZEOF_VOID_P=${VOID_P}")
 add_cond(CMAKE_REQUIRED_DEFINITIONS SIZEOF_LONG "-DSIZEOF_LONG=${LONG}")
 python_platform_test_run(
   HAVE_SIZE_T_FORMAT
-  "Checking for %zd printf() format support()"
+  "Checking for %zd and %zu printf() format support()"
   ${check_src}
-  DIRECT
+  INVERT
   )
 cmake_pop_check_state()
 if(HAVE_SIZE_T_FORMAT)
