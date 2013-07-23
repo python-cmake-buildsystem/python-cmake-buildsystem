@@ -11,7 +11,7 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Release")
 endif()
 
-project(Python${PY_VERSION_MAJOR}${PY_VERSION_MINOR} C)
+project(Python${PY_VERSION_MAJOR}${PY_VERSION_MINOR} C ASM)
 
 # This is the major version number of Python
 set(LIBPYTHON_VERSION ${PY_VERSION_MAJOR}.${PY_VERSION_MINOR})
@@ -21,7 +21,6 @@ endif(MSVC)
 set(LIBPYTHON python${LIBPYTHON_VERSION})
 
 # Include helper functions
-include(cmake/Assembler.cmake)
 include(cmake/Extensions.cmake)
 include(CMakeDependentOption)
 include(CMakeParseArguments)
