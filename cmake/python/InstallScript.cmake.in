@@ -1,0 +1,15 @@
+# This script creates the standard python<major-version>[.minor-version]
+# symlinks on unix at install time.
+
+if( UNIX )
+  message(STATUS "Creating Python executable symlinks...")
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} -E create_symlink python 
+      python@PY_VERSION_MAJOR@
+    COMMAND ${CMAKE_COMMAND} -E create_symlink python
+      python@PY_VERSION_MAJOR@.@PY_VERSION_MINOR@
+    WORKING_DIRECTORY
+      @CMAKE_INSTALL_PREFIX@/@BIN_INSTALL_DIR@
+  )
+endif()
+
