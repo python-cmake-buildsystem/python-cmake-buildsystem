@@ -20,4 +20,8 @@ endif(BUILD_SHARED)
 # Export target
 set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS python)
 
+# Write the script that will create symlinks at install time.
+configure_file(InstallScript.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/InstallScript.cmake @ONLY)
+
 install(TARGETS python EXPORT PythonTargets RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT Runtime)
+install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/InstallScript.cmake)
