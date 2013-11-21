@@ -21,3 +21,17 @@ endif(BUILD_SHARED)
 set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS python)
 
 install(TARGETS python EXPORT PythonTargets RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT Runtime)
+
+if(UNIX)
+  install(CODE
+"message(STATUS \"Creating Python executable symlinks...\")
+execute_process(
+  COMMAND \${CMAKE_COMMAND} -E create_symlink python
+    python${PY_VERSION_MAJOR}
+  COMMAND \${CMAKE_COMMAND} -E create_symlink python
+    python${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}
+  WORKING_DIRECTORY
+    \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${BIN_INSTALL_DIR}
+  )"
+)
+endif(UNIX)
