@@ -1289,7 +1289,7 @@ int main()
       exit(1);
 #if HAVE_TZNAME
   /* For UTC, tzname[1] is sometimes \"\", sometimes \"   \" */
-  if (strcmp(tzname[0], "UTC") ||
+  if (strcmp(tzname[0], \"UTC\") ||
     (tzname[1][0] != 0 && tzname[1][0] != ' '))
       exit(1);
 #endif
