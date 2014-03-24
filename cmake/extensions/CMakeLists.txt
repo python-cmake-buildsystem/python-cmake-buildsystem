@@ -130,23 +130,41 @@ endif(WIN32)
 # ctypes is different on Windows
 if(WIN32)
     if(MINGW)
-    add_python_extension(_ctypes
-        SOURCES _ctypes/_ctypes.c
-                _ctypes/callbacks.c
-                _ctypes/callproc.c
-                _ctypes/cfield.c
-                _ctypes/libffi_mingw/closures.c
-                _ctypes/libffi_mingw/debug.c
-                _ctypes/libffi_mingw/prep_cif.c
-                _ctypes/libffi_mingw/raw_api.c
-                _ctypes/libffi_mingw/x86/ffi.c
-                _ctypes/libffi_mingw/x86/win32.S
-                _ctypes/stgdict.c
-        INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi/src/x86
-                    ${SRC_DIR}/Modules/_ctypes/libffi/include
-        DEFINITIONS X86_WIN32
-      )
-    endif(MINGW)
+      add_python_extension(_ctypes
+          SOURCES _ctypes/_ctypes.c
+                  _ctypes/callbacks.c
+                  _ctypes/callproc.c
+                  _ctypes/cfield.c
+                  _ctypes/libffi_mingw/closures.c
+                  _ctypes/libffi_mingw/debug.c
+                  _ctypes/libffi_mingw/prep_cif.c
+                  _ctypes/libffi_mingw/raw_api.c
+                  _ctypes/libffi_mingw/x86/ffi.c
+                  _ctypes/libffi_mingw/x86/win32.S
+                  _ctypes/stgdict.c
+          INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi/src/x86
+                      ${SRC_DIR}/Modules/_ctypes/libffi/include
+          DEFINITIONS X86_WIN32
+        )
+    else() # Visual Studio
+      if(BUILTIN_CTYPES)
+        message(SEND_ERROR "BUILTIN_CTYPES is currently not supported")
+      endif()
+      # TODO: add win64.asm here for amd64?
+      add_python_extension(_ctypes
+          SOURCES _ctypes/_ctypes.c
+                  _ctypes/callbacks.c
+                  _ctypes/callproc.c
+                  _ctypes/cfield.c
+                  _ctypes/malloc_closure.c
+                  _ctypes/stgdict.c
+                  _ctypes/libffi_msvc/prep_cif.c
+                  _ctypes/libffi_msvc/ffi.c
+                  _ctypes/libffi_msvc/win32.c
+          REQUIRES BUILD_SHARED
+          INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi_msvc
+        )
+    endif()
 else(WIN32)
     if(APPLE)
         # TODO - Jc:02/20/2013
