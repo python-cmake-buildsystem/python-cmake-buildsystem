@@ -226,17 +226,16 @@ else(EXPAT_LIBRARIES AND EXPAT_INCLUDE_DIRS)
     )
 endif(EXPAT_LIBRARIES AND EXPAT_INCLUDE_DIRS)
 
-# If openssl is NOT available then build some other hash implementations
-if(OPENSSL_LIBRARIES)
-    set(OPENSSL_NOT_FOUND OFF)
-else(OPENSSL_LIBRARIES)
-    set(OPENSSL_NOT_FOUND ON)
-endif(OPENSSL_LIBRARIES)
+# If openssl is NOT available then build some other hash implementations on UNIX
+set(HASH_NOT_AVAILABLE ON)
+if(NOT WIN32 AND OPENSSL_LIBRARIES)
+  set(HASH_NOT_AVAILABLE OFF)
+endif()
 
-add_python_extension(_md5 REQUIRES OPENSSL_NOT_FOUND SOURCES md5.c md5module.c)
-add_python_extension(_sha REQUIRES OPENSSL_NOT_FOUND SOURCES shamodule.c)
-add_python_extension(_sha256 REQUIRES OPENSSL_NOT_FOUND SOURCES sha256module.c)
-add_python_extension(_sha512 REQUIRES OPENSSL_NOT_FOUND SOURCES sha512module.c)
+add_python_extension(_md5 REQUIRES HASH_NOT_AVAILABLE SOURCES md5.c md5module.c)
+add_python_extension(_sha REQUIRES HASH_NOT_AVAILABLE SOURCES shamodule.c)
+add_python_extension(_sha256 REQUIRES HASH_NOT_AVAILABLE SOURCES sha256module.c)
+add_python_extension(_sha512 REQUIRES HASH_NOT_AVAILABLE SOURCES sha512module.c)
 
 # Extensions that depend on other libraries
 set(binascii_REQUIRES "")
