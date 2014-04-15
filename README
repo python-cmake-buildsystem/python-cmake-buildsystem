@@ -50,7 +50,7 @@ CMake options:
                                    NT extensions which are builtin by default)
       These two options control how individual python extensions are built.
       <extension> is the name of the extension in upper case, and without any
-      leading underscore (_).  Known extensions for 2.7.1 include:
+      leading underscore (_).  Known extensions for 2.7.3 include:
 
         ARRAY AUDIOOP BINASCII BISECT BSDDB BZ2 CMATH CODECS_CN CODECS_HK
         CODECS_ISO2022 CODECS_JP CODECS_KR CODECS_TW COLLECTIONS CPICKLE CRYPT
@@ -145,7 +145,7 @@ Cross-compiling for Windows from Linux:
     * patch -p0 < cmake/patches-win32/02-signalmodule.patch
     * patch -p0 < cmake/patches-win32/03-mingw32.patch
 
-Note: This branch is for Python version 2.7.1.  Since this buildsystem is
+Note: This branch is for Python version 2.7.3.  Since this buildsystem is
 maintained separately from Python itself it needs to be manually updated
 whenever there is a new release of Python.
 
