@@ -150,7 +150,12 @@ if(WIN32)
       if(BUILTIN_CTYPES)
         message(SEND_ERROR "BUILTIN_CTYPES is currently not supported")
       endif()
-      # TODO: add win64.asm here for amd64?
+      if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
+        enable_language(ASM_MASM)
+        set(_ctype_arch_impl win64.asm)
+      else()
+        set(_ctype_arch_impl win32.c)
+      endif()
       add_python_extension(_ctypes
           SOURCES _ctypes/_ctypes.c
                   _ctypes/callbacks.c
@@ -160,7 +165,7 @@ if(WIN32)
                   _ctypes/stgdict.c
                   _ctypes/libffi_msvc/prep_cif.c
                   _ctypes/libffi_msvc/ffi.c
-                  _ctypes/libffi_msvc/win32.c
+                  _ctypes/libffi_msvc/${_ctype_arch_impl}
           REQUIRES BUILD_SHARED
           INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi_msvc
         )
