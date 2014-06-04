@@ -899,6 +899,12 @@
 /* Define to 1 if you have the `_getpty' function. */
 #cmakedefine HAVE__GETPTY 1
 
+/* Define to 1 if uint32_t is defined on the machine. */
+#cmakedefine HAVE_UINT32_T 1
+
+/* Define to 1 if int32_t is defined on the machine. */
+#cmakedefine HAVE_INT32_T 1
+
 /* Define if you are using Mach cthreads directly under /include */
 #cmakedefine HURD_C_THREADS 1
 

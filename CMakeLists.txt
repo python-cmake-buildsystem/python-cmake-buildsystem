@@ -2,7 +2,9 @@ cmake_minimum_required(VERSION 2.8.6)
 
 set(PY_VERSION_MAJOR 2)
 set(PY_VERSION_MINOR 7)
-set(PY_VERSION_PATCH 3)
+set(PY_VERSION_PATCH 5)
+
+set(PY_VERSION "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}")
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_CONFIGURATION_TYPES Release CACHE STRING "Release configuration" FORCE)
@@ -15,9 +17,9 @@ project(Python${PY_VERSION_MAJOR}${PY_VERSION_MINOR} C)
 
 # This is the major version number of Python
 set(LIBPYTHON_VERSION ${PY_VERSION_MAJOR}.${PY_VERSION_MINOR})
-if(MSVC)
+if(MSVC OR ("${CMAKE_C_COMPILER_ID}" STREQUAL "Intel") AND WIN32)
     set(LIBPYTHON_VERSION ${PY_VERSION_MAJOR}${PY_VERSION_MINOR})
-endif(MSVC)
+endif()
 set(LIBPYTHON python${LIBPYTHON_VERSION})
 
 # Include helper functions
@@ -30,6 +32,7 @@ include(CTest)
 # Options
 option(BUILD_SHARED "Build a shared libpython library" OFF)
 option(BUILD_STATIC "Build a static libpython library" ON)
+option(BUILTIN_ALL  "Build all extensions as builtin"  OFF)
 option(USE_LIB64 "Search for dependencies and install to prefix/lib64 instead of prefix/lib" OFF)
 
 option(USE_SYSTEM_LIBRARIES "Use system libraries" ON)
@@ -63,8 +66,8 @@ elseif(NOT "${SRC_DIR}" STREQUAL "" AND EXISTS ${SRC_DIR}/${_landmark})
     # Do nothing - SRC_DIR is already set.
 else()
     foreach(dirname
-        cpython-${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}
-        Python-${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}
+        cpython-${PY_VERSION}
+        Python-${PY_VERSION}
     )
         set(SRC_DIR "${CMAKE_CURRENT_BINARY_DIR}/../${dirname}")
         if(EXISTS ${SRC_DIR}/${_landmark})
@@ -76,25 +79,25 @@ if(NOT IS_ABSOLUTE ${SRC_DIR})
     set(SRC_DIR ${CMAKE_CURRENT_BINARY_DIR}/${SRC_DIR})
 endif()
 get_filename_component(_parent_dir ${CMAKE_CURRENT_BINARY_DIR} PATH)
-set(_download_link "http://www.python.org/ftp/python/2.7.3/Python-2.7.3.tgz")
-set(_extracted_dir "Python-2.7.3")
+set(_download_link "http://www.python.org/ftp/python/${PY_VERSION}/Python-${PY_VERSION}.tgz")
+set(_extracted_dir "Python-${PY_VERSION}")
 if(WIN32)
-    set(_download_link "https://github.com/jonashaag/cpython/archive/v2.7.3.zip")
-    set(_extracted_dir "cpython-2.7.3")
+    set(_download_link "https://github.com/jonashaag/cpython/archive/v${PY_VERSION}.zip")
+    set(_extracted_dir "cpython-${PY_VERSION}")
 endif(WIN32)
 if(NOT EXISTS ${SRC_DIR}/${_landmark})
     message(FATAL_ERROR "Failed to locate python source.
 The searched locations were:
    <CMAKE_CURRENT_BINARY_DIR>
-   <CMAKE_CURRENT_BINARY_DIR>/../cpython-${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}
-   <CMAKE_CURRENT_BINARY_DIR>/../Python-${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}
+   <CMAKE_CURRENT_BINARY_DIR>/../cpython-${PY_VERSION}
+   <CMAKE_CURRENT_BINARY_DIR>/../Python-${PY_VERSION}
    <SRC_DIR>
 You could try to:
   1) download ${_download_link}
   2) extract the archive in folder: ${_parent_dir}
   3) Check that file \"${_parent_dir}/${_extracted_dir}/${_landmark}\" exists.
   4) re-configure.
-If you already downloaded the source, you could try to re-configure this project passing -DSRC_DIR:PATH=/path/to/Python-2.7.3 using cmake or adding an PATH entry named SRC_DIR from cmake-gui.")
+If you already downloaded the source, you could try to re-configure this project passing -DSRC_DIR:PATH=/path/to/Python-{PY_VERSION} using cmake or adding an PATH entry named SRC_DIR from cmake-gui.")
 endif()
 message(STATUS "SRC_DIR: ${SRC_DIR}")
 
@@ -124,9 +127,9 @@ set(BIN_INSTALL_DIR bin)                         # Contains the python executabl
 set(CONFIG_INSTALL_DIR share/${LIBPYTHON})
 set(EXTENSION_INSTALL_DIR ${PYTHONHOME}/lib-dynload)
 set(INCLUDE_INSTALL_DIR include/${LIBPYTHON})
-if(MSVC)
+if(MSVC OR ("${CMAKE_C_COMPILER_ID}" STREQUAL "Intel") AND WIN32)
     set(INCLUDE_INSTALL_DIR include)
-endif(MSVC)
+endif()
 # Build tree directory
 set(BIN_BUILD_DIR ${CMAKE_BINARY_DIR}/bin)
 set(CONFIG_BUILD_DIR ${CMAKE_BINARY_DIR}/${CONFIG_INSTALL_DIR})
@@ -172,16 +175,16 @@ include_directories(${SRC_DIR}/Python)
 
 # Set cflags used by all components
 if(UNIX)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-strict-aliasing -fwrapv -Wall -Wstrict-prototypes")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -fno-strict-aliasing -fwrapv -Wall -Wstrict-prototypes")
+    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" CACHE STRING "Common flags used by the compiler during builds" FORCE)
 endif(UNIX)
-if(MSVC)
+if(WIN32)
     string(REPLACE "/Ob2" "/Ob1" CMAKE_C_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE}) # InlineFunctionExpansion=1
     set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" CACHE STRING "Flags used by the compiler during release builds" FORCE)
-endif(MSVC)
-
-if(NOT WIN32)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
-endif(NOT WIN32)
+else ()
+    string(REPLACE "-O3" "-O2" CMAKE_C_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE}) # InlineFunctionExpansion=1
+    set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" CACHE STRING "Flags used by the compiler during release builds" FORCE)
+endif ()
 
 # Useful additional variables that extensions can use.
 if(UNIX AND NOT APPLE)
@@ -295,7 +298,7 @@ export(TARGETS ${PYTHON_TARGETS} APPEND FILE ${CONFIG_BUILD_DIR}/PythonTargets.c
 set(python_config_version ${CONFIG_BUILD_DIR}/PythonConfigVersion.cmake)
 write_basic_package_version_file(
     ${python_config_version}
-    VERSION ${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}
+    VERSION ${PY_VERSION}
     COMPATIBILITY SameMajorVersion
 )
 

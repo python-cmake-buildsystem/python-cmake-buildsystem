@@ -183,15 +183,15 @@ elseif(WIN32)
         set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${PYTHONHOME_ESCAPED}\\\\lib-tk")
     endif(ENABLE_TKINTER)
     
+    if (WIN32)
+      string(REPLACE ";" "\\;" PYTHONPATH "${PYTHONPATH}")
+    endif ()
+    
     set_property(
         SOURCE ${SRC_DIR}/PC/getpathp.c
         PROPERTY COMPILE_DEFINITIONS
             LANDMARK="${PYTHONHOME_ESCAPED}\\\\os.py"
             "PYTHONPATH=\"${PYTHONPATH}\""
-    )
-    set_property(
-        SOURCE ${SRC_DIR}/PC/dl_nt.c
-        PROPERTY COMPILE_DEFINITIONS Py_ENABLE_SHARED
     )
 endif(UNIX)
 
