@@ -190,7 +190,7 @@ whenever there is a new release of Python.
 Materials in this repository are distributed under the following licenses:
 
 * All software is licensed under the Apache 2.0 License.
-  See LICENSE_Apache_20 file for details.
+  See [LICENSE_Apache_20](LICENSE_Apache_20) file for details.
 
 
 ## FAQ
