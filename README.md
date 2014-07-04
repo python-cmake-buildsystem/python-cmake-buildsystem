@@ -23,10 +23,12 @@ How to use this buildsystem:
 * Download and extract the Python 2.7.3 source
 
 ```bash
-mkdir ~/scratch
+VERSION=2.7.3
+mkdir -p ~/scratch
 cd ~/scratch
-curl -L -O http://www.python.org/ftp/python/2.7.3/Python-2.7.3.tgz
-md5sum Python-2.7.3.tgz
+curl -L -O http://www.python.org/ftp/python/$VERSION/Python-$VERSION.tgz
+md5sum Python-$VERSION.tgz
+tar -xzvf Python-$VERSION.tgz
 ```
 
 Expected MD5: `2cf641732ac23b18d139be077bd906cd`
@@ -42,7 +44,7 @@ git clone git://github.com/davidsansome/python-cmake-buildsystem
 
 ```bash
 cd ~/scratch
-mkdir python-build && mkdir python-install
+mkdir -p python-build && mkdir -p python-install
 cd python-build
 cmake -DCMAKE_INSTALL_PREFIX:PATH=${HOME}/scratch/python-install ../python-cmake-buildsystem
 make -j10
