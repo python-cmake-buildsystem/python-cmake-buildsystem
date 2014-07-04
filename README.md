@@ -180,3 +180,16 @@ Note: This branch is for Python version 2.7.3.  Since this buildsystem is
 maintained separately from Python itself it needs to be manually updated
 whenever there is a new release of Python.
 
+## Licenses
+
+Materials in this repository are distributed under the following licenses:
+
+* All software is licensed under the Apache 2.0 License.
+  See LICENSE_Apache_20 file for details.
+
+
+## FAQ
+
+### Why Apache 2.0 License ?
+
+From the python.org wiki, the answer to the question [What if I want to contribute my code to the PSF?](https://wiki.python.org/moin/PythonSoftwareFoundationLicenseFaq#What_if_I_want_to_contribute_my_code_to_the_PSF.3F) mentions that if code is going to end up in Python or the standard library, the PSF will require you to license code under "Academic Free License" or "Apache License 2.0".
