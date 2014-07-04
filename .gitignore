@@ -1,3 +1,4 @@
+# Ignore in source build files ...
 CMakeBuild
 CMakeCache.txt
 CMakeFiles
@@ -7,3 +8,22 @@ install_manifest.txt
 
 bin
 lib
+
+# Ignore all dotfiles...
+.*
+
+# Ignore all back-up files...
+*~
+*.bak
+
+# except for .gitignore
+!.gitignore
+
+# Exclude QtCreator files
+CMakeLists.txt.user*
+
+# Ignore ctags file
+tags
+
+# Ignore pyc files
+*.pyc
