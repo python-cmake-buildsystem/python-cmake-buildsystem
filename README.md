@@ -26,7 +26,10 @@ How to use this buildsystem:
 mkdir ~/scratch
 cd ~/scratch
 curl -L -O http://www.python.org/ftp/python/2.7.3/Python-2.7.3.tgz
+md5sum Python-2.7.3.tgz
 ```
+
+Expected MD5: `2cf641732ac23b18d139be077bd906cd`
 
 * Checkout the buildsystem
 
