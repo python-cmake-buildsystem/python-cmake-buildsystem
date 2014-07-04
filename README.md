@@ -25,7 +25,7 @@ How to use this buildsystem:
 ```bash
 mkdir ~/scratch
 cd ~/scratch
-curl -O http://www.python.org/ftp/python/2.7.3/Python-2.7.3.tgz
+curl -L -O http://www.python.org/ftp/python/2.7.3/Python-2.7.3.tgz
 ```
 
 * Checkout the buildsystem
