@@ -165,7 +165,9 @@ install(FILES ${PYCONFIG_BUILD_DIR}/pyconfig.h
         DESTINATION ${INCLUDE_INSTALL_DIR}/)
 
 # Set include directories
-include_directories(cmake)
+if(NOT MSVC)
+  include_directories(cmake)
+endif()
 include_directories(${INCLUDE_BUILD_DIR})
 include_directories(${PYCONFIG_BUILD_DIR})
 include_directories(${SRC_DIR}/Python)
