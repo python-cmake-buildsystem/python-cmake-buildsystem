@@ -14,6 +14,7 @@ include(cmake/PlatformTest.cmake)
 include(TestBigEndian)
 
 message(STATUS "The system name is ${CMAKE_SYSTEM_NAME}")
+message(STATUS "The system processor is ${CMAKE_SYSTEM_PROCESSOR}")
 message(STATUS "The system version is ${CMAKE_SYSTEM_VERSION}")
 
 # Find any dependencies
