@@ -1,4 +1,6 @@
-if(CMAKE_VERSION VERSION_GREATER 2.8.7)
+if(CMAKE_VERSION VERSION_GREATER 2.8.7
+  AND NOT POLICY CMP0045 # XXX ignore warning 'get_target_property() called with non-existent target'
+  )
   include(CMakeExpandImportedTargets)
 else()
   include(${CMAKE_SOURCE_DIR}/cmake/CMakeExpandImportedTargets.cmake)
