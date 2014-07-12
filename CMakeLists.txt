@@ -4,6 +4,8 @@ set(PY_VERSION_MAJOR 2)
 set(PY_VERSION_MINOR 7)
 set(PY_VERSION_PATCH 3)
 
+set(PY_VERSION "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}")
+
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_CONFIGURATION_TYPES Release CACHE STRING "Release configuration" FORCE)
     set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build." FORCE)
@@ -63,8 +65,8 @@ elseif(NOT "${SRC_DIR}" STREQUAL "" AND EXISTS ${SRC_DIR}/${_landmark})
     # Do nothing - SRC_DIR is already set.
 else()
     foreach(dirname
-        cpython-${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}
-        Python-${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}
+        cpython-${PY_VERSION}
+        Python-${PY_VERSION}
     )
         set(SRC_DIR "${CMAKE_CURRENT_BINARY_DIR}/../${dirname}")
         if(EXISTS ${SRC_DIR}/${_landmark})
@@ -76,25 +78,25 @@ if(NOT IS_ABSOLUTE ${SRC_DIR})
     set(SRC_DIR ${CMAKE_CURRENT_BINARY_DIR}/${SRC_DIR})
 endif()
 get_filename_component(_parent_dir ${CMAKE_CURRENT_BINARY_DIR} PATH)
-set(_download_link "http://www.python.org/ftp/python/2.7.3/Python-2.7.3.tgz")
-set(_extracted_dir "Python-2.7.3")
+set(_download_link "http://www.python.org/ftp/python/${PY_VERSION}/Python-${PY_VERSION}.tgz")
+set(_extracted_dir "Python-${PY_VERSION}")
 if(WIN32)
-    set(_download_link "https://github.com/jonashaag/cpython/archive/v2.7.3.zip")
-    set(_extracted_dir "cpython-2.7.3")
+    set(_download_link "https://github.com/jonashaag/cpython/archive/v${PY_VERSION}.zip")
+    set(_extracted_dir "cpython-${PY_VERSION}")
 endif(WIN32)
 if(NOT EXISTS ${SRC_DIR}/${_landmark})
     message(FATAL_ERROR "Failed to locate python source.
 The searched locations were:
    <CMAKE_CURRENT_BINARY_DIR>
-   <CMAKE_CURRENT_BINARY_DIR>/../cpython-${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}
-   <CMAKE_CURRENT_BINARY_DIR>/../Python-${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}
+   <CMAKE_CURRENT_BINARY_DIR>/../cpython-${PY_VERSION}
+   <CMAKE_CURRENT_BINARY_DIR>/../Python-${PY_VERSION}
    <SRC_DIR>
 You could try to:
   1) download ${_download_link}
   2) extract the archive in folder: ${_parent_dir}
   3) Check that file \"${_parent_dir}/${_extracted_dir}/${_landmark}\" exists.
   4) re-configure.
-If you already downloaded the source, you could try to re-configure this project passing -DSRC_DIR:PATH=/path/to/Python-2.7.3 using cmake or adding an PATH entry named SRC_DIR from cmake-gui.")
+If you already downloaded the source, you could try to re-configure this project passing -DSRC_DIR:PATH=/path/to/Python-{PY_VERSION} using cmake or adding an PATH entry named SRC_DIR from cmake-gui.")
 endif()
 message(STATUS "SRC_DIR: ${SRC_DIR}")
 
@@ -295,7 +297,7 @@ export(TARGETS ${PYTHON_TARGETS} APPEND FILE ${CONFIG_BUILD_DIR}/PythonTargets.c
 set(python_config_version ${CONFIG_BUILD_DIR}/PythonConfigVersion.cmake)
 write_basic_package_version_file(
     ${python_config_version}
-    VERSION ${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}
+    VERSION ${PY_VERSION}
     COMPATIBILITY SameMajorVersion
 )
 
