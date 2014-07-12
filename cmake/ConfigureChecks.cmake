@@ -1042,6 +1042,19 @@ endif(CMAKE_SYSTEM MATCHES BlueGene)
 # readline tests
 #
 #######################################################################
+
+# MacOSX 10.4 has a broken readline. Don't try to build
+# the readline module unless the user has installed a fixed
+# readline package
+if(HAVE_READLINE_READLINE_H)
+  if(APPLE AND CMAKE_OSX_DEPLOYMENT_TARGET
+     AND "${CMAKE_OSX_DEPLOYMENT_TARGET}" VERSION_LESS "10.5")
+    check_include_files(readline/rlconf.h HAVE_READLINE_RLCONF_H)
+    if(NOT HAVE_READLINE_RLCONF_H)
+      set(HAVE_READLINE_READLINE_H FALSE)
+    endif()
+  endif()
+endif()
 if(HAVE_READLINE_READLINE_H)
   cmake_push_check_state()
   set(CFG_HEADERS_SAVE ${CFG_HEADERS})
