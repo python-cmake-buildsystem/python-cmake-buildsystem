@@ -371,6 +371,12 @@
 /* Define to 1 if you have the `initgroups' function. */
 #cmakedefine HAVE_INITGROUPS 1
 
+/* Define if your compiler provides int32_t. */
+#cmakedefine HAVE_INT32_T 1
+
+/* Define if your compiler provides int64_t. */
+#cmakedefine HAVE_INT64_T 1
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #cmakedefine HAVE_INTTYPES_H 1
 
@@ -850,6 +856,12 @@
 
 /* Define to 1 if the system has the type `uintptr_t'. */
 #cmakedefine HAVE_UINTPTR_T 1
+
+/* Define if your compiler provides uint32_t. */
+#cmakedefine HAVE_UINT32_T 1
+
+/* Define if your compiler provides uint64_t. */
+#cmakedefine HAVE_UINT64_T 1
 
 /* Define to 1 if you have the `uname' function. */
 #cmakedefine HAVE_UNAME 1
