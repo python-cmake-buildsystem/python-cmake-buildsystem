@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 2.8.6)
 set(PY_VERSION_MAJOR 2)
 set(PY_VERSION_MINOR 7)
 set(PY_VERSION_PATCH 3)
-
 set(PY_VERSION "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}")
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
@@ -13,14 +12,7 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Release")
 endif()
 
-project(Python${PY_VERSION_MAJOR}${PY_VERSION_MINOR} C)
-
-# This is the major version number of Python
-set(LIBPYTHON_VERSION ${PY_VERSION_MAJOR}.${PY_VERSION_MINOR})
-if(MSVC)
-    set(LIBPYTHON_VERSION ${PY_VERSION_MAJOR}${PY_VERSION_MINOR})
-endif(MSVC)
-set(LIBPYTHON python${LIBPYTHON_VERSION})
+project(Python C)
 
 # Include helper functions
 include(cmake/Assembler.cmake)
@@ -123,6 +115,27 @@ You could try to:
 If you already downloaded the source, you could try to re-configure this project passing -DSRC_DIR:PATH=/path/to/Python-{PY_VERSION} using cmake or adding an PATH entry named SRC_DIR from cmake-gui.")
 endif()
 message(STATUS "SRC_DIR: ${SRC_DIR}")
+
+# Extract version from python source (Copied from FindPythonLibs.cmake)
+file(STRINGS "${SRC_DIR}/Include/patchlevel.h" python_version_str
+    REGEX "^#define[ \t]+PY_VERSION[ \t]+\"[^\"]+\"")
+string(REGEX REPLACE "^#define[ \t]+PY_VERSION[ \t]+\"([^\"]+)\".*" "\\1"
+    _version "${python_version_str}")
+string(REGEX REPLACE "([0-9])\\..+" "\\1"
+    PY_VERSION_MAJOR ${_version})
+string(REGEX REPLACE "[0-9]\\.([0-9]+)\\..+" "\\1"
+    PY_VERSION_MINOR ${_version})
+string(REGEX REPLACE "[0-9]\\.[0-9]+\\.([0-9]+)" "\\1"
+    PY_VERSION_PATCH ${_version})
+set(PY_VERSION "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}")
+message(STATUS "PY_VERSION: ${PY_VERSION}")
+
+# This is the major version number of Python
+set(LIBPYTHON_VERSION ${PY_VERSION_MAJOR}.${PY_VERSION_MINOR})
+if(MSVC)
+    set(LIBPYTHON_VERSION ${PY_VERSION_MAJOR}${PY_VERSION_MINOR})
+endif(MSVC)
+set(LIBPYTHON python${LIBPYTHON_VERSION})
 
 # Proceed to the configure checks
 include(cmake/ConfigureChecks.cmake)
