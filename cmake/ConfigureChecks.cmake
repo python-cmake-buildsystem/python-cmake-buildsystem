@@ -34,6 +34,11 @@ if(USE_SYSTEM_TCL)
     find_package(TCL)
 endif()
 
+if(UNIX)
+    # Only needed by _tkinter
+    find_package(X11)
+endif()
+
 if(USE_SYSTEM_ZLIB)
     find_package(ZLIB)
 endif()
