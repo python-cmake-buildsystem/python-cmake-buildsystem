@@ -473,6 +473,9 @@
 /* Define to 1 if you have the `mktime' function. */
 #cmakedefine HAVE_MKTIME 1
 
+/* Define to 1 if you have the `mmap' function. */
+#cmakedefine HAVE_MMAP 1
+
 /* Define to 1 if you have the `mremap' function. */
 #cmakedefine HAVE_MREMAP 1
 
