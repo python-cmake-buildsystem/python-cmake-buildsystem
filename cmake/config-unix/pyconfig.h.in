@@ -518,6 +518,9 @@
 /* Define if you have GNU PTH threads. */
 #cmakedefine HAVE_PTH 1
 
+/* Define to 1 if you have the `pthread_atfork' function. */
+#cmakedefine HAVE_PTHREAD_ATFORK 1
+
 /* Defined for Solaris 2.6 bug in pthread header. */
 #cmakedefine HAVE_PTHREAD_DESTRUCTOR 1
 

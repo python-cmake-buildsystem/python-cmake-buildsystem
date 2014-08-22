@@ -990,6 +990,7 @@ else()
   check_symbol_exists(pthread_init "${CFG_HEADERS}" HAVE_PTHREAD_INIT)
 endif()
 check_symbol_exists(pthread_sigmask "${CFG_HEADERS}" HAVE_PTHREAD_SIGMASK)
+check_symbol_exists(pthread_atfork "${CFG_HEADERS}" HAVE_PTHREAD_ATFORK)
 
 add_cond(CFG_HEADERS  HAVE_SEMAPHORE_H  semaphore.h)
 check_symbol_exists(sem_getvalue "${CFG_HEADERS}" HAVE_SEM_GETVALUE)
