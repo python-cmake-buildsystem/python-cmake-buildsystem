@@ -854,14 +854,14 @@
 /* Define this if you have tcl and TCL_UTF_MAX==6 */
 #cmakedefine HAVE_UCS4_TCL 1
 
-/* Define to 1 if the system has the type `uintptr_t'. */
-#cmakedefine HAVE_UINTPTR_T 1
-
 /* Define if your compiler provides uint32_t. */
 #cmakedefine HAVE_UINT32_T 1
 
 /* Define if your compiler provides uint64_t. */
 #cmakedefine HAVE_UINT64_T 1
+
+/* Define to 1 if the system has the type `uintptr_t'. */
+#cmakedefine HAVE_UINTPTR_T 1
 
 /* Define to 1 if you have the `uname' function. */
 #cmakedefine HAVE_UNAME 1
