@@ -162,10 +162,10 @@
 /* Define to 1 if you have the device macros. */
 #cmakedefine HAVE_DEVICE_MACROS 1
 
-/* Define if we have /dev/ptc. */
+/* Define to 1 if you have the /dev/ptc device file. */
 #cmakedefine HAVE_DEV_PTC 1
 
-/* Define if we have /dev/ptmx. */
+/* Define to 1 if you have the /dev/ptmx device file. */
 #cmakedefine HAVE_DEV_PTMX 1
 
 /* Define to 1 if you have the <direct.h> header file. */
