@@ -124,6 +124,7 @@ if(NOT HAVE_DIRENT_H)
   check_include_files(ndir.h HAVE_NDIR_H)
 endif(NOT HAVE_DIRENT_H)
 
+check_include_files(alloca.h HAVE_ALLOCA_H)
 check_include_files(asm/types.h HAVE_ASM_TYPES_H)
 check_include_files(arpa/inet.h HAVE_ARPA_INET_H)
 check_include_files(bluetooth/bluetooth.h HAVE_BLUETOOTH_BLUETOOTH_H)
