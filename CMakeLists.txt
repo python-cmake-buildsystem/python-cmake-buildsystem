@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.6)
 
 # Parse the version information acordingly
 if(NOT PY_VERSION)
-    set(PY_VERSION "2.7.3")
+    set(PY_VERSION "2.7.9")
 endif()
 include(cmake/ParseVersionString.cmake)
 parse_version_string(PY)
