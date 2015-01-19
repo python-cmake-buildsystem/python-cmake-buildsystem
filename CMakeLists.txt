@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 2.8.6)
 
-set(PY_VERSION_MAJOR 2)
-set(PY_VERSION_MINOR 7)
-set(PY_VERSION_PATCH 3)
-
-set(PY_VERSION "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}")
+# Parse the version information acordingly
+if(NOT PY_VERSION)
+    set(PY_VERSION "2.7.3")
+endif()
+include(cmake/ParseVersionString.cmake)
+parse_version_string(PY)
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_CONFIGURATION_TYPES Release CACHE STRING "Release configuration" FORCE)
