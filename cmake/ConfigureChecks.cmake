@@ -18,6 +18,10 @@ message(STATUS "The system processor is ${CMAKE_SYSTEM_PROCESSOR}")
 message(STATUS "The system version is ${CMAKE_SYSTEM_VERSION}")
 
 # Find any dependencies
+if(USE_SYSTEM_BZip2)
+    find_package(BZip2)
+endif()
+
 if(USE_SYSTEM_Curses)
     find_package(Curses)
 endif()
