@@ -7,7 +7,7 @@ else()
 endif()
 
 macro(python_platform_test var description srcfile invert)
-  IF("${var}_COMPILED" MATCHES "^${var}_COMPILED$")
+  if(NOT DEFINED "${var}_COMPILED")
     message(STATUS "${description}")
     
     set(MACRO_CHECK_FUNCTION_DEFINITIONS
@@ -66,7 +66,7 @@ macro(python_platform_test var description srcfile invert)
 endmacro()
 
 macro(python_platform_test_run var description srcfile invert)
-  if("${var}" MATCHES "^${var}$")
+  if(NOT DEFINED "${var}")
     message(STATUS "${description}")
     
     set(MACRO_CHECK_FUNCTION_DEFINITIONS
