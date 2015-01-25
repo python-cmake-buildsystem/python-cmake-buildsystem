@@ -30,6 +30,7 @@ include(CMakeParseArguments)
 include(CTest)
 
 # Options
+option(DOWNLOAD_SOURCES "Automatically download the Python sources" ON)
 option(BUILD_SHARED "Build a shared libpython library" OFF)
 option(BUILD_STATIC "Build a static libpython library" ON)
 option(USE_LIB64 "Search for dependencies and install to prefix/lib64 instead of prefix/lib" OFF)
@@ -85,6 +86,26 @@ if(WIN32)
     set(_download_link "https://github.com/jonashaag/cpython/archive/v${PY_VERSION}.zip")
     set(_extracted_dir "cpython-${PY_VERSION}")
 endif(WIN32)
+
+if(NOT EXISTS ${SRC_DIR}/${_landmark} AND DOWNLOAD_SOURCES)
+    get_filename_component(_filename ${_download_link} NAME)
+    if(EXISTS "${_filename}")
+        message(STATUS "${_filename} already downloaded")
+    else()
+        message(STATUS "getting ${_download_link}")
+        file(DOWNLOAD "${_download_link}" ${CMAKE_CURRENT_BINARY_DIR}/${_filename} SHOW_PROGRESS)
+    endif()
+
+    message(STATUS "extracting ${_filename}")
+    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xfz ${CMAKE_CURRENT_BINARY_DIR}/${_filename}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/..
+        RESULT_VARIABLE rv)
+    if(NOT rv EQUAL 0)
+        message(FATAL_ERROR "error: extraction of '${_filename}' failed")
+    endif()
+    set(SRC_DIR ${CMAKE_CURRENT_BINARY_DIR}/../${_extracted_dir})
+endif()
+
 if(NOT EXISTS ${SRC_DIR}/${_landmark})
     message(FATAL_ERROR "Failed to locate python source.
 The searched locations were:
