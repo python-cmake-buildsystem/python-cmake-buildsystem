@@ -1,8 +1,8 @@
 
 set(MSVC_BUILTIN )
-if(MSVC)
+if(MSVC OR (("${CMAKE_C_COMPILER_ID}" STREQUAL "Intel") AND WIN32))
     set(MSVC_BUILTIN BUILTIN)
-endif(MSVC)
+endif()
 
 add_python_extension(array SOURCES arraymodule.c)
 add_python_extension(audioop SOURCES audioop.c)
@@ -20,9 +20,17 @@ add_python_extension(crypt REQUIRES HAVE_LIBCRYPT SOURCES cryptmodule.c LIBRARIE
 add_python_extension(cStringIO SOURCES cStringIO.c)
 add_python_extension(_csv SOURCES _csv.c)
 add_python_extension(_ctypes_test SOURCES _ctypes/_ctypes_test.c)
-add_python_extension(datetime REQUIRES HAVE_LIBM SOURCES datetimemodule.c timemodule.c LIBRARIES ${M_LIBRARIES})
+add_python_extension(datetime ${MSVC_BUILTIN} REQUIRES HAVE_LIBM SOURCES datetimemodule.c timemodule.c LIBRARIES ${M_LIBRARIES})
 if(ENABLE_DATETIME AND UNIX)
     set_property(SOURCE ${SRC_DIR}/Modules/datetimemodule.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
+endif()
+if(ENABLE_DATETIME AND WIN32)
+	if (BUILD_SHARED)
+		set_property(
+			SOURCE ${SRC_DIR}/Modules/timemodule.c
+			PROPERTY COMPILE_DEFINITIONS "Py_ENABLE_SHARED;Py_BUILD_CORE"
+		)
+	endif ()
 endif()
 add_python_extension(_functools ${MSVC_BUILTIN} SOURCES _functoolsmodule.c)
 add_python_extension(future_builtins SOURCES future_builtins.c)
@@ -50,7 +58,7 @@ add_python_extension(_random SOURCES _randommodule.c)
 add_python_extension(strop SOURCES stropmodule.c)
 add_python_extension(_struct SOURCES _struct.c)
 add_python_extension(_testcapi SOURCES _testcapimodule.c)
-add_python_extension(time REQUIRES HAVE_LIBM SOURCES timemodule.c LIBRARIES ${M_LIBRARIES})
+add_python_extension(time ${MSVC_BUILTIN} REQUIRES HAVE_LIBM SOURCES timemodule.c LIBRARIES ${M_LIBRARIES})
 add_python_extension(unicodedata SOURCES unicodedata.c)
 
 # UNIX-only extensions
@@ -116,7 +124,7 @@ endif(WIN32)
 
 # Socket is different on Windows
 if(WIN32)
-    add_python_extension(_socket
+    add_python_extension(_socket ${MSVC_BUILTIN}
         SOURCES socketmodule.c
         DEFINITIONS EAI_ADDRFAMILY
                     HAVE_SOCKADDR_STORAGE
@@ -218,9 +226,9 @@ else(EXPAT_LIBRARIES AND EXPAT_INCLUDE_DIRS)
     set(_pyexpat_definitions XML_STATIC)
     if(UNIX)
         list(APPEND _pyexpat_definitions HAVE_EXPAT_CONFIG_H)
-    elseif(MSVC)
+    elseif(MSVC OR (("${CMAKE_C_COMPILER_ID}" STREQUAL "Intel") AND WIN32))
         list(APPEND _pyexpat_definitions COMPILED_FROM_DSP)
-    endif(UNIX)
+    endif ()
     add_python_extension(pyexpat
         SOURCES pyexpat.c
                 expat/xmlparse.c
@@ -230,7 +238,7 @@ else(EXPAT_LIBRARIES AND EXPAT_INCLUDE_DIRS)
         INCLUDEDIRS ${SRC_DIR}/Modules/expat
     )
     set(_elementtree_definitions USE_PYEXPAT_CAPI)
-    if(MSVC)
+    if(MSVC OR (("${CMAKE_C_COMPILER_ID}" STREQUAL "Intel") AND WIN32))
         list(APPEND _elementtree_definitions COMPILED_FROM_DSP)
     endif()
     add_python_extension(_elementtree

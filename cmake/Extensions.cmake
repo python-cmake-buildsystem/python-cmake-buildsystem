@@ -64,11 +64,16 @@ function(add_python_extension name)
            "Controls whether the \"${name}\" extension will be built"
            ON
     )
-    option(BUILTIN_${upper_name}
-           "If this is set the \"${name}\" extension will be compiled in to libpython"
-           ${ADD_PYTHON_EXTENSION_BUILTIN}
-    )
-
+    if (BUILTIN_ALL)
+      option(BUILTIN_${upper_name}
+             "If this is set the \"${name}\" extension will be compiled in to libpython" ON}
+      )
+    else ()
+      option(BUILTIN_${upper_name}
+             "If this is set the \"${name}\" extension will be compiled in to libpython"
+             ${ADD_PYTHON_EXTENSION_BUILTIN}
+      )
+    endif ()
     # Check all the things we require are found.
     set(missing_deps "")
     foreach(dep ${ADD_PYTHON_EXTENSION_REQUIRES} ENABLE_${upper_name})
