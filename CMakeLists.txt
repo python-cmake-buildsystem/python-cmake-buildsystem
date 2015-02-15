@@ -88,7 +88,7 @@ if(NOT EXISTS ${SRC_DIR}/${_landmark} AND DOWNLOAD_SOURCES)
     if(EXISTS "${_filename}")
         message(STATUS "${_filename} already downloaded")
     else()
-        message(STATUS "getting ${_download_link}")
+        message(STATUS "Downloading ${_download_link}")
         file(
           DOWNLOAD ${_download_link} ${CMAKE_CURRENT_BINARY_DIR}/${_filename}
           EXPECTED_MD5 ${_download_md5}
@@ -96,7 +96,7 @@ if(NOT EXISTS ${SRC_DIR}/${_landmark} AND DOWNLOAD_SOURCES)
           )
     endif()
 
-    message(STATUS "extracting ${_filename}")
+    message(STATUS "Extracting ${_filename}")
     execute_process(COMMAND ${CMAKE_COMMAND} -E tar xfz ${CMAKE_CURRENT_BINARY_DIR}/${_filename}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/..
         RESULT_VARIABLE rv)
