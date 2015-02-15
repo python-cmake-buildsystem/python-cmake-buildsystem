@@ -22,27 +22,14 @@ Usage
 
 How to use this buildsystem:
 
-1. Download and extract the Python 2.7.3 source
-
-.. code:: bash
-
-  VERSION=2.7.3
-  mkdir -p ~/scratch
-  cd ~/scratch
-  curl -L -O http://www.python.org/ftp/python/$VERSION/Python-$VERSION.tgz
-  md5sum Python-$VERSION.tgz
-  tar -xzvf Python-$VERSION.tgz
-
-Expected MD5: `2cf641732ac23b18d139be077bd906cd`
-
-2. Checkout the buildsystem
+1. Checkout the buildsystem
 
 .. code:: bash
 
   cd ~/scratch
   git clone git://github.com/davidsansome/python-cmake-buildsystem
 
-3. Build
+2. Build
 
 .. code:: bash
 
@@ -52,6 +39,12 @@ Expected MD5: `2cf641732ac23b18d139be077bd906cd`
   cmake -DCMAKE_INSTALL_PREFIX:PATH=${HOME}/scratch/python-install ../python-cmake-buildsystem
   make -j10
   make install
+
+.. note::
+
+  By default, the build system will download the python 2.7.3 source from
+  http://www.python.org/ftp/python/
+
 
 CMake Options
 -------------
@@ -67,6 +60,10 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
 
   CMAKE_INSTALL_PREFIX=<path>   (defaults to /usr/local)
     Path in which to install Python.
+
+  DOWNLOAD_SOURCES=ON|OFF      (defaults to ON)
+    Download, check MD5 sum and extract python sources in the parent directory.
+    Source archive is downloaded from http://www.python.org/ftp/python/2.7.3/Python-2.7.3.tgz
 
   BUILD_SHARED=ON|OFF          (defaults to OFF)
   BUILD_STATIC=ON|OFF          (defaults to ON)
