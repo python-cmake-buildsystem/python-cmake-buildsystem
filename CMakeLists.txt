@@ -80,6 +80,7 @@ if(NOT IS_ABSOLUTE ${SRC_DIR})
 endif()
 get_filename_component(_parent_dir ${CMAKE_CURRENT_BINARY_DIR} PATH)
 set(_download_link "http://www.python.org/ftp/python/${PY_VERSION}/Python-${PY_VERSION}.tgz")
+set(_download_md5 "2cf641732ac23b18d139be077bd906cd")
 set(_extracted_dir "Python-${PY_VERSION}")
 
 if(NOT EXISTS ${SRC_DIR}/${_landmark} AND DOWNLOAD_SOURCES)
@@ -88,7 +89,11 @@ if(NOT EXISTS ${SRC_DIR}/${_landmark} AND DOWNLOAD_SOURCES)
         message(STATUS "${_filename} already downloaded")
     else()
         message(STATUS "getting ${_download_link}")
-        file(DOWNLOAD "${_download_link}" ${CMAKE_CURRENT_BINARY_DIR}/${_filename} SHOW_PROGRESS)
+        file(
+          DOWNLOAD ${_download_link} ${CMAKE_CURRENT_BINARY_DIR}/${_filename}
+          EXPECTED_MD5 ${_download_md5}
+          SHOW_PROGRESS
+          )
     endif()
 
     message(STATUS "extracting ${_filename}")
