@@ -11,6 +11,7 @@ lib
 
 # Ignore all dotfiles...
 .*
+!.travis.yml
 
 # Ignore all back-up files...
 *~
