@@ -1,0 +1,20 @@
+language: c
+
+compiler:
+ - gcc
+ - clang
+
+branches:
+ only:
+  - master
+  - /^ci.*$/
+
+before_script:
+ - wget -P /tmp/ https://raw.githubusercontent.com/davidsansome/python-cmake-buildsystem/dashboard/travis_dashboard.cmake
+
+script:
+ - ctest -V -S /tmp/travis_dashboard.cmake
+
+after_script:
+ - cat ${TRAVIS_BUILD_DIR}-build/CMakeCache.txt
+
