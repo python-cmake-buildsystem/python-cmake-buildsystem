@@ -300,11 +300,11 @@ ${dashboard_cache}
 endmacro(write_cache)
 
 # Start with a fresh build tree.
-file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
 if(NOT "${CTEST_SOURCE_DIRECTORY}" STREQUAL "${CTEST_BINARY_DIRECTORY}")
   message("Clearing build tree...")
   ctest_empty_binary_directory(${CTEST_BINARY_DIRECTORY})
 endif()
+file(MAKE_DIRECTORY "${CTEST_BINARY_DIRECTORY}")
 
 set(dashboard_continuous 0)
 if("${dashboard_model}" STREQUAL "Continuous")
