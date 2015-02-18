@@ -1,0 +1,28 @@
+
+branches:
+ only:
+  - master
+  - /^ci.*$/
+
+platform:
+  - x86
+
+configuration:
+  - Release
+  - Debug
+
+install:
+  - ps: |
+      $scripts_dir="$env:APPVEYOR_BUILD_FOLDER\scripts"
+      mkdir $scripts_dir
+      $source="https://raw.githubusercontent.com/davidsansome/python-cmake-buildsystem/dashboard/appveyor_dashboard.cmake"
+      $destination="$scripts_dir\appveyor_dashboard.cmake"
+      (New-Object Net.WebClient).DownloadFile($source, $destination)
+
+
+build_script:
+  - ctest -V -C %configuration% -S "%APPVEYOR_BUILD_FOLDER%\\scripts\\appveyor_dashboard.cmake"
+
+test: off
+
+deploy: off
