@@ -73,7 +73,7 @@ if(NOT IS_ABSOLUTE ${SRC_DIR})
 endif()
 get_filename_component(_parent_dir ${CMAKE_CURRENT_BINARY_DIR} PATH)
 set(_download_link "http://www.python.org/ftp/python/${PY_VERSION}/Python-${PY_VERSION}.tgz")
-set(_download_md5 "2cf641732ac23b18d139be077bd906cd")
+set(_download_md5 "d4bca0159acb0b44a781292b5231936f")
 set(_extracted_dir "Python-${PY_VERSION}")
 
 if(NOT EXISTS ${SRC_DIR}/${_landmark} AND DOWNLOAD_SOURCES)
