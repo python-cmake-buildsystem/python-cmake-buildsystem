@@ -1,5 +1,5 @@
 
-set(MSVC_BUILTIN )
+set(MSVC_BUILTIN)
 if(MSVC)
     set(MSVC_BUILTIN BUILTIN)
 endif(MSVC)
