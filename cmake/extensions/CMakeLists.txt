@@ -339,7 +339,7 @@ if(ENABLE_SQLITE3 AND UNIX)
 endif()
 set(_ssl_LIBRARIES ${OPENSSL_LIBRARIES})
 if(WIN32)
-    list(APPEND _ssl_LIBRARIES ws2_32)
+    list(APPEND _ssl_LIBRARIES Crypt32 ws2_32)
 endif()
 add_python_extension(_ssl
     REQUIRES OPENSSL_INCLUDE_DIR OPENSSL_LIBRARIES
