@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.6)
 
 set(PY_VERSION_MAJOR 2)
-set(PY_VERSION_MINOR 4)
+set(PY_VERSION_MINOR 7)
 # Builds: 3
 # Fails to configure: 4
 # Fails to build: 5 6 8 9 10
