@@ -6,7 +6,7 @@ set(PY_VERSION_MINOR 7)
 # Fails to configure: 4
 # Fails to build: 5 6 8 9 10
 # Problem: C:\winsame\cary\vorpalall-pytry\builds\Python\Python-2.7.6\Modules\timemodule.c(104) : warning C4273: '_PyTime_DoubleToTimet' : inconsistent dll linkage
-set(PY_VERSION_PATCH 3)
+set(PY_VERSION_PATCH 10)
 
 set(PY_VERSION "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}")
 
@@ -89,6 +89,10 @@ if (PY_VERSION_PATCH EQUAL 3)
   set(_download_md5 "2cf641732ac23b18d139be077bd906cd")
 elseif (PY_VERSION_PATCH EQUAL 8)
   set(_download_md5 "d4bca0159acb0b44a781292b5231936f")
+elseif (PY_VERSION_PATCH EQUAL 9)
+  set(_download_md5 "5eebcaa0030dc4061156d3429657fb83")
+elseif (PY_VERSION_PATCH EQUAL 10)
+  set(_download_md5 "d7547558fd673bd9d38e2108c6b42521")
 endif ()
 if (_download_md5)
   set(hashargs EXPECTED_MD5 ${_download_md5})

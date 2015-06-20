@@ -117,14 +117,14 @@ endif(WIN32)
 # Socket is different on Windows
 if(WIN32)
     add_python_extension(_socket
-        SOURCES socketmodule.c
+        SOURCES socketmodule.c timemodule.c
         DEFINITIONS EAI_ADDRFAMILY
                     HAVE_SOCKADDR_STORAGE
                     HAVE_ADDRINFO
         LIBRARIES ws2_32
     )
 else(WIN32)
-    add_python_extension(_socket SOURCES socketmodule.c)
+    add_python_extension(_socket SOURCES socketmodule.c timemodule.c)
 endif(WIN32)
 
 set(_libffi_system_dir ${CMAKE_SYSTEM_PROCESSOR})
