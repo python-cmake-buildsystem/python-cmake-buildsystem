@@ -1,0 +1,13 @@
+diff -ruN Python-2.7.10-orig/Modules/timemodule.c Python-2.7.10/Modules/timemodule.c
+--- Python-2.7.10-orig/Modules/timemodule.c	2015-05-23 10:09:21.000000000 -0600
++++ Python-2.7.10/Modules/timemodule.c	2015-06-22 06:47:14.422695200 -0600
+@@ -1057,7 +1057,8 @@
+ }
+ 
+ /* export floattime to socketmodule.c */
+-PyAPI_FUNC(double)
++/* PyAPI_FUNC(double) */
++__declspec(dllexport) double
+ _PyTime_FloatTime(void)
+ {
+     return floattime();

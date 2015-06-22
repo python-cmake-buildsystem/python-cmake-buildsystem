@@ -120,7 +120,17 @@ if(NOT EXISTS ${SRC_DIR}/${_landmark} AND DOWNLOAD_SOURCES)
     if(NOT rv EQUAL 0)
         message(FATAL_ERROR "error: extraction of '${_filename}' failed")
     endif()
+    set(mixedpatch ${CMAKE_CURRENT_SOURCE_DIR}/python-${PY_VERSION}.patch)
     set(SRC_DIR ${CMAKE_CURRENT_BINARY_DIR}/../${_extracted_dir})
+    if (EXISTS ${mixedpatch})
+      execute_process(COMMAND cygpath -au ${mixedpatch} OUTPUT_VARIABLE unixpatch)
+      message(STATUS "Executing patch -p1 -i ${unixpatch} in ${SRC_DIR}")
+      execute_process(COMMAND patch -p1 -i ${unixpatch}
+        WORKING_DIRECTORY ${SRC_DIR}
+        RESULT_VARIABLE rv)
+    else()
+      message(STATUS "${CMAKE_CURRENT_SOURCE_DIR}/python-${PY_VERSION}.patch does not exist.  Not patching.")
+    endif()
 endif()
 
 if(NOT EXISTS ${SRC_DIR}/${_landmark})
