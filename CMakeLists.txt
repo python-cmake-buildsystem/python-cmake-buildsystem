@@ -2,7 +2,11 @@ cmake_minimum_required(VERSION 2.8.6)
 
 set(PY_VERSION_MAJOR 2)
 set(PY_VERSION_MINOR 7)
-set(PY_VERSION_PATCH 3)
+# Builds: 3
+# Fails to configure: 4
+# Fails to build: 5 6 8 9 10
+# Problem: C:\winsame\cary\vorpalall-pytry\builds\Python\Python-2.7.6\Modules\timemodule.c(104) : warning C4273: '_PyTime_DoubleToTimet' : inconsistent dll linkage
+set(PY_VERSION_PATCH 10)
 
 set(PY_VERSION "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}")
 
@@ -81,7 +85,18 @@ if(NOT IS_ABSOLUTE ${SRC_DIR})
 endif()
 get_filename_component(_parent_dir ${CMAKE_CURRENT_BINARY_DIR} PATH)
 set(_download_link "http://www.python.org/ftp/python/${PY_VERSION}/Python-${PY_VERSION}.tgz")
-set(_download_md5 "2cf641732ac23b18d139be077bd906cd")
+if (PY_VERSION_PATCH EQUAL 3)
+  set(_download_md5 "2cf641732ac23b18d139be077bd906cd")
+elseif (PY_VERSION_PATCH EQUAL 8)
+  set(_download_md5 "d4bca0159acb0b44a781292b5231936f")
+elseif (PY_VERSION_PATCH EQUAL 9)
+  set(_download_md5 "5eebcaa0030dc4061156d3429657fb83")
+elseif (PY_VERSION_PATCH EQUAL 10)
+  set(_download_md5 "d7547558fd673bd9d38e2108c6b42521")
+endif ()
+if (_download_md5)
+  set(hashargs EXPECTED_MD5 ${_download_md5})
+endif ()
 set(_extracted_dir "Python-${PY_VERSION}")
 
 if(NOT EXISTS ${SRC_DIR}/${_landmark} AND DOWNLOAD_SOURCES)
@@ -93,7 +108,7 @@ if(NOT EXISTS ${SRC_DIR}/${_landmark} AND DOWNLOAD_SOURCES)
         message(STATUS "Downloading ${_download_link}")
         file(
           DOWNLOAD ${_download_link} ${_archive_filepath}
-          EXPECTED_MD5 ${_download_md5}
+          ${hashargs}
           SHOW_PROGRESS
           )
     endif()
@@ -105,6 +120,7 @@ if(NOT EXISTS ${SRC_DIR}/${_landmark} AND DOWNLOAD_SOURCES)
     if(NOT rv EQUAL 0)
         message(FATAL_ERROR "error: extraction of '${_filename}' failed")
     endif()
+    set(mixedpatch ${CMAKE_CURRENT_SOURCE_DIR}/python-${PY_VERSION}.patch)
     set(SRC_DIR ${CMAKE_CURRENT_BINARY_DIR}/../${_extracted_dir})
 endif()
 

@@ -7,6 +7,7 @@
 #     SOURCES source1.c source2.c ...
 #     [ REQUIRES variable1 variable2 ... ]
 #     [ DEFINITIONS define1 define2 ... ]
+#     [ DEPENDS depend1 depend2 ... ]
 #     [ LIBRARIES lib1 lib2 ... ]
 #     [ INCLUDEDIRS dir1 dir2 ... ]
 #     [ BUILTIN ]
@@ -20,6 +21,7 @@
 #              in the LIBRARIES and INCLUDEDIRS sections.
 # DEFINITIONS: an optional list of definitions to pass to the compiler while
 #              building this module.  Do not include the -D prefix.
+# DEPENDS      A list of targets that this target depends on
 # LIBRARIES:   an optional list of additional libraries.
 # INCLUDEDIRS: an optional list of additional include directories.
 # BUILTIN:     if this is set the module will be compiled statically into
@@ -40,7 +42,7 @@
 function(add_python_extension name)
     set(options BUILTIN)
     set(oneValueArgs)
-    set(multiValueArgs REQUIRES SOURCES DEFINITIONS LIBRARIES INCLUDEDIRS)
+    set(multiValueArgs REQUIRES SOURCES DEFINITIONS DEPENDS LIBRARIES INCLUDEDIRS)
     cmake_parse_arguments(ADD_PYTHON_EXTENSION
         "${options}"
         "${oneValueArgs}"
@@ -116,6 +118,9 @@ function(add_python_extension name)
         # Extensions cannot be built against a static libpython on windows
     else(BUILTIN_${upper_name})
         add_library(${target_name} SHARED ${absolute_sources})
+        foreach (dep ${ADD_PYTHON_EXTENSION_DEPENDS})
+          add_dependencies(${target_name} extension_${dep})
+        endforeach ()
         include_directories(${ADD_PYTHON_EXTENSION_INCLUDEDIRS})
         target_link_libraries(${target_name} ${ADD_PYTHON_EXTENSION_LIBRARIES})
 
