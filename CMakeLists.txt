@@ -119,6 +119,19 @@ if(NOT EXISTS ${SRC_DIR}/${_landmark} AND DOWNLOAD_SOURCES)
         message(FATAL_ERROR "error: extraction of '${_filename}' failed")
     endif()
     set(SRC_DIR ${CMAKE_CURRENT_BINARY_DIR}/../${_extracted_dir})
+
+# To get Python to build shared on Windows, we need to patch these
+# two files to remove the PyAPI_FUNC macros
+    set(fixfiles "${SRC_DIR}/Include/timefuncs.h"
+        "${SRC_DIR}/Modules/timemodule.c")
+    message(STATUS "Patching ${fixfiles}.")
+    foreach (ff ${fixfiles})
+      file(READ "${ff}" fs)
+      string(REPLACE "PyAPI_FUNC(time_t)" "time_t" fs "${fs}")
+      string(REPLACE "PyAPI_FUNC(double)" "double" fs "${fs}")
+      file(WRITE "${ff}" "${fs}")
+    endforeach ()
+
 endif()
 
 if(NOT EXISTS ${SRC_DIR}/${_landmark})
