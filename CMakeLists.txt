@@ -34,6 +34,7 @@ option(DOWNLOAD_SOURCES "Automatically download the Python sources" ON)
 option(BUILD_SHARED "Build a shared libpython library" OFF)
 option(BUILD_STATIC "Build a static libpython library" ON)
 option(USE_LIB64 "Search for dependencies and install to prefix/lib64 instead of prefix/lib" OFF)
+option(INSTALL_WINDOWS_TRADITIONAL "Install the Windows exe and dlls in the traditional place" OFF)
 
 option(USE_SYSTEM_LIBRARIES "Use system libraries" ON)
 
@@ -172,29 +173,36 @@ if(UNIX)
 endif()
 
 # Install tree directory
-set(BIN_INSTALL_DIR bin)                         # Contains the python executable
+if (WIN32 AND INSTALL_WINDOWS_TRADITIONAL)
+  set(BIN_INSTALL_DIR .)  # Contains the python executable
+  set(EXTENSION_INSTALL_DIR DLLs)
+else ()
+  set(BIN_INSTALL_DIR bin)  # Contains the python executable
+  set(EXTENSION_INSTALL_DIR ${PYTHONHOME}/lib-dynload)
+endif ()
 set(CONFIG_INSTALL_DIR share/${LIBPYTHON})
-set(EXTENSION_INSTALL_DIR ${PYTHONHOME}/lib-dynload)
-set(INCLUDE_INSTALL_DIR include/${LIBPYTHON})
-if(MSVC)
-    set(INCLUDE_INSTALL_DIR include)
-endif(MSVC)
+if (WIN32)
+  set(INCLUDE_INSTALL_DIR include)
+else ()
+  set(INCLUDE_INSTALL_DIR include/${LIBPYTHON})
+endif ()
 # Build tree directory
 set(BIN_BUILD_DIR ${CMAKE_BINARY_DIR}/bin)
 set(CONFIG_BUILD_DIR ${CMAKE_BINARY_DIR}/${CONFIG_INSTALL_DIR})
-set(EXTENSION_BUILD_DIR ${CMAKE_BINARY_DIR}/${EXTENSION_INSTALL_DIR})
+set(EXTENSION_BUILD_DIR ${CMAKE_BINARY_DIR}/${PYTHONHOME}/lib-dynload)
 set(INCLUDE_BUILD_DIR ${SRC_DIR}/Include)
 
-set(ARCHIVEDIR "libs")      # Contains the static (*.a) and import libraries (*.lib)
+set(ARCHIVEDIR "libs") # Contains the static (*.a) and import libraries (*.lib)
 
 # Directories specific to 'libpython'
-set(LIBPYTHON_LIBDIR ${LIBDIR})
-set(LIBPYTHON_ARCHIVEDIR ${LIBDIR})
-set(LIBPYTHON_STATIC_ARCHIVEDIR ${LIBDIR})
 if(WIN32)
-    set(LIBPYTHON_LIBDIR ${BIN_INSTALL_DIR})
+    set(LIBPYTHON_LIBDIR ${BIN_INSTALL_DIR}/bin)
     set(LIBPYTHON_ARCHIVEDIR ${ARCHIVEDIR})
     set(LIBPYTHON_STATIC_ARCHIVEDIR static-${ARCHIVEDIR})
+else()
+    set(LIBPYTHON_LIBDIR ${LIBDIR})
+    set(LIBPYTHON_ARCHIVEDIR ${LIBDIR})
+    set(LIBPYTHON_STATIC_ARCHIVEDIR ${LIBDIR})
 endif()
 
 set(EXTRA_PYTHONPATH "" CACHE STRING
