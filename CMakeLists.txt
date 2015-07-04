@@ -286,7 +286,7 @@ add_subdirectory(cmake/python CMakeBuild/python)
 add_subdirectory(cmake/include CMakeBuild/include)
 add_subdirectory(cmake/lib CMakeBuild/lib)
 if (WIN32 AND ZLIB_INCLUDE_DIRS AND ZLIB_LIBRARIES)
-  add_subdirectory(cmake/PC/bdist_wininst)
+  # add_subdirectory(cmake/PC/bdist_wininst)
 endif ()
 
 show_extension_summary()
