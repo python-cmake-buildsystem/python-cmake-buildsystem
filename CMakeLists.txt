@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.6)
 
 set(PY_VERSION_MAJOR 2)
 set(PY_VERSION_MINOR 7)
-set(PY_VERSION_PATCH 8)
+set(PY_VERSION_PATCH 10)
 set(PY_VERSION "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}")
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
@@ -26,6 +26,7 @@ option(DOWNLOAD_SOURCES "Automatically download the Python sources" ON)
 option(BUILD_SHARED "Build a shared libpython library" OFF)
 option(BUILD_STATIC "Build a static libpython library" ON)
 option(USE_LIB64 "Search for dependencies and install to prefix/lib64 instead of prefix/lib" OFF)
+option(INSTALL_WINDOWS_TRADITIONAL "Install the Windows exe and dlls in the traditional place" OFF)
 
 option(USE_SYSTEM_LIBRARIES "Use system libraries" ON)
 
@@ -73,7 +74,20 @@ if(NOT IS_ABSOLUTE ${SRC_DIR})
 endif()
 get_filename_component(_parent_dir ${CMAKE_CURRENT_BINARY_DIR} PATH)
 set(_download_link "http://www.python.org/ftp/python/${PY_VERSION}/Python-${PY_VERSION}.tgz")
-set(_download_md5 "d4bca0159acb0b44a781292b5231936f")
+if (PY_VERSION_PATCH EQUAL 3)
+  set(_download_md5 "2cf641732ac23b18d139be077bd906cd")
+elseif (PY_VERSION_PATCH EQUAL 8)
+  set(_download_md5 "d4bca0159acb0b44a781292b5231936f")
+elseif (PY_VERSION_PATCH EQUAL 9)
+  set(_download_md5 "5eebcaa0030dc4061156d3429657fb83")
+elseif (PY_VERSION_PATCH EQUAL 10)
+  set(_download_md5 "d7547558fd673bd9d38e2108c6b42521")
+endif ()
+if (_download_md5)
+  set(hashargs EXPECTED_MD5 ${_download_md5})
+else ()
+  message(FATAL_ERROR "Hash for Python-${PY_VERSION} unknown.")
+endif ()
 set(_extracted_dir "Python-${PY_VERSION}")
 
 if(NOT EXISTS ${SRC_DIR}/${_landmark} AND DOWNLOAD_SOURCES)
@@ -85,7 +99,7 @@ if(NOT EXISTS ${SRC_DIR}/${_landmark} AND DOWNLOAD_SOURCES)
         message(STATUS "Downloading ${_download_link}")
         file(
           DOWNLOAD ${_download_link} ${_archive_filepath}
-          EXPECTED_MD5 ${_download_md5}
+          ${hashargs}
           SHOW_PROGRESS
           )
     endif()
@@ -98,6 +112,7 @@ if(NOT EXISTS ${SRC_DIR}/${_landmark} AND DOWNLOAD_SOURCES)
         message(FATAL_ERROR "error: extraction of '${_filename}' failed")
     endif()
     set(SRC_DIR ${CMAKE_CURRENT_BINARY_DIR}/../${_extracted_dir})
+
 endif()
 
 if(NOT EXISTS ${SRC_DIR}/${_landmark})
@@ -159,29 +174,36 @@ if(UNIX)
 endif()
 
 # Install tree directory
-set(BIN_INSTALL_DIR bin)                         # Contains the python executable
+if (WIN32 AND INSTALL_WINDOWS_TRADITIONAL)
+  set(BIN_INSTALL_DIR .)  # Contains the python executable
+  set(EXTENSION_INSTALL_DIR DLLs)
+else ()
+  set(BIN_INSTALL_DIR bin)  # Contains the python executable
+  set(EXTENSION_INSTALL_DIR ${PYTHONHOME}/lib-dynload)
+endif ()
 set(CONFIG_INSTALL_DIR share/${LIBPYTHON})
-set(EXTENSION_INSTALL_DIR ${PYTHONHOME}/lib-dynload)
-set(INCLUDE_INSTALL_DIR include/${LIBPYTHON})
-if(MSVC)
-    set(INCLUDE_INSTALL_DIR include)
-endif(MSVC)
+if (WIN32)
+  set(INCLUDE_INSTALL_DIR include)
+else ()
+  set(INCLUDE_INSTALL_DIR include/${LIBPYTHON})
+endif ()
 # Build tree directory
 set(BIN_BUILD_DIR ${CMAKE_BINARY_DIR}/bin)
 set(CONFIG_BUILD_DIR ${CMAKE_BINARY_DIR}/${CONFIG_INSTALL_DIR})
-set(EXTENSION_BUILD_DIR ${CMAKE_BINARY_DIR}/${EXTENSION_INSTALL_DIR})
+set(EXTENSION_BUILD_DIR ${CMAKE_BINARY_DIR}/${PYTHONHOME}/lib-dynload)
 set(INCLUDE_BUILD_DIR ${SRC_DIR}/Include)
 
-set(ARCHIVEDIR "libs")      # Contains the static (*.a) and import libraries (*.lib)
+set(ARCHIVEDIR "libs") # Contains the static (*.a) and import libraries (*.lib)
 
 # Directories specific to 'libpython'
-set(LIBPYTHON_LIBDIR ${LIBDIR})
-set(LIBPYTHON_ARCHIVEDIR ${LIBDIR})
-set(LIBPYTHON_STATIC_ARCHIVEDIR ${LIBDIR})
 if(WIN32)
-    set(LIBPYTHON_LIBDIR ${BIN_INSTALL_DIR})
+    set(LIBPYTHON_LIBDIR ${BIN_INSTALL_DIR}/bin)
     set(LIBPYTHON_ARCHIVEDIR ${ARCHIVEDIR})
     set(LIBPYTHON_STATIC_ARCHIVEDIR static-${ARCHIVEDIR})
+else()
+    set(LIBPYTHON_LIBDIR ${LIBDIR})
+    set(LIBPYTHON_ARCHIVEDIR ${LIBDIR})
+    set(LIBPYTHON_STATIC_ARCHIVEDIR ${LIBDIR})
 endif()
 
 set(EXTRA_PYTHONPATH "" CACHE STRING
@@ -204,7 +226,9 @@ install(FILES ${PYCONFIG_BUILD_DIR}/pyconfig.h
         DESTINATION ${INCLUDE_INSTALL_DIR}/)
 
 # Set include directories
-include_directories(cmake)
+if(NOT MSVC)
+  include_directories(cmake)
+endif()
 include_directories(${INCLUDE_BUILD_DIR})
 include_directories(${PYCONFIG_BUILD_DIR})
 include_directories(${SRC_DIR}/Python)
@@ -248,6 +272,9 @@ add_subdirectory(cmake/libpython CMakeBuild/libpython)
 add_subdirectory(cmake/python CMakeBuild/python)
 add_subdirectory(cmake/include CMakeBuild/include)
 add_subdirectory(cmake/lib CMakeBuild/lib)
+if (WIN32 AND ZLIB_INCLUDE_DIRS AND ZLIB_LIBRARIES)
+  # add_subdirectory(cmake/PC/bdist_wininst)
+endif ()
 
 show_extension_summary()
 

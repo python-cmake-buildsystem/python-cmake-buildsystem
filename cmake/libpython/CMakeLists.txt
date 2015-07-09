@@ -243,10 +243,15 @@ function(add_libpython name type)
     # Export target
     set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS ${name})
 
+    if (WIN32 AND INSTALL_WINDOWS_TRADITIONAL)
+      set(LIBPYTHON_RUNTIME_DIR ${BIN_INSTALL_DIR})
+    else ()
+      set(LIBPYTHON_RUNTIME_DIR ${BIN_INSTALL_DIR}/bin)
+    endif ()
     install(TARGETS ${name} EXPORT PythonTargets
         ARCHIVE DESTINATION ${LIBPYTHON_ARCHIVEDIR}
         LIBRARY DESTINATION ${LIBPYTHON_LIBDIR}
-        RUNTIME DESTINATION ${LIBPYTHON_LIBDIR}
+        RUNTIME DESTINATION ${LIBPYTHON_RUNTIME_DIR}
     )
 endfunction(add_libpython)
 
