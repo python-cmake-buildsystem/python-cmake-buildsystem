@@ -20,7 +20,7 @@ add_python_extension(crypt REQUIRES HAVE_LIBCRYPT SOURCES cryptmodule.c LIBRARIE
 add_python_extension(cStringIO SOURCES cStringIO.c)
 add_python_extension(_csv SOURCES _csv.c)
 add_python_extension(_ctypes_test SOURCES _ctypes/_ctypes_test.c)
-add_python_extension(datetime REQUIRES HAVE_LIBM SOURCES datetimemodule.c timemodule.c LIBRARIES ${M_LIBRARIES})
+add_python_extension(datetime ${MSVC_BUILTIN} REQUIRES HAVE_LIBM SOURCES datetimemodule.c timemodule.c LIBRARIES ${M_LIBRARIES})
 if(ENABLE_DATETIME AND UNIX)
     set_property(SOURCE ${SRC_DIR}/Modules/datetimemodule.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
 endif()
@@ -50,7 +50,7 @@ add_python_extension(_random SOURCES _randommodule.c)
 add_python_extension(strop SOURCES stropmodule.c)
 add_python_extension(_struct SOURCES _struct.c)
 add_python_extension(_testcapi SOURCES _testcapimodule.c)
-add_python_extension(time REQUIRES HAVE_LIBM SOURCES timemodule.c LIBRARIES ${M_LIBRARIES})
+add_python_extension(time ${MSVC_BUILTIN} REQUIRES HAVE_LIBM SOURCES timemodule.c LIBRARIES ${M_LIBRARIES})
 add_python_extension(unicodedata SOURCES unicodedata.c)
 
 # UNIX-only extensions
@@ -115,16 +115,23 @@ else(WIN32)
 endif(WIN32)
 
 # Socket is different on Windows
+set(_socket_SOURCES socketmodule.c)
 if(WIN32)
     add_python_extension(_socket
-        SOURCES socketmodule.c
+        REQUIRES HAVE_LIBM
+        SOURCES ${_socket_SOURCES}
         DEFINITIONS EAI_ADDRFAMILY
                     HAVE_SOCKADDR_STORAGE
                     HAVE_ADDRINFO
-        LIBRARIES ws2_32
+        LIBRARIES ws2_32 ${M_LIBRARIES}
     )
 else(WIN32)
-    add_python_extension(_socket SOURCES socketmodule.c)
+    list(APPEND _socket_SOURCES timemodule.c)
+    add_python_extension(_socket
+        REQUIRES HAVE_LIBM
+        SOURCES ${_socket_SOURCES}
+        LIBRARIES ${M_LIBRARIES}
+    )
 endif(WIN32)
 
 set(_libffi_system_dir ${CMAKE_SYSTEM_PROCESSOR})
