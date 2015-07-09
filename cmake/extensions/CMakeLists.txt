@@ -20,7 +20,7 @@ add_python_extension(crypt REQUIRES HAVE_LIBCRYPT SOURCES cryptmodule.c LIBRARIE
 add_python_extension(cStringIO SOURCES cStringIO.c)
 add_python_extension(_csv SOURCES _csv.c)
 add_python_extension(_ctypes_test SOURCES _ctypes/_ctypes_test.c)
-add_python_extension(datetime ${MSVC_BUILTIN} REQUIRES HAVE_LIBM SOURCES datetimemodule.c timemodule.c LIBRARIES ${M_LIBRARIES})
+add_python_extension(datetime ${MSVC_BUILTIN} REQUIRES HAVE_LIBM SOURCES datetimemodule.c LIBRARIES ${M_LIBRARIES})
 if(ENABLE_DATETIME AND UNIX)
     set_property(SOURCE ${SRC_DIR}/Modules/datetimemodule.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
 endif()
@@ -118,6 +118,7 @@ endif(WIN32)
 set(_socket_SOURCES socketmodule.c)
 if(WIN32)
     add_python_extension(_socket
+        ${MSVC_BUILTIN}
         REQUIRES HAVE_LIBM
         SOURCES ${_socket_SOURCES}
         DEFINITIONS EAI_ADDRFAMILY
