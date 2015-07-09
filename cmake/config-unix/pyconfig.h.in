@@ -56,6 +56,9 @@
 /* Define to 1 if you have the `alarm' function. */
 #cmakedefine HAVE_ALARM 1
 
+/* Define to 1 if you have the <alloca.h> header file. */
+#cmakedefine HAVE_ALLOCA_H 1
+
 /* Define this if your time.h defines altzone. */
 #cmakedefine HAVE_ALTZONE 1
 
@@ -162,10 +165,10 @@
 /* Define to 1 if you have the device macros. */
 #cmakedefine HAVE_DEVICE_MACROS 1
 
-/* Define if we have /dev/ptc. */
+/* Define to 1 if you have the /dev/ptc device file. */
 #cmakedefine HAVE_DEV_PTC 1
 
-/* Define if we have /dev/ptmx. */
+/* Define to 1 if you have the /dev/ptmx device file. */
 #cmakedefine HAVE_DEV_PTMX 1
 
 /* Define to 1 if you have the <direct.h> header file. */
@@ -473,6 +476,9 @@
 /* Define to 1 if you have the `mktime' function. */
 #cmakedefine HAVE_MKTIME 1
 
+/* Define to 1 if you have the `mmap' function. */
+#cmakedefine HAVE_MMAP 1
+
 /* Define to 1 if you have the `mremap' function. */
 #cmakedefine HAVE_MREMAP 1
 
@@ -517,6 +523,9 @@
 
 /* Define if you have GNU PTH threads. */
 #cmakedefine HAVE_PTH 1
+
+/* Define to 1 if you have the `pthread_atfork' function. */
+#cmakedefine HAVE_PTHREAD_ATFORK 1
 
 /* Defined for Solaris 2.6 bug in pthread header. */
 #cmakedefine HAVE_PTHREAD_DESTRUCTOR 1
@@ -854,14 +863,14 @@
 /* Define this if you have tcl and TCL_UTF_MAX==6 */
 #cmakedefine HAVE_UCS4_TCL 1
 
-/* Define to 1 if the system has the type `uintptr_t'. */
-#cmakedefine HAVE_UINTPTR_T 1
-
 /* Define if your compiler provides uint32_t. */
 #cmakedefine HAVE_UINT32_T 1
 
 /* Define if your compiler provides uint64_t. */
 #cmakedefine HAVE_UINT64_T 1
+
+/* Define to 1 if the system has the type `uintptr_t'. */
+#cmakedefine HAVE_UINTPTR_T 1
 
 /* Define to 1 if you have the `uname' function. */
 #cmakedefine HAVE_UNAME 1

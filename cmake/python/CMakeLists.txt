@@ -22,6 +22,27 @@ set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS python)
 
 install(TARGETS python EXPORT PythonTargets RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT Runtime)
 
+if(UNIX AND PY_VERSION VERSION_GREATER "2.7.4")
+    # Setup landmark allowing to run the interpreter from a build tree. See 'getpath.c' for details.
+    add_custom_command(
+        OUTPUT ${BIN_BUILD_DIR}/pybuilddir.txt ${EXTENSION_BUILD_DIR}/_sysconfigdata.py
+        COMMAND $<TARGET_FILE:python> -E -S -m sysconfig --generate-posix-vars
+        COMMAND ${CMAKE_COMMAND}
+          -DBIN_BUILD_DIR:PATH=${BIN_BUILD_DIR}
+          -DPYTHON_BINARY_DIR:PATH=${CMAKE_BINARY_DIR}
+          -DEXTENSION_INSTALL_DIR:PATH=${EXTENSION_INSTALL_DIR}
+          -P ${CMAKE_SOURCE_DIR}/cmake/UpdateSysconfig.cmake
+        COMMENT "Relocate _sysconfigdata.py and update pybuilddir.txt"
+        WORKING_DIRECTORY ${BIN_BUILD_DIR}
+        DEPENDS python
+        )
+    add_custom_target(update_sysconfig ALL
+        DEPENDS ${BIN_BUILD_DIR}/pybuilddir.txt ${EXTENSION_BUILD_DIR}/_sysconfigdata.py
+        )
+    install(FILES ${EXTENSION_BUILD_DIR}/_sysconfigdata.py
+        DESTINATION ${PYTHONHOME}/)
+endif()
+
 if(UNIX)
   install(CODE
 "message(STATUS \"Creating Python executable symlinks...\")

@@ -42,7 +42,7 @@ How to use this buildsystem:
 
 .. note::
 
-  By default, the build system will download the python 2.7.3 source from
+  By default, the build system will download the python 2.7.8 source from
   http://www.python.org/ftp/python/
 
 
@@ -63,7 +63,7 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
 
   DOWNLOAD_SOURCES=ON|OFF      (defaults to ON)
     Download, check MD5 sum and extract python sources in the parent directory.
-    Source archive is downloaded from http://www.python.org/ftp/python/2.7.3/Python-2.7.3.tgz
+    Source archive is downloaded from http://www.python.org/ftp/python/2.7.8/Python-2.7.8.tgz
 
   BUILD_SHARED=ON|OFF          (defaults to OFF)
   BUILD_STATIC=ON|OFF          (defaults to ON)
@@ -82,7 +82,7 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
                                  NT extensions which are builtin by default)
     These two options control how individual python extensions are built.
     <extension> is the name of the extension in upper case, and without any
-    leading underscore (_).  Known extensions for 2.7.3 include:
+    leading underscore (_).  Known extensions for 2.7.8 include:
 
       ARRAY AUDIOOP BINASCII BISECT BSDDB BZ2 CMATH CODECS_CN CODECS_HK
       CODECS_ISO2022 CODECS_JP CODECS_KR CODECS_TW COLLECTIONS CPICKLE CRYPT
@@ -185,7 +185,7 @@ these before running make::
 Remarks
 -------
 
-Note: This branch is for Python version 2.7.3.  Since this buildsystem is
+Note: This branch is for Python version 2.7.8.  Since this buildsystem is
 maintained separately from Python itself it needs to be manually updated
 whenever there is a new release of Python.
 
