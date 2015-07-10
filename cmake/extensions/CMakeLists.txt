@@ -235,6 +235,15 @@ else(WIN32)
     endif(APPLE)
 endif(WIN32)
 
+# XXX Because of CMake issue #8170 disable ctypes support when using
+#     "Visual Studio 2008 Win64" generator.
+if((ENABLE_CTYPES OR ENABLE_CTYPES_TEST) AND "${MSVC_VERSION}" VERSION_EQUAL 1500 AND ${CMAKE_SIZEOF_VOID_P} EQUAL 8)
+    set(warn "Disable 'ctypes' and 'ctypes_test' extensions when using 'Visual Studio 2008 Win64' generator. See http://public.kitware.com/Bug/view.php?id=8170 for more details.")
+    message(WARNING ${warn})
+    set(ENABLE_CTYPES OFF CACHE BOOL "${warn}" FORCE)
+    set(ENABLE_CTYPES_TEST OFF CACHE BOOL "${warn}" FORCE)
+endif()
+
 
 # Build expat using the system expat if it's installed, otherwise use the
 # builtin version.
