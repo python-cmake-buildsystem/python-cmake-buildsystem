@@ -207,6 +207,7 @@ else(WIN32)
                     ${_libffi_system_extra_src}
             INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi/src/${_libffi_system_dir}
                         ${SRC_DIR}/Modules/_ctypes/libffi/include
+                        ${CMAKE_SOURCE_DIR}/cmake # For ffi.h and fficonfig.h
         )
     endif(APPLE)
 endif(WIN32)
