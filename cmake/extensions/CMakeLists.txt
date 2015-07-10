@@ -165,6 +165,29 @@ if(WIN32)
                     ${SRC_DIR}/Modules/_ctypes/libffi/include
         DEFINITIONS X86_WIN32
       )
+    else(MINGW) # Visual Studio
+      if(BUILTIN_CTYPES)
+          message(SEND_ERROR "BUILTIN_CTYPES is currently not supported")
+      endif(BUILTIN_CTYPES)
+      if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
+          enable_language(ASM_MASM)
+          set(_ctype_arch_impl win64.asm)
+      else(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
+          set(_ctype_arch_impl win32.c)
+      endif(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
+      add_python_extension(_ctypes
+          SOURCES _ctypes/_ctypes.c
+                  _ctypes/callbacks.c
+                  _ctypes/callproc.c
+                  _ctypes/cfield.c
+                  _ctypes/malloc_closure.c
+                  _ctypes/stgdict.c
+                  _ctypes/libffi_msvc/prep_cif.c
+                  _ctypes/libffi_msvc/ffi.c
+                  _ctypes/libffi_msvc/${_ctype_arch_impl}
+          REQUIRES BUILD_SHARED
+          INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi_msvc
+        )
     endif(MINGW)
 else(WIN32)
     set(_libffi_system_extra_src)
@@ -207,9 +230,30 @@ else(WIN32)
                     ${_libffi_system_extra_src}
             INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi/src/${_libffi_system_dir}
                         ${SRC_DIR}/Modules/_ctypes/libffi/include
+                        ${CMAKE_SOURCE_DIR}/cmake # For ffi.h and fficonfig.h
         )
     endif(APPLE)
 endif(WIN32)
+
+# XXX Because of CMake issue #8170 disable ctypes support when using
+#     "Visual Studio 2008 Win64" generator.
+if((ENABLE_CTYPES OR ENABLE_CTYPES_TEST) AND "${MSVC_VERSION}" VERSION_EQUAL 1500 AND ${CMAKE_SIZEOF_VOID_P} EQUAL 8)
+    set(warn "Disable 'ctypes' and 'ctypes_test' extensions when using 'Visual Studio 2008 Win64' generator. See http://public.kitware.com/Bug/view.php?id=8170 for more details.")
+    message(WARNING ${warn})
+    set(ENABLE_CTYPES OFF CACHE BOOL "${warn}" FORCE)
+    set(ENABLE_CTYPES_TEST OFF CACHE BOOL "${warn}" FORCE)
+endif()
+# XXX Because of CMake issue #11536, disable ctypes support when using
+#     CMake < 2.8.12 with "Visual Studio 2010" and "Visual Studio 2010 Win64"
+#     generator.
+if((ENABLE_CTYPES OR ENABLE_CTYPES_TEST) AND CMAKE_VERSION VERSION_LESS 2.8.12)
+    if("${MSVC_VERSION}" VERSION_EQUAL 1600)
+        set(warn "Disable 'ctypes' and 'ctypes_test' extensions when using CMake < 2.8.12 with any 'Visual Studio 2010' generators. See http://public.kitware.com/Bug/view.php?id=11536 for more details.")
+        message(WARNING ${warn})
+        set(ENABLE_CTYPES OFF CACHE BOOL "${warn}" FORCE)
+        set(ENABLE_CTYPES_TEST OFF CACHE BOOL "${warn}" FORCE)
+    endif()
+endif()
 
 
 # Build expat using the system expat if it's installed, otherwise use the
