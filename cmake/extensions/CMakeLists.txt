@@ -122,7 +122,6 @@ endif(WIN32)
 set(_socket_SOURCES socketmodule.c)
 if(WIN32)
     add_python_extension(_socket
-        ${MSVC_BUILTIN}
         REQUIRES HAVE_LIBM
         SOURCES ${_socket_SOURCES}
         DEFINITIONS EAI_ADDRFAMILY
