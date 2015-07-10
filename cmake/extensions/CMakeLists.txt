@@ -243,6 +243,17 @@ if((ENABLE_CTYPES OR ENABLE_CTYPES_TEST) AND "${MSVC_VERSION}" VERSION_EQUAL 150
     set(ENABLE_CTYPES OFF CACHE BOOL "${warn}" FORCE)
     set(ENABLE_CTYPES_TEST OFF CACHE BOOL "${warn}" FORCE)
 endif()
+# XXX Because of CMake issue #11536, disable ctypes support when using
+#     CMake < 2.8.12 with "Visual Studio 2010" and "Visual Studio 2010 Win64"
+#     generator.
+if((ENABLE_CTYPES OR ENABLE_CTYPES_TEST) AND CMAKE_VERSION VERSION_LESS 2.8.12)
+    if("${MSVC_VERSION}" VERSION_EQUAL 1600)
+        set(warn "Disable 'ctypes' and 'ctypes_test' extensions when using CMake < 2.8.12 with any 'Visual Studio 2010' generators. See http://public.kitware.com/Bug/view.php?id=11536 for more details.")
+        message(WARNING ${warn})
+        set(ENABLE_CTYPES OFF CACHE BOOL "${warn}" FORCE)
+        set(ENABLE_CTYPES_TEST OFF CACHE BOOL "${warn}" FORCE)
+    endif()
+endif()
 
 
 # Build expat using the system expat if it's installed, otherwise use the
