@@ -82,7 +82,7 @@ if(USE_SYSTEM_READLINE)
     endif()
 endif()
 
-if(USE_SYSTEM_READLINE)
+if(USE_SYSTEM_SQLITE3)
     find_path(SQLITE3_INCLUDE_PATH sqlite3.h)
     find_library(SQLITE3_LIBRARY sqlite3)
 endif()
