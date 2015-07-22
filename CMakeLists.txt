@@ -26,6 +26,11 @@ option(DOWNLOAD_SOURCES "Automatically download the Python sources" ON)
 option(BUILD_SHARED "Build a shared libpython library" OFF)
 option(BUILD_STATIC "Build a static libpython library" ON)
 option(USE_LIB64 "Search for dependencies and install to prefix/lib64 instead of prefix/lib" OFF)
+if(WIN32)
+  option(INSTALL_WINDOWS_TRADITIONAL "Install the executable and extensions in the traditional location" OFF)
+else()
+  set(INSTALL_WINDOWS_TRADITIONAL OFF)
+endif()
 
 option(USE_SYSTEM_LIBRARIES "Use system libraries" ON)
 
@@ -160,8 +165,14 @@ endif()
 
 # Install tree directory
 set(BIN_INSTALL_DIR bin)                         # Contains the python executable
+if(INSTALL_WINDOWS_TRADITIONAL)
+    set(BIN_INSTALL_DIR .)                       # Contains the python executable
+endif()
 set(CONFIG_INSTALL_DIR share/${LIBPYTHON})
 set(EXTENSION_INSTALL_DIR ${PYTHONHOME}/lib-dynload)
+if(INSTALL_WINDOWS_TRADITIONAL)
+    set(EXTENSION_INSTALL_DIR DLLs)
+endif()
 set(INCLUDE_INSTALL_DIR include/${LIBPYTHON})
 if(MSVC)
     set(INCLUDE_INSTALL_DIR include)
@@ -169,7 +180,7 @@ endif(MSVC)
 # Build tree directory
 set(BIN_BUILD_DIR ${CMAKE_BINARY_DIR}/bin)
 set(CONFIG_BUILD_DIR ${CMAKE_BINARY_DIR}/${CONFIG_INSTALL_DIR})
-set(EXTENSION_BUILD_DIR ${CMAKE_BINARY_DIR}/${EXTENSION_INSTALL_DIR})
+set(EXTENSION_BUILD_DIR ${CMAKE_BINARY_DIR}/${PYTHONHOME}/lib-dynload)
 set(INCLUDE_BUILD_DIR ${SRC_DIR}/Include)
 
 set(ARCHIVEDIR "libs")      # Contains the static (*.a) and import libraries (*.lib)
