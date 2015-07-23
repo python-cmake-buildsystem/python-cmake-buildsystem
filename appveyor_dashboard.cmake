@@ -2,7 +2,11 @@
 set(CTEST_SITE "appveyor")
 set(CTEST_DASHBOARD_ROOT $ENV{APPVEYOR_BUILD_FOLDER}/..)
 string(SUBSTRING $ENV{APPVEYOR_REPO_COMMIT} 0 7 commit)
-set(CTEST_BUILD_NAME "VS-$ENV{PLATFORM}-$ENV{CONFIGURATION}_$ENV{APPVEYOR_REPO_BRANCH}_${commit}")
+set(PY_VERSION_PATCH 8) # Value should match the default set in CMakeLists.txt
+if(NOT "$ENV{PY_VERSION_PATCH}" STREQUAL "")
+  set(PY_VERSION_PATCH "$ENV{PY_VERSION_PATCH}")
+endif()
+set(CTEST_BUILD_NAME "2.7.${PY_VERSION_PATCH}-VS-$ENV{PLATFORM}-$ENV{CONFIGURATION}_$ENV{APPVEYOR_REPO_BRANCH}_${commit}")
 set(CTEST_CONFIGURATION_TYPE $ENV{CONFIGURATION})
 set(CTEST_CMAKE_GENERATOR "Visual Studio 9 2008")
 if("$ENV{platform}" STREQUAL "x64")
@@ -16,7 +20,9 @@ set(dashboard_model Experimental)
 set(dashboard_track AppVeyor-CI)
 
 set(dashboard_cache "BUILD_SHARED:BOOL=ON
-BUILD_STATIC:BOOL=OFF")
+BUILD_STATIC:BOOL=OFF
+PY_VERSION_PATCH:STRING=${PY_VERSION_PATCH}
+")
 
 function(downloadFile url dest)
  file(DOWNLOAD ${url} ${dest} STATUS status)

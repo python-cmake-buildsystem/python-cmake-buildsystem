@@ -4,7 +4,11 @@ set(CTEST_SITE "${hostname}")
 set(CTEST_DASHBOARD_ROOT $ENV{TRAVIS_BUILD_DIR}/..)
 get_filename_component(compiler_name $ENV{CC} NAME)
 string(SUBSTRING $ENV{TRAVIS_COMMIT} 0 7 commit)
-set(CTEST_BUILD_NAME "$ENV{TRAVIS_OS_NAME}-${compiler_name}_$ENV{TRAVIS_BRANCH}_${commit}")
+set(PY_VERSION_PATCH 8) # Value should match the default set in CMakeLists.txt
+if(NOT "$ENV{PY_VERSION_PATCH}" STREQUAL "")
+  set(PY_VERSION_PATCH "$ENV{PY_VERSION_PATCH}")
+endif()
+set(CTEST_BUILD_NAME "2.7.${PY_VERSION_PATCH}-$ENV{TRAVIS_OS_NAME}-${compiler_name}_$ENV{TRAVIS_BRANCH}_${commit}")
 set(CTEST_CONFIGURATION_TYPE Release)
 set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 set(CTEST_BUILD_FLAGS "-j4")
@@ -12,6 +16,9 @@ set(CTEST_TEST_ARGS PARALLEL_LEVEL 8)
 
 set(dashboard_model Experimental)
 set(dashboard_track Travis-CI)
+
+set(dashboard_cache "PY_VERSION_PATCH:STRING=${PY_VERSION_PATCH}
+")
 
 function(downloadFile url dest)
  file(DOWNLOAD ${url} ${dest} STATUS status)
