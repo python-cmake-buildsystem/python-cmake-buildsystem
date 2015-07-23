@@ -11,6 +11,17 @@ configuration:
   - Release
   - Debug
 
+environment:
+  matrix:
+  - PY_VERSION_PATCH: 10
+  - PY_VERSION_PATCH: 9
+  - PY_VERSION_PATCH: 8
+  - PY_VERSION_PATCH: 7
+  - PY_VERSION_PATCH: 6
+  - PY_VERSION_PATCH: 5
+  - PY_VERSION_PATCH: 4
+  - PY_VERSION_PATCH: 3
+
 install:
   - ps: |
       $scripts_dir="$env:APPVEYOR_BUILD_FOLDER\scripts"
