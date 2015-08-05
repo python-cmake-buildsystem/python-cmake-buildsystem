@@ -37,6 +37,14 @@
 # leading underscores.  So add_python_extension(_foo ...) will create the
 # options ENABLE_FOO and BUILTIN_FOO.
 
+macro(append_list_in_cache L)
+  if(ARGN)
+    list(APPEND ${L} ${ARGN})
+    list(REMOVE_DUPLICATES ${L})
+    set(${L} "${${L}}" CACHE INTERNAL "" FORCE)
+  endif()
+endmacro()
+
 function(add_python_extension name)
     set(options BUILTIN)
     set(oneValueArgs)
@@ -106,11 +114,11 @@ function(add_python_extension name)
 
     if(BUILTIN_${upper_name})
         # This will be compiled into libpython instead of as a separate library
-        set(builtin_extensions "${builtin_extensions}${name};" CACHE INTERNAL "" FORCE)
-        set(builtin_source "${builtin_source}${absolute_sources};" CACHE INTERNAL "" FORCE)
-        set(builtin_link_libraries "${builtin_link_libraries}${ADD_PYTHON_EXTENSION_LIBRARIES};" CACHE INTERNAL "" FORCE)
-        set(builtin_includedirs "${builtin_includedirs}${ADD_PYTHON_EXTENSION_INCLUDEDIRS};" CACHE INTERNAL "" FORCE)
-        set(builtin_definitions "${builtin_definitions}${ADD_PYTHON_EXTENSION_DEFINITIONS};" CACHE INTERNAL "" FORCE)
+        append_list_in_cache(builtin_extensions ${name})
+        append_list_in_cache(builtin_source ${absolute_sources})
+        append_list_in_cache(builtin_link_libraries ${ADD_PYTHON_EXTENSION_LIBRARIES})
+        append_list_in_cache(builtin_includedirs ${ADD_PYTHON_EXTENSION_INCLUDEDIRS})
+        append_list_in_cache(builtin_definitions ${ADD_PYTHON_EXTENSION_DEFINITIONS})
     elseif(WIN32 AND NOT BUILD_SHARED)
         # Extensions cannot be built against a static libpython on windows
     else(BUILTIN_${upper_name})
