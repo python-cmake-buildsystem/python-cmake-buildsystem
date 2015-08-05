@@ -1,5 +1,8 @@
 add_definitions(-DPy_BUILD_CORE)
 add_definitions(-DNDEBUG)
+if(HAVE_MEMMOVE)
+  add_definitions(-DHAVE_MEMMOVE=1)
+endif()
 
 set(LIBPYTHON_SOURCES
     ${CMAKE_BINARY_DIR}/CMakeFiles/config.c
@@ -237,7 +240,7 @@ function(add_libpython name type)
     )
 
     if(builtin_definitions)
-        set_target_properties(${name} PROPERTIES COMPILE_DEFINITIONS "${builtin_definitions}")
+        target_compile_definitions(${name} PUBLIC "${builtin_definitions}")
     endif(builtin_definitions)
 
     # Export target
@@ -268,8 +271,8 @@ endif(BUILD_SHARED)
 
 if(BUILD_STATIC)
     add_libpython(libpython-static STATIC)
+    target_compile_definitions(libpython-static PUBLIC Py_NO_ENABLE_SHARED)
     set_target_properties(libpython-static PROPERTIES
-        COMPILE_DEFINITIONS Py_NO_ENABLE_SHARED
         ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_STATIC_ARCHIVEDIR}
     )
     install(TARGETS libpython-static ARCHIVE DESTINATION ${PYTHONHOME}/config/)
