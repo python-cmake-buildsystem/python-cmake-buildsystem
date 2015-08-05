@@ -237,7 +237,11 @@ function(add_libpython name type)
     )
 
     if(builtin_definitions)
-        target_compile_definitions(${name} PUBLIC "${builtin_definitions}")
+        if(HAVE_TARGET_COMPILE_DEFINITIONS)
+            target_compile_definitions(${name} PUBLIC "${builtin_definitions}")
+        else(HAVE_TARGET_COMPILE_DEFINITIONS)
+            set_target_properties(${name} PROPERTIES COMPILE_DEFINITIONS "${builtin_definitions}")
+        endif(HAVE_TARGET_COMPILE_DEFINITIONS)
     endif(builtin_definitions)
 
     # Export target
@@ -268,7 +272,13 @@ endif(BUILD_SHARED)
 
 if(BUILD_STATIC)
     add_libpython(libpython-static STATIC)
-    target_compile_definitions(libpython-static PUBLIC Py_NO_ENABLE_SHARED)
+    if(HAVE_TARGET_COMPILE_DEFINITIONS)
+        target_compile_definitions(libpython-static PUBLIC Py_NO_ENABLE_SHARED)
+    else(HAVE_TARGET_COMPILE_DEFINITIONS)
+        set_target_properties(libpython-static PROPERTIES
+            COMPILE_DEFINITIONS Py_NO_ENABLE_SHARED
+        )
+    endif(HAVE_TARGET_COMPILE_DEFINITIONS)
     set_target_properties(libpython-static PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_STATIC_ARCHIVEDIR}
     )
