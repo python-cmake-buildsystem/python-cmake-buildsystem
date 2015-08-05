@@ -15,6 +15,12 @@ if(BUILD_SHARED)
 else(BUILD_SHARED)
     target_link_libraries(python libpython-static)
     set_target_properties(python PROPERTIES COMPILE_DEFINITIONS Py_NO_ENABLE_SHARED)
+    if(WITH_STATIC_DEPENDENCIES)
+      set_target_properties(python PROPERTIES
+          LINK_SEARCH_START_STATIC ON
+          LINK_SEARCH_END_STATIC ON
+          )
+    endif()
 endif(BUILD_SHARED)
 
 # Export target

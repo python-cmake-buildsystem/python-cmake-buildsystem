@@ -48,6 +48,10 @@ function(add_python_extension name)
         ${ARGN}
         )
 
+    if(WITH_STATIC_DEPENDENCIES)
+        set(ADD_PYTHON_EXTENSION_BUILTIN TRUE)
+    endif()
+
     # Remove _ from the beginning of the name.
     string(REGEX REPLACE "^_" "" pretty_name "${name}")
 
