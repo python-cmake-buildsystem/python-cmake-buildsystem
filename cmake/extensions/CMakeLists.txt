@@ -199,7 +199,6 @@ else(WIN32)
         #            _ctypes/callproc.c
         #            _ctypes/cfield.c
         #            _ctypes/libffi_osx/src/closures.c
-        #            _ctypes/libffi_osx/src/dlmalloc.c
         #            _ctypes/libffi_osx/${_libffi_system_dir}/ffi.c
         #            _ctypes/libffi_osx/${_libffi_system_dir}/ffi64.c
         #            _ctypes/libffi_osx/src/prep_cif.c
@@ -222,7 +221,6 @@ else(WIN32)
                     _ctypes/callproc.c
                     _ctypes/cfield.c
                     _ctypes/libffi/src/closures.c
-                    _ctypes/libffi/src/dlmalloc.c
                     _ctypes/libffi/src/prep_cif.c
                     _ctypes/stgdict.c
                     _ctypes/libffi/src/${_libffi_system_dir}/ffi.c
