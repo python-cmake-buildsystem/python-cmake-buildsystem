@@ -208,6 +208,7 @@ else(WIN32)
         #            _ctypes/libffi_osx/${_libffi_system_dir}/darwin64.S
         #    INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi/src/${_libffi_system_dir}
         #                ${SRC_DIR}/Modules/_ctypes/libffi/include
+        #    DEFINITIONS USE_DL_PREFIX
         #)
     else(APPLE)
         if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
@@ -231,6 +232,7 @@ else(WIN32)
             INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi/src/${_libffi_system_dir}
                         ${SRC_DIR}/Modules/_ctypes/libffi/include
                         ${CMAKE_SOURCE_DIR}/cmake # For ffi.h and fficonfig.h
+            DEFINITIONS USE_DL_PREFIX
         )
     endif(APPLE)
 endif(WIN32)
