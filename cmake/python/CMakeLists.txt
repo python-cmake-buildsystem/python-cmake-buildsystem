@@ -15,7 +15,17 @@ if(BUILD_SHARED)
 else(BUILD_SHARED)
     target_link_libraries(python libpython-static)
     set_target_properties(python PROPERTIES COMPILE_DEFINITIONS Py_NO_ENABLE_SHARED)
+    if(WITH_STATIC_DEPENDENCIES)
+        set_target_properties(python PROPERTIES
+            LINK_SEARCH_START_STATIC ON
+            LINK_SEARCH_END_STATIC ON
+        )
+    endif(WITH_STATIC_DEPENDENCIES)
 endif(BUILD_SHARED)
+
+if(WITH_STATIC_EXECUTABLES AND NOT HAVE_ADD_COMPILE_OPTIONS)
+    set_property(TARGET python APPEND PROPERTY COMPILE_FLAGS "-static")
+endif()
 
 # Export target
 set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS python)

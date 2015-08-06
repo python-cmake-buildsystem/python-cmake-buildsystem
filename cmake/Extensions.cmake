@@ -80,6 +80,10 @@ function(add_python_extension name)
     if(${name} STREQUAL "_ctypes_test")
         unset(BUILTIN_${upper_name} CACHE)
         set(BUILTIN_${upper_name} 0)
+        if(WITH_STATIC_DEPENDENCIES)
+            unset(ENABLE_${upper_name} CACHE)
+            set(ENABLE_${upper_name} 0)
+        endif()
     endif()
 
     # Check all the things we require are found.
@@ -151,6 +155,10 @@ function(add_python_extension name)
                 SUFFIX .so
             )
         endif(APPLE)
+
+        if(WITH_STATIC_EXECUTABLES AND NOT HAVE_ADD_COMPILE_OPTIONS)
+            set_property(TARGET ${target_name} APPEND PROPERTY COMPILE_FLAGS "-static")
+        endif()
 
         # Turn off the "lib" prefix and add any compiler definitions
         set_target_properties(${target_name} PROPERTIES

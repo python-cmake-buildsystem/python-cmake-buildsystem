@@ -17,6 +17,7 @@ endif()
 project(Python C ASM)
 
 # Include helper functions
+include(cmake/CMakeChecks.cmake)
 include(cmake/Extensions.cmake)
 include(CMakeDependentOption)
 include(CMakeParseArguments)
@@ -57,6 +58,38 @@ option(Py_USING_UNICODE "Enable unicode support" ON)
 set(Py_DEBUG OFF) # TODO - Build debugging interpreter
 option(WITH_PYMALLOC "Define if you want to compile in Python-specific mallocs" ON)
 option(WITH_THREAD "Compile in rudimentary thread support" ON)
+if(UNIX)
+    option(WITH_STATIC_DEPENDENCIES "Restrict extensions and external dependencies to static libraries" OFF)
+    if(WITH_STATIC_DEPENDENCIES)
+
+        set(_reason " because of WITH_STATIC_DEPENDENCIES=ON")
+
+        set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_STATIC_LIBRARY_SUFFIX})
+        message(STATUS "Setting CMAKE_FIND_LIBRARY_SUFFIXES to \"${CMAKE_STATIC_LIBRARY_SUFFIX}\"${_reason}")
+
+        set(BUILD_EXTENSIONS_AS_BUILTIN ON CACHE BOOL "Forced to ON${_reason}" FORCE)
+        message(STATUS "Setting BUILD_EXTENSIONS_AS_BUILTIN to ON${_reason}")
+
+        set(BUILD_SHARED OFF CACHE BOOL "Forced to OFF${_reason}" FORCE)
+        message(STATUS "Setting BUILD_SHARED to OFF${_reason}")
+
+        set(BUILD_STATIC ON CACHE BOOL "Forced to ON${_reason}" FORCE)
+        message(STATUS "Setting BUILD_STATIC to ON${_reason}")
+
+        set(HAVE_DLFCN_H 0 CACHE BOOL "Forced to 0${_reason}" FORCE)
+        message(STATUS "Setting HAVE_DLFCN_H to 0${_reason}")
+
+        option(WITH_STATIC_EXECUTABLES "Build fully static executables" OFF)
+        if(WITH_STATIC_EXECUTABLES AND HAVE_ADD_COMPILE_OPTIONS)
+            add_compile_options(-static)
+        endif()
+    else()
+        if(DEFINED HAVE_DLFCN_H)
+            unset(HAVE_DLFCN_H UNSET)
+            message(STATUS "Unsetting HAVE_DLFCN_H")
+        endif()
+    endif()
+endif()
 
 # Detect source directory
 set(_landmark "pyconfig.h.in") # CMake will look for this file.
