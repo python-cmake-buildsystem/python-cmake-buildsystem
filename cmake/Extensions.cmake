@@ -72,9 +72,10 @@ function(add_python_extension name)
     # Check all the things we require are found.
     set(missing_deps "")
     foreach(dep ${ADD_PYTHON_EXTENSION_REQUIRES} ENABLE_${upper_name})
-        if(NOT ${dep})
+        string(REPLACE " " ";" list_dep ${dep})
+        if(NOT (${list_dep}))
             set(missing_deps "${missing_deps}${dep} ")
-        endif(NOT ${dep})
+        endif(NOT (${list_dep}))
     endforeach(dep)
 
     # If any dependencies were missing don't include this extension.
