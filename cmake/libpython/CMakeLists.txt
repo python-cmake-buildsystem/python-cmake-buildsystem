@@ -1,4 +1,3 @@
-add_definitions(-DPy_BUILD_CORE)
 add_definitions(-DNDEBUG)
 
 set(LIBPYTHON_SOURCES
@@ -107,7 +106,6 @@ set(LIBPYTHON_SOURCES
     ${SRC_DIR}/Python/sysmodule.c
     ${SRC_DIR}/Python/traceback.c
     ${SRC_DIR}/Python/_warnings.c
-    ${builtin_source}
 )
 
 if(UNIX)
@@ -197,6 +195,8 @@ elseif(WIN32)
     )
 endif(UNIX)
 
+set_property(SOURCE ${LIBPYTHON_SOURCES} APPEND PROPERTY COMPILE_DEFINITIONS Py_BUILD_CORE)
+
 # Create the parts of config.c for platform-specific and user-controlled
 # builtin modules.
 
@@ -216,7 +216,7 @@ configure_file(
 
 
 function(add_libpython name type)
-    add_library(${name} ${type} ${LIBPYTHON_SOURCES})
+    add_library(${name} ${type} ${LIBPYTHON_SOURCES} ${builtin_source})
     target_link_libraries(${name}
         ${builtin_link_libraries}
         ${HAVE_LIBDL}
@@ -266,7 +266,7 @@ if(BUILD_SHARED)
         #      and used to build a target in an other directory.
         set_property(
             SOURCE ${SRC_DIR}/Modules/posixmodule.c
-            PROPERTY COMPILE_DEFINITIONS WITH_NEXT_FRAMEWORK)
+            APPEND PROPERTY COMPILE_DEFINITIONS WITH_NEXT_FRAMEWORK)
     endif(APPLE)
 endif(BUILD_SHARED)
 
