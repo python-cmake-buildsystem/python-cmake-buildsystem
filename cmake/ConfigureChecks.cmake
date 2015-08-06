@@ -97,6 +97,18 @@ if(WIN32)
   #  standard part of the Python distribution.
 else(WIN32)
 
+# Ensure the try_compile / try_run executables are also statically built.
+if(WITH_STATIC_EXECUTABLES)
+    set(_option "-static")
+    if(NOT CMAKE_REQUIRED_FLAGS MATCHES "(^| )${_option}($| )")
+        if(CMAKE_REQUIRED_FLAGS)
+            set(CMAKE_REQUIRED_FLAGS "${_option} $CMAKE_REQUIRED_FLAGS}")
+        else()
+            set(CMAKE_REQUIRED_FLAGS "${_option}")
+        endif()
+    endif()
+endif(WITH_STATIC_EXECUTABLES)
+
 macro(ADD_COND var cond item)
   if(${cond})
     set(${var} ${${var}} ${item})
