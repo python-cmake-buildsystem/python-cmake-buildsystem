@@ -80,7 +80,7 @@ if(UNIX)
         message(STATUS "Setting HAVE_DLFCN_H to 0${_reason}")
 
         option(WITH_STATIC_EXECUTABLES "Build fully static executables" OFF)
-        if(WITH_STATIC_EXECUTABLES)
+        if(WITH_STATIC_EXECUTABLES AND HAVE_ADD_COMPILE_OPTIONS)
             add_compile_options(-static)
         endif()
     else()

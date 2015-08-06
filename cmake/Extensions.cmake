@@ -156,6 +156,10 @@ function(add_python_extension name)
             )
         endif(APPLE)
 
+        if(WITH_STATIC_EXECUTABLES AND NOT HAVE_ADD_COMPILE_OPTIONS)
+            set_property(TARGET ${target_name} APPEND PROPERTY COMPILE_FLAGS "-static")
+        endif()
+
         # Turn off the "lib" prefix and add any compiler definitions
         set_target_properties(${target_name} PROPERTIES
             ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${ARCHIVEDIR}

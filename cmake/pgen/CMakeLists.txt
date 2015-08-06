@@ -24,3 +24,7 @@ set(PGEN_SOURCES
 )
 
 add_executable(pgen ${PGEN_SOURCES})
+
+if(WITH_STATIC_EXECUTABLES AND NOT HAVE_ADD_COMPILE_OPTIONS)
+    set_property(TARGET pgen APPEND PROPERTY COMPILE_FLAGS "-static")
+endif()
