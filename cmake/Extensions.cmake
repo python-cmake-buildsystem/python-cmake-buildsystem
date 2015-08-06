@@ -69,6 +69,12 @@ function(add_python_extension name)
            ${ADD_PYTHON_EXTENSION_BUILTIN}
     )
 
+    # HACK _ctypes_test should always be shared
+    if(${name} STREQUAL "_ctypes_test")
+        unset(BUILTIN_${upper_name} CACHE)
+        set(BUILTIN_${upper_name} 0)
+    endif()
+
     # Check all the things we require are found.
     set(missing_deps "")
     foreach(dep ${ADD_PYTHON_EXTENSION_REQUIRES} ENABLE_${upper_name})
