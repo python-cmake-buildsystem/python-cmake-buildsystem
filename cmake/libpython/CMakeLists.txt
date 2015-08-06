@@ -1,4 +1,3 @@
-add_definitions(-DPy_BUILD_CORE)
 add_definitions(-DNDEBUG)
 
 set(LIBPYTHON_SOURCES
@@ -107,7 +106,6 @@ set(LIBPYTHON_SOURCES
     ${SRC_DIR}/Python/sysmodule.c
     ${SRC_DIR}/Python/traceback.c
     ${SRC_DIR}/Python/_warnings.c
-    ${builtin_source}
 )
 
 if(UNIX)
@@ -197,6 +195,41 @@ elseif(WIN32)
     )
 endif(UNIX)
 
+set_property(SOURCE ${LIBPYTHON_SOURCES} APPEND PROPERTY COMPILE_DEFINITIONS Py_BUILD_CORE)
+
+# List of builtin extensions
+get_property(builtin_extensions GLOBAL PROPERTY builtin_extensions)
+
+# Collect builtin extension sources
+set(builtin_extension_sources)
+foreach(name ${builtin_extensions})
+    get_property(extension_${name}_sources GLOBAL PROPERTY extension_${name}_sources)
+    list(APPEND builtin_extension_sources ${extension_${name}_sources})
+endforeach()
+
+# Collect builtin extension link libraries
+set(builtin_link_libraries)
+foreach(name ${builtin_extensions})
+    get_property(extension_${name}_link_libraries GLOBAL PROPERTY extension_${name}_link_libraries)
+    list(APPEND builtin_link_libraries ${extension_${name}_link_libraries})
+endforeach()
+
+# Collect builtin extension includedirs
+set(builtin_includedirs)
+foreach(name ${builtin_extensions})
+    get_property(extension_${name}_includedirs GLOBAL PROPERTY extension_${name}_includedirs)
+    list(APPEND builtin_includedirs ${extension_${name}_includedirs})
+endforeach()
+
+# Collect builtin extension definitions
+foreach(name ${builtin_extensions})
+    get_property(extension_${name}_definitions GLOBAL PROPERTY extension_${name}_definitions)
+    if(extension_${name}_definitions)
+        set_property(SOURCE ${extension_${name}_sources}
+            APPEND PROPERTY COMPILE_DEFINITIONS ${extension_${name}_definitions})
+    endif()
+endforeach()
+
 # Create the parts of config.c for platform-specific and user-controlled
 # builtin modules.
 
@@ -216,7 +249,7 @@ configure_file(
 
 
 function(add_libpython name type)
-    add_library(${name} ${type} ${LIBPYTHON_SOURCES})
+    add_library(${name} ${type} ${LIBPYTHON_SOURCES} ${builtin_extension_sources})
     target_link_libraries(${name}
         ${builtin_link_libraries}
         ${HAVE_LIBDL}
@@ -235,14 +268,6 @@ function(add_libpython name type)
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_LIBDIR}
         INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/${LIBPYTHON_LIBDIR}
     )
-
-    if(builtin_definitions)
-        if(HAVE_TARGET_COMPILE_DEFINITIONS)
-            target_compile_definitions(${name} PUBLIC "${builtin_definitions}")
-        else(HAVE_TARGET_COMPILE_DEFINITIONS)
-            set_target_properties(${name} PROPERTIES COMPILE_DEFINITIONS "${builtin_definitions}")
-        endif(HAVE_TARGET_COMPILE_DEFINITIONS)
-    endif(builtin_definitions)
 
     # Export target
     set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS ${name})
@@ -266,7 +291,7 @@ if(BUILD_SHARED)
         #      and used to build a target in an other directory.
         set_property(
             SOURCE ${SRC_DIR}/Modules/posixmodule.c
-            PROPERTY COMPILE_DEFINITIONS WITH_NEXT_FRAMEWORK)
+            APPEND PROPERTY COMPILE_DEFINITIONS WITH_NEXT_FRAMEWORK)
     endif(APPLE)
 endif(BUILD_SHARED)
 

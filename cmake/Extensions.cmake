@@ -64,17 +64,31 @@ function(add_python_extension name)
            "Controls whether the \"${name}\" extension will be built"
            ON
     )
-    option(BUILTIN_${upper_name}
-           "If this is set the \"${name}\" extension will be compiled in to libpython"
-           ${ADD_PYTHON_EXTENSION_BUILTIN}
-    )
+    if(NOT BUILD_EXTENSIONS_AS_BUILTIN)
+        option(BUILTIN_${upper_name}
+               "If this is set the \"${name}\" extension will be compiled in to libpython"
+               ${ADD_PYTHON_EXTENSION_BUILTIN}
+        )
+    else(NOT BUILD_EXTENSIONS_AS_BUILTIN)
+        # To keep things simple, if user toggle the BUILD_EXTENSIONS_AS_BUILTIN
+        # option, we do not keep track of the BUILTIN_<name> option previous value.
+        unset(BUILTIN_${upper_name} CACHE)
+        set(BUILTIN_${upper_name} 1)
+    endif(NOT BUILD_EXTENSIONS_AS_BUILTIN)
+
+    # HACK _ctypes_test should always be shared
+    if(${name} STREQUAL "_ctypes_test")
+        unset(BUILTIN_${upper_name} CACHE)
+        set(BUILTIN_${upper_name} 0)
+    endif()
 
     # Check all the things we require are found.
     set(missing_deps "")
     foreach(dep ${ADD_PYTHON_EXTENSION_REQUIRES} ENABLE_${upper_name})
-        if(NOT ${dep})
+        string(REPLACE " " ";" list_dep ${dep})
+        if(NOT (${list_dep}))
             set(missing_deps "${missing_deps}${dep} ")
-        endif(NOT ${dep})
+        endif(NOT (${list_dep}))
     endforeach(dep)
 
     # If any dependencies were missing don't include this extension.
@@ -106,11 +120,11 @@ function(add_python_extension name)
 
     if(BUILTIN_${upper_name})
         # This will be compiled into libpython instead of as a separate library
-        _append_list_in_cache(builtin_extensions ${name})
-        _append_list_in_cache(builtin_source ${absolute_sources})
-        _append_list_in_cache(builtin_link_libraries ${ADD_PYTHON_EXTENSION_LIBRARIES})
-        _append_list_in_cache(builtin_includedirs ${ADD_PYTHON_EXTENSION_INCLUDEDIRS})
-        _append_list_in_cache(builtin_definitions ${ADD_PYTHON_EXTENSION_DEFINITIONS})
+        set_property(GLOBAL APPEND PROPERTY builtin_extensions ${name})
+        set_property(GLOBAL APPEND PROPERTY extension_${name}_sources ${absolute_sources})
+        set_property(GLOBAL APPEND PROPERTY extension_${name}_link_libraries ${ADD_PYTHON_EXTENSION_LIBRARIES})
+        set_property(GLOBAL APPEND PROPERTY extension_${name}_includedirs ${ADD_PYTHON_EXTENSION_INCLUDEDIRS})
+        set_property(GLOBAL APPEND PROPERTY extension_${name}_definitions ${ADD_PYTHON_EXTENSION_DEFINITIONS})
     elseif(WIN32 AND NOT BUILD_SHARED)
         # Extensions cannot be built against a static libpython on windows
     else(BUILTIN_${upper_name})
@@ -171,11 +185,3 @@ function(show_extension_summary)
         message(STATUS "")
     endif(extensions_disabled)
 endfunction(show_extension_summary)
-
-macro(_append_list_in_cache L)
-  if(ARGN)
-    list(APPEND ${L} ${ARGN})
-    list(REMOVE_DUPLICATES ${L})
-    set(${L} "${${L}}" CACHE INTERNAL "" FORCE)
-  endif()
-endmacro()
