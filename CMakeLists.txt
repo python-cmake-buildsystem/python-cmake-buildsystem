@@ -255,11 +255,6 @@ endif(UNIX AND NOT APPLE)
 file(WRITE ${CONFIG_BUILD_DIR}/PythonTargets.cmake "")
 
 # Add extension modules
-set(builtin_extensions "" CACHE INTERNAL "" FORCE)
-set(builtin_source "" CACHE INTERNAL "" FORCE)
-set(builtin_link_libraries "" CACHE INTERNAL "" FORCE)
-set(builtin_includedirs "" CACHE INTERNAL "" FORCE)
-set(builtin_definitions "" CACHE INTERNAL "" FORCE)
 set(extensions_enabled "" CACHE INTERNAL "" FORCE)
 set(extensions_disabled "" CACHE INTERNAL "" FORCE)
 add_subdirectory(cmake/extensions CMakeBuild/extensions)
