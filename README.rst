@@ -121,7 +121,7 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
   USE_SYSTEM_Curses=ON|OFF      (defaults to ON)
     If set to OFF, no attempt to detect Curses libraries will be done.
     Associated python extensions are: CURSES, CURSES_PANEL, READLINE
-    Following CMake variables can manually be set: CURSES_LIBRARIES
+    Following CMake variables can manually be set: CURSES_LIBRARIES, PANEL_LIBRARIES
 
   USE_SYSTEM_EXPAT=ON|OFF       (defaults to ON)
     If set to OFF, no attempt to detect Expat libraries will be done.
