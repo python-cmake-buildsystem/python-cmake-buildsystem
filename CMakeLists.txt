@@ -17,6 +17,7 @@ endif()
 project(Python C ASM)
 
 # Include helper functions
+include(cmake/CMakeChecks.cmake)
 include(cmake/Extensions.cmake)
 include(CMakeDependentOption)
 include(CMakeParseArguments)
