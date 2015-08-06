@@ -116,6 +116,11 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
     installed into lib64/python2.7/lib-dynload instead of
     lib/python2.7/lib-dynload.
 
+  WITH_STATIC_DEPENDENCIES=ON|OFF    (defaults to OFF, available only on UNIX)
+    If this is set to ON then cmake will compile statically libpython and all
+    extensions. External dependencies (ncurses, sqlite, ...) will be builtin
+    only if they are available as static libraries.
+
   EXTRA_PYTHONPATH=dir1:dir2    (defaults to "")
     Colon (:) separated list of extra directories to add to the compiled-in
     PYTHONPATH.

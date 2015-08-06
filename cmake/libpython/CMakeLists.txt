@@ -131,8 +131,14 @@ endif(UNIX OR MINGW)
 
 # Platform-specific source files
 if(UNIX)
+    if(NOT WITH_STATIC_DEPENDENCIES)
+        list(APPEND LIBPYTHON_SOURCES
+            ${SRC_DIR}/Python/dynload_shlib.c
+        )
+    else(NOT WITH_STATIC_DEPENDENCIES)
+        message(STATUS "Excluding Python/dynload_shlib.c from libpython because of WITH_STATIC_DEPENDENCIES=ON")
+    endif(NOT WITH_STATIC_DEPENDENCIES)
     list(APPEND LIBPYTHON_SOURCES
-        ${SRC_DIR}/Python/dynload_shlib.c
         ${SRC_DIR}/Modules/getpath.c
     )
     set_property(

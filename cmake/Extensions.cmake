@@ -80,6 +80,10 @@ function(add_python_extension name)
     if(${name} STREQUAL "_ctypes_test")
         unset(BUILTIN_${upper_name} CACHE)
         set(BUILTIN_${upper_name} 0)
+        if(WITH_STATIC_DEPENDENCIES)
+            unset(ENABLE_${upper_name} CACHE)
+            set(ENABLE_${upper_name} 0)
+        endif()
     endif()
 
     # Check all the things we require are found.
