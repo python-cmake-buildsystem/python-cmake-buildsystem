@@ -64,10 +64,17 @@ function(add_python_extension name)
            "Controls whether the \"${name}\" extension will be built"
            ON
     )
-    option(BUILTIN_${upper_name}
-           "If this is set the \"${name}\" extension will be compiled in to libpython"
-           ${ADD_PYTHON_EXTENSION_BUILTIN}
-    )
+    if(NOT BUILD_EXTENSIONS_AS_BUILTIN)
+        option(BUILTIN_${upper_name}
+               "If this is set the \"${name}\" extension will be compiled in to libpython"
+               ${ADD_PYTHON_EXTENSION_BUILTIN}
+        )
+    else(NOT BUILD_EXTENSIONS_AS_BUILTIN)
+        # To keep things simple, if user toggle the BUILD_EXTENSIONS_AS_BUILTIN
+        # option, we do not keep track of the BUILTIN_<name> option previous value.
+        unset(BUILTIN_${upper_name} CACHE)
+        set(BUILTIN_${upper_name} 1)
+    endif(NOT BUILD_EXTENSIONS_AS_BUILTIN)
 
     # HACK _ctypes_test should always be shared
     if(${name} STREQUAL "_ctypes_test")

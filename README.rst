@@ -77,6 +77,13 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
     static libpython, so you must build any extensions you want into libpython
     itself (see the BUILTIN flags below).
 
+  BUILD_EXTENSIONS_AS_BUILTIN=ON|OFF (defaults to OFF)
+    If enabled, all extensions are statically compiled into the built python
+    libraries (static and/or shared).
+
+    Note that all previously set BUILTIN_<extension> options are ignored and
+    reset to their original value.
+
   ENABLE_<extension>=ON|OFF     (defaults to ON)
   BUILTIN_<extension>=ON|OFF    (defaults to OFF except for POSIX, PWD and
                                  NT extensions which are builtin by default)
