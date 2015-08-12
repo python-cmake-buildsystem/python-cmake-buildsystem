@@ -267,7 +267,10 @@ include_directories(${SRC_DIR}/Python)
 
 # Set cflags used by all components
 if(UNIX)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-strict-aliasing -fwrapv -Wall -Wstrict-prototypes")
+    append_if_absent(CMAKE_C_FLAGS "-fno-strict-aliasing" CACHE STRING " " FORCE)
+    append_if_absent(CMAKE_C_FLAGS "-fwrapv" CACHE STRING " " FORCE)
+    append_if_absent(CMAKE_C_FLAGS "-Wall" CACHE STRING " " FORCE)
+    append_if_absent(CMAKE_C_FLAGS "-Wstrict-prototypes" CACHE STRING " " FORCE)
 endif(UNIX)
 if(MSVC)
     string(REPLACE "/Ob2" "/Ob1" CMAKE_C_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE}) # InlineFunctionExpansion=1
@@ -275,7 +278,7 @@ if(MSVC)
 endif(MSVC)
 
 if(NOT WIN32)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+    append_if_absent(CMAKE_C_FLAGS "-fPIC" CACHE STRING " " FORCE)
 endif(NOT WIN32)
 
 # Useful additional variables that extensions can use.
