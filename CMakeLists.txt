@@ -34,6 +34,39 @@ else()
   set(INSTALL_WINDOWS_TRADITIONAL OFF)
 endif()
 
+# Append an item to a string if it does not already contain it.  Any additional
+# arguments are treated as extra "set" arguments
+macro(append_if_absent VARNAME VALUE)
+    if(NOT ${VARNAME} MATCHES "(^| )${VALUE}($| )")
+        if(${VARNAME})
+            set(${VARNAME} "${${VARNAME}} ${VALUE}" ${ARGN})
+        else()
+            set(${VARNAME} "${VALUE}" ${ARGN})
+        endif()
+    endif()
+endmacro()
+
+if(UNIX)
+    option(WITH_STATIC_DEPENDENCIES "Restrict all dependencies to static libraries, including runtime libs" OFF)
+    if(WITH_STATIC_DEPENDENCIES)
+        # Make sure we only search for static libraries
+        set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_STATIC_LIBRARY_SUFFIX})
+
+        # Make sure we get rid of -rdynamic business
+        set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS)
+
+        # Add the necessary static link flags
+        # Really -static should only be getting passed as exe linker flags but
+        # that breaks try_compile for older CMake < 3.2.  See policy CMP0056
+        if(POLICY CMP0056)
+            cmake_policy(SET CMP0056 NEW)
+            append_if_absent(CMAKE_EXE_LINKER_FLAGS -static CACHE STRING " " FORCE)
+        else()
+            append_if_absent(CMAKE_C_FLAGS -static CACHE STRING " " FORCE)
+        endif()
+    endif()
+endif()
+
 option(USE_SYSTEM_LIBRARIES "Use system libraries" ON)
 
 cmake_dependent_option(USE_SYSTEM_BZip2 "Use system BZip2" ON "USE_SYSTEM_LIBRARIES" OFF)
