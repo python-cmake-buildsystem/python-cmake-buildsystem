@@ -24,3 +24,6 @@ set(PGEN_SOURCES
 )
 
 add_executable(pgen ${PGEN_SOURCES})
+if(WITH_STATIC_DEPENDENCIES)
+  set_target_properties(pgen PROPERTIES LINK_SEARCH_START_STATIC ON)
+endif()
