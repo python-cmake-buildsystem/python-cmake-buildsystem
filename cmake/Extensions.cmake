@@ -66,9 +66,15 @@ function(add_python_extension name)
            "Controls whether the \"${name}\" extension will be built"
            ON
     )
+    if(ENABLE_${upper_name})
+        mark_as_advanced(ENABLE_${upper_name} FORCE)
+    else()
+        mark_as_advanced(ENABLE_${upper_name} CLEAR)
+    endif()
 
     # Add options that the extention is either external to libpython or
-    # builtin.
+    # builtin.  These will be marked as advanced unless different from default
+    # values
     if(NOT ADD_PYTHON_EXTENSION_BUILTIN)
         set(ADD_PYTHON_EXTENSION_BUILTIN ${BUILD_EXTENSIONS_AS_BUILTIN})
     endif()
@@ -76,6 +82,11 @@ function(add_python_extension name)
            "If this is set the \"${name}\" extension will be compiled in to libpython"
            ${ADD_PYTHON_EXTENSION_BUILTIN}
     )
+    if(BUILTIN_${upper_name} EQUAL BUILD_EXTENSIONS_AS_BUILTIN)
+        mark_as_advanced(BUILTIN_${upper_name} FORCE)
+    else()
+        mark_as_advanced(BUILTIN_${upper_name} CLEAR)
+    endif()
 
     # HACK _ctypes_test should always be shared
     if(${name} STREQUAL "_ctypes_test")
