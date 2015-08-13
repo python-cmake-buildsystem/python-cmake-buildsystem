@@ -72,29 +72,6 @@ function(add_python_extension name)
         mark_as_advanced(CLEAR ENABLE_${upper_name})
     endif()
 
-    # Add options that the extention is either external to libpython or
-    # builtin.  These will be marked as advanced unless different from default
-    # values
-    if(NOT ADD_PYTHON_EXTENSION_BUILTIN)
-        set(ADD_PYTHON_EXTENSION_BUILTIN ${BUILD_EXTENSIONS_AS_BUILTIN})
-    endif()
-    option(BUILTIN_${upper_name}
-           "If this is set the \"${name}\" extension will be compiled in to libpython"
-           ${ADD_PYTHON_EXTENSION_BUILTIN}
-    )
-    if((BUILTIN_${upper_name} AND BUILD_EXTENSIONS_AS_BUILTIN)
-       OR (NOT BUILTIN_${upper_name} AND NOT BUILD_EXTENSIONS_AS_BUILTIN))
-        mark_as_advanced(FORCE BUILTIN_${upper_name})
-    else()
-        mark_as_advanced(CLEAR BUILTIN_${upper_name})
-    endif()
-
-    # HACK _ctypes_test should always be shared
-    if(${name} STREQUAL "_ctypes_test")
-        unset(BUILTIN_${upper_name} CACHE)
-        set(BUILTIN_${upper_name} 0)
-    endif()
-
     # Check all the things we require are found.
     set(missing_deps "")
     foreach(dep ${ADD_PYTHON_EXTENSION_REQUIRES} ENABLE_${upper_name})
@@ -103,6 +80,34 @@ function(add_python_extension name)
             set(missing_deps "${missing_deps}${dep} ")
         endif(NOT (${list_dep}))
     endforeach(dep)
+
+    # Add options that the extention is either external to libpython or
+    # builtin.  These will be marked as advanced unless different from default
+    # values
+    if(NOT ADD_PYTHON_EXTENSION_BUILTIN)
+        set(ADD_PYTHON_EXTENSION_BUILTIN ${BUILD_EXTENSIONS_AS_BUILTIN})
+    endif()
+    cmake_dependent_option(
+        BUILTIN_${upper_name}
+        "If this is set the \"${name}\" extension will be compiled in to libpython"
+        ${ADD_PYTHON_EXTENSION_BUILTIN}
+        "NOT missing_deps"
+        OFF
+    )
+    if(NOT missing_deps)
+        if((BUILTIN_${upper_name} AND BUILD_EXTENSIONS_AS_BUILTIN)
+            OR (NOT BUILTIN_${upper_name} AND NOT BUILD_EXTENSIONS_AS_BUILTIN))
+            mark_as_advanced(FORCE BUILTIN_${upper_name})
+        else()
+            mark_as_advanced(CLEAR BUILTIN_${upper_name})
+        endif()
+    endif()
+
+    # HACK _ctypes_test should always be shared
+    if(${name} STREQUAL "_ctypes_test")
+        unset(BUILTIN_${upper_name} CACHE)
+        set(BUILTIN_${upper_name} 0)
+    endif()
 
     # If any dependencies were missing don't include this extension.
     if(missing_deps)
