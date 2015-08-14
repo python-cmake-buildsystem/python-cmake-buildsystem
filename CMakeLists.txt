@@ -60,24 +60,21 @@ option(WITH_THREAD "Compile in rudimentary thread support" ON)
 
 # Detect source directory
 set(_landmark "pyconfig.h.in") # CMake will look for this file.
-if(EXISTS ${CMAKE_SOURCE_DIR}/${_landmark})
-    set(SRC_DIR ${CMAKE_SOURCE_DIR})
-elseif(NOT "${SRC_DIR}" STREQUAL "" AND EXISTS ${SRC_DIR}/${_landmark})
-    # Do nothing - SRC_DIR is already set.
-else()
+if(NOT (SRC_DIR AND EXISTS ${SRC_DIR}/${_landmark}))
     foreach(dirname
-        cpython-${PY_VERSION}
-        Python-${PY_VERSION}
-    )
-        set(SRC_DIR "${CMAKE_CURRENT_BINARY_DIR}/../${dirname}")
+        ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/cpython-${PY_VERSION}
+        ${CMAKE_CURRENT_SOURCE_DIR}/Python-${PY_VERSION}
+        ${CMAKE_CURRENT_BINARY_DIR}/../cpython-${PY_VERSION}
+        ${CMAKE_CURRENT_BINARY_DIR}/../Python-${PY_VERSION})
+        set(SRC_DIR ${dirname})
         if(EXISTS ${SRC_DIR}/${_landmark})
             break()
         endif()
     endforeach()
 endif()
-if(NOT IS_ABSOLUTE ${SRC_DIR})
-    set(SRC_DIR ${CMAKE_CURRENT_BINARY_DIR}/${SRC_DIR})
-endif()
+get_filename_component(SRC_DIR "${SRC_DIR}" ABSOLUTE)
+
 get_filename_component(_parent_dir ${CMAKE_CURRENT_BINARY_DIR} PATH)
 set(_download_link "http://www.python.org/ftp/python/${PY_VERSION}/Python-${PY_VERSION}.tgz")
 # Variable below represent the set of supported python version.

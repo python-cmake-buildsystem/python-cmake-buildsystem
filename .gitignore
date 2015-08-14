@@ -28,3 +28,7 @@ tags
 
 # Ignore pyc files
 *.pyc
+
+# Ignore Python source directories
+cython-*/
+Python-*/
