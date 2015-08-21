@@ -195,8 +195,6 @@ elseif(WIN32)
     )
 endif(UNIX)
 
-set_property(SOURCE ${LIBPYTHON_SOURCES} APPEND PROPERTY COMPILE_DEFINITIONS Py_BUILD_CORE)
-
 # List of builtin extensions
 get_property(builtin_extensions GLOBAL PROPERTY builtin_extensions)
 
@@ -229,6 +227,12 @@ foreach(name ${builtin_extensions})
             APPEND PROPERTY COMPILE_DEFINITIONS ${extension_${name}_definitions})
     endif()
 endforeach()
+
+set_property(SOURCE ${LIBPYTHON_SOURCES} APPEND PROPERTY COMPILE_DEFINITIONS Py_BUILD_CORE)
+
+if(WIN32)
+set_property(SOURCE ${builtin_extension_sources} APPEND PROPERTY COMPILE_DEFINITIONS Py_BUILD_CORE)
+endif(WIN32)
 
 # Create the parts of config.c for platform-specific and user-controlled
 # builtin modules.
