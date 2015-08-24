@@ -8,7 +8,7 @@ set(PY_VERSION_PATCH 8) # Value should match the default set in CMakeLists.txt
 if(NOT "$ENV{PY_VERSION_PATCH}" STREQUAL "")
   set(PY_VERSION_PATCH "$ENV{PY_VERSION_PATCH}")
 endif()
-set(CTEST_BUILD_NAME "2.7.${PY_VERSION_PATCH}-$ENV{TRAVIS_OS_NAME}-${compiler_name}_$ENV{TRAVIS_BRANCH}_${commit}")
+set(CTEST_BUILD_NAME "2.7.${PY_VERSION_PATCH}-$ENV{TRAVIS_OS_NAME}-${compiler_name}_#$ENV{TRAVIS_PULL_REQUEST}_${commit}")
 set(CTEST_CONFIGURATION_TYPE Release)
 set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
 set(CTEST_BUILD_FLAGS "-j4")
