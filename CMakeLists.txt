@@ -301,6 +301,12 @@ if(UNIX)
 
 endif(UNIX)
 
+# Create an empty lib-dynload folder, even if we don't have any extentions
+# to go in there.  bin/python uses this to auto-determine the exec_prefix
+# and properly generate the _sysconfigdata.py
+file(MAKE_DIRECTORY "${EXTENSION_BUILD_DIR}")
+install(DIRECTORY ${EXTENSION_BUILD_DIR} DESTINATION ${PYTHONHOME})
+
 if(BUILD_TESTING)
     set(EXTRATESTOPTS -v)
     set(TESTOPTS -l ${EXTRATESTOPTS})
