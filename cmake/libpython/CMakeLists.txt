@@ -206,6 +206,17 @@ foreach(name ${builtin_extensions})
     list(APPEND builtin_extension_sources ${extension_${name}_sources})
 endforeach()
 
+# XXX Associate Py_NO_ENABLE_SHARED with "_ctypes/callbacks.c" if corresponding
+#     extension is builtin.
+if(WIN32)
+    foreach(src ${builtin_extension_sources})
+        get_filename_component(filename ${src} NAME)
+        if(${filename} STREQUAL "callbacks.c")
+            set_property(SOURCE ${src} APPEND PROPERTY COMPILE_DEFINITIONS Py_NO_ENABLE_SHARED)
+        endif()
+    endforeach()
+endif()
+
 # Collect builtin extension link libraries
 set(builtin_link_libraries)
 foreach(name ${builtin_extensions})

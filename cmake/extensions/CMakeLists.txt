@@ -190,9 +190,6 @@ if(WIN32)
         DEFINITIONS X86_WIN32
       )
     else(MINGW) # Visual Studio
-      if(BUILTIN_CTYPES)
-          message(SEND_ERROR "BUILTIN_CTYPES is currently not supported")
-      endif(BUILTIN_CTYPES)
       if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
           enable_language(ASM_MASM)
           set(_ctype_arch_impl win64.asm)
