@@ -1,4 +1,7 @@
 add_definitions(-DNDEBUG)
+if(HAVE_MEMMOVE)
+  add_definitions(-DHAVE_MEMMOVE=1)
+endif()
 
 set(LIBPYTHON_SOURCES
     ${CMAKE_BINARY_DIR}/CMakeFiles/config.c
