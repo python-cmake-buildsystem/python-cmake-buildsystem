@@ -8,7 +8,6 @@ include(CheckFunctionExists)
 include(CheckLibraryExists)
 include(CheckSymbolExists)
 include(CheckVariableExists)
-include(cmake/CheckCMakeCommandExists.cmake)
 include(cmake/CheckTypeExists.cmake)
 include(cmake/PlatformTest.cmake)
 include(TestBigEndian)
@@ -88,17 +87,6 @@ if(USE_SYSTEM_SQLITE3)
     find_path(SQLITE3_INCLUDE_PATH sqlite3.h)
     find_library(SQLITE3_LIBRARY sqlite3)
 endif()
-
-
-# Detect CMake features
-
-include(CMakePackageConfigHelpers OPTIONAL)
-check_cmake_command_exists("configure_package_config_file")
-check_cmake_command_exists("write_basic_package_version_file")
-
-# Remove if minimum required version >= 2.8.12
-check_cmake_command_exists("target_compile_definitions")
-
 
 if(WIN32)
   set(M_LIBRARIES )
