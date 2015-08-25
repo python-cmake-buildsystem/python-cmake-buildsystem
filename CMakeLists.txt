@@ -116,7 +116,9 @@ endif()
 if(NOT EXISTS ${SRC_DIR}/${_landmark})
     message(FATAL_ERROR "Failed to locate python source.
 The searched locations were:
-   <CMAKE_CURRENT_BINARY_DIR>
+   <CMAKE_CURRENT_SOURCE_DIR>
+   <CMAKE_CURRENT_SOURCE_DIR>/cpython-${PY_VERSION}
+   <CMAKE_CURRENT_SOURCE_DIR>/Python-${PY_VERSION}
    <CMAKE_CURRENT_BINARY_DIR>/../cpython-${PY_VERSION}
    <CMAKE_CURRENT_BINARY_DIR>/../Python-${PY_VERSION}
    <SRC_DIR>
