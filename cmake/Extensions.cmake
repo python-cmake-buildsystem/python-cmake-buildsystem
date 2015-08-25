@@ -103,8 +103,8 @@ function(add_python_extension name)
         endif()
     endif()
 
-    # HACK _ctypes_test should always be shared
-    if(${name} STREQUAL "_ctypes_test")
+    # XXX _ctypes_test and _testcapi should always be shared
+    if(${name} STREQUAL "_ctypes_test" OR ${name} STREQUAL "_testcapi")
         unset(BUILTIN_${upper_name} CACHE)
         set(BUILTIN_${upper_name} 0)
     endif()

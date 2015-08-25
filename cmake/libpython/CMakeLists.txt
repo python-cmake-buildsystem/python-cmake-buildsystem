@@ -1,3 +1,4 @@
+add_definitions(-DPy_BUILD_CORE)
 add_definitions(-DNDEBUG)
 
 set(LIBPYTHON_SOURCES
@@ -194,8 +195,6 @@ elseif(WIN32)
         PROPERTY COMPILE_DEFINITIONS Py_ENABLE_SHARED
     )
 endif(UNIX)
-
-set_property(SOURCE ${LIBPYTHON_SOURCES} APPEND PROPERTY COMPILE_DEFINITIONS Py_BUILD_CORE)
 
 # List of builtin extensions
 get_property(builtin_extensions GLOBAL PROPERTY builtin_extensions)
