@@ -1,37 +1,61 @@
 
+# XXX Because of CMake issue #8170 disable ctypes support when using
+#     "Visual Studio 2008 Win64" generator.
+if("${MSVC_VERSION}" VERSION_EQUAL 1500 AND ${CMAKE_SIZEOF_VOID_P} EQUAL 8)
+    set(warn "Disable 'ctypes' and 'ctypes_test' extensions when using 'Visual Studio 2008 Win64' generator. See http://public.kitware.com/Bug/view.php?id=8170 for more details.")
+    if(NOT DEFINED ENABLE_CTYPES OR ENABLE_CTYPES OR NOT DEFINED ENABLE_CTYPES_TEST OR ENABLE_CTYPES_TEST)
+        message(WARNING ${warn})
+    endif()
+    set(ENABLE_CTYPES OFF CACHE BOOL "${warn}" FORCE)
+    set(ENABLE_CTYPES_TEST OFF CACHE BOOL "${warn}" FORCE)
+endif()
+# XXX Because of CMake issue #11536, disable ctypes support when using
+#     CMake < 2.8.12 with "Visual Studio 2010" and "Visual Studio 2010 Win64"
+#     generator.
+if(CMAKE_VERSION VERSION_LESS 2.8.12)
+    if("${MSVC_VERSION}" VERSION_EQUAL 1600)
+        set(warn "Disable 'ctypes' and 'ctypes_test' extensions when using CMake < 2.8.12 with any 'Visual Studio 2010' generators. See http://public.kitware.com/Bug/view.php?id=11536 for more details.")
+        if(NOT DEFINED ENABLE_CTYPES OR ENABLE_CTYPES OR NOT DEFINED ENABLE_CTYPES_TEST OR ENABLE_CTYPES_TEST)
+            message(WARNING ${warn})
+        endif()
+        set(ENABLE_CTYPES OFF CACHE BOOL "${warn}" FORCE)
+        set(ENABLE_CTYPES_TEST OFF CACHE BOOL "${warn}" FORCE)
+    endif()
+endif()
+
 set(MSVC_BUILTIN )
 if(MSVC)
     set(MSVC_BUILTIN BUILTIN)
 endif(MSVC)
 
-add_python_extension(array SOURCES arraymodule.c)
-add_python_extension(audioop SOURCES audioop.c)
-add_python_extension(_bisect SOURCES _bisectmodule.c)
-add_python_extension(cmath REQUIRES HAVE_LIBM SOURCES _math.c cmathmodule.c LIBRARIES ${M_LIBRARIES})
-add_python_extension(_codecs_cn SOURCES cjkcodecs/_codecs_cn.c)
-add_python_extension(_codecs_hk SOURCES cjkcodecs/_codecs_hk.c)
-add_python_extension(_codecs_iso2022 SOURCES cjkcodecs/_codecs_iso2022.c)
-add_python_extension(_codecs_jp SOURCES cjkcodecs/_codecs_jp.c)
-add_python_extension(_codecs_kr SOURCES cjkcodecs/_codecs_kr.c)
-add_python_extension(_codecs_tw SOURCES cjkcodecs/_codecs_tw.c)
-add_python_extension(_collections SOURCES _collectionsmodule.c)
-add_python_extension(cPickle SOURCES cPickle.c)
+add_python_extension(array ${MSVC_BUILTIN} SOURCES arraymodule.c)
+add_python_extension(audioop ${MSVC_BUILTIN} SOURCES audioop.c)
+add_python_extension(_bisect ${MSVC_BUILTIN} SOURCES _bisectmodule.c)
+add_python_extension(cmath REQUIRES HAVE_LIBM ${MSVC_BUILTIN} SOURCES _math.c cmathmodule.c LIBRARIES ${M_LIBRARIES})
+add_python_extension(_codecs_cn ${MSVC_BUILTIN} SOURCES cjkcodecs/_codecs_cn.c)
+add_python_extension(_codecs_hk ${MSVC_BUILTIN} SOURCES cjkcodecs/_codecs_hk.c)
+add_python_extension(_codecs_iso2022 ${MSVC_BUILTIN} SOURCES cjkcodecs/_codecs_iso2022.c)
+add_python_extension(_codecs_jp ${MSVC_BUILTIN} SOURCES cjkcodecs/_codecs_jp.c)
+add_python_extension(_codecs_kr ${MSVC_BUILTIN} SOURCES cjkcodecs/_codecs_kr.c)
+add_python_extension(_codecs_tw ${MSVC_BUILTIN} SOURCES cjkcodecs/_codecs_tw.c)
+add_python_extension(_collections ${MSVC_BUILTIN} SOURCES _collectionsmodule.c)
+add_python_extension(cPickle ${MSVC_BUILTIN} SOURCES cPickle.c)
 add_python_extension(crypt REQUIRES HAVE_LIBCRYPT SOURCES cryptmodule.c LIBRARIES ${HAVE_LIBCRYPT})
-add_python_extension(cStringIO SOURCES cStringIO.c)
-add_python_extension(_csv SOURCES _csv.c)
+add_python_extension(cStringIO ${MSVC_BUILTIN} SOURCES cStringIO.c)
+add_python_extension(_csv ${MSVC_BUILTIN} SOURCES _csv.c)
 add_python_extension(_ctypes_test SOURCES _ctypes/_ctypes_test.c)
 set(datetime_SOURCES datetimemodule.c)
 if(UNIX)
   list(APPEND datetime_SOURCES timemodule.c)
 endif()
-add_python_extension(datetime ${MSVC_DATETIME} REQUIRES HAVE_LIBM SOURCES ${datetime_SOURCES} LIBRARIES ${M_LIBRARIES})
+add_python_extension(datetime ${MSVC_DATETIME} REQUIRES HAVE_LIBM ${MSVC_BUILTIN} SOURCES ${datetime_SOURCES} LIBRARIES ${M_LIBRARIES})
 if(ENABLE_DATETIME AND UNIX)
     set_property(SOURCE ${SRC_DIR}/Modules/datetimemodule.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
 endif()
 add_python_extension(_functools ${MSVC_BUILTIN} SOURCES _functoolsmodule.c)
-add_python_extension(future_builtins SOURCES future_builtins.c)
-add_python_extension(_heapq SOURCES _heapqmodule.c)
-add_python_extension(_hotshot SOURCES _hotshot.c)
+add_python_extension(future_builtins ${MSVC_BUILTIN} SOURCES future_builtins.c)
+add_python_extension(_heapq ${MSVC_BUILTIN} SOURCES _heapqmodule.c)
+add_python_extension(_hotshot ${MSVC_BUILTIN} SOURCES _hotshot.c)
 add_python_extension(_io ${MSVC_BUILTIN} SOURCES
     _io/_iomodule.c
     _io/bufferedio.c
@@ -41,18 +65,18 @@ add_python_extension(_io ${MSVC_BUILTIN} SOURCES
     _io/stringio.c
     _io/textio.c
 )
-add_python_extension(itertools SOURCES itertoolsmodule.c)
-add_python_extension(_json SOURCES _json.c)
+add_python_extension(itertools ${MSVC_BUILTIN} SOURCES itertoolsmodule.c)
+add_python_extension(_json ${MSVC_BUILTIN} SOURCES _json.c)
 add_python_extension(_locale ${MSVC_BUILTIN} SOURCES _localemodule.c)
-add_python_extension(_lsprof SOURCES _lsprof.c rotatingtree.c)
+add_python_extension(_lsprof ${MSVC_BUILTIN} SOURCES _lsprof.c rotatingtree.c)
 add_python_extension(math ${MSVC_BUILTIN} SOURCES _math.c mathmodule.c)
 add_python_extension(mmap ${MSVC_BUILTIN} SOURCES mmapmodule.c)
-add_python_extension(_multibytecodec SOURCES cjkcodecs/multibytecodec.c)
+add_python_extension(_multibytecodec ${MSVC_BUILTIN} SOURCES cjkcodecs/multibytecodec.c)
 add_python_extension(operator ${MSVC_BUILTIN} SOURCES operator.c)
 add_python_extension(parser ${MSVC_BUILTIN} SOURCES parsermodule.c)
-add_python_extension(_random SOURCES _randommodule.c)
-add_python_extension(strop SOURCES stropmodule.c)
-add_python_extension(_struct SOURCES _struct.c)
+add_python_extension(_random ${MSVC_BUILTIN} SOURCES _randommodule.c)
+add_python_extension(strop ${MSVC_BUILTIN} SOURCES stropmodule.c)
+add_python_extension(_struct ${MSVC_BUILTIN} SOURCES _struct.c)
 add_python_extension(_testcapi SOURCES _testcapimodule.c)
 add_python_extension(time ${MSVC_BUILTIN} REQUIRES HAVE_LIBM SOURCES timemodule.c LIBRARIES ${M_LIBRARIES})
 add_python_extension(unicodedata SOURCES unicodedata.c)
@@ -166,9 +190,6 @@ if(WIN32)
         DEFINITIONS X86_WIN32
       )
     else(MINGW) # Visual Studio
-      if(BUILTIN_CTYPES)
-          message(SEND_ERROR "BUILTIN_CTYPES is currently not supported")
-      endif(BUILTIN_CTYPES)
       if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
           enable_language(ASM_MASM)
           set(_ctype_arch_impl win64.asm)
@@ -235,27 +256,6 @@ else(WIN32)
     endif(APPLE)
 endif(WIN32)
 
-# XXX Because of CMake issue #8170 disable ctypes support when using
-#     "Visual Studio 2008 Win64" generator.
-if((ENABLE_CTYPES OR ENABLE_CTYPES_TEST) AND "${MSVC_VERSION}" VERSION_EQUAL 1500 AND ${CMAKE_SIZEOF_VOID_P} EQUAL 8)
-    set(warn "Disable 'ctypes' and 'ctypes_test' extensions when using 'Visual Studio 2008 Win64' generator. See http://public.kitware.com/Bug/view.php?id=8170 for more details.")
-    message(WARNING ${warn})
-    set(ENABLE_CTYPES OFF CACHE BOOL "${warn}" FORCE)
-    set(ENABLE_CTYPES_TEST OFF CACHE BOOL "${warn}" FORCE)
-endif()
-# XXX Because of CMake issue #11536, disable ctypes support when using
-#     CMake < 2.8.12 with "Visual Studio 2010" and "Visual Studio 2010 Win64"
-#     generator.
-if((ENABLE_CTYPES OR ENABLE_CTYPES_TEST) AND CMAKE_VERSION VERSION_LESS 2.8.12)
-    if("${MSVC_VERSION}" VERSION_EQUAL 1600)
-        set(warn "Disable 'ctypes' and 'ctypes_test' extensions when using CMake < 2.8.12 with any 'Visual Studio 2010' generators. See http://public.kitware.com/Bug/view.php?id=11536 for more details.")
-        message(WARNING ${warn})
-        set(ENABLE_CTYPES OFF CACHE BOOL "${warn}" FORCE)
-        set(ENABLE_CTYPES_TEST OFF CACHE BOOL "${warn}" FORCE)
-    endif()
-endif()
-
-
 # Build expat using the system expat if it's installed, otherwise use the
 # builtin version.
 if(EXPAT_LIBRARIES AND EXPAT_INCLUDE_DIRS)
@@ -301,10 +301,10 @@ if(NOT WIN32 AND OPENSSL_LIBRARIES)
   set(HASH_NOT_AVAILABLE OFF)
 endif()
 
-add_python_extension(_md5 REQUIRES HASH_NOT_AVAILABLE SOURCES md5.c md5module.c)
-add_python_extension(_sha REQUIRES HASH_NOT_AVAILABLE SOURCES shamodule.c)
-add_python_extension(_sha256 REQUIRES HASH_NOT_AVAILABLE SOURCES sha256module.c)
-add_python_extension(_sha512 REQUIRES HASH_NOT_AVAILABLE SOURCES sha512module.c)
+add_python_extension(_md5 REQUIRES HASH_NOT_AVAILABLE ${MSVC_BUILTIN} SOURCES md5.c md5module.c)
+add_python_extension(_sha REQUIRES HASH_NOT_AVAILABLE ${MSVC_BUILTIN} SOURCES shamodule.c)
+add_python_extension(_sha256 REQUIRES HASH_NOT_AVAILABLE ${MSVC_BUILTIN} SOURCES sha256module.c)
+add_python_extension(_sha512 REQUIRES HASH_NOT_AVAILABLE ${MSVC_BUILTIN} SOURCES sha512module.c)
 
 # Extensions that depend on other libraries
 set(binascii_REQUIRES "")
@@ -319,6 +319,7 @@ if(ZLIB_LIBRARY)
 endif()
 add_python_extension(binascii
     REQUIRES ${binascii_REQUIRES}
+    ${MSVC_BUILTIN}
     SOURCES binascii.c
     DEFINITIONS ${binascii_DEFINITIONS}
     LIBRARIES ${binascii_LIBRARIES}

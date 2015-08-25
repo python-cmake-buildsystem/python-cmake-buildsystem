@@ -1,3 +1,4 @@
+add_definitions(-DPy_BUILD_CORE)
 add_definitions(-DNDEBUG)
 
 set(LIBPYTHON_SOURCES
@@ -195,8 +196,6 @@ elseif(WIN32)
     )
 endif(UNIX)
 
-set_property(SOURCE ${LIBPYTHON_SOURCES} APPEND PROPERTY COMPILE_DEFINITIONS Py_BUILD_CORE)
-
 # List of builtin extensions
 get_property(builtin_extensions GLOBAL PROPERTY builtin_extensions)
 
@@ -206,6 +205,17 @@ foreach(name ${builtin_extensions})
     get_property(extension_${name}_sources GLOBAL PROPERTY extension_${name}_sources)
     list(APPEND builtin_extension_sources ${extension_${name}_sources})
 endforeach()
+
+# XXX Associate Py_NO_ENABLE_SHARED with "_ctypes/callbacks.c" if corresponding
+#     extension is builtin.
+if(WIN32)
+    foreach(src ${builtin_extension_sources})
+        get_filename_component(filename ${src} NAME)
+        if(${filename} STREQUAL "callbacks.c")
+            set_property(SOURCE ${src} APPEND PROPERTY COMPILE_DEFINITIONS Py_NO_ENABLE_SHARED)
+        endif()
+    endforeach()
+endif()
 
 # Collect builtin extension link libraries
 set(builtin_link_libraries)
