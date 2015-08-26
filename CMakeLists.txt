@@ -35,6 +35,18 @@ else()
   set(INSTALL_WINDOWS_TRADITIONAL OFF)
 endif()
 
+# Append an item to a string if it does not already contain it.  Any additional
+# arguments are treated as extra "set" arguments
+macro(append_if_absent VARNAME VALUE)
+    if(NOT ${VARNAME} MATCHES "(^| )${VALUE}($| )")
+        if(${VARNAME})
+            set(${VARNAME} "${${VARNAME}} ${VALUE}" ${ARGN})
+        else()
+            set(${VARNAME} "${VALUE}" ${ARGN})
+        endif()
+    endif()
+endmacro()
+
 option(USE_SYSTEM_LIBRARIES "Use system libraries" ON)
 
 cmake_dependent_option(USE_SYSTEM_BZip2 "Use system BZip2" ON "USE_SYSTEM_LIBRARIES" OFF)
@@ -234,7 +246,10 @@ include_directories(${SRC_DIR}/Python)
 
 # Set cflags used by all components
 if(UNIX)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-strict-aliasing -fwrapv -Wall -Wstrict-prototypes")
+    append_if_absent(CMAKE_C_FLAGS "-fno-strict-aliasing")
+    append_if_absent(CMAKE_C_FLAGS "-fwrapv")
+    append_if_absent(CMAKE_C_FLAGS "-Wall")
+    append_if_absent(CMAKE_C_FLAGS "-Wstrict-prototypes")
 endif(UNIX)
 if(MSVC)
     string(REPLACE "/Ob2" "/Ob1" CMAKE_C_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE}) # InlineFunctionExpansion=1
@@ -242,7 +257,7 @@ if(MSVC)
 endif(MSVC)
 
 if(NOT WIN32)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
+    append_if_absent(CMAKE_C_FLAGS "-fPIC")
 endif(NOT WIN32)
 
 # Useful additional variables that extensions can use.
