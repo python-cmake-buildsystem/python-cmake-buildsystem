@@ -12,6 +12,12 @@ include(cmake/CheckTypeExists.cmake)
 include(cmake/PlatformTest.cmake)
 include(TestBigEndian)
 
+# XXX Remove if minimum required CMake >= 2.8.11
+#     See CMake commit add8d22a (properly detect processor architecture on Windows)
+if(WIN32 AND CMAKE_VERSION VERSION_LESS "2.8.11" AND CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(CMAKE_SYSTEM_PROCESSOR "AMD64")
+endif()
+
 message(STATUS "The system name is ${CMAKE_SYSTEM_NAME}")
 message(STATUS "The system processor is ${CMAKE_SYSTEM_PROCESSOR}")
 message(STATUS "The system version is ${CMAKE_SYSTEM_VERSION}")
