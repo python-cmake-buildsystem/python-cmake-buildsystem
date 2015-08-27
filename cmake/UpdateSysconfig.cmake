@@ -5,7 +5,7 @@
 # This cmake script allows to adapt the output of sysconfig._generate_posix_vars()
 # function to play nice with CMake build system.
 #
-#  1. Backup original pybuilddir.txt to pybuilddir.txt.autoconf
+#  1. Backup original pybuilddir.txt to pybuilddir.txt.backup
 #  2. Read the value PYBUILDDIR written in pybuilddir.txt
 #  3. Copy the file <PYBUILDDIR>/_sysconfigdata.py to <EXTENSION_INSTALL_DIR>
 #  4. Create a new pybuilddir.txt file with <EXTENSION_INSTALL_DIR>
