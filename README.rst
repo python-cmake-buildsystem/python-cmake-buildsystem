@@ -87,6 +87,14 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
     Note that all previously set BUILTIN_<extension> options are ignored and
     reset to their original value.
 
+  BUILD_WININST=ON|OFF (defaults to ON)
+    If enabled, build the 'Windows Installer' program for distutils if not
+    already provided in the source tree.
+
+  BUILD_WININST_ALWAYS=ON|OFF (defaults to OFF)
+    If enabled, always build 'Windows Installer' program for distutils even
+    if it is already provided in the source tree.
+
   ENABLE_<extension>=ON|OFF     (defaults to ON)
   BUILTIN_<extension>=ON|OFF    (defaults to OFF except for POSIX, PWD and
                                  NT extensions which are builtin by default)
