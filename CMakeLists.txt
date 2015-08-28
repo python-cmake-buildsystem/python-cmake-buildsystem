@@ -31,8 +31,12 @@ option(BUILD_EXTENSIONS_AS_BUILTIN "Default all modules as builtin to libpython"
 option(USE_LIB64 "Search for dependencies and install to prefix/lib64 instead of prefix/lib" OFF)
 if(WIN32)
   option(INSTALL_WINDOWS_TRADITIONAL "Install the executable and extensions in the traditional location" OFF)
+  option(BUILD_WININST "Build 'Windows Installer' program for distutils if not already provided in the source tree." ON)
+  cmake_dependent_option(BUILD_WININST_ALWAYS "Always build 'Windows installer' program even if provided in the source tree." OFF "BUILD_WININST" OFF)
 else()
   set(INSTALL_WINDOWS_TRADITIONAL OFF)
+  set(BUILD_WININST OFF)
+  set(BUILD_WININST_ALWAYS OFF)
 endif()
 
 option(USE_SYSTEM_LIBRARIES "Use system libraries" ON)
@@ -266,6 +270,9 @@ add_subdirectory(cmake/libpython CMakeBuild/libpython)
 add_subdirectory(cmake/python CMakeBuild/python)
 add_subdirectory(cmake/include CMakeBuild/include)
 add_subdirectory(cmake/lib CMakeBuild/lib)
+if(BUILD_WININST)
+    add_subdirectory(cmake/PC/bdist_wininst CMakeBuild/bdist_wininst)
+endif()
 
 show_extension_summary()
 
