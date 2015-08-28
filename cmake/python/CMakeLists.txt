@@ -22,6 +22,13 @@ set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS python)
 
 install(TARGETS python EXPORT PythonTargets RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT Runtime)
 
+# See "is_python_build()" in sysconfig.py
+add_custom_command(TARGET python PRE_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${BIN_BUILD_DIR}/${CMAKE_CFG_INTDIR}/Modules
+    COMMAND ${CMAKE_COMMAND} -E touch ${BIN_BUILD_DIR}/${CMAKE_CFG_INTDIR}/Modules/Setup.local
+    COMMENT "Creating '${BIN_INSTALL_DIR}/${CMAKE_CFG_INTDIR}/Modules/Setup.local'"
+    )
+
 if(UNIX AND PY_VERSION VERSION_GREATER "2.7.4")
     # Setup landmark allowing to run the interpreter from a build tree. See 'getpath.c' for details.
     add_custom_command(

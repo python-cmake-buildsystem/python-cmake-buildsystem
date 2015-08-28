@@ -27,14 +27,8 @@ foreach(file ${libfiles})
     endif(NOT is_platform_file OR is_matching_platform_file)
 endforeach(file)
 
-
-file(MAKE_DIRECTORY ${BIN_BUILD_DIR}/Modules)
-
 if(PY_VERSION VERSION_LESS "2.7.5")
   # Setup landmark allowing to run the interpreter from a build tree. See 'getpath.c' for details.
+  file(MAKE_DIRECTORY ${BIN_BUILD_DIR}/Modules)
   file(WRITE ${BIN_BUILD_DIR}/Modules/Setup "")
 endif()
-
-# See "is_python_build()" in sysconfig.py
-file(MAKE_DIRECTORY ${BIN_BUILD_DIR}/Modules)
-file(WRITE ${BIN_BUILD_DIR}/Modules/Setup.local "")
