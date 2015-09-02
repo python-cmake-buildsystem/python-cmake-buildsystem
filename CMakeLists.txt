@@ -256,9 +256,9 @@ if(MSVC)
     set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" CACHE STRING "Flags used by the compiler during release builds" FORCE)
 endif(MSVC)
 
-if(NOT WIN32)
+if(NOT HAVE_POSITION_INDEPENDENT_CODE AND NOT WIN32)
     append_if_absent(CMAKE_C_FLAGS "-fPIC")
-endif(NOT WIN32)
+endif()
 
 # Useful additional variables that extensions can use.
 if(UNIX AND NOT APPLE)
