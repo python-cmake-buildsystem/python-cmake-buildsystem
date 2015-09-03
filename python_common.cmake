@@ -355,9 +355,49 @@ while(NOT dashboard_done)
   set(CTEST_CHECKOUT_COMMAND) # checkout on first iteration only
   safe_message("Found ${count} changed files")
 
+  # Additional CMake configure options can be specified in a commit message
+  # using one or multiple line of the form "[cmake <ARGUMENT1> <ARGUMENT2> ...]".
+  #
+  # If multiple matching lines are found, the project will be configured passing
+  # all <ARGUMENT> without doing any particular filtering.
+
+  # 1) Extract additional CMake configure option from last commit message
+  execute_process(
+    COMMAND ${CTEST_GIT_COMMAND} log -1 --pretty=%B
+    WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}"
+    OUTPUT_VARIABLE output
+    ERROR_VARIABLE output
+    RESULT_VARIABLE failed
+    )
+  if(failed)
+    message(FATAL_ERROR "Failed to extract last commit message from git history !")
+  endif()
+
+  # 2) Split by newlines
+  # Copied from http://www.cmake.org/pipermail/cmake/2007-May/014222.html
+  string(REGEX REPLACE ";" "\\\\;" output "${output}")
+  string(REGEX REPLACE "\n" ";" output "${output}")
+
+  # 3) Loop over all lines, match "[cmake ...] and extract <ARGUMENT>
+  set(CMAKE_CONFIGURE_ARGS_FROM_COMMITMSG )
+  foreach(line ${output})
+    string(REGEX MATCH "^\\[cmake (.+)\\]" raw_cmake_comment ${line})
+    if(raw_cmake_comment)
+      list(APPEND CMAKE_CONFIGURE_ARGS_FROM_COMMITMSG ${CMAKE_MATCH_1})
+    endif()
+  endforeach()
+
+  set(ctest_configure_options)
+  if(CMAKE_CONFIGURE_ARGS_FROM_COMMITMSG)
+    set(ctest_configure_options OPTIONS ${CMAKE_CONFIGURE_ARGS_FROM_COMMITMSG})
+    message("CMake configure options from commit msg: ${CMAKE_CONFIGURE_ARGS_FROM_COMMITMSG}")
+  else()
+    message("CMake configure options from commit msg: Didn't find any [cmake <ARGUMENT>] directives in commit message.")
+  endif()
+
   if(dashboard_fresh OR NOT dashboard_continuous OR count GREATER 0)
 
-    ctest_configure()
+    ctest_configure(${ctest_configure_options})
 
     ctest_submit(PARTS Update Configure Notes)
     ctest_read_custom_files(${CTEST_BINARY_DIRECTORY})
