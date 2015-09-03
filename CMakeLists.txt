@@ -16,6 +16,10 @@ endif()
 
 project(Python C ASM)
 
+if(POLICY CMP0042)
+    cmake_policy(SET CMP0042 OLD)
+endif()
+
 # Include helper functions
 include(cmake/CMakeChecks.cmake)
 include(cmake/Extensions.cmake)
