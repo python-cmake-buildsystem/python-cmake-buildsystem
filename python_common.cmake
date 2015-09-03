@@ -311,6 +311,10 @@ if("${dashboard_model}" STREQUAL "Continuous")
   set(dashboard_continuous 1)
 endif()
 
+if("${dashboard_model}" STREQUAL "Experimental")
+  set(CTEST_UPDATE_VERSION_ONLY 1)
+endif()
+
 # CTest 2.6 crashes with message() after ctest_test.
 macro(safe_message)
   if(NOT "${CMAKE_VERSION}" VERSION_LESS 2.8 OR NOT safe_message_skip)
