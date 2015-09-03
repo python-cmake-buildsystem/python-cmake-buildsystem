@@ -25,8 +25,8 @@ include(CTest)
 
 # Options
 option(DOWNLOAD_SOURCES "Automatically download the Python sources" ON)
-option(BUILD_SHARED "Build a shared libpython library" OFF)
-option(BUILD_STATIC "Build a static libpython library" ON)
+option(BUILD_SHARED "Build a shared libpython library" ON)
+option(BUILD_STATIC "Build a static libpython library" OFF)
 option(BUILD_EXTENSIONS_AS_BUILTIN "Default all modules as builtin to libpython" OFF)
 option(USE_LIB64 "Search for dependencies and install to prefix/lib64 instead of prefix/lib" OFF)
 if(WIN32)
