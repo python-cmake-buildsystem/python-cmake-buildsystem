@@ -366,8 +366,9 @@ while(NOT dashboard_done)
   # all <ARGUMENT> without doing any particular filtering.
 
   # 1) Extract additional CMake configure option from last commit message
+  #    that is not associated with a merge commit.
   execute_process(
-    COMMAND ${CTEST_GIT_COMMAND} log -1 --pretty=%B
+    COMMAND ${CTEST_GIT_COMMAND} log -1 --pretty=%B --max-parents=1
     WORKING_DIRECTORY "${CTEST_SOURCE_DIRECTORY}"
     OUTPUT_VARIABLE output
     ERROR_VARIABLE output
