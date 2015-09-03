@@ -30,7 +30,7 @@ How to use this buildsystem:
 .. code:: bash
 
   cd ~/scratch
-  git clone git://github.com/davidsansome/python-cmake-buildsystem
+  git clone git://github.com/python-cmake-buildsystem/python-cmake-buildsystem
 
 2. Build
 
