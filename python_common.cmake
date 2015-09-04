@@ -312,7 +312,7 @@ if("${dashboard_model}" STREQUAL "Continuous")
 endif()
 
 if("${dashboard_model}" STREQUAL "Experimental")
-  set(CTEST_UPDATE_VERSION_ONLY 1)
+  set(CTEST_UPDATE_VERSION_ONLY 1) # Introduced in CMake >= 3.1.0
 endif()
 
 # CTest 2.6 crashes with message() after ctest_test.
@@ -355,7 +355,14 @@ while(NOT dashboard_done)
   endif()
 
   # Look for updates.
-  ctest_update(RETURN_VALUE count)
+  set(count 0)
+  set(_skip_ctest_update 0) # XXX Required for CMake < 3.1.0
+  if(CMAKE_VERSION VERSION_LESS "3.1.0" AND CTEST_UPDATE_VERSION_ONLY)
+    set(_skip_ctest_update 1)
+  endif()
+  if(NOT _skip_ctest_update)
+    ctest_update(RETURN_VALUE count)
+  endif()
   set(CTEST_CHECKOUT_COMMAND) # checkout on first iteration only
   safe_message("Found ${count} changed files")
 
