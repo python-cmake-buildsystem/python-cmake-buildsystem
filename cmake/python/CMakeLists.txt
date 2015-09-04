@@ -24,9 +24,13 @@ install(TARGETS python EXPORT PythonTargets RUNTIME DESTINATION ${BIN_INSTALL_DI
 
 if(UNIX AND PY_VERSION VERSION_GREATER "2.7.4")
     # Setup landmark allowing to run the interpreter from a build tree. See 'getpath.c' for details.
+    set(PYTHON_WRAPPER_COMMAND )
+    if(APPLE AND BUILD_SHARED)
+        set(PYTHON_WRAPPER_COMMAND env DYLD_LIBRARY_PATH="${CMAKE_BINARY_DIR}/${LIBPYTHON_LIBDIR}")
+    endif()
     add_custom_command(
         OUTPUT ${BIN_BUILD_DIR}/pybuilddir.txt ${EXTENSION_BUILD_DIR}/_sysconfigdata.py
-        COMMAND $<TARGET_FILE:python> -E -S -m sysconfig --generate-posix-vars
+        COMMAND ${PYTHON_WRAPPER_COMMAND} $<TARGET_FILE:python> -E -S -m sysconfig --generate-posix-vars
         COMMAND ${CMAKE_COMMAND}
           -DBIN_BUILD_DIR:PATH=${BIN_BUILD_DIR}
           -DPYTHON_BINARY_DIR:PATH=${CMAKE_BINARY_DIR}
