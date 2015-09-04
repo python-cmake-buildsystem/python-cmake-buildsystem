@@ -25,6 +25,11 @@ branches:
   - master
   - /^ci.*$/
 
+addons:
+  apt:
+    packages:
+     - libssl-dev
+
 before_script:
  - wget -P /tmp/ https://raw.githubusercontent.com/davidsansome/python-cmake-buildsystem/dashboard/travis_dashboard.cmake
 
