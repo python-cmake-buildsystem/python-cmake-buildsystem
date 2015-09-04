@@ -367,7 +367,7 @@ while(NOT dashboard_done)
   safe_message("Found ${count} changed files")
 
   # Additional CMake configure options can be specified in a commit message
-  # using one or multiple line of the form "[cmake <ARGUMENT1> <ARGUMENT2> ...]".
+  # using one or multiple line of the form "[cmake <ARGUMENT1>;<ARGUMENT2>;...]".
   #
   # If multiple matching lines are found, the project will be configured passing
   # all <ARGUMENT> without doing any particular filtering.
@@ -401,7 +401,7 @@ while(NOT dashboard_done)
 
   set(ctest_configure_options)
   if(CMAKE_CONFIGURE_ARGS_FROM_COMMITMSG)
-    set(ctest_configure_options OPTIONS ${CMAKE_CONFIGURE_ARGS_FROM_COMMITMSG})
+    set(ctest_configure_options ${CMAKE_CONFIGURE_ARGS_FROM_COMMITMSG})
     message("CMake configure options from commit msg: ${CMAKE_CONFIGURE_ARGS_FROM_COMMITMSG}")
   else()
     message("CMake configure options from commit msg: Didn't find any [cmake <ARGUMENT>] directives in commit message.")
@@ -409,7 +409,11 @@ while(NOT dashboard_done)
 
   if(dashboard_fresh OR NOT dashboard_continuous OR count GREATER 0)
 
-    ctest_configure(${ctest_configure_options})
+    if(ctest_configure_options)
+      ctest_configure(OPTIONS "${ctest_configure_options}")
+    else()
+      ctest_configure()
+    endif()
 
     ctest_submit(PARTS Update Configure Notes)
     ctest_read_custom_files(${CTEST_BINARY_DIRECTORY})
