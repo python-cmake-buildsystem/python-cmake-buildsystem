@@ -19,7 +19,7 @@
 #   ctest -S ~/Dashboards/Scripts/my_dashboard.cmake -V
 #
 # By default the source and build trees will be placed in the path
-# "../My Tests/" relative to your script location.
+# "../MyTests/" relative to your script location.
 #
 # The following variables may be set before including this script
 # to configure it:
@@ -27,7 +27,7 @@
 #   dashboard_model        = Nightly | Experimental | Continuous
 #   dashboard_track        = Optional track to submit dashboard to
 #   dashboard_disable_loop = For continuous dashboards, disable loop.
-#   dashboard_root_name    = Change name of "My Tests" directory
+#   dashboard_root_name    = Change name of "MyTests" directory
 #   dashboard_source_name  = Name of source directory (python-cmake-buildsystem)
 #   dashboard_binary_name  = Name of binary directory (python-cmake-buildsystem-build)
 #   dashboard_cache        = Initial CMakeCache.txt file content
@@ -95,7 +95,7 @@ set(dashboard_user_home "$ENV{HOME}")
 
 # Select the top dashboard directory.
 if(NOT DEFINED dashboard_root_name)
-  set(dashboard_root_name "My Tests")
+  set(dashboard_root_name "MyTests")
 endif()
 if(NOT DEFINED CTEST_DASHBOARD_ROOT)
   get_filename_component(CTEST_DASHBOARD_ROOT "${CTEST_SCRIPT_DIRECTORY}/../${dashboard_root_name}" ABSOLUTE)
