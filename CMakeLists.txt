@@ -259,6 +259,17 @@ endif(UNIX AND NOT APPLE)
 # Clear PythonTargets.cmake
 file(WRITE ${CONFIG_BUILD_DIR}/PythonTargets.cmake "")
 
+# Define python executable wrapper command to ensure
+# python executable resolves the expected python library.
+set(PYTHON_WRAPPER_COMMAND )
+if(BUILD_SHARED AND UNIX)
+    set(_envvar LD_LIBRARY_PATH)
+    if(APPLE)
+        set(_envvar DYLD_LIBRARY_PATH)
+    endif()
+    set(PYTHON_WRAPPER_COMMAND env ${_envvar}=${CMAKE_BINARY_DIR}/${LIBPYTHON_LIBDIR})
+endif()
+
 # Add extension modules
 set(extensions_enabled "" CACHE INTERNAL "" FORCE)
 set(extensions_disabled "" CACHE INTERNAL "" FORCE)
@@ -323,7 +334,7 @@ if(BUILD_TESTING)
 
     include(cmake/UnitTests.cmake)
     foreach(unittest ${unittests})
-      add_test(NAME ${unittest} COMMAND ${TESTPYTHON} ${TESTPROG} ${TESTOPTS} ${unittest})
+      add_test(NAME ${unittest} COMMAND ${PYTHON_WRAPPER_COMMAND} ${TESTPYTHON} ${TESTPROG} ${TESTOPTS} ${unittest})
     endforeach(unittest)
 endif(BUILD_TESTING)
 
