@@ -18,6 +18,8 @@ env:
  - PY_VERSION_PATCH=4
  - PY_VERSION_PATCH=3
 
+sudo: false
+
 branches:
  only:
   - master
