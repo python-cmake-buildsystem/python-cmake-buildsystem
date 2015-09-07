@@ -49,7 +49,7 @@ if(UNIX)
   list(APPEND datetime_SOURCES timemodule.c)
 endif()
 add_python_extension(datetime ${MSVC_DATETIME} REQUIRES HAVE_LIBM ${MSVC_BUILTIN} SOURCES ${datetime_SOURCES} LIBRARIES ${M_LIBRARIES})
-if(ENABLE_DATETIME AND UNIX)
+if(ENABLE_DATETIME AND CMAKE_C_COMPILER_ID MATCHES GNU)
     set_property(SOURCE ${SRC_DIR}/Modules/datetimemodule.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
 endif()
 add_python_extension(_functools ${MSVC_BUILTIN} SOURCES _functoolsmodule.c)
@@ -121,7 +121,7 @@ if(UNIX)
                 _multiprocessing/semaphore.c
                 _multiprocessing/socket_connection.c
     )
-    if(ENABLE_MULTIPROCESSING)
+    if(ENABLE_MULTIPROCESSING AND CMAKE_C_COMPILER_ID MATCHES GNU)
         set_property(SOURCE ${SRC_DIR}/Modules/semaphore.c PROPERTY COMPILE_FLAGS -Wimplicit-function-declaration)
     endif()
 elseif(WIN32)
@@ -364,7 +364,7 @@ add_python_extension(_hashlib
     LIBRARIES ${OPENSSL_LIBRARIES}
     INCLUDEDIRS ${OPENSSL_INCLUDE_DIR}
 )
-if(ENABLE_HASHLIB AND UNIX)
+if(ENABLE_HASHLIB AND CMAKE_C_COMPILER_ID MATCHES GNU)
     set_property(SOURCE ${SRC_DIR}/Modules/_hashopenssl.c PROPERTY COMPILE_FLAGS -Wno-deprecated-declarations)
 endif()
 add_python_extension(readline
@@ -388,7 +388,7 @@ add_python_extension(_sqlite3
     INCLUDEDIRS ${SQLITE3_INCLUDE_PATH}
     LIBRARIES ${SQLITE3_LIBRARY}
 )
-if(ENABLE_SQLITE3 AND UNIX)
+if(ENABLE_SQLITE3 AND CMAKE_C_COMPILER_ID MATCHES GNU)
     set_property(SOURCE ${SRC_DIR}/Modules/_sqlite/module.c PROPERTY COMPILE_FLAGS -Wno-deprecated-declarations)
 endif()
 set(_ssl_LIBRARIES ${OPENSSL_LIBRARIES})
