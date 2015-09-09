@@ -109,11 +109,11 @@ set(LIBPYTHON_SOURCES
     ${SRC_DIR}/Python/_warnings.c
 )
 
-if(UNIX)
+if(CMAKE_C_COMPILER_ID MATCHES GNU)
     foreach(filename class complex float int method string type unicode weakref)
         set_property(SOURCE ${SRC_DIR}/Objects/${filename}object.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
     endforeach()
-endif(UNIX)
+endif()
 
 if(WITH_THREAD)
     list(APPEND LIBPYTHON_SOURCES
@@ -136,11 +136,13 @@ if(UNIX)
         ${SRC_DIR}/Python/dynload_shlib.c
         ${SRC_DIR}/Modules/getpath.c
     )
-    set_property(
-        SOURCE ${SRC_DIR}/Modules/getpath.c
-        PROPERTY COMPILE_FLAGS
-            -Wno-deprecated-declarations
-        )
+    if(CMAKE_C_COPILER_ID MATCHES GNU)
+        set_property(
+            SOURCE ${SRC_DIR}/Modules/getpath.c
+            PROPERTY COMPILE_FLAGS
+                -Wno-deprecated-declarations
+            )
+    endif()
     set(PYTHONPATH "${EXTRA_PYTHONPATH}:lib-dynload:plat-${PY_PLATFORM}")
     if(ENABLE_TKINTER)
         set(PYTHONPATH "${PYTHONPATH}:lib-tk")
@@ -277,7 +279,13 @@ function(add_libpython name type)
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_LIBDIR}
         RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_LIBDIR}
         INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/${LIBPYTHON_LIBDIR}
+        POSITION_INDEPENDENT_CODE ON
     )
+    if(HAVE_POSITION_INDEPENDENT_CODE)
+        set_target_properties(${name} PROPERTIES
+            POSITION_INDEPENDENT_CODE ON
+        )
+    endif()
 
     # Export target
     set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS ${name})

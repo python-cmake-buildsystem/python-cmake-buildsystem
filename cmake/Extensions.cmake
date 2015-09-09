@@ -178,6 +178,11 @@ function(add_python_extension name)
             OUTPUT_NAME "${name}"
             PREFIX ""
         )
+        if(HAVE_POSITION_INDEPENDENT_CODE)
+            set_target_properties(${target_name} PROPERTIES
+                POSITION_INDEPENDENT_CODE ON
+            )
+        endif()
 
         if(ADD_PYTHON_EXTENSION_DEFINITIONS)
             set_target_properties(${target_name} PROPERTIES

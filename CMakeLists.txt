@@ -43,6 +43,18 @@ else()
   set(BUILD_WININST_ALWAYS OFF)
 endif()
 
+# Append an item to a string if it does not already contain it.  Any additional
+# arguments are treated as extra "set" arguments
+macro(append_if_absent VARNAME VALUE)
+    if(NOT ${VARNAME} MATCHES "(^| )${VALUE}($| )")
+        if(${VARNAME})
+            set(${VARNAME} "${${VARNAME}} ${VALUE}" ${ARGN})
+        else()
+            set(${VARNAME} "${VALUE}" ${ARGN})
+        endif()
+    endif()
+endmacro()
+
 option(USE_SYSTEM_LIBRARIES "Use system libraries" ON)
 
 cmake_dependent_option(USE_SYSTEM_BZip2 "Use system BZip2" ON "USE_SYSTEM_LIBRARIES" OFF)
@@ -241,17 +253,28 @@ include_directories(${PYCONFIG_BUILD_DIR})
 include_directories(${SRC_DIR}/Python)
 
 # Set cflags used by all components
-if(UNIX)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fno-strict-aliasing -fwrapv -Wall -Wstrict-prototypes")
-endif(UNIX)
+if(CMAKE_C_COMPILER_ID MATCHES GNU)
+    append_if_absent(CMAKE_C_FLAGS "-Wall")
+    append_if_absent(CMAKE_C_FLAGS "-Wstrict-prototypes")
+    append_if_absent(CMAKE_C_FLAGS "-fno-strict-aliasing")
+    append_if_absent(CMAKE_C_FLAGS "-fwrapv")
+elseif(CMAKE_C_COMPILER_ID MATCHES Clang)
+    append_if_absent(CMAKE_C_FLAGS "-Wall")
+elseif(CMAKE_C_COMPILER_ID MATCHES Intel)
+    append_if_absent(CMAKE_C_FLAGS "-Wall")
+    append_if_absent(CMAKE_C_FLAGS "-no-ansi-alias")
+elseif(CMAKE_C_COMPILER_ID MATCHES PGI)
+    append_if_absent(CMAKE_C_FLAGS "-alias=traditional")
+endif()
+
 if(MSVC)
     string(REPLACE "/Ob2" "/Ob1" CMAKE_C_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE}) # InlineFunctionExpansion=1
     set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" CACHE STRING "Flags used by the compiler during release builds" FORCE)
 endif(MSVC)
 
-if(NOT WIN32)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC")
-endif(NOT WIN32)
+if(NOT HAVE_POSITION_INDEPENDENT_CODE AND NOT WIN32)
+    append_if_absent(CMAKE_C_FLAGS "-fPIC")
+endif()
 
 # Useful additional variables that extensions can use.
 if(UNIX AND NOT APPLE)
