@@ -177,6 +177,7 @@ function(add_python_extension name)
             RUNTIME_OUTPUT_DIRECTORY ${EXTENSION_BUILD_DIR}
             OUTPUT_NAME "${name}"
             PREFIX ""
+            POSITION_INDEPENDENT_CODE ON
         )
 
         if(ADD_PYTHON_EXTENSION_DEFINITIONS)
