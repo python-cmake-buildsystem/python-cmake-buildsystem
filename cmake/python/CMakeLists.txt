@@ -29,6 +29,15 @@ add_custom_command(TARGET python PRE_BUILD
     COMMENT "Creating '${BIN_INSTALL_DIR}/${CMAKE_CFG_INTDIR}/Modules/Setup.local'"
     )
 
+if(WIN32)
+    # See "get_config_h_filename()" in sysconfig.py
+    add_custom_command(TARGET python POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${BIN_BUILD_DIR}/${CMAKE_CFG_INTDIR}/PC
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SRC_DIR}/PC/pyconfig.h ${BIN_BUILD_DIR}/${CMAKE_CFG_INTDIR}/PC/pyconfig.h
+        COMMENT "Copying 'pyconfig.h' to '${BIN_INSTALL_DIR}/${CMAKE_CFG_INTDIR}/PC'"
+        )
+endif()
+
 if(UNIX AND PY_VERSION VERSION_GREATER "2.7.4")
     # Setup landmark allowing to run the interpreter from a build tree. See 'getpath.c' for details.
     add_custom_command(
