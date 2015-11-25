@@ -13,6 +13,7 @@ configuration:
 
 environment:
   matrix:
+  - PY_VERSION_PATCH: 11rc1
   - PY_VERSION_PATCH: 10
   - PY_VERSION_PATCH: 9
   - PY_VERSION_PATCH: 8
