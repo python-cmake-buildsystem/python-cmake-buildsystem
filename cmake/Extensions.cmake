@@ -145,7 +145,7 @@ function(add_python_extension name)
         set_property(GLOBAL APPEND PROPERTY extension_${name}_definitions ${ADD_PYTHON_EXTENSION_DEFINITIONS})
     elseif(WIN32 AND NOT BUILD_SHARED)
         # Extensions cannot be built against a static libpython on windows
-    else(BUILTIN_${upper_name})
+    elseif(BUILD_SHARED)
         add_library(${target_name} SHARED ${absolute_sources})
         include_directories(${ADD_PYTHON_EXTENSION_INCLUDEDIRS})
         target_link_libraries(${target_name} ${ADD_PYTHON_EXTENSION_LIBRARIES})
