@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8.6)
 
 set(PY_VERSION_MAJOR 2 CACHE STRING "Python major version")
 set(PY_VERSION_MINOR 7 CACHE STRING "Python minor version")
-set(PY_VERSION_PATCH 8 CACHE STRING "Python patch version")
+set(PY_VERSION_PATCH 11 CACHE STRING "Python patch version")
 set(PY_VERSION "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}")
 
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
