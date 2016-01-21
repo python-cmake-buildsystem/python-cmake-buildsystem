@@ -230,6 +230,7 @@ else(WIN32)
         #                ${SRC_DIR}/Modules/_ctypes/libffi/include
         #)
     else(APPLE)
+        enable_language(ASM)
         if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
           set(_libffi_system_extra_src
                 _ctypes/libffi/src/${_libffi_system_dir}/ffi64.c

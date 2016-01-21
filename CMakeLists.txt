@@ -12,7 +12,7 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Release")
 endif()
 
-project(Python C ASM)
+project(Python C)
 
 if(POLICY CMP0042)
     cmake_policy(SET CMP0042 OLD)
