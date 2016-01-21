@@ -203,9 +203,9 @@ these before running make::
 Remarks
 -------
 
-Note: This branch is for Python version 2.7.8.  Since this buildsystem is
-maintained separately from Python itself it needs to be manually updated
-whenever there is a new release of Python.
+Note: Currently, multiple versions of Python 2.7 are supported. This
+repository is maintained separately from Python itself it needs to be manually
+updated whenever there is a new release of Python.
 
 Licenses
 --------
