@@ -100,8 +100,8 @@ add_python_extension(_scproxy
 )
 
 # Linux-only extensions
-add_python_extension(linuxaudiodev REQUIRES LINUX SOURCES linuxaudiodev.c)
-add_python_extension(ossaudiodev REQUIRES LINUX SOURCES ossaudiodev.c)
+add_python_extension(linuxaudiodev REQUIRES LINUX HAVE_SYS_SOUNDCARD_H SOURCES linuxaudiodev.c)
+add_python_extension(ossaudiodev REQUIRES LINUX HAVE_SYS_SOUNDCARD_H SOURCES ossaudiodev.c)
 
 # Windows-only extensions
 add_python_extension(_msi
