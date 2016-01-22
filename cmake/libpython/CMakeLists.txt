@@ -271,7 +271,10 @@ function(add_libpython name type)
     endif(WITH_THREAD)
 
     if(UNIX)
-        target_link_libraries(${name} ${HAVE_LIBUTIL} ${HAVE_LIBM})
+        target_link_libraries(${name} ${HAVE_LIBM})
+        if(HAVE_LIBUTIL)
+            target_link_libraries(${name} ${HAVE_LIBUTIL})
+        endif(HAVE_LIBUTIL)
     endif(UNIX)
 
     set_target_properties(${name} PROPERTIES
