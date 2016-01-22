@@ -117,6 +117,7 @@ add_python_extension(_winreg REQUIRES WIN32 BUILTIN SOURCES ${SRC_DIR}/PC/_winre
 # Multiprocessing is different on unix and windows
 if(UNIX)
     add_python_extension(_multiprocessing
+        REQUIRES HAVE_SEM_OPEN "NOT POSIX_SEMAPHORES_NOT_ENABLED"
         SOURCES _multiprocessing/multiprocessing.c
                 _multiprocessing/semaphore.c
                 _multiprocessing/socket_connection.c
