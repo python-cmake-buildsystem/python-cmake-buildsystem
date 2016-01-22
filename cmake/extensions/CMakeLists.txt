@@ -342,7 +342,7 @@ add_python_extension(_curses_panel
     LIBRARIES ${CURSES_LIBRARIES} ${PANEL_LIBRARIES}
 )
 add_python_extension(_curses
-    REQUIRES CURSES_LIBRARIES
+    REQUIRES CURSES_LIBRARIES HAVE_CURSES_H
     SOURCES _cursesmodule.c
     LIBRARIES ${CURSES_LIBRARIES}
 )
