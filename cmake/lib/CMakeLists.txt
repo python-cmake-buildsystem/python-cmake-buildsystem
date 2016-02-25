@@ -14,7 +14,14 @@ foreach(file ${libfiles})
         string(REGEX MATCH "^${plat_subdir}" is_matching_platform_file "${file}")
     endif(plat_subdir)
 
-    if(NOT is_platform_file OR is_matching_platform_file)
+    # Exclude tests if BUILD_TESTING is OFF
+    string(REGEX MATCH "^test" is_test "${file}")
+    set(include_file 1)
+    if(NOT BUILD_TESTING AND is_test)
+        set(include_file 0)
+    endif(NOT BUILD_TESTING AND is_test)
+
+    if(include_file AND (NOT is_platform_file OR is_matching_platform_file))
         get_filename_component(path ${file} PATH)
 
         # Copy lib files to build tree
@@ -24,7 +31,7 @@ foreach(file ${libfiles})
         # Install
         install(FILES ${libdir}/${file} DESTINATION ${PYTHONHOME}/${path})
 
-    endif(NOT is_platform_file OR is_matching_platform_file)
+    endif(include_file AND (NOT is_platform_file OR is_matching_platform_file))
 endforeach(file)
 
 if(PY_VERSION VERSION_LESS "2.7.5")
