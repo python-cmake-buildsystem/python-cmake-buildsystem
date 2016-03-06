@@ -312,6 +312,24 @@ if(BUILD_WININST)
     add_subdirectory(cmake/PC/bdist_wininst CMakeBuild/bdist_wininst)
 endif()
 
+# Add target to generate 'Include/graminit.h' and 'Python/graminit.c'
+add_custom_target(generate_graminit
+    COMMAND $<TARGET_FILE:pgen>
+        ${SRC_DIR}/Grammar/Grammar
+        ${PROJECT_BINARY_DIR}/CMakeFiles/graminit.h
+        ${PROJECT_BINARY_DIR}/CMakeFiles/graminit.c
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${PROJECT_BINARY_DIR}/CMakeFiles/graminit.h
+        ${SRC_DIR}/Include/graminit.h
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${PROJECT_BINARY_DIR}/CMakeFiles/graminit.c
+        ${SRC_DIR}/Python/graminit.c
+    DEPENDS pgen
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMENT "Generating '${SRC_DIR}/Include/graminit.h' and '${SRC_DIR}/Python/graminit.c'."
+    VERBATIM
+)
+
 show_extension_summary()
 
 if(UNIX)
