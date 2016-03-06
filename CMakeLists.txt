@@ -304,7 +304,6 @@ set(extensions_disabled "" CACHE INTERNAL "" FORCE)
 add_subdirectory(cmake/extensions CMakeBuild/extensions)
 
 # Add the other subdirectories
-add_subdirectory(cmake/pgen CMakeBuild/pgen)
 add_subdirectory(cmake/libpython CMakeBuild/libpython)
 add_subdirectory(cmake/python CMakeBuild/python)
 add_subdirectory(cmake/include CMakeBuild/include)

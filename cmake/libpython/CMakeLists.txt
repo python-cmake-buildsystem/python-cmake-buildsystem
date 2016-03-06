@@ -1,19 +1,78 @@
 add_definitions(-DPy_BUILD_CORE)
 add_definitions(-DNDEBUG)
 
-set(LIBPYTHON_SOURCES
+set(MODULE_SOURCES # Equivalent to MODULE_OBJS in Makefile.pre
     ${CMAKE_BINARY_DIR}/CMakeFiles/config.c
-    ${SRC_DIR}/Modules/_codecsmodule.c
-    ${SRC_DIR}/Modules/errnomodule.c
     ${SRC_DIR}/Modules/gcmodule.c
-    ${SRC_DIR}/Modules/getbuildinfo.c
     ${SRC_DIR}/Modules/main.c
-    ${SRC_DIR}/Modules/signalmodule.c
-    ${SRC_DIR}/Modules/_sre.c
-    ${SRC_DIR}/Modules/symtablemodule.c
-    ${SRC_DIR}/Modules/_weakref.c
-    ${SRC_DIR}/Modules/xxsubtype.c
-    ${SRC_DIR}/Modules/zipimport.c
+)
+if(UNIX)
+    list(APPEND MODULE_SOURCES
+        ${SRC_DIR}/Modules/getpath.c
+    )
+    set(PYTHONPATH "${EXTRA_PYTHONPATH}:lib-dynload:plat-${PY_PLATFORM}")
+    if(ENABLE_TKINTER)
+        set(PYTHONPATH "${PYTHONPATH}:lib-tk")
+    endif(ENABLE_TKINTER)
+    set_property(
+        SOURCE ${SRC_DIR}/Modules/getpath.c
+        PROPERTY COMPILE_DEFINITIONS
+            PREFIX="${CMAKE_INSTALL_PREFIX}"
+            EXEC_PREFIX="${CMAKE_INSTALL_PREFIX}"
+            VERSION="${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}"
+            VPATH="."
+            PYTHONPATH="${PYTHONPATH}"
+      )
+elseif(WIN32)
+    list(APPEND MODULE_SOURCES
+        ${SRC_DIR}/PC/getpathp.c
+    )
+    # HACK To workaround limitation in escaping logic of CMake, the pythonpath
+    #      separator is conditionally set depending of the version of Visual Studio.
+    #      See http://cmake.org/Bug/view.php?id=14073
+    if( ("${MSVC_VERSION}" VERSION_GREATER "1599") AND ("${CMAKE_GENERATOR}" MATCHES "^Visual Studio") )
+        set(PATHSEP "%3B")
+    elseif( (${MSVC}) AND ("${CMAKE_GENERATOR}" MATCHES "^Ninja") )
+        set(PATHSEP "\;")
+    elseif( (${MSVC}) AND ("${CMAKE_GENERATOR}" MATCHES "^NMake") )
+        set(PATHSEP "\;")
+    else()
+        set(PATHSEP ";")
+    endif()
+    string(REPLACE "/" "\\\\" PYTHONHOME_ESCAPED ${PYTHONHOME})
+    string(REPLACE "/" "\\\\" EXTENSION_INSTALL_DIR_ESCAPED ${EXTENSION_INSTALL_DIR})
+    set(PYTHONPATH "${EXTRA_PYTHONPATH}")
+    set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${PYTHONHOME_ESCAPED}")
+    set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${EXTENSION_INSTALL_DIR_ESCAPED}")
+    set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${EXTENSION_INSTALL_DIR_ESCAPED}\\\\${CMAKE_CFG_INTDIR}")
+    set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${PYTHONHOME_ESCAPED}\\\\plat-${PY_PLATFORM}")
+    if(ENABLE_TKINTER)
+        set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${PYTHONHOME_ESCAPED}\\\\lib-tk")
+    endif(ENABLE_TKINTER)
+
+    set_property(
+        SOURCE ${SRC_DIR}/PC/getpathp.c
+        PROPERTY COMPILE_DEFINITIONS
+            LANDMARK="${PYTHONHOME_ESCAPED}\\\\os.py"
+            "PYTHONPATH=\"${PYTHONPATH}\""
+    )
+endif()
+
+set(PARSER_COMMON_SOURCES # Equivalent to POBJS in Makefile.pre
+    ${SRC_DIR}/Parser/acceler.c
+    ${SRC_DIR}/Parser/bitset.c
+    ${SRC_DIR}/Parser/firstsets.c
+    ${SRC_DIR}/Parser/grammar1.c
+    ${SRC_DIR}/Parser/grammar.c
+    ${SRC_DIR}/Parser/listnode.c
+    ${SRC_DIR}/Parser/metagrammar.c
+    ${SRC_DIR}/Parser/node.c
+    ${SRC_DIR}/Parser/parser.c
+    ${SRC_DIR}/Parser/parsetok.c
+    ${SRC_DIR}/Parser/pgen.c
+)
+
+set(OBJECT_COMMON_SOURCES # Equivalent to OBJECT_OBJS in Makefile.pre
     ${SRC_DIR}/Objects/abstract.c
     ${SRC_DIR}/Objects/boolobject.c
     ${SRC_DIR}/Objects/bufferobject.c
@@ -53,19 +112,44 @@ set(LIBPYTHON_SOURCES
     ${SRC_DIR}/Objects/unicodectype.c
     ${SRC_DIR}/Objects/unicodeobject.c
     ${SRC_DIR}/Objects/weakrefobject.c
-    ${SRC_DIR}/Parser/acceler.c
-    ${SRC_DIR}/Parser/bitset.c
-    ${SRC_DIR}/Parser/firstsets.c
-    ${SRC_DIR}/Parser/grammar1.c
-    ${SRC_DIR}/Parser/grammar.c
-    ${SRC_DIR}/Parser/listnode.c
-    ${SRC_DIR}/Parser/metagrammar.c
-    ${SRC_DIR}/Parser/myreadline.c
-    ${SRC_DIR}/Parser/node.c
-    ${SRC_DIR}/Parser/parser.c
-    ${SRC_DIR}/Parser/parsetok.c
-    ${SRC_DIR}/Parser/pgen.c
-    ${SRC_DIR}/Parser/tokenizer.c
+
+)
+
+if(CMAKE_C_COMPILER_ID MATCHES GNU)
+    foreach(filename class complex float int method string type unicode weakref)
+        set_property(SOURCE ${SRC_DIR}/Objects/${filename}object.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
+    endforeach()
+endif()
+
+set(DYNLOAD_SOURCES
+  )
+
+if(UNIX)
+    list(APPEND DYNLOAD_SOURCES
+        ${SRC_DIR}/Python/dynload_shlib.c
+    )
+elseif(WIN32)
+    list(APPEND DYNLOAD_SOURCES
+        ${SRC_DIR}/PC/dl_nt.c
+        ${SRC_DIR}/Python/dynload_win.c
+        )
+    set_property(
+        SOURCE ${SRC_DIR}/PC/dl_nt.c
+        PROPERTY COMPILE_DEFINITIONS Py_ENABLE_SHARED
+    )
+endif()
+
+set(THREAD_SOURCES )
+if(WITH_THREAD)
+    set(THREAD_SOURCES ${SRC_DIR}/Modules/threadmodule.c)
+    list(APPEND THREAD_SOURCES
+        ${SRC_DIR}/Python/thread.c
+    )
+endif()
+
+set(PYTHON_COMMON_SOURCES
+    ${DYNLOAD_SOURCES}
+    ${THREAD_SOURCES}
     ${SRC_DIR}/Python/asdl.c
     ${SRC_DIR}/Python/ast.c
     ${SRC_DIR}/Python/bltinmodule.c
@@ -74,9 +158,10 @@ set(LIBPYTHON_SOURCES
     ${SRC_DIR}/Python/compile.c
     ${SRC_DIR}/Python/dtoa.c
     ${SRC_DIR}/Python/errors.c
+    ${SRC_DIR}/Python/frozen.c
+    ${SRC_DIR}/Python/frozenmain.c
     ${SRC_DIR}/Python/formatter_string.c
     ${SRC_DIR}/Python/formatter_unicode.c
-    ${SRC_DIR}/Python/frozen.c
     ${SRC_DIR}/Python/future.c
     ${SRC_DIR}/Python/getargs.c
     ${SRC_DIR}/Python/getcompiler.c
@@ -109,16 +194,9 @@ set(LIBPYTHON_SOURCES
     ${SRC_DIR}/Python/_warnings.c
 )
 
-if(CMAKE_C_COMPILER_ID MATCHES GNU)
-    foreach(filename class complex float int method string type unicode weakref)
-        set_property(SOURCE ${SRC_DIR}/Objects/${filename}object.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
-    endforeach()
-endif()
-
-if(WITH_THREAD)
-    list(APPEND LIBPYTHON_SOURCES
-        ${SRC_DIR}/Modules/threadmodule.c
-        ${SRC_DIR}/Python/thread.c
+if(WIN32)
+    list(APPEND PYTHON_COMMON_SOURCES
+        ${SRC_DIR}/PC/import_nt.c
     )
 endif()
 
@@ -130,73 +208,16 @@ if(UNIX OR MINGW)
     )
 endif(UNIX OR MINGW)
 
-# Platform-specific source files
-if(UNIX)
-    list(APPEND LIBPYTHON_SOURCES
-        ${SRC_DIR}/Python/dynload_shlib.c
-        ${SRC_DIR}/Modules/getpath.c
-    )
-    if(CMAKE_C_COPILER_ID MATCHES GNU)
-        set_property(
-            SOURCE ${SRC_DIR}/Modules/getpath.c
-            PROPERTY COMPILE_FLAGS
-                -Wno-deprecated-declarations
-            )
-    endif()
-    set(PYTHONPATH "${EXTRA_PYTHONPATH}:lib-dynload:plat-${PY_PLATFORM}")
-    if(ENABLE_TKINTER)
-        set(PYTHONPATH "${PYTHONPATH}:lib-tk")
-    endif(ENABLE_TKINTER)
-    set_property(
-        SOURCE ${SRC_DIR}/Modules/getpath.c
-        PROPERTY COMPILE_DEFINITIONS
-            PREFIX="${CMAKE_INSTALL_PREFIX}"
-            EXEC_PREFIX="${CMAKE_INSTALL_PREFIX}"
-            VERSION="${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}"
-            VPATH="."
-            PYTHONPATH="${PYTHONPATH}"
-      )
-elseif(WIN32)
-    # HACK To workaround limitation in escaping logic of CMake, the pythonpath
-    #      separator is conditionally set depending of the version of Visual Studio.
-    #      See http://cmake.org/Bug/view.php?id=14073
-    if( ("${MSVC_VERSION}" VERSION_GREATER "1599") AND ("${CMAKE_GENERATOR}" MATCHES "^Visual Studio") )
-        set(PATHSEP "%3B")
-    elseif( (${MSVC}) AND ("${CMAKE_GENERATOR}" MATCHES "^Ninja") )
-        set(PATHSEP "\;")
-    elseif( (${MSVC}) AND ("${CMAKE_GENERATOR}" MATCHES "^NMake") )
-        set(PATHSEP "\;")
-    else()
-        set(PATHSEP ";")
-    endif()
-    list(APPEND LIBPYTHON_SOURCES
-        ${SRC_DIR}/PC/dl_nt.c
-        ${SRC_DIR}/PC/getpathp.c
-        ${SRC_DIR}/PC/import_nt.c
-        ${SRC_DIR}/Python/dynload_win.c
-    )
-    string(REPLACE "/" "\\\\" PYTHONHOME_ESCAPED ${PYTHONHOME})
-    string(REPLACE "/" "\\\\" EXTENSION_INSTALL_DIR_ESCAPED ${EXTENSION_INSTALL_DIR})
-    set(PYTHONPATH "${EXTRA_PYTHONPATH}")
-    set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${PYTHONHOME_ESCAPED}")
-    set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${EXTENSION_INSTALL_DIR_ESCAPED}")
-    set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${EXTENSION_INSTALL_DIR_ESCAPED}\\\\${CMAKE_CFG_INTDIR}")
-    set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${PYTHONHOME_ESCAPED}\\\\plat-${PY_PLATFORM}")
-    if(ENABLE_TKINTER)
-        set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${PYTHONHOME_ESCAPED}\\\\lib-tk")
-    endif(ENABLE_TKINTER)
-    
-    set_property(
-        SOURCE ${SRC_DIR}/PC/getpathp.c
-        PROPERTY COMPILE_DEFINITIONS
-            LANDMARK="${PYTHONHOME_ESCAPED}\\\\os.py"
-            "PYTHONPATH=\"${PYTHONPATH}\""
-    )
-    set_property(
-        SOURCE ${SRC_DIR}/PC/dl_nt.c
-        PROPERTY COMPILE_DEFINITIONS Py_ENABLE_SHARED
-    )
-endif(UNIX)
+list(APPEND MODULE_SOURCES
+    ${SRC_DIR}/Modules/_codecsmodule.c
+    ${SRC_DIR}/Modules/errnomodule.c
+    ${SRC_DIR}/Modules/signalmodule.c
+    ${SRC_DIR}/Modules/_sre.c
+    ${SRC_DIR}/Modules/symtablemodule.c
+    ${SRC_DIR}/Modules/_weakref.c
+    ${SRC_DIR}/Modules/xxsubtype.c
+    ${SRC_DIR}/Modules/zipimport.c
+)
 
 # List of builtin extensions
 get_property(builtin_extensions GLOBAL PROPERTY builtin_extensions)
@@ -259,20 +280,46 @@ configure_file(
     ${CMAKE_BINARY_DIR}/CMakeFiles/config.c
     )
 
+# Collect libpython sources
+set(LIBPYTHON_SOURCES
+    ${SRC_DIR}/Modules/getbuildinfo.c
+    ${SRC_DIR}/Parser/myreadline.c
+    ${SRC_DIR}/Parser/parsetok.c
+    ${SRC_DIR}/Parser/tokenizer.c
+    ${MODULE_SOURCES}
+    ${OBJECT_COMMON_SOURCES}
+    ${PARSER_COMMON_SOURCES}
+    ${PYTHON_COMMON_SOURCES}
+    ${builtin_extension_sources}
+)
 
+# Collect libpython target libraries
+set(LIBPYTHON_TARGET_LIBRARIES
+  ${HAVE_LIBDL}
+  ${builtin_link_libraries}
+  )
+if(WITH_THREAD)
+    list(APPEND LIBPYTHON_TARGET_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
+endif(WITH_THREAD)
+if(UNIX)
+    list(APPEND LIBPYTHON_TARGET_LIBRARIES ${HAVE_LIBUTIL} ${HAVE_LIBM})
+endif(UNIX)
+
+# Build pgen executable
+add_executable(pgen
+    ${PARSER_COMMON_SOURCES}
+    ${SRC_DIR}/Objects/obmalloc.c
+    ${SRC_DIR}/Python/mysnprintf.c
+    ${SRC_DIR}/Python/pyctype.c
+    ${SRC_DIR}/Parser/tokenizer_pgen.c
+    ${SRC_DIR}/Parser/printgrammar.c
+    ${SRC_DIR}/Parser/pgenmain.c
+)
+
+# Build python libraries
 function(add_libpython name type)
-    add_library(${name} ${type} ${LIBPYTHON_SOURCES} ${builtin_extension_sources})
-    target_link_libraries(${name}
-        ${builtin_link_libraries}
-        ${HAVE_LIBDL}
-    )
-    if(WITH_THREAD)
-        target_link_libraries(${name} ${CMAKE_THREAD_LIBS_INIT})
-    endif(WITH_THREAD)
-
-    if(UNIX)
-        target_link_libraries(${name} ${HAVE_LIBUTIL} ${HAVE_LIBM})
-    endif(UNIX)
+    add_library(${name} ${type} ${LIBPYTHON_SOURCES})
+    target_link_libraries(${name} ${LIBPYTHON_TARGET_LIBRARIES})
 
     set_target_properties(${name} PROPERTIES
         OUTPUT_NAME ${LIBPYTHON}
