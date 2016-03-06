@@ -330,6 +330,20 @@ add_custom_target(generate_graminit
     VERBATIM
 )
 
+# Add target to generate 'opcode.h' header file
+add_custom_target(generate_opcode_h
+    COMMAND $<TARGET_FILE:python> ${SRC_DIR}/Tools/scripts/generate_opcode_h.py
+        ${SRC_DIR}/Lib/opcode.py
+        ${PROJECT_BINARY_DIR}/CMakeFiles/opcode.h
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${PROJECT_BINARY_DIR}/CMakeFiles/opcode.h
+        ${SRC_DIR}/Include/opcode.h
+    DEPENDS python
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMENT "Generating '${SRC_DIR}/Include/opcode.h'."
+    VERBATIM
+)
+
 # Add target to generate 'Include/Python-ast.h' from 'Python.asdl'
 add_custom_target(generate_python_ast_h
     COMMAND $<TARGET_FILE:python> ${SRC_DIR}/Parser/asdl_c.py
