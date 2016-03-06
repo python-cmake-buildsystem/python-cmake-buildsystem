@@ -330,6 +330,27 @@ add_custom_target(generate_graminit
     VERBATIM
 )
 
+# Add target to generate 'Include/Python-ast.h' from 'Python.asdl'
+add_custom_target(generate_python_ast_h
+    COMMAND $<TARGET_FILE:python> ${SRC_DIR}/Parser/asdl_c.py
+        -h ${SRC_DIR}/Include
+        ${SRC_DIR}/Parser/Python.asdl
+    DEPENDS python
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMENT "Generating '${SRC_DIR}/Include/Python-ast.h'"
+    VERBATIM
+)
+
+# Add target to generate 'Python/Python-ast.c' from 'Python.asdl'
+add_custom_target(generate_python_ast_c
+    COMMAND $<TARGET_FILE:python> ${SRC_DIR}/Parser/asdl_c.py
+        -c ${SRC_DIR}/Python
+        ${SRC_DIR}/Parser/Python.asdl
+    DEPENDS python
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMENT "Generating '${SRC_DIR}/Python/Python-ast.c'"
+    VERBATIM
+)
 show_extension_summary()
 
 if(UNIX)
