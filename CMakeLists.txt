@@ -406,15 +406,19 @@ file(MAKE_DIRECTORY "${EXTENSION_BUILD_DIR}")
 install(DIRECTORY ${EXTENSION_BUILD_DIR} DESTINATION ${PYTHONHOME})
 
 if(BUILD_TESTING)
-    set(EXTRATESTOPTS -v)
-    set(TESTOPTS -l ${EXTRATESTOPTS})
+    set(TESTOPTS -l)
     set(TESTPROG ${CMAKE_BINARY_DIR}/${PYTHONHOME}/test/regrtest.py)
     set(TESTPYTHONOPTS )
     set(TESTPYTHON $<TARGET_FILE:python> -Wd -3 -E -tt ${TESTPYTHONOPTS})
 
     include(cmake/UnitTests.cmake)
     foreach(unittest ${unittests})
-      add_test(NAME ${unittest} COMMAND ${PYTHON_WRAPPER_COMMAND} ${TESTPYTHON} ${TESTPROG} ${TESTOPTS} ${unittest})
+      set(EXTRATESTOPTS -v)
+      # XXX Running 'test_doctest' in verbose mode always return 1
+      if(unittest STREQUAL "test_doctest")
+        set(EXTRATESTOPTS )
+      endif()
+      add_test(NAME ${unittest} COMMAND ${PYTHON_WRAPPER_COMMAND} ${TESTPYTHON} ${TESTPROG} ${TESTOPTS} ${EXTRATESTOPTS} ${unittest})
     endforeach(unittest)
 endif(BUILD_TESTING)
 
