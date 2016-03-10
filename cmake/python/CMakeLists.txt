@@ -72,3 +72,17 @@ execute_process(
   )"
 )
 endif(UNIX)
+
+# Copy up the gdb python hooks into a position where they can be automatically
+# loaded by gdb during Lib/test/test_gdb.py
+#
+# Distributors are likely to want to install this somewhere else e.g. relative
+# to the stripped DWARF data for the shared library.
+
+set(SRC_GDB_HOOKS ${SRC_DIR}/Tools/gdb/libpython.py)
+configure_file(
+    ${SRC_GDB_HOOKS}
+    ${BIN_BUILD_DIR}/python-gdb.py
+    COPYONLY
+)
+install(FILES ${SRC_GDB_HOOKS} DESTINATION ${BIN_INSTALL_DIR} COMPONENT Runtime)
