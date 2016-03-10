@@ -25,6 +25,8 @@
 # BUILTIN:     if this is set the module will be compiled statically into
 #              libpython by default.  The user can still override by setting
 #              BUILTIN_[extension_name]=OFF.
+# ALWAYS_BUILTIN: if this is set the module will always be compiled statically into
+#                 libpython.
 #
 # Two user-settable options are created for each extension added:
 # ENABLE_[extension_name]   defaults to ON.  If set to OFF the extension will
@@ -40,7 +42,7 @@
 # options ENABLE_FOO and BUILTIN_FOO.
 
 function(add_python_extension name)
-    set(options BUILTIN)
+    set(options BUILTIN ALWAYS_BUILTIN)
     set(oneValueArgs)
     set(multiValueArgs REQUIRES SOURCES DEFINITIONS LIBRARIES INCLUDEDIRS)
     cmake_parse_arguments(ADD_PYTHON_EXTENSION
@@ -81,32 +83,36 @@ function(add_python_extension name)
         endif(NOT (${list_dep}))
     endforeach(dep)
 
-    # Add options that the extention is either external to libpython or
-    # builtin.  These will be marked as advanced unless different from default
-    # values
-    if(NOT ADD_PYTHON_EXTENSION_BUILTIN)
-        set(ADD_PYTHON_EXTENSION_BUILTIN ${BUILD_EXTENSIONS_AS_BUILTIN})
-    endif()
-    cmake_dependent_option(
-        BUILTIN_${upper_name}
-        "If this is set the \"${name}\" extension will be compiled in to libpython"
-        ${ADD_PYTHON_EXTENSION_BUILTIN}
-        "NOT missing_deps"
-        OFF
-    )
-    if(NOT missing_deps)
-        if((BUILTIN_${upper_name} AND BUILD_EXTENSIONS_AS_BUILTIN)
-            OR (NOT BUILTIN_${upper_name} AND NOT BUILD_EXTENSIONS_AS_BUILTIN))
-            mark_as_advanced(FORCE BUILTIN_${upper_name})
-        else()
-            mark_as_advanced(CLEAR BUILTIN_${upper_name})
+    if(NOT ADD_PYTHON_EXTENSION_ALWAYS_BUILTIN)
+        # Add options that the extention is either external to libpython or
+        # builtin.  These will be marked as advanced unless different from default
+        # values
+        if(NOT ADD_PYTHON_EXTENSION_BUILTIN)
+            set(ADD_PYTHON_EXTENSION_BUILTIN ${BUILD_EXTENSIONS_AS_BUILTIN})
         endif()
-    endif()
+        cmake_dependent_option(
+            BUILTIN_${upper_name}
+            "If this is set the \"${name}\" extension will be compiled in to libpython"
+            ${ADD_PYTHON_EXTENSION_BUILTIN}
+            "NOT missing_deps"
+            OFF
+        )
+        if(NOT missing_deps)
+            if((BUILTIN_${upper_name} AND BUILD_EXTENSIONS_AS_BUILTIN)
+                OR (NOT BUILTIN_${upper_name} AND NOT BUILD_EXTENSIONS_AS_BUILTIN))
+                mark_as_advanced(FORCE BUILTIN_${upper_name})
+            else()
+                mark_as_advanced(CLEAR BUILTIN_${upper_name})
+            endif()
+        endif()
 
-    # XXX _ctypes_test and _testcapi should always be shared
-    if(${name} STREQUAL "_ctypes_test" OR ${name} STREQUAL "_testcapi")
-        unset(BUILTIN_${upper_name} CACHE)
-        set(BUILTIN_${upper_name} 0)
+        # XXX _ctypes_test and _testcapi should always be shared
+        if(${name} STREQUAL "_ctypes_test" OR ${name} STREQUAL "_testcapi")
+            unset(BUILTIN_${upper_name} CACHE)
+            set(BUILTIN_${upper_name} 0)
+        endif()
+    else()
+        set(BUILTIN_${upper_name} 1)
     endif()
 
     # If any dependencies were missing don't include this extension.
