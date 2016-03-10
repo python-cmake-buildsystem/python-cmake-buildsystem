@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.6)
 
-set(PY_VERSION_MAJOR 2)
-set(PY_VERSION_MINOR 7)
+set(PY_VERSION_MAJOR 2 CACHE STRING "Python major version")
+set(PY_VERSION_MINOR 7 CACHE STRING "Python minor version")
 set(PY_VERSION_PATCH 11 CACHE STRING "Python patch version")
 set(PY_VERSION "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}")
 
@@ -72,7 +72,6 @@ cmake_dependent_option(USE_LIBEDIT "Use libedit instead of readline" OFF
 option(WITH_TSC "profile with the Pentium timestamp counter" OFF)
 option(ENABLE_IPV6 "Enable IP v6" ON)
 option(WITH_DOC_STRINGS "Enable if you want documentation strings in extension modules" ON)
-option(Py_USING_UNICODE "Enable unicode support" ON)
 set(Py_DEBUG OFF) # TODO - Build debugging interpreter
 option(WITH_PYMALLOC "Define if you want to compile in Python-specific mallocs" ON)
 option(WITH_THREAD "Compile in rudimentary thread support" ON)
@@ -94,6 +93,7 @@ if(NOT (SRC_DIR AND EXISTS ${SRC_DIR}/${_landmark}))
 endif()
 get_filename_component(SRC_DIR "${SRC_DIR}" ABSOLUTE)
 
+# Download sources
 get_filename_component(_parent_dir ${CMAKE_CURRENT_BINARY_DIR} PATH)
 string(REGEX REPLACE "rc[1-9]$" "" _py_version_patch_no_rc ${PY_VERSION_PATCH})
 set(_py_version_no_rc "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${_py_version_patch_no_rc}")
@@ -108,6 +108,7 @@ set(_download_2.7.8_md5 "d4bca0159acb0b44a781292b5231936f")
 set(_download_2.7.9_md5 "5eebcaa0030dc4061156d3429657fb83")
 set(_download_2.7.10_md5 "d7547558fd673bd9d38e2108c6b42521")
 set(_download_2.7.11_md5 "6b6076ec9e93f05dd63e47eb9c15728b")
+set(_download_3.5.1_md5 "be78e48cdfc1a7ad90efff146dce6cfe")
 set(_extracted_dir "Python-${PY_VERSION}")
 
 if(NOT EXISTS ${SRC_DIR}/${_landmark} AND DOWNLOAD_SOURCES)
@@ -169,11 +170,33 @@ if(NOT DEFINED _download_${PY_VERSION}_md5)
     message(FATAL_ERROR "error: unknown python version '${PY_VERSION}'. Valid version should match '2.7.[3-10]'")
 endif()
 
+# Convenience boolean variables to easily test python version
+set(IS_PY3 0)
+set(IS_PY2 1)
+if(PY_VERSION_MAJOR VERSION_GREATER 2)
+    set(IS_PY3 1)
+    set(IS_PY2 0)
+endif()
+
+# Options depending of the python version
+if(IS_PY2)
+  option(Py_USING_UNICODE "Enable unicode support" ON)
+else()
+  if(DEFINED Py_USING_UNICODE)
+    message(AUTHOR_WARNING "Py_USING_UNICODE option is *NOT* supported with Python 3. Current version is ${PY_VERSION}")
+  endif()
+endif()
+
 if(PY_VERSION_MAJOR VERSION_GREATER 2.7.10)
 # See "Improving performance in Python 2.7" - http://lwn.net/Articles/646888/
 option(WITH_COMPUTED_GOTOS "Improve performance enabling the computed goto based dispatch" OFF)
 set(USE_COMPUTED_GOTOS ${WITH_COMPUTED_GOTOS})
 endif()
+
+if(IS_PY3)
+set(WITH_HASH_ALGORITHM "default" CACHE STRING "Define hash algorithm for str, bytes and memoryview.")
+set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "default" "siphash24" "fnv")
+endif(IS_PY3)
 
 # This is the major version number of Python
 set(LIBPYTHON_VERSION ${PY_VERSION_MAJOR}.${PY_VERSION_MINOR})
@@ -431,8 +454,11 @@ if(BUILD_TESTING)
     set(TESTOPTS -l)
     set(TESTPROG ${CMAKE_BINARY_DIR}/${PYTHONHOME}/test/regrtest.py)
     set(TESTPYTHONOPTS )
-    set(TESTPYTHON $<TARGET_FILE:python> -Wd -3 -E -tt ${TESTPYTHONOPTS})
-
+    if(IS_PY2)
+      set(TESTPYTHON $<TARGET_FILE:python> -Wd -3 -E -tt ${TESTPYTHONOPTS})
+    else()
+      set(TESTPYTHON $<TARGET_FILE:python> ${TESTPYTHONOPTS})
+    endif()
     include(cmake/UnitTests.cmake)
     foreach(unittest ${unittests})
       set(EXTRATESTOPTS -v)

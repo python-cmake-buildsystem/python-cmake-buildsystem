@@ -1,5 +1,8 @@
+set(subdir_2  Modules)
+set(subdir_3  Programs)
+
 set(PYTHON_SOURCES
-    ${SRC_DIR}/Modules/python.c
+    ${SRC_DIR}/${subdir_${PY_VERSION_MAJOR}}/python.c
 )
 
 add_executable(python ${PYTHON_SOURCES})

@@ -42,7 +42,7 @@
 # options ENABLE_FOO and BUILTIN_FOO.
 
 function(add_python_extension name)
-    set(options BUILTIN ALWAYS_BUILTIN)
+    set(options BUILTIN ALWAYS_BUILTIN NOINIT)
     set(oneValueArgs)
     set(multiValueArgs REQUIRES SOURCES DEFINITIONS LIBRARIES INCLUDEDIRS)
     cmake_parse_arguments(ADD_PYTHON_EXTENSION
@@ -145,6 +145,9 @@ function(add_python_extension name)
     if(BUILTIN_${upper_name})
         # This will be compiled into libpython instead of as a separate library
         set_property(GLOBAL APPEND PROPERTY builtin_extensions ${name})
+        if(ADD_PYTHON_EXTENSION_NOINIT)
+            set_property(GLOBAL APPEND PROPERTY builtin_noinit_extensions ${name})
+        endif()
         set_property(GLOBAL APPEND PROPERTY extension_${name}_sources ${absolute_sources})
         set_property(GLOBAL APPEND PROPERTY extension_${name}_link_libraries ${ADD_PYTHON_EXTENSION_LIBRARIES})
         set_property(GLOBAL APPEND PROPERTY extension_${name}_includedirs ${ADD_PYTHON_EXTENSION_INCLUDEDIRS})
