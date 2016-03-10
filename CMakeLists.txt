@@ -169,6 +169,12 @@ if(NOT DEFINED _download_${PY_VERSION}_md5)
     message(FATAL_ERROR "error: unknown python version '${PY_VERSION}'. Valid version should match '2.7.[3-10]'")
 endif()
 
+if(PY_VERSION_MAJOR VERSION_GREATER 2.7.10)
+# See "Improving performance in Python 2.7" - http://lwn.net/Articles/646888/
+option(WITH_COMPUTED_GOTOS "Improve performance enabling the computed goto based dispatch" OFF)
+set(USE_COMPUTED_GOTOS ${WITH_COMPUTED_GOTOS})
+endif()
+
 # This is the major version number of Python
 set(LIBPYTHON_VERSION ${PY_VERSION_MAJOR}.${PY_VERSION_MINOR})
 if(MSVC)
