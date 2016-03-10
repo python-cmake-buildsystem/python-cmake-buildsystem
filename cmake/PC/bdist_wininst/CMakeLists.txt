@@ -74,7 +74,6 @@ message(STATUS "bdist_wininst: Configuring 'Windows Installer' named '${WININST_
 # Configure installer
 add_executable(bdist_wininst WIN32 ${WININST_HEADERS} ${WININST_SOURCES})
 target_link_libraries(bdist_wininst
-    ${ZLIB_LIBRARIES}
     imagehlp
     comctl32
 )
