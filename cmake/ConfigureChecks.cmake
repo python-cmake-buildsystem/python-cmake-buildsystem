@@ -45,7 +45,7 @@ if(USE_SYSTEM_EXPAT)
 endif()
 
 if(USE_SYSTEM_OpenSSL)
-    find_package(OpenSSL)
+    find_package(OpenSSL 0.9.7)
 endif()
 
 if(USE_SYSTEM_TCL)
