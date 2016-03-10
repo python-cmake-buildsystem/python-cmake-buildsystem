@@ -2,10 +2,20 @@
 set(CTEST_SITE "appveyor")
 set(CTEST_DASHBOARD_ROOT $ENV{APPVEYOR_BUILD_FOLDER}/..)
 string(SUBSTRING $ENV{APPVEYOR_REPO_COMMIT} 0 7 commit)
-set(PY_VERSION_PATCH 8) # Value should match the default set in CMakeLists.txt
-if(NOT "$ENV{PY_VERSION_PATCH}" STREQUAL "")
-  set(PY_VERSION_PATCH "$ENV{PY_VERSION_PATCH}")
+
+# Extract major/minor/patch python versions
+if("$ENV{PY_VERSION}" STREQUAL "")
+  message(FATAL_ERROR "Environment variable 'PY_VERSION' is not set")
 endif()
+set(PY_VERSION $ENV{PY_VERSION})
+string(REGEX MATCH "([0-9])\\.([0-9]+)\\.([0-9]+)" _match ${PY_VERSION})
+if(_match STREQUAL "")
+  message(FATAL_ERROR "Environment variable 'PY_VERSION' is improperly set.")
+endif()
+set(PY_VERSION_MAJOR ${CMAKE_MATCH_1})
+set(PY_VERSION_MINOR ${CMAKE_MATCH_2})
+set(PY_VERSION_PATCH ${CMAKE_MATCH_3})
+
 set(what "$ENV{APPVEYOR_PULL_REQUEST_TITLE}_#$ENV{APPVEYOR_PULL_REQUEST_NUMBER}")
 if("$ENV{APPVEYOR_PULL_REQUEST_NUMBER}" STREQUAL "")
   set(what "$ENV{APPVEYOR_REPO_BRANCH}")
@@ -25,6 +35,8 @@ set(dashboard_track AppVeyor-CI)
 
 set(dashboard_cache "BUILD_SHARED:BOOL=ON
 BUILD_STATIC:BOOL=OFF
+PY_VERSION_MAJOR:STRING=${PY_VERSION_MAJOR}
+PY_VERSION_MINOR:STRING=${PY_VERSION_MINOR}
 PY_VERSION_PATCH:STRING=${PY_VERSION_PATCH}
 ")
 

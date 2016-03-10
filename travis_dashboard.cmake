@@ -4,10 +4,20 @@ set(CTEST_SITE "${hostname}")
 set(CTEST_DASHBOARD_ROOT $ENV{TRAVIS_BUILD_DIR}/..)
 get_filename_component(compiler_name $ENV{CC} NAME)
 string(SUBSTRING $ENV{TRAVIS_COMMIT} 0 7 commit)
-set(PY_VERSION_PATCH 8) # Value should match the default set in CMakeLists.txt
-if(NOT "$ENV{PY_VERSION_PATCH}" STREQUAL "")
-  set(PY_VERSION_PATCH "$ENV{PY_VERSION_PATCH}")
+
+# Extract major/minor/patch python versions
+if("$ENV{PY_VERSION}" STREQUAL "")
+  message(FATAL_ERROR "Environment variable 'PY_VERSION' is not set")
 endif()
+set(PY_VERSION $ENV{PY_VERSION})
+string(REGEX MATCH "([0-9])\\.([0-9]+)\\.([0-9]+)" _match ${PY_VERSION})
+if(_match STREQUAL "")
+  message(FATAL_ERROR "Environment variable 'PY_VERSION' is improperly set.")
+endif()
+set(PY_VERSION_MAJOR ${CMAKE_MATCH_1})
+set(PY_VERSION_MINOR ${CMAKE_MATCH_2})
+set(PY_VERSION_PATCH ${CMAKE_MATCH_3})
+
 set(what "#$ENV{TRAVIS_PULL_REQUEST}")
 if($ENV{TRAVIS_PULL_REQUEST} STREQUAL "false")
   set(what "$ENV{TRAVIS_BRANCH}")
@@ -21,7 +31,9 @@ set(CTEST_TEST_ARGS PARALLEL_LEVEL 8)
 set(dashboard_model Experimental)
 set(dashboard_track Travis-CI)
 
-set(dashboard_cache "PY_VERSION_PATCH:STRING=${PY_VERSION_PATCH}
+set(dashboard_cache "PY_VERSION_MAJOR:STRING=${PY_VERSION_MAJOR}
+PY_VERSION_MINOR:STRING=${PY_VERSION_MINOR}
+PY_VERSION_PATCH:STRING=${PY_VERSION_PATCH}
 ")
 
 function(downloadFile url dest)
