@@ -25,7 +25,7 @@ endif()
 set(MSVC_BUILTIN )
 if(MSVC)
     set(MSVC_BUILTIN BUILTIN)
-endif(MSVC)
+endif()
 
 # XXX Following modules are missing:
 # lzma
@@ -196,14 +196,14 @@ elseif(WIN32)
                 ${_multiprocessing${PY_VERSION_MAJOR}_SOURCES}
         LIBRARIES ws2_32
     )
-endif(UNIX)
+endif()
 
 # Select needs winsock on Windows
 if(WIN32)
     add_python_extension(select SOURCES selectmodule.c LIBRARIES ws2_32)
-else(WIN32)
+else()
     add_python_extension(select SOURCES selectmodule.c)
-endif(WIN32)
+endif()
 
 # Socket is different on Windows
 set(_socket_SOURCES socketmodule.c)
@@ -216,14 +216,14 @@ if(WIN32)
                     HAVE_ADDRINFO
         LIBRARIES ws2_32 ${M_LIBRARIES}
     )
-else(WIN32)
+else()
     list(APPEND _socket_SOURCES timemodule.c)
     add_python_extension(_socket
         REQUIRES HAVE_LIBM BUILTIN
         SOURCES ${_socket_SOURCES}
         LIBRARIES ${M_LIBRARIES}
     )
-endif(WIN32)
+endif()
 
 set(_libffi_system_dir ${CMAKE_SYSTEM_PROCESSOR})
 if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i686")
@@ -252,13 +252,13 @@ if(WIN32)
                     ${SRC_DIR}/Modules/_ctypes/libffi/include
         DEFINITIONS X86_WIN32
       )
-    else(MINGW) # Visual Studio
+    else() # Visual Studio
       if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
           enable_language(ASM_MASM)
           set(_ctype_arch_impl win64.asm)
-      else(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
+      else()
           set(_ctype_arch_impl win32.c)
-      endif(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
+      endif()
       add_python_extension(_ctypes
           SOURCES _ctypes/_ctypes.c
                   _ctypes/callbacks.c
@@ -272,8 +272,8 @@ if(WIN32)
           REQUIRES BUILD_SHARED
           INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi_msvc
         )
-    endif(MINGW)
-else(WIN32)
+    endif()
+else()
     set(_libffi_system_extra_src)
     if(APPLE)
         # TODO - Jc:02/20/2013
@@ -292,7 +292,7 @@ else(WIN32)
         #    INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi/src/${_libffi_system_dir}
         #                ${SRC_DIR}/Modules/_ctypes/libffi/include
         #)
-    else(APPLE)
+    else()
         if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
           set(_libffi_system_extra_src
                 _ctypes/libffi/src/${_libffi_system_dir}/ffi64.c
@@ -314,8 +314,8 @@ else(WIN32)
                         ${SRC_DIR}/Modules/_ctypes/libffi/include
                         ${CMAKE_SOURCE_DIR}/cmake # For ffi.h and fficonfig.h
         )
-    endif(APPLE)
-endif(WIN32)
+    endif()
+endif()
 
 # Python3: _decimal
 if(IS_PY3)
@@ -434,7 +434,7 @@ if(_decimal_compile_flags)
     set_target_properties(extension_decimal PROPERTIES COMPILE_FLAGS ${_decimal_compile_flags})
 endif()
 
-endif(IS_PY3)
+endif()
 
 # Build expat using the system expat if it's installed, otherwise use the
 # builtin version.
@@ -449,13 +449,13 @@ if(EXPAT_LIBRARIES AND EXPAT_INCLUDE_DIRS)
         LIBRARIES ${EXPAT_LIBRARIES}
         INCLUDEDIRS ${EXPAT_INCLUDE_DIRS}
     )
-else(EXPAT_LIBRARIES AND EXPAT_INCLUDE_DIRS)
+else()
     set(_pyexpat_definitions XML_STATIC)
     if(UNIX)
         list(APPEND _pyexpat_definitions HAVE_EXPAT_CONFIG_H)
     elseif(MSVC)
         list(APPEND _pyexpat_definitions COMPILED_FROM_DSP)
-    endif(UNIX)
+    endif()
     add_python_extension(pyexpat
         SOURCES pyexpat.c
                 expat/xmlparse.c
@@ -473,7 +473,7 @@ else(EXPAT_LIBRARIES AND EXPAT_INCLUDE_DIRS)
         DEFINITIONS ${_elementtree_definitions}
         INCLUDEDIRS ${SRC_DIR}/Modules/expat
     )
-endif(EXPAT_LIBRARIES AND EXPAT_INCLUDE_DIRS)
+endif()
 
 if(IS_PY2)
 

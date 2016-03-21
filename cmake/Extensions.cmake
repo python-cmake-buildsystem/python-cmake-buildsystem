@@ -81,8 +81,8 @@ function(add_python_extension name)
         string(REPLACE " " ";" list_dep ${dep})
         if(NOT (${list_dep}))
             set(missing_deps "${missing_deps}${dep} ")
-        endif(NOT (${list_dep}))
-    endforeach(dep)
+        endif()
+    endforeach()
 
     if(NOT ADD_PYTHON_EXTENSION_ALWAYS_BUILTIN)
         # Add options that the extention is either external to libpython or
@@ -122,9 +122,9 @@ function(add_python_extension name)
         set(extensions_disabled "${extensions_disabled}${name} (not set: ${missing_deps});"
              CACHE INTERNAL "" FORCE)
         return()
-    else(missing_deps)
+    else()
         set(extensions_enabled "${extensions_enabled}${name};" CACHE INTERNAL "" FORCE)
-    endif(missing_deps)
+    endif()
 
     # Callers to this function provide source files relative to the Modules/
     # directory.  We need to get absolute paths for them all.
@@ -139,9 +139,9 @@ function(add_python_extension name)
         set(absolute_src ${source})
         if(NOT IS_ABSOLUTE ${source})
             set(absolute_src ${SRC_DIR}/Modules/${source})
-        endif(NOT IS_ABSOLUTE ${source})
+        endif()
         list(APPEND absolute_sources ${absolute_src})
-    endforeach(source)
+    endforeach()
 
     if(BUILTIN_${upper_name})
         # This will be compiled into libpython instead of as a separate library
@@ -152,7 +152,7 @@ function(add_python_extension name)
         set_property(GLOBAL APPEND PROPERTY extension_${name}_definitions ${ADD_PYTHON_EXTENSION_DEFINITIONS})
     elseif(WIN32 AND NOT BUILD_SHARED)
         # Extensions cannot be built against a static libpython on windows
-    else(BUILTIN_${upper_name})
+    else()
 
         # XXX Uncomment when CMake >= 2.8.8 is required
         #add_library(${target_name} SHARED ${absolute_sources})
@@ -189,18 +189,18 @@ function(add_python_extension name)
                 set_target_properties(${target_name} PROPERTIES
                     LINK_FLAGS -Wl,--enable-auto-import
                 )
-            endif(MINGW)
+            endif()
             set_target_properties(${target_name} PROPERTIES
                 SUFFIX .pyd
             )
-        endif(WIN32)
+        endif()
         
         if(APPLE)
             set_target_properties(${target_name} PROPERTIES
                 LINK_FLAGS -Wl,-undefined,dynamic_lookup
                 SUFFIX .so
             )
-        endif(APPLE)
+        endif()
 
         # Turn off the "lib" prefix and add any compiler definitions
         set_target_properties(${target_name} PROPERTIES
@@ -219,7 +219,7 @@ function(add_python_extension name)
         if(ADD_PYTHON_EXTENSION_DEFINITIONS)
             set_target_properties(${target_name} PROPERTIES
                 COMPILE_DEFINITIONS "${ADD_PYTHON_EXTENSION_DEFINITIONS}")
-        endif(ADD_PYTHON_EXTENSION_DEFINITIONS)
+        endif()
 
         # XXX Uncomment when CMake >= 2.8.8 is required
         #if(NOT ADD_PYTHON_EXTENSION_NO_INSTALL)
@@ -228,8 +228,8 @@ function(add_python_extension name)
         #            LIBRARY DESTINATION ${EXTENSION_INSTALL_DIR}
         #            RUNTIME DESTINATION ${EXTENSION_INSTALL_DIR})
         #endif()
-    endif(BUILTIN_${upper_name})
-endfunction(add_python_extension)
+    endif()
+endfunction()
 
 
 function(show_extension_summary)
@@ -239,7 +239,7 @@ function(show_extension_summary)
         message(STATUS "")
         foreach(line ${extensions_disabled})
             message(STATUS "    ${line}")
-        endforeach(line)
+        endforeach()
         message(STATUS "")
-    endif(extensions_disabled)
-endfunction(show_extension_summary)
+    endif()
+endfunction()

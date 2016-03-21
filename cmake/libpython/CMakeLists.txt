@@ -13,7 +13,7 @@ if(UNIX)
     set(PYTHONPATH "${EXTRA_PYTHONPATH}:lib-dynload:plat-${PY_PLATFORM}")
     if(ENABLE_TKINTER)
         set(PYTHONPATH "${PYTHONPATH}:lib-tk")
-    endif(ENABLE_TKINTER)
+    endif()
     set_property(
         SOURCE ${SRC_DIR}/Modules/getpath.c
         PROPERTY COMPILE_DEFINITIONS
@@ -48,7 +48,7 @@ elseif(WIN32)
     set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${PYTHONHOME_ESCAPED}\\\\plat-${PY_PLATFORM}")
     if(ENABLE_TKINTER)
         set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${PYTHONHOME_ESCAPED}\\\\lib-tk")
-    endif(ENABLE_TKINTER)
+    endif()
 
     set(_wide_char_modifier)
     if(IS_PY3)
@@ -153,7 +153,7 @@ if(UNIX)
         PROPERTY COMPILE_DEFINITIONS
             SOABI="${SOABI}"
         )
-    endif(IS_PY3)
+    endif()
 elseif(WIN32)
     list(APPEND DYNLOAD_SOURCES
         ${SRC_DIR}/PC/dl_nt.c
@@ -260,8 +260,8 @@ if(UNIX OR MINGW)
         PROPERTY COMPILE_DEFINITIONS
             ABIFLAGS="${ABIFLAGS}"
         )
-    endif(IS_PY3)
-endif(UNIX OR MINGW)
+    endif()
+endif()
 
 list(APPEND MODULE_SOURCES
     ${SRC_DIR}/Modules/_codecsmodule.c
@@ -345,7 +345,7 @@ set(config_entries "")
 foreach(ext ${builtin_extensions})
     set(config_inits "${config_inits}extern ${init_return_type_${PY_VERSION_MAJOR}} ${init_prefix_${PY_VERSION_MAJOR}}${ext}(void);\n")
     set(config_entries "${config_entries}    {\"${ext}\", ${init_prefix_${PY_VERSION_MAJOR}}${ext}},\n")
-endforeach(ext)
+endforeach()
 
 configure_file(
     ${CMAKE_SOURCE_DIR}/cmake/config_${PY_VERSION_MAJOR}.c.in
@@ -359,10 +359,10 @@ set(LIBPYTHON_TARGET_LIBRARIES
   )
 if(WITH_THREAD)
     list(APPEND LIBPYTHON_TARGET_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
-endif(WITH_THREAD)
+endif()
 if(UNIX)
     list(APPEND LIBPYTHON_TARGET_LIBRARIES ${HAVE_LIBUTIL} ${HAVE_LIBM})
-endif(UNIX)
+endif()
 if(WIN32 AND IS_PY3)
     list(APPEND LIBPYTHON_TARGET_LIBRARIES ws2_32) # Required by signalmodule
 endif()
@@ -402,7 +402,7 @@ add_custom_command(
 # the frozen sources.
 add_custom_target(freeze_modules DEPENDS ${LIBPYTHON_FROZEN_SOURCES})
 
-endif(IS_PY3)
+endif()
 
 # Build pgen executable
 set(PGEN2_SOURCES
@@ -466,7 +466,7 @@ function(add_libpython name type)
         LIBRARY DESTINATION ${LIBPYTHON_LIBDIR}
         RUNTIME DESTINATION ${LIBPYTHON_LIBDIR}
     )
-endfunction(add_libpython)
+endfunction()
 
 if(BUILD_SHARED)
     add_libpython(libpython-shared SHARED)
@@ -481,7 +481,7 @@ if(BUILD_SHARED)
         set_property(
             SOURCE ${SRC_DIR}/Modules/posixmodule.c
             APPEND PROPERTY COMPILE_DEFINITIONS WITH_NEXT_FRAMEWORK)
-    endif(APPLE)
+    endif()
 
     set(targetname "libpython3-shared")
 
@@ -551,20 +551,20 @@ if(BUILD_SHARED)
         )
     endif()
 
-endif(BUILD_SHARED)
+endif()
 
 if(BUILD_STATIC)
     add_libpython(libpython-static STATIC)
     if(HAVE_TARGET_COMPILE_DEFINITIONS)
         target_compile_definitions(libpython-static PUBLIC Py_NO_ENABLE_SHARED)
-    else(HAVE_TARGET_COMPILE_DEFINITIONS)
+    else()
         set_target_properties(libpython-static PROPERTIES
             COMPILE_DEFINITIONS Py_NO_ENABLE_SHARED
         )
-    endif(HAVE_TARGET_COMPILE_DEFINITIONS)
+    endif()
     set_target_properties(libpython-static PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_STATIC_ARCHIVEDIR}
     )
     install(TARGETS libpython-static ARCHIVE DESTINATION ${PYTHONHOME}/config/)
 
-endif(BUILD_STATIC)
+endif()
