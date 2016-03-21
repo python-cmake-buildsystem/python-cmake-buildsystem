@@ -435,10 +435,7 @@ if(USE_LIB64)
     set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS ON)
     set(LIBDIR "lib64")
 endif()
-set(PYTHONHOME "${LIBDIR}")
-if(UNIX)
-    set(PYTHONHOME "${PYTHONHOME}/${LIBPYTHON}")
-endif()
+set(PYTHONHOME "${LIBDIR}/${LIBPYTHON}")
 
 # Install tree directory
 set(BIN_INSTALL_DIR bin)                         # Contains the python executable
@@ -460,7 +457,7 @@ if(INSTALL_WINDOWS_TRADITIONAL)
 endif()
 set(INCLUDE_INSTALL_DIR include/python${LD_VERSION})
 if(MSVC)
-    set(INCLUDE_INSTALL_DIR include)
+    set(INCLUDE_INSTALL_DIR include/python${PY_VERSION_MAJOR}.${PY_VERSION_MINOR})
 endif()
 # Build tree directory
 set(BIN_BUILD_DIR ${PROJECT_BINARY_DIR}/bin)
@@ -468,7 +465,7 @@ set(CONFIG_BUILD_DIR ${PROJECT_BINARY_DIR}/${CONFIG_INSTALL_DIR})
 set(EXTENSION_BUILD_DIR ${PROJECT_BINARY_DIR}/${PYTHONHOME}/lib-dynload)
 set(INCLUDE_BUILD_DIR ${SRC_DIR}/Include)
 
-set(ARCHIVEDIR "libs")      # Contains the static (*.a) and import libraries (*.lib)
+set(ARCHIVEDIR "lib")      # Contains the static (*.a) and import libraries (*.lib)
 
 # Directories specific to 'libpython'
 set(LIBPYTHON_LIBDIR ${LIBDIR})
