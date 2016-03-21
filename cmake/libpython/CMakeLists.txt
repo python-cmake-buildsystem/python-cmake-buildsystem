@@ -589,6 +589,15 @@ if(BUILD_LIBPYTHON_SHARED)
     set_target_properties(libpython-shared PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}
     )
+
+    if((MSVC_VERSION GREATER 1500) AND (NOT CMAKE_VERSION VERSION_LESS "3.1"))
+        install(
+            FILES $<TARGET_PDB_FILE:libpython-shared>
+            DESTINATION ${LIBPYTHON_ARCHIVEDIR}
+            CONFIGURATIONS Debug RelWithDebInfo
+        )
+    endif()
+
     if(APPLE)
         # HACK For python <= 2.7.3, this fix link error related to undefined _environ symbol and
         #      is equivalent to solution implemented in commit http://hg.python.org/cpython/rev/864b983
@@ -644,6 +653,14 @@ if(BUILD_LIBPYTHON_SHARED)
         add_dependencies(${targetname} generate_libpython3stub_lib)
 
         target_link_libraries(${targetname} ${python3stub_lib})
+
+        if((MSVC_VERSION GREATER 1500) AND (NOT CMAKE_VERSION VERSION_LESS "3.1"))
+            install(
+                FILES $<TARGET_PDB_FILE:libpython3-shared>
+                DESTINATION ${LIBPYTHON_ARCHIVEDIR}
+                CONFIGURATIONS Debug RelWithDebInfo
+            )
+        endif()
     endif()
 
     if(IS_PY3 AND UNIX AND NOT APPLE)
