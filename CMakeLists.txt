@@ -827,18 +827,6 @@ write_basic_package_version_file(
     COMPATIBILITY SameMajorVersion
 )
 
-if(INSTALL_DEVELOPMENT)
-    # Install 'PythonTargets.cmake', 'PythonConfig.cmake' and 'PythonConfigVersion.cmake
-    install(EXPORT PythonTargets
-        FILE PythonTargets.cmake
-        DESTINATION ${CONFIG_INSTALL_DIR} COMPONENT Development)
-
-    install(
-        FILES ${python_install_config} ${python_config_version}
-        DESTINATION ${CONFIG_INSTALL_DIR} COMPONENT Development
-    )
-endif()
-
 # Install License
 set(license_destination ${PYTHONHOME})
 if(INSTALL_WINDOWS_TRADITIONAL)

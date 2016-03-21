@@ -575,7 +575,7 @@ function(add_libpython name type install component)
     set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS ${name})
 
     if(install)
-        install(TARGETS ${name} EXPORT PythonTargets
+        install(TARGETS ${name}
             ARCHIVE DESTINATION ${LIBPYTHON_ARCHIVEDIR}
             LIBRARY DESTINATION ${LIBPYTHON_LIBDIR}
             RUNTIME DESTINATION ${LIBPYTHON_LIBDIR}

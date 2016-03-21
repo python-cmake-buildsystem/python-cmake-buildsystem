@@ -32,7 +32,7 @@ endif()
 # Export target
 set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS python)
 
-install(TARGETS python EXPORT PythonTargets RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT Runtime)
+install(TARGETS python RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT Runtime)
 
 # See "is_python_build()" in sysconfig.py
 add_custom_command(TARGET python PRE_BUILD
