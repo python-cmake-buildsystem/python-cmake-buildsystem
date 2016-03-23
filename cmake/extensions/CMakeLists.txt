@@ -65,9 +65,9 @@ add_python_extension(_io ${MSVC_BUILTIN} SOURCES
     _io/stringio.c
     _io/textio.c
 )
-add_python_extension(itertools ${MSVC_BUILTIN} SOURCES itertoolsmodule.c)
+add_python_extension(itertools ${MSVC_BUILTIN} SOURCES itertoolsmodule.c) # Functions creating iterators for efficient looping
 add_python_extension(_json ${MSVC_BUILTIN} SOURCES _json.c)
-add_python_extension(_locale ${MSVC_BUILTIN} SOURCES _localemodule.c)
+add_python_extension(_locale ${MSVC_BUILTIN} SOURCES _localemodule.c) # access to ISO C locale support
 add_python_extension(_lsprof ${MSVC_BUILTIN} SOURCES _lsprof.c rotatingtree.c)
 add_python_extension(math ${MSVC_BUILTIN} SOURCES _math.c mathmodule.c)
 add_python_extension(mmap ${MSVC_BUILTIN} SOURCES mmapmodule.c)
@@ -86,7 +86,7 @@ add_python_extension(fcntl REQUIRES UNIX SOURCES fcntlmodule.c)
 add_python_extension(grp REQUIRES UNIX SOURCES grpmodule.c)
 add_python_extension(nis REQUIRES UNIX HAVE_LIBNSL SOURCES nismodule.c LIBRARIES ${HAVE_LIBNSL})
 add_python_extension(posix REQUIRES UNIX BUILTIN SOURCES posixmodule.c)
-add_python_extension(pwd REQUIRES UNIX BUILTIN SOURCES pwdmodule.c)
+add_python_extension(pwd REQUIRES UNIX BUILTIN SOURCES pwdmodule.c) # this is needed to find out the user's home dir if $HOME is not set
 add_python_extension(resource REQUIRES UNIX SOURCES resource.c)
 add_python_extension(spwd REQUIRES UNIX HAVE_GETSPNAM HAVE_GETSPENT SOURCES spwdmodule.c)
 add_python_extension(syslog REQUIRES UNIX SOURCES syslogmodule.c)
