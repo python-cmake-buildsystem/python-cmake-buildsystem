@@ -152,13 +152,18 @@ function(add_python_extension name)
     elseif(WIN32 AND NOT BUILD_SHARED)
         # Extensions cannot be built against a static libpython on windows
     else(BUILTIN_${upper_name})
+
         add_library(${target_name} SHARED ${absolute_sources})
         include_directories(${ADD_PYTHON_EXTENSION_INCLUDEDIRS})
+
+        if(WIN32)
+            list(APPEND ADD_PYTHON_EXTENSION_LIBRARIES libpython-shared)
+        endif()
+
         target_link_libraries(${target_name} ${ADD_PYTHON_EXTENSION_LIBRARIES})
 
         if(WIN32)
             #list(APPEND ADD_PYTHON_EXTENSION_DEFINITIONS Py_NO_ENABLE_SHARED)
-            target_link_libraries(${target_name} libpython-shared)
             if(MINGW)
                 set_target_properties(${target_name} PROPERTIES
                     LINK_FLAGS -Wl,--enable-auto-import
