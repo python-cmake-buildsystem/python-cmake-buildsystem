@@ -44,6 +44,11 @@ if(USE_SYSTEM_EXPAT)
     find_package(EXPAT)
 endif()
 
+if(IS_PY3 AND USE_SYSTEM_LIBMPDEC)
+    find_library(LIBMPDEC_LIBRARY NAMES libmpdec)
+    set(LIBMPDEC_LIBRARIES ${LIBMPDEC_LIBRARY})
+endif()
+
 if(USE_SYSTEM_OpenSSL)
     find_package(OpenSSL 0.9.7)
 endif()
@@ -1951,7 +1956,7 @@ python_platform_test_run(
 cmake_pop_check_state()
 
 # HAVE_IPA_PURE_CONST_BUG
-if(HAVE_GCC_ASM_FOR_X87 AND CMAKE_COMPILER_IS_GNUCC)
+if(HAVE_GCC_ASM_FOR_X87 AND CMAKE_C_COMPILER_ID MATCHES "GNU")
   # Some versions of gcc miscompile inline asm:
   # http://gcc.gnu.org/bugzilla/show_bug.cgi?id=46491
   # http://gcc.gnu.org/ml/gcc/2010-11/msg00366.html

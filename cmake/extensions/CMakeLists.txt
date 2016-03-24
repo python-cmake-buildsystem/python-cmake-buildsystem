@@ -28,7 +28,6 @@ if(MSVC)
 endif(MSVC)
 
 # XXX Following modules are missing:
-#  _decimal
 # xxlimited + Py_LIMITED_API
 # lzma
 
@@ -310,6 +309,117 @@ else(WIN32)
         )
     endif(APPLE)
 endif(WIN32)
+
+# Python3: _decimal
+if(IS_PY3)
+
+set(libmpdec_config_x64          CONFIG_64 ASM)
+set(libmpdec_config_uint128      CONFIG_64 ANSI HAVE_UINT128_T)
+set(libmpdec_config_ansi64       CONFIG_64 ANSI)
+set(libmpdec_config_ppro         CONFIG_32 PPRO ASM)
+set(libmpdec_config_ansi32       CONFIG_32 PPRO)
+set(libmpdec_config_ansi_legacy  CONFIG_32 ANSI LEGACY_COMPILER)
+set(libmpdec_config_universal    UNIVERSAL)
+
+if(USE_SYSTEM_LIBMPDEC)
+    set(_decimal_REQUIRES REQUIRES LIBMPDEC_LIBRARIES)
+    set(_decimal_EXTRA_SOURCES )
+    set(_decimal_INCLUDEDIRS )
+else()
+    set(_decimal_REQUIRES )
+    set(_decimal_EXTRA_SOURCES
+        _decimal/libmpdec/basearith.c
+        _decimal/libmpdec/constants.c
+        _decimal/libmpdec/context.c
+        _decimal/libmpdec/convolute.c
+        _decimal/libmpdec/crt.c
+        _decimal/libmpdec/difradix2.c
+        _decimal/libmpdec/fnt.c
+        _decimal/libmpdec/fourstep.c
+        _decimal/libmpdec/io.c
+        _decimal/libmpdec/memory.c
+        _decimal/libmpdec/mpdecimal.c
+        _decimal/libmpdec/numbertheory.c
+        _decimal/libmpdec/sixstep.c
+        _decimal/libmpdec/transpose.c
+    )
+    if(WIN32)
+        enable_language(ASM_MASM)
+        list(APPEND _decimal_EXTRA_SOURCES
+            _decimal/libmpdec/vcdiv64.asm
+        )
+    endif()
+    set(_decimal_INCLUDEDIRS INCLUDEDIRS ${SRC_DIR}/Modules/_decimal/libmpdec)
+endif()
+set(libmpdec_config )
+set(_decimal_compile_flags )
+if(APPLE)
+    # Universal here means: build with the same options Python
+    # was built with.
+    set(libmpdec_config universal)
+elseif(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
+    if(HAVE_GCC_ASM_FOR_X64)
+        set(libmpdec_config x64)
+    elseif(HAVE_GCC_UINT128_T)
+        set(libmpdec_config uint128)
+    else()
+        set(libmpdec_config ansi64)
+    endif()
+else(${CMAKE_SIZEOF_VOID_P} EQUAL 4)
+    if(HAVE_GCC_ASM_FOR_X87 AND
+        (CMAKE_C_COMPILER_ID MATCHES "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
+        AND NOT CMAKE_SYSTEM MATCHES SunOS
+    )
+        # solaris: problems with register allocation.
+        # icc >= 11.0 works as well.
+        set(libmpdec_config ppro)
+        list(APPEND _decimal_compile_flags "-Wno-unknown-pragmas")
+    else()
+      set(libmpdec_config ansi32)
+    endif()
+else()
+    message(FATAL_ERROR "extension_decimal: unsupported architecture")
+endif()
+
+# Workarounds for toolchain bugs:
+if(HAVE_IPA_PURE_CONST_BUG)
+    # Some versions of gcc miscompile inline asm:
+    # http://gcc.gnu.org/bugzilla/show_bug.cgi?id=46491
+    # http://gcc.gnu.org/ml/gcc/2010-11/msg00366.html
+    list(APPEND _decimal_compile_flags "-fno-ipa-pure-const")
+endif()
+if(HAVE_GLIBC_MEMMOVE_BUG)
+    # _FORTIFY_SOURCE wrappers for memmove and bcopy are incorrect:
+    # http://sourceware.org/ml/libc-alpha/2010-12/msg00009.html
+    # XXX Implement missing logic
+#    undef_macros.append('_FORTIFY_SOURCE')
+endif()
+
+if(NOT WITH_THREAD)
+    # Faster version without thread local contexts:
+    list(APPEND libmpdec_config_${libmpdec_config}
+        WITHOUT_THREADS
+    )
+endif()
+
+# Uncomment for extra functionality:
+#list(APPEND libmpdec_config_${libmpdec_config} EXTRA_FUNCTIONALITY)
+
+add_python_extension(_decimal
+    SOURCES
+        _decimal/_decimal.c
+        _decimal/docstrings.h
+        ${_decimal_EXTRA_SOURCES}
+    DEFINITIONS ${libmpdec_config_${libmpdec_config}}
+    ${_decimal_REQUIRES}
+    ${_decimal_LIBRARIES}
+    ${_decimal_INCLUDEDIRS}
+)
+if(_decimal_compile_flags)
+    set_target_properties(extension_decimal PROPERTIES COMPILE_FLAGS ${_decimal_compile_flags})
+endif()
+
+endif(IS_PY3)
 
 # Build expat using the system expat if it's installed, otherwise use the
 # builtin version.
