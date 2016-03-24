@@ -439,6 +439,13 @@ function(add_libpython name type)
     add_library(${name} ${type} ${LIBPYTHON_SOURCES})
     target_link_libraries(${name} ${LIBPYTHON_TARGET_LIBRARIES})
 
+    if(MSVC)
+        # Explicitly disable COMDAT folding. Note that this was not required
+        # in the original "pcbuild.sln" solution file because it was side effect
+        # of having "/Zi" flag set.
+        set_target_properties(${name} PROPERTIES LINK_FLAGS /OPT:NOICF)
+    endif()
+
     set_target_properties(${name} PROPERTIES
         OUTPUT_NAME ${LIBPYTHON}
         LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_LIBDIR}
