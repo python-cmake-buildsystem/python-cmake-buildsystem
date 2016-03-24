@@ -130,9 +130,11 @@ add_python_extension(errno BUILTIN REQUIRES IS_PY3 UNIX SOURCES errnomodule.c)
 add_python_extension(_posixsubprocess BUILTIN REQUIRES IS_PY3 UNIX SOURCES _posixsubprocess.c)
 
 # MacOSX-only extensions
+set(_scproxy2_SOURCES ${SRC_DIR}/Mac/Modules/_scproxy.c)
+set(_scproxy3_SOURCES ${SRC_DIR}/Modules/_scproxy.c)
 add_python_extension(_scproxy
     REQUIRES APPLE HAVE_LIBSYSTEMCONFIGURATION
-    SOURCES ${SRC_DIR}/Mac/Modules/_scproxy.c
+    SOURCES ${_scproxy${PY_VERSION_MAJOR}_SOURCES}
     LIBRARIES ${HAVE_LIBSYSTEMCONFIGURATION}
 )
 
