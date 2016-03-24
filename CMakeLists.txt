@@ -376,15 +376,19 @@ add_custom_target(generate_python_ast_c
 )
 
 # If needed, copy 'asdl.py' and 'Python.asdl' into build directory so that 'test_asdl_parser' passes.
+set(_asdl_subdir ${LIBDIR})
+if(WIN32)
+  set(_asdl_subdir )
+endif()
 file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBDIR}/Parser)
 configure_file(
     ${SRC_DIR}/Parser/Python.asdl
-    ${PROJECT_BINARY_DIR}/${LIBDIR}/Parser/Python.asdl
+    ${PROJECT_BINARY_DIR}/${_asdl_subdir}/Parser/Python.asdl
     COPYONLY
 )
 configure_file(
     ${SRC_DIR}/Parser/asdl.py
-    ${PROJECT_BINARY_DIR}/${LIBDIR}/Parser/asdl.py
+    ${PROJECT_BINARY_DIR}/${_asdl_subdir}/Parser/asdl.py
     COPYONLY
 )
 
