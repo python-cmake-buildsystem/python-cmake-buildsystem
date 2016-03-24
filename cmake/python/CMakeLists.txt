@@ -20,6 +20,10 @@ else(BUILD_SHARED)
     set_target_properties(python PROPERTIES COMPILE_DEFINITIONS Py_NO_ENABLE_SHARED)
 endif(BUILD_SHARED)
 
+if(MSVC)
+    set_target_properties(python PROPERTIES LINK_FLAGS /STACK:2000000)
+endif()
+
 # Export target
 set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS python)
 
