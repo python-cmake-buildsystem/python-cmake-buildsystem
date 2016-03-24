@@ -55,16 +55,26 @@ endmacro()
 
 option(USE_SYSTEM_LIBRARIES "Use system libraries" ON)
 
+# Set platform dependent defaults
+set(_use_builtin_zlib_default OFF)
+set(_use_system_zlib_default ON)
+if(WIN32)
+  set(_use_builtin_zlib_default ON)
+  set(_use_system_zlib_default OFF)
+endif()
+
 cmake_dependent_option(USE_SYSTEM_BZip2 "Use system BZip2" ON "USE_SYSTEM_LIBRARIES" OFF)
 cmake_dependent_option(USE_SYSTEM_Curses "Use system Curses" ON "USE_SYSTEM_LIBRARIES" OFF)
 cmake_dependent_option(USE_SYSTEM_EXPAT "Use system EXPAT" ON "USE_SYSTEM_LIBRARIES" OFF)
 cmake_dependent_option(USE_SYSTEM_OpenSSL "Use system OpenSSL" ON "USE_SYSTEM_LIBRARIES" OFF)
 cmake_dependent_option(USE_SYSTEM_TCL "Use system TCL" ON "USE_SYSTEM_LIBRARIES" OFF)
-cmake_dependent_option(USE_SYSTEM_ZLIB "Use system ZLIB" ON "USE_SYSTEM_LIBRARIES" OFF)
+cmake_dependent_option(USE_SYSTEM_ZLIB "Use system ZLIB" ${_use_system_zlib_default} "USE_SYSTEM_LIBRARIES" OFF)
 cmake_dependent_option(USE_SYSTEM_DB "Use system DB" ON "USE_SYSTEM_LIBRARIES" OFF)
 cmake_dependent_option(USE_SYSTEM_GDBM "Use system GDBM" ON "USE_SYSTEM_LIBRARIES" OFF)
 cmake_dependent_option(USE_SYSTEM_READLINE "Use system READLINE" ON "USE_SYSTEM_LIBRARIES" OFF)
 cmake_dependent_option(USE_SYSTEM_SQLITE3 "Use system SQLITE3" ON "USE_SYSTEM_LIBRARIES" OFF)
+
+cmake_dependent_option(USE_BUILTIN_ZLIB "Use builtin ZLIB" ${_use_builtin_zlib_default} "NOT USE_SYSTEM_ZLIB" OFF)
 
 cmake_dependent_option(USE_LIBEDIT "Use libedit instead of readline" OFF
                        "USE_SYSTEM_READLINE" OFF)

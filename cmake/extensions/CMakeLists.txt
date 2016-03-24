@@ -417,12 +417,32 @@ add_python_extension(_tkinter
     LIBRARIES ${_tkinter_LIBRARIES}
     INCLUDEDIRS ${_tkinter_INCLUDEDIRS}
 )
-add_python_extension(zlib
-    REQUIRES ZLIB_LIBRARY ZLIB_INCLUDE_DIR
-    SOURCES zlibmodule.c
-    LIBRARIES ${ZLIB_LIBRARY}
-    INCLUDEDIRS ${ZLIB_INCLUDE_DIR}
-)
+if(NOT USE_BUILTIN_ZLIB)
+    add_python_extension(zlib
+        REQUIRES ZLIB_LIBRARY ZLIB_INCLUDE_DIR
+        SOURCES zlibmodule.c
+        LIBRARIES ${ZLIB_LIBRARY}
+        INCLUDEDIRS ${ZLIB_INCLUDE_DIR}
+    )
+else()
+    add_python_extension(zlib BUILTIN
+        REQUIRES
+        SOURCES
+            zlibmodule.c
+            zlib/adler32.c
+            zlib/compress.c
+            zlib/crc32.c
+            zlib/deflate.c
+            zlib/infback.c
+            zlib/inffast.c
+            zlib/inflate.c
+            zlib/inftrees.c
+            zlib/trees.c
+            zlib/uncompr.c
+            zlib/zutil.c
+        INCLUDEDIRS ${SRC_DIR}/Modules/zlib
+    )
+endif()
 
 if(USE_LIBEDIT)
     set_target_properties(extension_readline PROPERTIES
