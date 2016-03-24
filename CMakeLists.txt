@@ -277,6 +277,7 @@ elseif(CMAKE_C_COMPILER_ID MATCHES PGI)
 endif()
 
 if(MSVC)
+    append_if_absent(CMAKE_C_FLAGS "/Zm200")
     string(REPLACE "/Ob2" "/Ob1" CMAKE_C_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE}) # InlineFunctionExpansion=1
     set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" CACHE STRING "Flags used by the compiler during release builds" FORCE)
 endif(MSVC)
