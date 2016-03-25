@@ -28,7 +28,6 @@ if(MSVC)
 endif(MSVC)
 
 # XXX Following modules are missing:
-# xxlimited + Py_LIMITED_API
 # lzma
 
 add_python_extension(array ${MSVC_BUILTIN} SOURCES arraymodule.c)
@@ -109,6 +108,12 @@ add_python_extension(_testmultiphase REQUIRES IS_PY3 SOURCES _testmultiphase.c)
 # debug tool to trace memory blocks allocated by Python
 add_python_extension(_tracemalloc BUILTIN REQUIRES IS_PY3 SOURCES hashtable.c _tracemalloc.c)
 add_python_extension(_weakref BUILTIN REQUIRES IS_PY3 SOURCES _weakref.c)
+math(EXPR _limited_api_version "${PY_VERSION_MAJOR} * 100 + ${PY_VERSION_MINOR}")
+add_python_extension(xxlimited REQUIRES IS_PY3 BUILD_TESTING
+    SOURCES xxlimited.c
+    DEFINITIONS Py_LIMITED_API=0x${_limited_api_version}0000
+    NO_INSTALL
+)
 add_python_extension(xxsubtype BUILTIN REQUIRES IS_PY3 SOURCES xxsubtype.c)
 # The zipimport module is always imported at startup. Having it as a
 # builtin module avoids some bootstrapping problems and reduces overhead.
