@@ -357,6 +357,17 @@ if(BUILD_WININST)
     add_subdirectory(cmake/PC/bdist_wininst CMakeBuild/bdist_wininst)
 endif()
 
+# Add target to run "Argument Clinic" over all source files
+if(IS_PY3)
+add_custom_target(clinic
+    COMMAND $<TARGET_FILE:python> ${SRC_DIR}/Tools/clinic/clinic.py --make
+    DEPENDS python
+    WORKING_DIRECTORY ${SRC_DIR}
+    COMMENT "Running 'Argument Clinic' over all source files"
+    VERBATIM
+)
+endif(IS_PY3)
+
 # Add target to generate 'Include/graminit.h' and 'Python/graminit.c'
 add_custom_target(generate_graminit
     COMMAND $<TARGET_FILE:pgen>
