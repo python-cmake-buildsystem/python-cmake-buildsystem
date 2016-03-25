@@ -482,6 +482,46 @@ if(BUILD_SHARED)
             SOURCE ${SRC_DIR}/Modules/posixmodule.c
             APPEND PROPERTY COMPILE_DEFINITIONS WITH_NEXT_FRAMEWORK)
     endif(APPLE)
+
+    if(IS_PY3 AND MSVC)
+        # XXX Add BuildPython3_dDef
+
+        # Generate 'python3stub.def'
+        set(pythonstub_def ${CMAKE_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}/${CMAKE_CFG_INTDIR}/python3stub.def)
+        add_custom_command(
+            OUTPUT ${pythonstub_def}
+            COMMAND ${CMAKE_COMMAND}
+                -DINPUT_DEF_FILE:PATH=${SRC_DIR}/PC/python3.def
+                -DOUTPUT_DEF_FILE:PATH=${PROJECT_BINARY_DIR}/CMakeFiles/python3stub.def
+                -P ${CMAKE_CURRENT_SOURCE_DIR}/generate_libpythonstub_def.cmake
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${PROJECT_BINARY_DIR}/CMakeFiles/python3stub.def
+                ${pythonstub_def}
+        )
+        add_custom_target(generate_libpythonstub_def DEPENDS ${pythonstub_def})
+
+        # Build 'python3.dll'
+        set(targetname "libpython3-shared")
+        add_library(${targetname} SHARED ${SRC_DIR}/PC/python3dll.c ${SRC_DIR}/PC/python3.def)
+        set_target_properties(${targetname} PROPERTIES
+            OUTPUT_NAME python3
+            LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_LIBDIR}
+            RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_LIBDIR}
+            INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/${LIBPYTHON_LIBDIR}
+        )
+        add_dependencies(${targetname} generate_libpythonstub_def)
+
+        # Build 'python3stub.lib' before linking 'python3.dll'
+        set(python3stub_lib ${CMAKE_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}/${CMAKE_CFG_INTDIR}/python3stub.lib)
+        add_custom_command(
+            TARGET ${targetname} PRE_LINK
+            COMMAND lib /nologo /def:${pythonstub_def} /out:${python3stub_lib} /MACHINE:X64
+            COMMENT "Rebuilding python3stub.lib"
+            VERBATIM
+        )
+
+        target_link_libraries(${targetname} ${python3stub_lib})
+    endif()
 endif(BUILD_SHARED)
 
 if(BUILD_STATIC)

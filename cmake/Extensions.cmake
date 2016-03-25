@@ -160,7 +160,12 @@ function(add_python_extension name)
         #    INCLUDE_DIRECTORIES ${ADD_PYTHON_EXTENSION_INCLUDEDIRS})
 
         if(WIN32)
-            list(APPEND ADD_PYTHON_EXTENSION_LIBRARIES libpython-shared)
+            string(REGEX MATCH "Py_LIMITED_API" require_limited_api "${ADD_PYTHON_EXTENSION_DEFINITIONS}")
+            if(require_limited_api STREQUAL "")
+              list(APPEND ADD_PYTHON_EXTENSION_LIBRARIES libpython-shared)
+            else()
+              list(APPEND ADD_PYTHON_EXTENSION_LIBRARIES libpython3-shared)
+            endif()
         endif()
 
         # XXX When CMake >= 2.8.8 is required, remove the section below
