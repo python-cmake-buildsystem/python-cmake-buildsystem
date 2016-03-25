@@ -523,6 +523,19 @@ if(BUILD_SHARED)
 
         target_link_libraries(${targetname} ${python3stub_lib})
     endif()
+
+    if(IS_PY3 AND UNIX)
+        add_library(${targetname} SHARED ${PROJECT_SOURCE_DIR}/cmake/empty.c)
+        set_target_properties(${targetname} PROPERTIES
+            LINK_FLAGS "-Wl,--no-as-needed"
+            OUTPUT_NAME python3
+            LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_LIBDIR}
+            RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_LIBDIR}
+            INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/${LIBPYTHON_LIBDIR}
+        )
+        target_link_libraries(${targetname} libpython-shared)
+    endif()
+
     # Export target
     if(TARGET ${targetname})
         set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS ${targetname})
