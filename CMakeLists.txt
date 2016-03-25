@@ -440,7 +440,7 @@ endif(UNIX)
 # to go in there.  bin/python uses this to auto-determine the exec_prefix
 # and properly generate the _sysconfigdata.py
 file(MAKE_DIRECTORY "${EXTENSION_BUILD_DIR}")
-install(DIRECTORY ${EXTENSION_BUILD_DIR} DESTINATION ${PYTHONHOME})
+install(CODE "file(MAKE_DIRECTORY \"\${CMAKE_INSTALL_PREFIX}/${EXTENSION_INSTALL_DIR}\")")
 
 if(BUILD_TESTING)
     set(TESTOPTS -l)

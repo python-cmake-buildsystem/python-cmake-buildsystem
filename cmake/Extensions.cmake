@@ -27,6 +27,7 @@
 #              BUILTIN_[extension_name]=OFF.
 # ALWAYS_BUILTIN: if this is set the module will always be compiled statically into
 #                 libpython.
+# NO_INSTALL:   do not install or package the extension.
 #
 # Two user-settable options are created for each extension added:
 # ENABLE_[extension_name]   defaults to ON.  If set to OFF the extension will
@@ -42,7 +43,7 @@
 # options ENABLE_FOO and BUILTIN_FOO.
 
 function(add_python_extension name)
-    set(options BUILTIN ALWAYS_BUILTIN)
+    set(options BUILTIN ALWAYS_BUILTIN NO_INSTALL)
     set(oneValueArgs)
     set(multiValueArgs REQUIRES SOURCES DEFINITIONS LIBRARIES INCLUDEDIRS)
     cmake_parse_arguments(ADD_PYTHON_EXTENSION
@@ -216,10 +217,12 @@ function(add_python_extension name)
         endif(ADD_PYTHON_EXTENSION_DEFINITIONS)
 
         # XXX Uncomment when CMake >= 2.8.8 is required
-        #install(TARGETS ${target_name}
-        #        ARCHIVE DESTINATION ${ARCHIVEDIR}
-        #        LIBRARY DESTINATION ${EXTENSION_INSTALL_DIR}
-        #        RUNTIME DESTINATION ${EXTENSION_INSTALL_DIR})
+        #if(NOT ADD_PYTHON_EXTENSION_NO_INSTALL)
+        #    install(TARGETS ${target_name}
+        #            ARCHIVE DESTINATION ${ARCHIVEDIR}
+        #            LIBRARY DESTINATION ${EXTENSION_INSTALL_DIR}
+        #            RUNTIME DESTINATION ${EXTENSION_INSTALL_DIR})
+        #endif()
     endif(BUILTIN_${upper_name})
 endfunction(add_python_extension)
 
