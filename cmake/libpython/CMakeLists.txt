@@ -483,6 +483,8 @@ if(BUILD_SHARED)
             APPEND PROPERTY COMPILE_DEFINITIONS WITH_NEXT_FRAMEWORK)
     endif(APPLE)
 
+    set(targetname "libpython3-shared")
+
     if(IS_PY3 AND MSVC)
         # XXX Add BuildPython3_dDef
 
@@ -501,7 +503,6 @@ if(BUILD_SHARED)
         add_custom_target(generate_libpythonstub_def DEPENDS ${pythonstub_def})
 
         # Build 'python3.dll'
-        set(targetname "libpython3-shared")
         add_library(${targetname} SHARED ${SRC_DIR}/PC/python3dll.c ${SRC_DIR}/PC/python3.def)
         set_target_properties(${targetname} PROPERTIES
             OUTPUT_NAME python3
@@ -522,6 +523,17 @@ if(BUILD_SHARED)
 
         target_link_libraries(${targetname} ${python3stub_lib})
     endif()
+    # Export target
+    if(TARGET ${targetname})
+        set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS ${targetname})
+
+        install(TARGETS ${targetname} EXPORT PythonTargets
+            ARCHIVE DESTINATION ${LIBPYTHON_ARCHIVEDIR}
+            LIBRARY DESTINATION ${LIBPYTHON_LIBDIR}
+            RUNTIME DESTINATION ${LIBPYTHON_LIBDIR}
+        )
+    endif()
+
 endif(BUILD_SHARED)
 
 if(BUILD_STATIC)
