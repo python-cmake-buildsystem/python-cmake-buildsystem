@@ -13,6 +13,7 @@ configuration:
 
 environment:
   matrix:
+  - PY_VERSION: 3.5.1
   - PY_VERSION: 2.7.11
   - PY_VERSION: 2.7.10
   - PY_VERSION: 2.7.9
