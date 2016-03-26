@@ -351,10 +351,12 @@ else()
         _decimal/libmpdec/transpose.c
     )
     if(WIN32)
-        enable_language(ASM_MASM)
-        list(APPEND _decimal_EXTRA_SOURCES
-            _decimal/libmpdec/vcdiv64.asm
-        )
+        if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
+            enable_language(ASM_MASM)
+            list(APPEND _decimal_EXTRA_SOURCES
+                _decimal/libmpdec/vcdiv64.asm
+            )
+        endif()
     endif()
     set(_decimal_INCLUDEDIRS INCLUDEDIRS ${SRC_DIR}/Modules/_decimal/libmpdec)
 endif()
