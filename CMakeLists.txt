@@ -471,6 +471,11 @@ if(UNIX)
     install(FILES ${SRC_DIR}/install-sh ${SRC_DIR}/Modules/makesetup
             DESTINATION ${PYTHONHOME}/config/)
 
+    # Install manual
+    set(_install_man FILES ${SRC_DIR}/Misc/python.man DESTINATION share/man/man1 COMPONENT Runtime)
+    install(${_install_man} RENAME python${LIBPYTHON_VERSION}.1)
+    install(${_install_man} RENAME python${PY_VERSION_MAJOR}.1)
+
 endif()
 
 # Create an empty lib-dynload folder, even if we don't have any extensions
