@@ -374,7 +374,7 @@ elseif(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
     else()
         set(libmpdec_config ansi64)
     endif()
-else(${CMAKE_SIZEOF_VOID_P} EQUAL 4)
+elseif(${CMAKE_SIZEOF_VOID_P} EQUAL 4)
     if(HAVE_GCC_ASM_FOR_X87 AND
         (CMAKE_C_COMPILER_ID MATCHES "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
         AND NOT CMAKE_SYSTEM MATCHES SunOS
