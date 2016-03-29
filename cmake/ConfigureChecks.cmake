@@ -1172,6 +1172,21 @@ endif()
 #
 #######################################################################
 
+# Check for UCS-4 tcl
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_ucs4_tcl.c)
+file(WRITE ${check_src} "#include <tcl.h>
+#if TCL_UTF_MAX != 6
+# error \"NOT UCS4_TCL\"
+#endif
+int main () { return 0; }
+")
+python_platform_test(
+  HAVE_UCS4_TCL
+  "Checking for UCS-4 tcl"
+  ${check_src}
+  DIRECT
+  )
+
 #ucs2
 set(HAVE_USABLE_WCHAR_T 0)
 
@@ -2156,7 +2171,6 @@ int main(int argc, char* argv[]){FSIORefNum fRef = 0; return 0;}")
 endif()
 
 # todo 
-set(HAVE_UCS4_TCL 0)
 set(PTHREAD_SYSTEM_SCHED_SUPPORTED 1)
 set(HAVE_DEVICE_MACROS ${HAVE_MAKEDEV})
 
