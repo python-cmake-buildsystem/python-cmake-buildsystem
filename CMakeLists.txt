@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.6)
 
-set(PY_VERSION_MAJOR 2)
-set(PY_VERSION_MINOR 7)
+set(PY_VERSION_MAJOR 2 CACHE STRING "Python major version")
+set(PY_VERSION_MINOR 7 CACHE STRING "Python minor version")
 set(PY_VERSION_PATCH 11 CACHE STRING "Python patch version")
 set(PY_VERSION "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}")
 
@@ -55,16 +55,29 @@ endmacro()
 
 option(USE_SYSTEM_LIBRARIES "Use system libraries" ON)
 
+# Set platform dependent defaults
+set(_use_builtin_zlib_default OFF)
+set(_use_system_zlib_default ON)
+if(WIN32)
+  set(_use_builtin_zlib_default ON)
+  set(_use_system_zlib_default OFF)
+endif()
+
 cmake_dependent_option(USE_SYSTEM_BZip2 "Use system BZip2" ON "USE_SYSTEM_LIBRARIES" OFF)
 cmake_dependent_option(USE_SYSTEM_Curses "Use system Curses" ON "USE_SYSTEM_LIBRARIES" OFF)
 cmake_dependent_option(USE_SYSTEM_EXPAT "Use system EXPAT" ON "USE_SYSTEM_LIBRARIES" OFF)
 cmake_dependent_option(USE_SYSTEM_OpenSSL "Use system OpenSSL" ON "USE_SYSTEM_LIBRARIES" OFF)
 cmake_dependent_option(USE_SYSTEM_TCL "Use system TCL" ON "USE_SYSTEM_LIBRARIES" OFF)
-cmake_dependent_option(USE_SYSTEM_ZLIB "Use system ZLIB" ON "USE_SYSTEM_LIBRARIES" OFF)
+cmake_dependent_option(USE_SYSTEM_ZLIB "Use system ZLIB" ${_use_system_zlib_default} "USE_SYSTEM_LIBRARIES" OFF)
 cmake_dependent_option(USE_SYSTEM_DB "Use system DB" ON "USE_SYSTEM_LIBRARIES" OFF)
 cmake_dependent_option(USE_SYSTEM_GDBM "Use system GDBM" ON "USE_SYSTEM_LIBRARIES" OFF)
 cmake_dependent_option(USE_SYSTEM_READLINE "Use system READLINE" ON "USE_SYSTEM_LIBRARIES" OFF)
 cmake_dependent_option(USE_SYSTEM_SQLITE3 "Use system SQLITE3" ON "USE_SYSTEM_LIBRARIES" OFF)
+if(IS_PY3)
+  cmake_dependent_option(USE_SYSTEM_LIBMPDEC "Use system LIBMPDEC" ON "USE_SYSTEM_LIBRARIES" OFF)
+endif()
+
+cmake_dependent_option(USE_BUILTIN_ZLIB "Use builtin ZLIB" ${_use_builtin_zlib_default} "NOT USE_SYSTEM_ZLIB" OFF)
 
 cmake_dependent_option(USE_LIBEDIT "Use libedit instead of readline" OFF
                        "USE_SYSTEM_READLINE" OFF)
@@ -72,7 +85,6 @@ cmake_dependent_option(USE_LIBEDIT "Use libedit instead of readline" OFF
 option(WITH_TSC "profile with the Pentium timestamp counter" OFF)
 option(ENABLE_IPV6 "Enable IP v6" ON)
 option(WITH_DOC_STRINGS "Enable if you want documentation strings in extension modules" ON)
-option(Py_USING_UNICODE "Enable unicode support" ON)
 set(Py_DEBUG OFF) # TODO - Build debugging interpreter
 option(WITH_PYMALLOC "Define if you want to compile in Python-specific mallocs" ON)
 option(WITH_THREAD "Compile in rudimentary thread support" ON)
@@ -94,6 +106,7 @@ if(NOT (SRC_DIR AND EXISTS ${SRC_DIR}/${_landmark}))
 endif()
 get_filename_component(SRC_DIR "${SRC_DIR}" ABSOLUTE)
 
+# Download sources
 get_filename_component(_parent_dir ${CMAKE_CURRENT_BINARY_DIR} PATH)
 string(REGEX REPLACE "rc[1-9]$" "" _py_version_patch_no_rc ${PY_VERSION_PATCH})
 set(_py_version_no_rc "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${_py_version_patch_no_rc}")
@@ -108,6 +121,7 @@ set(_download_2.7.8_md5 "d4bca0159acb0b44a781292b5231936f")
 set(_download_2.7.9_md5 "5eebcaa0030dc4061156d3429657fb83")
 set(_download_2.7.10_md5 "d7547558fd673bd9d38e2108c6b42521")
 set(_download_2.7.11_md5 "6b6076ec9e93f05dd63e47eb9c15728b")
+set(_download_3.5.1_md5 "be78e48cdfc1a7ad90efff146dce6cfe")
 set(_extracted_dir "Python-${PY_VERSION}")
 
 if(NOT EXISTS ${SRC_DIR}/${_landmark} AND DOWNLOAD_SOURCES)
@@ -168,6 +182,34 @@ message(STATUS "PY_VERSION: ${PY_VERSION}")
 if(NOT DEFINED _download_${PY_VERSION}_md5)
     message(FATAL_ERROR "error: unknown python version '${PY_VERSION}'. Valid version should match '2.7.[3-10]'")
 endif()
+
+# Convenience boolean variables to easily test python version
+set(IS_PY3 0)
+set(IS_PY2 1)
+if(PY_VERSION_MAJOR VERSION_GREATER 2)
+    set(IS_PY3 1)
+    set(IS_PY2 0)
+endif()
+
+# Options depending of the python version
+if(IS_PY2)
+  option(Py_USING_UNICODE "Enable unicode support" ON)
+else()
+  if(DEFINED Py_USING_UNICODE)
+    message(AUTHOR_WARNING "Py_USING_UNICODE option is *NOT* supported with Python 3. Current version is ${PY_VERSION}")
+  endif()
+endif()
+
+if(PY_VERSION_MAJOR VERSION_GREATER 2.7.10)
+# See "Improving performance in Python 2.7" - http://lwn.net/Articles/646888/
+option(WITH_COMPUTED_GOTOS "Improve performance enabling the computed goto based dispatch" OFF)
+set(USE_COMPUTED_GOTOS ${WITH_COMPUTED_GOTOS})
+endif()
+
+if(IS_PY3)
+set(WITH_HASH_ALGORITHM "default" CACHE STRING "Define hash algorithm for str, bytes and memoryview.")
+set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "default" "siphash24" "fnv")
+endif(IS_PY3)
 
 # This is the major version number of Python
 set(LIBPYTHON_VERSION ${PY_VERSION_MAJOR}.${PY_VERSION_MINOR})
@@ -259,8 +301,10 @@ if(CMAKE_C_COMPILER_ID MATCHES GNU)
     append_if_absent(CMAKE_C_FLAGS "-Wstrict-prototypes")
     append_if_absent(CMAKE_C_FLAGS "-fno-strict-aliasing")
     append_if_absent(CMAKE_C_FLAGS "-fwrapv")
+    append_if_absent(CMAKE_C_FLAGS "-g")
 elseif(CMAKE_C_COMPILER_ID MATCHES Clang)
     append_if_absent(CMAKE_C_FLAGS "-Wall")
+    append_if_absent(CMAKE_C_FLAGS "-g")
 elseif(CMAKE_C_COMPILER_ID MATCHES Intel)
     append_if_absent(CMAKE_C_FLAGS "-Wall")
     append_if_absent(CMAKE_C_FLAGS "-no-ansi-alias")
@@ -269,6 +313,7 @@ elseif(CMAKE_C_COMPILER_ID MATCHES PGI)
 endif()
 
 if(MSVC)
+    append_if_absent(CMAKE_C_FLAGS "/Zm200")
     string(REPLACE "/Ob2" "/Ob1" CMAKE_C_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE}) # InlineFunctionExpansion=1
     set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" CACHE STRING "Flags used by the compiler during release builds" FORCE)
 endif(MSVC)
@@ -304,7 +349,6 @@ set(extensions_disabled "" CACHE INTERNAL "" FORCE)
 add_subdirectory(cmake/extensions CMakeBuild/extensions)
 
 # Add the other subdirectories
-add_subdirectory(cmake/pgen CMakeBuild/pgen)
 add_subdirectory(cmake/libpython CMakeBuild/libpython)
 add_subdirectory(cmake/python CMakeBuild/python)
 add_subdirectory(cmake/include CMakeBuild/include)
@@ -312,6 +356,88 @@ add_subdirectory(cmake/lib CMakeBuild/lib)
 if(BUILD_WININST)
     add_subdirectory(cmake/PC/bdist_wininst CMakeBuild/bdist_wininst)
 endif()
+
+# Add target to run "Argument Clinic" over all source files
+if(IS_PY3)
+add_custom_target(clinic
+    COMMAND $<TARGET_FILE:python> ${SRC_DIR}/Tools/clinic/clinic.py --make
+    DEPENDS python
+    WORKING_DIRECTORY ${SRC_DIR}
+    COMMENT "Running 'Argument Clinic' over all source files"
+    VERBATIM
+)
+endif(IS_PY3)
+
+# Add target to generate 'Include/graminit.h' and 'Python/graminit.c'
+add_custom_target(generate_graminit
+    COMMAND $<TARGET_FILE:pgen>
+        ${SRC_DIR}/Grammar/Grammar
+        ${PROJECT_BINARY_DIR}/CMakeFiles/graminit.h
+        ${PROJECT_BINARY_DIR}/CMakeFiles/graminit.c
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${PROJECT_BINARY_DIR}/CMakeFiles/graminit.h
+        ${SRC_DIR}/Include/graminit.h
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${PROJECT_BINARY_DIR}/CMakeFiles/graminit.c
+        ${SRC_DIR}/Python/graminit.c
+    DEPENDS pgen
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMENT "Generating '${SRC_DIR}/Include/graminit.h' and '${SRC_DIR}/Python/graminit.c'."
+    VERBATIM
+)
+
+# Add target to generate 'opcode.h' header file
+add_custom_target(generate_opcode_h
+    COMMAND $<TARGET_FILE:python> ${SRC_DIR}/Tools/scripts/generate_opcode_h.py
+        ${SRC_DIR}/Lib/opcode.py
+        ${PROJECT_BINARY_DIR}/CMakeFiles/opcode.h
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${PROJECT_BINARY_DIR}/CMakeFiles/opcode.h
+        ${SRC_DIR}/Include/opcode.h
+    DEPENDS python
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMENT "Generating '${SRC_DIR}/Include/opcode.h'."
+    VERBATIM
+)
+
+# Add target to generate 'Include/Python-ast.h' from 'Python.asdl'
+add_custom_target(generate_python_ast_h
+    COMMAND $<TARGET_FILE:python> ${SRC_DIR}/Parser/asdl_c.py
+        -h ${SRC_DIR}/Include
+        ${SRC_DIR}/Parser/Python.asdl
+    DEPENDS python
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMENT "Generating '${SRC_DIR}/Include/Python-ast.h'"
+    VERBATIM
+)
+
+# Add target to generate 'Python/Python-ast.c' from 'Python.asdl'
+add_custom_target(generate_python_ast_c
+    COMMAND $<TARGET_FILE:python> ${SRC_DIR}/Parser/asdl_c.py
+        -c ${SRC_DIR}/Python
+        ${SRC_DIR}/Parser/Python.asdl
+    DEPENDS python
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    COMMENT "Generating '${SRC_DIR}/Python/Python-ast.c'"
+    VERBATIM
+)
+
+# If needed, copy 'asdl.py' and 'Python.asdl' into build directory so that 'test_asdl_parser' passes.
+set(_asdl_subdir ${LIBDIR})
+if(WIN32)
+  set(_asdl_subdir )
+endif()
+file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBDIR}/Parser)
+configure_file(
+    ${SRC_DIR}/Parser/Python.asdl
+    ${PROJECT_BINARY_DIR}/${_asdl_subdir}/Parser/Python.asdl
+    COPYONLY
+)
+configure_file(
+    ${SRC_DIR}/Parser/asdl.py
+    ${PROJECT_BINARY_DIR}/${_asdl_subdir}/Parser/asdl.py
+    COPYONLY
+)
 
 show_extension_summary()
 
@@ -351,18 +477,25 @@ endif(UNIX)
 # to go in there.  bin/python uses this to auto-determine the exec_prefix
 # and properly generate the _sysconfigdata.py
 file(MAKE_DIRECTORY "${EXTENSION_BUILD_DIR}")
-install(DIRECTORY ${EXTENSION_BUILD_DIR} DESTINATION ${PYTHONHOME})
+install(CODE "file(MAKE_DIRECTORY \"\${CMAKE_INSTALL_PREFIX}/${EXTENSION_INSTALL_DIR}\")")
 
 if(BUILD_TESTING)
-    set(EXTRATESTOPTS -v)
-    set(TESTOPTS -l ${EXTRATESTOPTS})
+    set(TESTOPTS -l)
     set(TESTPROG ${CMAKE_BINARY_DIR}/${PYTHONHOME}/test/regrtest.py)
     set(TESTPYTHONOPTS )
-    set(TESTPYTHON $<TARGET_FILE:python> -Wd -3 -E -tt ${TESTPYTHONOPTS})
-
+    if(IS_PY2)
+      set(TESTPYTHON $<TARGET_FILE:python> -Wd -3 -E -tt ${TESTPYTHONOPTS})
+    else()
+      set(TESTPYTHON $<TARGET_FILE:python> ${TESTPYTHONOPTS})
+    endif()
     include(cmake/UnitTests.cmake)
     foreach(unittest ${unittests})
-      add_test(NAME ${unittest} COMMAND ${PYTHON_WRAPPER_COMMAND} ${TESTPYTHON} ${TESTPROG} ${TESTOPTS} ${unittest})
+      set(EXTRATESTOPTS -v)
+      # XXX Running 'test_doctest' in verbose mode always return 1
+      if(unittest STREQUAL "test_doctest")
+        set(EXTRATESTOPTS )
+      endif()
+      add_test(NAME ${unittest} COMMAND ${PYTHON_WRAPPER_COMMAND} ${TESTPYTHON} ${TESTPROG} ${TESTOPTS} ${EXTRATESTOPTS} ${unittest})
     endforeach(unittest)
 endif(BUILD_TESTING)
 

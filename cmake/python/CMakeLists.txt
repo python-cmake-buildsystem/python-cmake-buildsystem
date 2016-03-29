@@ -1,5 +1,8 @@
+set(subdir_2  Modules)
+set(subdir_3  Programs)
+
 set(PYTHON_SOURCES
-    ${SRC_DIR}/Modules/python.c
+    ${SRC_DIR}/${subdir_${PY_VERSION_MAJOR}}/python.c
 )
 
 add_executable(python ${PYTHON_SOURCES})
@@ -16,6 +19,10 @@ else(BUILD_SHARED)
     target_link_libraries(python libpython-static)
     set_target_properties(python PROPERTIES COMPILE_DEFINITIONS Py_NO_ENABLE_SHARED)
 endif(BUILD_SHARED)
+
+if(MSVC)
+    set_target_properties(python PROPERTIES LINK_FLAGS /STACK:2000000)
+endif()
 
 # Export target
 set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS python)
@@ -72,3 +79,17 @@ execute_process(
   )"
 )
 endif(UNIX)
+
+# Copy up the gdb python hooks into a position where they can be automatically
+# loaded by gdb during Lib/test/test_gdb.py
+#
+# Distributors are likely to want to install this somewhere else e.g. relative
+# to the stripped DWARF data for the shared library.
+
+set(SRC_GDB_HOOKS ${SRC_DIR}/Tools/gdb/libpython.py)
+configure_file(
+    ${SRC_GDB_HOOKS}
+    ${BIN_BUILD_DIR}/python-gdb.py
+    COPYONLY
+)
+install(FILES ${SRC_GDB_HOOKS} DESTINATION ${BIN_INSTALL_DIR} COMPONENT Runtime)

@@ -1,4 +1,3 @@
-
 # XXX Because of CMake issue #8170 disable ctypes support when using
 #     "Visual Studio 2008 Win64" generator.
 if("${MSVC_VERSION}" VERSION_EQUAL 1500 AND ${CMAKE_SIZEOF_VOID_P} EQUAL 8)
@@ -28,6 +27,9 @@ if(MSVC)
     set(MSVC_BUILTIN BUILTIN)
 endif(MSVC)
 
+# XXX Following modules are missing:
+# lzma
+
 add_python_extension(array ${MSVC_BUILTIN} SOURCES arraymodule.c)
 add_python_extension(audioop ${MSVC_BUILTIN} SOURCES audioop.c)
 add_python_extension(_bisect ${MSVC_BUILTIN} SOURCES _bisectmodule.c)
@@ -38,25 +40,30 @@ add_python_extension(_codecs_iso2022 ${MSVC_BUILTIN} SOURCES cjkcodecs/_codecs_i
 add_python_extension(_codecs_jp ${MSVC_BUILTIN} SOURCES cjkcodecs/_codecs_jp.c)
 add_python_extension(_codecs_kr ${MSVC_BUILTIN} SOURCES cjkcodecs/_codecs_kr.c)
 add_python_extension(_codecs_tw ${MSVC_BUILTIN} SOURCES cjkcodecs/_codecs_tw.c)
-add_python_extension(_collections ${MSVC_BUILTIN} SOURCES _collectionsmodule.c)
-add_python_extension(cPickle ${MSVC_BUILTIN} SOURCES cPickle.c)
-add_python_extension(crypt REQUIRES HAVE_LIBCRYPT SOURCES cryptmodule.c LIBRARIES ${HAVE_LIBCRYPT})
-add_python_extension(cStringIO ${MSVC_BUILTIN} SOURCES cStringIO.c)
+add_python_extension(_collections ALWAYS_BUILTIN SOURCES _collectionsmodule.c) # Container types
+add_python_extension(cPickle ${MSVC_BUILTIN} REQUIRES IS_PY2 SOURCES cPickle.c)
+set(crypt2_SOURCES cryptmodule.c)
+set(crypt3_SOURCES _cryptmodule.c)
+add_python_extension(crypt REQUIRES HAVE_LIBCRYPT SOURCES ${crypt${PY_VERSION_MAJOR}_SOURCES} LIBRARIES ${HAVE_LIBCRYPT})
+add_python_extension(cStringIO ${MSVC_BUILTIN} REQUIRES IS_PY2 SOURCES cStringIO.c)
 add_python_extension(_csv ${MSVC_BUILTIN} SOURCES _csv.c)
 add_python_extension(_ctypes_test SOURCES _ctypes/_ctypes_test.c)
-set(datetime_SOURCES datetimemodule.c)
+set(datetime2_NAME datetime)
+set(datetime2_SOURCES datetimemodule.c)
+set(datetime3_NAME _datetime)
+set(datetime3_SOURCES _datetimemodule.c)
 if(UNIX)
-  list(APPEND datetime_SOURCES timemodule.c)
+  list(APPEND datetime${PY_VERSION_MAJOR}_SOURCES timemodule.c)
 endif()
-add_python_extension(datetime ${MSVC_DATETIME} REQUIRES HAVE_LIBM ${MSVC_BUILTIN} SOURCES ${datetime_SOURCES} LIBRARIES ${M_LIBRARIES})
-if(ENABLE_DATETIME AND CMAKE_C_COMPILER_ID MATCHES GNU)
-    set_property(SOURCE ${SRC_DIR}/Modules/datetimemodule.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
-endif()
-add_python_extension(_functools ${MSVC_BUILTIN} SOURCES _functoolsmodule.c)
-add_python_extension(future_builtins ${MSVC_BUILTIN} SOURCES future_builtins.c)
+add_python_extension(${datetime${PY_VERSION_MAJOR}_NAME} ${MSVC_DATETIME} REQUIRES HAVE_LIBM BUILTIN SOURCES ${datetime${PY_VERSION_MAJOR}_SOURCES} LIBRARIES ${M_LIBRARIES})
+#if(ENABLE_DATETIME AND CMAKE_C_COMPILER_ID MATCHES GNU)
+#    set_property(SOURCE ${SRC_DIR}/Modules/datetimemodule.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
+#endif()
+add_python_extension(_functools ${MSVC_BUILTIN} SOURCES _functoolsmodule.c) # Tools for working with functions and callable objects
+add_python_extension(future_builtins ${MSVC_BUILTIN} REQUIRES IS_PY2 SOURCES future_builtins.c)
 add_python_extension(_heapq ${MSVC_BUILTIN} SOURCES _heapqmodule.c)
-add_python_extension(_hotshot ${MSVC_BUILTIN} SOURCES _hotshot.c)
-add_python_extension(_io ${MSVC_BUILTIN} SOURCES
+add_python_extension(_hotshot ${MSVC_BUILTIN} REQUIRES IS_PY2 SOURCES _hotshot.c)
+add_python_extension(_io BUILTIN SOURCES
     _io/_iomodule.c
     _io/bufferedio.c
     _io/bytesio.c
@@ -65,72 +72,128 @@ add_python_extension(_io ${MSVC_BUILTIN} SOURCES
     _io/stringio.c
     _io/textio.c
 )
-add_python_extension(itertools ${MSVC_BUILTIN} SOURCES itertoolsmodule.c)
+add_python_extension(itertools ${MSVC_BUILTIN} SOURCES itertoolsmodule.c) # Functions creating iterators for efficient looping
 add_python_extension(_json ${MSVC_BUILTIN} SOURCES _json.c)
-add_python_extension(_locale ${MSVC_BUILTIN} SOURCES _localemodule.c)
+add_python_extension(_locale ${MSVC_BUILTIN} SOURCES _localemodule.c) # access to ISO C locale support
 add_python_extension(_lsprof ${MSVC_BUILTIN} SOURCES _lsprof.c rotatingtree.c)
 add_python_extension(math ${MSVC_BUILTIN} SOURCES _math.c mathmodule.c)
 add_python_extension(mmap ${MSVC_BUILTIN} SOURCES mmapmodule.c)
 add_python_extension(_multibytecodec ${MSVC_BUILTIN} SOURCES cjkcodecs/multibytecodec.c)
-add_python_extension(operator ${MSVC_BUILTIN} SOURCES operator.c)
+add_python_extension(operator ${MSVC_BUILTIN} REQUIRES IS_PY2 SOURCES operator.c)
 add_python_extension(parser ${MSVC_BUILTIN} SOURCES parsermodule.c)
 add_python_extension(_random ${MSVC_BUILTIN} SOURCES _randommodule.c)
-add_python_extension(strop ${MSVC_BUILTIN} SOURCES stropmodule.c)
+add_python_extension(strop ${MSVC_BUILTIN} REQUIRES IS_PY2 SOURCES stropmodule.c)
 add_python_extension(_struct ${MSVC_BUILTIN} SOURCES _struct.c)
 add_python_extension(_testcapi SOURCES _testcapimodule.c)
-add_python_extension(time ${MSVC_BUILTIN} REQUIRES HAVE_LIBM SOURCES timemodule.c LIBRARIES ${M_LIBRARIES})
+add_python_extension(time BUILTIN REQUIRES HAVE_LIBM SOURCES timemodule.c LIBRARIES ${M_LIBRARIES} ${TIMEMODULE_LIB})
 add_python_extension(unicodedata SOURCES unicodedata.c)
+
+# Python3
+add_python_extension(_thread BUILTIN REQUIRES IS_PY3 SOURCES _threadmodule.c)
+add_python_extension(atexit BUILTIN REQUIRES IS_PY3 SOURCES atexitmodule.c) # Register functions to be run at interpreter-shutdown
+add_python_extension(_codecs BUILTIN REQUIRES IS_PY3 SOURCES _codecsmodule.c) # access to the builtin codecs and codec registry
+add_python_extension(faulthandler BUILTIN REQUIRES IS_PY3 SOURCES faulthandler.c)
+add_python_extension(_opcode BUILTIN REQUIRES IS_PY3 SOURCES _opcode.c)
+add_python_extension(_operator ${MSVC_BUILTIN} REQUIRES IS_PY3 SOURCES _operator.c)
+add_python_extension(_pickle BUILTIN REQUIRES IS_PY3 SOURCES _pickle.c)
+add_python_extension(_sre BUILTIN REQUIRES IS_PY3 SOURCES _sre.c) # Fredrik Lundh's new regular expressions
+add_python_extension(_stat BUILTIN REQUIRES IS_PY3 SOURCES _stat.c) # stat.h interface
+add_python_extension(_symtable BUILTIN REQUIRES IS_PY3 SOURCES symtablemodule.c)
+# Python PEP-3118 (buffer protocol) test module
+add_python_extension(_testbuffer REQUIRES IS_PY3 SOURCES _testbuffer.c)
+# Test loading multiple modules from one compiled file (http://bugs.python.org/issue16421)
+add_python_extension(_testimportmultiple REQUIRES IS_PY3 SOURCES _testimportmultiple.c)
+# Test multi-phase extension module init (PEP 489)
+add_python_extension(_testmultiphase REQUIRES IS_PY3 SOURCES _testmultiphase.c)
+# debug tool to trace memory blocks allocated by Python
+add_python_extension(_tracemalloc BUILTIN REQUIRES IS_PY3 SOURCES hashtable.c _tracemalloc.c)
+add_python_extension(_weakref BUILTIN REQUIRES IS_PY3 SOURCES _weakref.c)
+math(EXPR _limited_api_version "${PY_VERSION_MAJOR} * 100 + ${PY_VERSION_MINOR}")
+add_python_extension(xxlimited REQUIRES IS_PY3 BUILD_TESTING
+    SOURCES xxlimited.c
+    DEFINITIONS Py_LIMITED_API=0x${_limited_api_version}0000
+    NO_INSTALL
+)
+add_python_extension(xxsubtype BUILTIN REQUIRES IS_PY3 SOURCES xxsubtype.c)
+# The zipimport module is always imported at startup. Having it as a
+# builtin module avoids some bootstrapping problems and reduces overhead.
+add_python_extension(zipimport ALWAYS_BUILTIN REQUIRES IS_PY3 SOURCES zipimport.c)
 
 # UNIX-only extensions
 add_python_extension(fcntl REQUIRES UNIX SOURCES fcntlmodule.c)
 add_python_extension(grp REQUIRES UNIX SOURCES grpmodule.c)
 add_python_extension(nis REQUIRES UNIX HAVE_LIBNSL SOURCES nismodule.c LIBRARIES ${HAVE_LIBNSL})
 add_python_extension(posix REQUIRES UNIX BUILTIN SOURCES posixmodule.c)
-add_python_extension(pwd REQUIRES UNIX BUILTIN SOURCES pwdmodule.c)
+add_python_extension(pwd REQUIRES UNIX BUILTIN SOURCES pwdmodule.c) # this is needed to find out the user's home dir if $HOME is not set
 add_python_extension(resource REQUIRES UNIX SOURCES resource.c)
 add_python_extension(spwd REQUIRES UNIX HAVE_GETSPNAM HAVE_GETSPENT SOURCES spwdmodule.c)
 add_python_extension(syslog REQUIRES UNIX SOURCES syslogmodule.c)
 add_python_extension(termios REQUIRES UNIX SOURCES termios.c)
 
+# Python3: UNIX-only extensions
+add_python_extension(errno BUILTIN REQUIRES IS_PY3 UNIX SOURCES errnomodule.c)
+add_python_extension(_posixsubprocess BUILTIN REQUIRES IS_PY3 UNIX SOURCES _posixsubprocess.c)
+
 # MacOSX-only extensions
+set(_scproxy2_SOURCES ${SRC_DIR}/Mac/Modules/_scproxy.c)
+set(_scproxy3_SOURCES ${SRC_DIR}/Modules/_scproxy.c)
 add_python_extension(_scproxy
     REQUIRES APPLE HAVE_LIBSYSTEMCONFIGURATION
-    SOURCES ${SRC_DIR}/Mac/Modules/_scproxy.c
+    SOURCES ${_scproxy${PY_VERSION_MAJOR}_SOURCES}
     LIBRARIES ${HAVE_LIBSYSTEMCONFIGURATION}
 )
 
 # Linux-only extensions
-add_python_extension(linuxaudiodev REQUIRES LINUX SOURCES linuxaudiodev.c)
+add_python_extension(linuxaudiodev REQUIRES LINUX IS_PY2 SOURCES linuxaudiodev.c)
 add_python_extension(ossaudiodev REQUIRES LINUX SOURCES ossaudiodev.c)
 
 # Windows-only extensions
 add_python_extension(_msi
-    REQUIRES WIN32 BUILTIN
+    REQUIRES WIN32
     SOURCES ${SRC_DIR}/PC/_msi.c
     LIBRARIES cabinet.lib msi.lib rpcrt4.lib
 )
 add_python_extension(msvcrt REQUIRES MSVC BUILTIN SOURCES ${SRC_DIR}/PC/msvcrtmodule.c)
 add_python_extension(nt REQUIRES WIN32 BUILTIN SOURCES posixmodule.c)
-add_python_extension(_subprocess REQUIRES WIN32 BUILTIN SOURCES ${SRC_DIR}/PC/_subprocess.c)
-add_python_extension(_winreg REQUIRES WIN32 BUILTIN SOURCES ${SRC_DIR}/PC/_winreg.c)
+add_python_extension(_subprocess REQUIRES WIN32 IS_PY2 BUILTIN SOURCES ${SRC_DIR}/PC/_subprocess.c)
+
+set(winreg2_NAME _winreg)
+set(winreg3_NAME winreg)
+add_python_extension(${winreg${PY_VERSION_MAJOR}_NAME} REQUIRES WIN32 BUILTIN SOURCES ${SRC_DIR}/PC/${winreg${PY_VERSION_MAJOR}_NAME}.c)
+
+# Python3: Windows-only extensions
+add_python_extension(overlapped
+    REQUIRES WIN32 IS_PY3
+    SOURCES ${SRC_DIR}/Modules/overlapped.c
+    LIBRARIES ws2_32
+)
+add_python_extension(_winapi REQUIRES WIN32 IS_PY3 BUILTIN SOURCES ${SRC_DIR}/Modules/_winapi.c)
 
 # Multiprocessing is different on unix and windows
 if(UNIX)
+    set(_multiprocessing2_SOURCES
+        _multiprocessing/socket_connection.c
+    )
+    set(_multiprocessing3_SOURCES )
     add_python_extension(_multiprocessing
         SOURCES _multiprocessing/multiprocessing.c
                 _multiprocessing/semaphore.c
-                _multiprocessing/socket_connection.c
+                ${_multiprocessing${PY_VERSION_MAJOR}_SOURCES}
     )
     if(ENABLE_MULTIPROCESSING AND CMAKE_C_COMPILER_ID MATCHES GNU)
         set_property(SOURCE ${SRC_DIR}/Modules/semaphore.c PROPERTY COMPILE_FLAGS -Wimplicit-function-declaration)
     endif()
 elseif(WIN32)
+    set(_multiprocessing2_SOURCES
+        _multiprocessing/pipe_connection.c
+        _multiprocessing/socket_connection.c
+        _multiprocessing/win32_functions.c
+    )
+    set(_multiprocessing3_SOURCES )
     add_python_extension(_multiprocessing
         SOURCES _multiprocessing/multiprocessing.c
                 _multiprocessing/semaphore.c
-                _multiprocessing/pipe_connection.c
-                _multiprocessing/socket_connection.c
-                _multiprocessing/win32_functions.c
+                ${_multiprocessing${PY_VERSION_MAJOR}_SOURCES}
         LIBRARIES ws2_32
     )
 endif(UNIX)
@@ -156,7 +219,7 @@ if(WIN32)
 else(WIN32)
     list(APPEND _socket_SOURCES timemodule.c)
     add_python_extension(_socket
-        REQUIRES HAVE_LIBM
+        REQUIRES HAVE_LIBM BUILTIN
         SOURCES ${_socket_SOURCES}
         LIBRARIES ${M_LIBRARIES}
     )
@@ -254,6 +317,125 @@ else(WIN32)
     endif(APPLE)
 endif(WIN32)
 
+# Python3: _decimal
+if(IS_PY3)
+
+set(libmpdec_config_x64          CONFIG_64 ASM)
+set(libmpdec_config_uint128      CONFIG_64 ANSI HAVE_UINT128_T)
+set(libmpdec_config_ansi64       CONFIG_64 ANSI)
+set(libmpdec_config_ppro         CONFIG_32 PPRO ASM)
+set(libmpdec_config_ansi32       CONFIG_32 PPRO)
+set(libmpdec_config_ansi_legacy  CONFIG_32 ANSI LEGACY_COMPILER)
+set(libmpdec_config_universal    UNIVERSAL)
+
+if(USE_SYSTEM_LIBMPDEC)
+    set(_decimal_REQUIRES REQUIRES LIBMPDEC_LIBRARIES)
+    set(_decimal_EXTRA_SOURCES )
+    set(_decimal_INCLUDEDIRS )
+else()
+    set(_decimal_REQUIRES )
+    set(_decimal_EXTRA_SOURCES
+        _decimal/libmpdec/basearith.c
+        _decimal/libmpdec/constants.c
+        _decimal/libmpdec/context.c
+        _decimal/libmpdec/convolute.c
+        _decimal/libmpdec/crt.c
+        _decimal/libmpdec/difradix2.c
+        _decimal/libmpdec/fnt.c
+        _decimal/libmpdec/fourstep.c
+        _decimal/libmpdec/io.c
+        _decimal/libmpdec/memory.c
+        _decimal/libmpdec/mpdecimal.c
+        _decimal/libmpdec/numbertheory.c
+        _decimal/libmpdec/sixstep.c
+        _decimal/libmpdec/transpose.c
+    )
+    if(WIN32)
+        if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
+            enable_language(ASM_MASM)
+            list(APPEND _decimal_EXTRA_SOURCES
+                _decimal/libmpdec/vcdiv64.asm
+            )
+        endif()
+    endif()
+    set(_decimal_INCLUDEDIRS INCLUDEDIRS ${SRC_DIR}/Modules/_decimal/libmpdec)
+endif()
+set(libmpdec_config )
+set(_decimal_compile_flags )
+if(APPLE)
+    # Universal here means: build with the same options Python
+    # was built with.
+    set(libmpdec_config universal)
+elseif(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
+    if(HAVE_GCC_ASM_FOR_X64)
+        set(libmpdec_config x64)
+    elseif(HAVE_GCC_UINT128_T)
+        set(libmpdec_config uint128)
+    else()
+        set(libmpdec_config ansi64)
+    endif()
+else(${CMAKE_SIZEOF_VOID_P} EQUAL 4)
+    if(HAVE_GCC_ASM_FOR_X87 AND
+        (CMAKE_C_COMPILER_ID MATCHES "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
+        AND NOT CMAKE_SYSTEM MATCHES SunOS
+    )
+        # solaris: problems with register allocation.
+        # icc >= 11.0 works as well.
+        set(libmpdec_config ppro)
+        list(APPEND _decimal_compile_flags "-Wno-unknown-pragmas")
+    else()
+      set(libmpdec_config ansi32)
+    endif()
+else()
+    message(FATAL_ERROR "extension_decimal: unsupported architecture")
+endif()
+
+# Workarounds for toolchain bugs:
+if(HAVE_IPA_PURE_CONST_BUG)
+    # Some versions of gcc miscompile inline asm:
+    # http://gcc.gnu.org/bugzilla/show_bug.cgi?id=46491
+    # http://gcc.gnu.org/ml/gcc/2010-11/msg00366.html
+    list(APPEND _decimal_compile_flags "-fno-ipa-pure-const")
+endif()
+if(HAVE_GLIBC_MEMMOVE_BUG)
+    # _FORTIFY_SOURCE wrappers for memmove and bcopy are incorrect:
+    # http://sourceware.org/ml/libc-alpha/2010-12/msg00009.html
+    # XXX Implement missing logic
+#    undef_macros.append('_FORTIFY_SOURCE')
+endif()
+
+if(NOT WITH_THREAD)
+    # Faster version without thread local contexts:
+    list(APPEND libmpdec_config_${libmpdec_config}
+        WITHOUT_THREADS
+    )
+endif()
+
+if(WIN32)
+    list(APPEND libmpdec_config_${libmpdec_config}
+        _CRT_SECURE_NO_WARNINGS MASM
+    )
+endif()
+
+# Uncomment for extra functionality:
+#list(APPEND libmpdec_config_${libmpdec_config} EXTRA_FUNCTIONALITY)
+
+add_python_extension(_decimal
+    SOURCES
+        _decimal/_decimal.c
+        _decimal/docstrings.h
+        ${_decimal_EXTRA_SOURCES}
+    DEFINITIONS ${libmpdec_config_${libmpdec_config}}
+    ${_decimal_REQUIRES}
+    ${_decimal_LIBRARIES}
+    ${_decimal_INCLUDEDIRS}
+)
+if(_decimal_compile_flags)
+    set_target_properties(extension_decimal PROPERTIES COMPILE_FLAGS ${_decimal_compile_flags})
+endif()
+
+endif(IS_PY3)
+
 # Build expat using the system expat if it's installed, otherwise use the
 # builtin version.
 if(EXPAT_LIBRARIES AND EXPAT_INCLUDE_DIRS)
@@ -293,6 +475,8 @@ else(EXPAT_LIBRARIES AND EXPAT_INCLUDE_DIRS)
     )
 endif(EXPAT_LIBRARIES AND EXPAT_INCLUDE_DIRS)
 
+if(IS_PY2)
+
 # If openssl is NOT available then build some other hash implementations on UNIX
 set(HASH_NOT_AVAILABLE ON)
 if(NOT WIN32 AND OPENSSL_LIBRARIES)
@@ -303,6 +487,19 @@ add_python_extension(_md5 REQUIRES HASH_NOT_AVAILABLE ${MSVC_BUILTIN} SOURCES md
 add_python_extension(_sha REQUIRES HASH_NOT_AVAILABLE ${MSVC_BUILTIN} SOURCES shamodule.c)
 add_python_extension(_sha256 REQUIRES HASH_NOT_AVAILABLE ${MSVC_BUILTIN} SOURCES sha256module.c)
 add_python_extension(_sha512 REQUIRES HASH_NOT_AVAILABLE ${MSVC_BUILTIN} SOURCES sha512module.c)
+
+else()
+
+# We always compile these even when OpenSSL is available (issue #14693).
+# It's harmless and the object code is tiny (40-50 KB per module,
+# only loaded when actually used).
+add_python_extension(_md5 ${MSVC_BUILTIN} SOURCES md5module.c)
+add_python_extension(_sha1 ${MSVC_BUILTIN} SOURCES sha1module.c)
+add_python_extension(_sha256 ${MSVC_BUILTIN} SOURCES sha256module.c)
+add_python_extension(_sha512 ${MSVC_BUILTIN} SOURCES sha512module.c)
+
+endif()
+
 
 # Extensions that depend on other libraries
 set(binascii_REQUIRES "")
@@ -329,9 +526,11 @@ add_python_extension(_bsddb
     LIBRARIES ${DB_LIBRARIES}
     INCLUDEDIRS ${DB_INCLUDE_PATH}
 )
-add_python_extension(bz2
+set(bz2_2_NAME bz2)
+set(bz2_3_NAME _bz2)
+add_python_extension(${bz2_${PY_VERSION_MAJOR}_NAME}
     REQUIRES BZIP2_LIBRARIES BZIP2_INCLUDE_DIR
-    SOURCES bz2module.c
+    SOURCES ${bz2_${PY_VERSION_MAJOR}_NAME}module.c
     LIBRARIES ${BZIP2_LIBRARIES}
     INCLUDEDIRS ${BZIP2_INCLUDE_DIR}
 )
@@ -345,16 +544,20 @@ add_python_extension(_curses
     SOURCES _cursesmodule.c
     LIBRARIES ${CURSES_LIBRARIES}
 )
+set(dbm2_SOURCES dbmmodule.c)
+set(dbm3_SOURCES _dbmmodule.c)
 add_python_extension(dbm
     REQUIRES NDBM_TAG GDBM_LIBRARY GDBM_COMPAT_LIBRARY
-    SOURCES dbmmodule.c
+    SOURCES ${dbm${PY_VERSION_MAJOR}_SOURCES}
     DEFINITIONS HAVE_${NDBM_TAG}_H
     LIBRARIES ${GDBM_LIBRARY} ${GDBM_COMPAT_LIBRARY}
     INCLUDEDIRS ${${NDBM_TAG}_INCLUDE_PATH}
 )
+set(gdbm2_SOURCES gdbmmodule.c)
+set(gdbm3_SOURCES _gdbmmodule.c)
 add_python_extension(gdbm
     REQUIRES GDBM_INCLUDE_PATH GDBM_LIBRARY GDBM_COMPAT_LIBRARY
-    SOURCES gdbmmodule.c
+    SOURCES ${gdbm${PY_VERSION_MAJOR}_SOURCES}
     DEFINITIONS HAVE_GDBM_DASH_NDBM_H
     LIBRARIES ${GDBM_LIBRARY}
     INCLUDEDIRS ${GDBM_INCLUDE_PATH}
@@ -417,12 +620,32 @@ add_python_extension(_tkinter
     LIBRARIES ${_tkinter_LIBRARIES}
     INCLUDEDIRS ${_tkinter_INCLUDEDIRS}
 )
-add_python_extension(zlib
-    REQUIRES ZLIB_LIBRARY ZLIB_INCLUDE_DIR
-    SOURCES zlibmodule.c
-    LIBRARIES ${ZLIB_LIBRARY}
-    INCLUDEDIRS ${ZLIB_INCLUDE_DIR}
-)
+if(NOT USE_BUILTIN_ZLIB)
+    add_python_extension(zlib
+        REQUIRES ZLIB_LIBRARY ZLIB_INCLUDE_DIR
+        SOURCES zlibmodule.c
+        LIBRARIES ${ZLIB_LIBRARY}
+        INCLUDEDIRS ${ZLIB_INCLUDE_DIR}
+    )
+else()
+    add_python_extension(zlib BUILTIN
+        REQUIRES
+        SOURCES
+            zlibmodule.c
+            zlib/adler32.c
+            zlib/compress.c
+            zlib/crc32.c
+            zlib/deflate.c
+            zlib/infback.c
+            zlib/inffast.c
+            zlib/inflate.c
+            zlib/inftrees.c
+            zlib/trees.c
+            zlib/uncompr.c
+            zlib/zutil.c
+        INCLUDEDIRS ${SRC_DIR}/Modules/zlib
+    )
+endif()
 
 if(USE_LIBEDIT)
     set_target_properties(extension_readline PROPERTIES

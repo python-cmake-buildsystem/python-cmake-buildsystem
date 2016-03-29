@@ -44,8 +44,13 @@ if(USE_SYSTEM_EXPAT)
     find_package(EXPAT)
 endif()
 
+if(IS_PY3 AND USE_SYSTEM_LIBMPDEC)
+    find_library(LIBMPDEC_LIBRARY NAMES libmpdec)
+    set(LIBMPDEC_LIBRARIES ${LIBMPDEC_LIBRARY})
+endif()
+
 if(USE_SYSTEM_OpenSSL)
-    find_package(OpenSSL)
+    find_package(OpenSSL 0.9.7)
 endif()
 
 if(USE_SYSTEM_TCL)
@@ -110,6 +115,53 @@ if(WIN32)
   #  standard part of the Python distribution.
 else(WIN32)
 
+if(IS_PY3)
+set(_msg "Checking WITH_HASH_ALGORITHM option")
+message(STATUS "${_msg}")
+if(WITH_HASH_ALGORITHM STREQUAL "default")
+  set(Py_HASH_ALGORITHM 0)
+elseif(WITH_HASH_ALGORITHM STREQUAL "siphash24")
+  set(Py_HASH_ALGORITHM 1)
+elseif(WITH_HASH_ALGORITHM STREQUAL "fnv")
+  set(Py_HASH_ALGORITHM 2)
+else()
+  message(FATAL_ERROR "Unknown hash algorithm '${Py_HASH_ALGORITHM}'")
+endif()
+message(STATUS "${_msg} [${WITH_HASH_ALGORITHM}]")
+
+# ABI version string for Python extension modules.  This appears between the
+# periods in shared library file names, e.g. foo.<SOABI>.so.  It is calculated
+# from the following attributes which affect the ABI of this Python build (in
+# this order):
+#
+# * The Python implementation (always 'cpython-' for us)
+# * The major and minor version numbers
+# * --with-pydebug (adds a 'd')
+# * --with-pymalloc (adds a 'm')
+# * --with-wide-unicode (adds a 'u')
+#
+# Thus for example, Python 3.2 built with wide unicode, pydebug, and pymalloc,
+# would get a shared library ABI version tag of 'cpython-32dmu' and shared
+# libraries would be named 'foo.cpython-32dmu.so'.
+set(_msg "Checking ABIFLAGS")
+set(ABIFLAGS )
+if(Py_DEBUG)
+  set(ABIFLAGS "${ABIFLAGS}d")
+endif()
+if(WITH_PYMALLOC)
+  set(ABIFLAGS "${ABIFLAGS}m")
+endif()
+message(STATUS "${_msg} - ${ABIFLAGS}")
+
+set(_msg "Checking SOABI")
+string(TOLOWER ${CMAKE_SYSTEM_NAME} lc_system_name)
+# XXX This should be improved.
+set(PLATFORM_TRIPLET "${CMAKE_SYSTEM_PROCESSOR}-${lc_system_name}")
+set(SOABI "cpython-${PY_VERSION_MAJOR}${PY_VERSION_MINOR}${ABIFLAGS}-${PLATFORM_TRIPLET}")
+message(STATUS "${_msg} - ${SOABI}")
+
+endif(IS_PY3)
+
 macro(ADD_COND var cond item)
   if(${cond})
     set(${var} ${${var}} ${item})
@@ -131,6 +183,9 @@ if(NOT HAVE_DIRENT_H)
   check_type_exists(DIR sys/dir.h HAVE_SYS_DIR_H)
   check_include_files(ndir.h HAVE_NDIR_H)
 endif(NOT HAVE_DIRENT_H)
+if(IS_PY3)
+check_symbol_exists("dirfd" "sys/types.h;dirent.h" HAVE_DIRFD)
+endif(IS_PY3)
 
 check_include_files(alloca.h HAVE_ALLOCA_H)
 check_include_files(asm/types.h HAVE_ASM_TYPES_H)
@@ -161,6 +216,15 @@ add_cond(LINUX_NETLINK_HEADERS HAVE_ASM_TYPES_H  asm/types.h)
 add_cond(LINUX_NETLINK_HEADERS HAVE_SYS_SOCKET_H sys/socket.h)
 set(LINUX_NETLINK_HEADERS ${LINUX_NETLINK_HEADERS} linux/netlink.h)
 check_include_files("${LINUX_NETLINK_HEADERS}" HAVE_LINUX_NETLINK_H)
+
+if(IS_PY3)
+# On Linux, can.h and can/raw.h require sys/socket.h
+set(LINUX_CAN_HEADERS)
+add_cond(LINUX_CAN_HEADERS HAVE_SYS_SOCKET_H sys/socket.h)
+check_include_files("${LINUX_CAN_HEADERS};linux/can.h" HAVE_LINUX_CAN_H)
+check_include_files("${LINUX_CAN_HEADERS};linux/can/bcm.h" HAVE_LINUX_CAN_BCM_H)
+check_include_files("${LINUX_CAN_HEADERS};linux/can/raw.h" HAVE_LINUX_CAN_RAW_H)
+endif(IS_PY3)
 
 check_include_files(memory.h HAVE_MEMORY_H)
 check_include_files(minix/config.h HAVE_MINIX_CONFIG_H)
@@ -212,7 +276,9 @@ check_include_files(sys/utsname.h HAVE_SYS_UTSNAME_H)
 check_include_files(sys/wait.h HAVE_SYS_WAIT_H)
 check_include_files(termios.h HAVE_TERMIOS_H)
 check_include_files(term.h HAVE_TERM_H)
+if(IS_PY2)
 check_include_files(thread.h HAVE_THREAD_H)
+endif(IS_PY2)
 check_include_files(unistd.h HAVE_UNISTD_H)
 check_include_files(util.h HAVE_UTIL_H)
 check_include_files(utime.h HAVE_UTIME_H)
@@ -220,6 +286,32 @@ check_include_files(wchar.h HAVE_WCHAR_H)
 check_include_files("stdlib.h;stdarg.h;string.h;float.h" STDC_HEADERS)
 
 check_include_files(stdarg.h HAVE_STDARG_PROTOTYPES)
+
+if(IS_PY3)
+check_include_files(endian.h HAVE_ENDIAN_H)
+check_include_files(sched.h HAVE_SCHED_H)
+check_include_files(sys/devpoll.h HAVE_SYS_DEVPOLL_H)
+check_include_files(sys/endian.h HAVE_SYS_ENDIAN_H)
+check_include_files(sys/ioctl.h HAVE_SYS_IOCTL_H)
+check_include_files("sys/types.h;sys/kern_control.h" HAVE_SYS_KERN_CONTROL_H)
+check_include_files(sys/sendfile.h HAVE_SYS_SENDFILE_H)
+check_include_files(sys/syscall.h HAVE_SYS_SYSCALL_H)
+check_include_files(sys/domain.h HAVE_SYS_SYS_DOMAIN_H)
+check_include_files(sys/uio.h HAVE_SYS_UIO_H)
+check_include_files(sys/xattr.h HAVE_SYS_XATTR_H)
+
+# On Darwin (OS X) net/if.h requires sys/socket.h to be imported first.
+set(NET_IF_HEADERS stdio.h)
+if(STDC_HEADERS)
+  set(NET_IF_HEADERS stdlib.h stddef.h)
+else()
+  add_cond(NET_IF_HEADERS HAVE_STDLIB_H stdlib.h)
+endif()
+add_cond(NET_IF_HEADERS HAVE_SYS_SOCKET_H sys/socket.h)
+list(APPEND NET_IF_HEADERS net/if.h)
+check_include_files("${NET_IF_HEADERS}" HAVE_NET_IF_H)
+
+endif(IS_PY3)
 
 find_file(HAVE_DEV_PTMX NAMES /dev/ptmx PATHS / NO_DEFAULT_PATH)
 find_file(HAVE_DEV_PTC  NAMES /dev/ptc  PATHS / NO_DEFAULT_PATH)
@@ -235,6 +327,9 @@ set(M_LIBRARIES ${HAVE_LIBM})
 find_library(HAVE_LIBNCURSES ncurses)
 find_library(HAVE_LIBNSL nsl)
 find_library(HAVE_LIBREADLINE readline)
+if(IS_PY3)
+find_library(HAVE_LIBSENDFILE sendfile)
+endif(IS_PY3)
 find_library(HAVE_LIBTERMCAP termcap)
 find_library(HAVE_LIBUTIL    util)
 
@@ -249,6 +344,28 @@ if(WITH_THREAD)
     set_required_def(_REENTRANT 1)
   endif()
 endif()
+
+if(IS_PY3)
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_lib_crypto_RAND_egd.c)
+file(WRITE ${check_src} "/* Override any GCC internal prototype to avoid an error.
+  Use char because int might match the return type of a GCC
+  builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern \"C\"
+#endif
+char RAND_egd ();
+int main () { return RAND_egd (); }
+")
+cmake_push_check_state()
+list(APPEND CMAKE_REQUIRED_LIBRARIES crypto)
+python_platform_test(
+  HAVE_RAND_EGD
+  "Checking for RAND_egd in -lcrypto"
+  ${check_src}
+  DIRECT
+  )
+cmake_pop_check_state()
+endif(IS_PY3)
 
 set_required_def(_GNU_SOURCE 1)       # Define on Linux to activate all library features
 set_required_def(_NETBSD_SOURCE 1)    # Define on NetBSD to activate all library features
@@ -399,9 +516,14 @@ endif()
 
 if(define_xopen_source)
   message(STATUS "Checking for XOPEN_SOURCE - yes")
-  set_required_def(_XOPEN_SOURCE 600)        # Define to the level of X/Open that your system supports
   set_required_def(_XOPEN_SOURCE_EXTENDED 1) # Define to activate Unix95-and-earlier features
-  set_required_def(_POSIX_C_SOURCE 200112L)  # Define to activate features from IEEE Stds 1003.1-2001
+  if(IS_PY2)
+    set_required_def(_XOPEN_SOURCE 600)        # Define to the level of X/Open that your system supports
+    set_required_def(_POSIX_C_SOURCE 200112L)  # Define to activate features from IEEE Stds 1003.1-2001
+  else()
+    set_required_def(_XOPEN_SOURCE 700)        # Define to the level of X/Open that your system supports
+    set_required_def(_POSIX_C_SOURCE 200809L)  # Define to activate features from IEEE Stds 1003.1-2008
+  endif()
 else()
   message(STATUS "Checking for XOPEN_SOURCE - no")
 endif()
@@ -421,6 +543,7 @@ else()
   message(STATUS "Checking for Large File Support - no")
 endif()
 
+# CMAKE_EXTRA_INCLUDE_FILES is used in CheckTypeSize
 set(CMAKE_EXTRA_INCLUDE_FILES stdio.h)
 
 add_cond(CMAKE_REQUIRED_LIBRARIES HAVE_LIBM ${M_LIBRARIES})
@@ -484,6 +607,7 @@ add_cond(CFG_HEADERS HAVE_SYS_STAT_H sys/stat.h)
 add_cond(CFG_HEADERS HAVE_SYS_LOCK_H sys/lock.h)
 add_cond(CFG_HEADERS HAVE_SYS_TIMEB_H sys/timeb.h)
 add_cond(CFG_HEADERS HAVE_SYS_TIMES_H sys/times.h)
+add_cond(CFG_HEADERS HAVE_SYS_UIO_H sys/uio.h)
 add_cond(CFG_HEADERS HAVE_SYS_UTSNAME_H sys/utsname.h)
 add_cond(CFG_HEADERS HAVE_SYS_MMAN_H sys/mman.h)
 add_cond(CFG_HEADERS HAVE_SYS_SOCKET_H sys/socket.h)
@@ -504,6 +628,16 @@ add_cond(CFG_HEADERS HAVE_UTIL_H util.h)
 add_cond(CFG_HEADERS HAVE_UNISTD_H unistd.h)
 add_cond(CFG_HEADERS HAVE_UTIME_H utime.h)
 add_cond(CFG_HEADERS HAVE_WCHAR_H wchar.h)
+if(IS_PY3)
+add_cond(CFG_HEADERS HAVE_DIRENT_H dirent.h)
+add_cond(CFG_HEADERS HAVE_ENDIAN_H endian.h)
+add_cond(CFG_HEADERS HAVE_NET_IF_H net/if.h)
+add_cond(CFG_HEADERS HAVE_SCHED_H sched.h)
+add_cond(CFG_HEADERS HAVE_SYS_ENDIAN_H sys/endian.h)
+add_cond(CFG_HEADERS HAVE_SYS_RESOURCE_H sys/resource.h)
+add_cond(CFG_HEADERS HAVE_SYS_SENDFILE_H sys/sendfile.h)
+add_cond(CFG_HEADERS HAVE_SYS_TIME_H sys/time.h)
+endif(IS_PY3)
 
 if(HAVE_PTY_H)
   set(CFG_HEADERS ${CFG_HEADERS} pty.h utmp.h)
@@ -523,6 +657,9 @@ check_symbol_exists(ctermid      "${CFG_HEADERS}" HAVE_CTERMID)
 check_symbol_exists(ctermid_r    "${CFG_HEADERS}" HAVE_CTERMID_R)
 check_symbol_exists(dup2         "${CFG_HEADERS}" HAVE_DUP2)
 check_symbol_exists(epoll_create "${CFG_HEADERS}" HAVE_EPOLL)
+if(IS_PY3)
+check_symbol_exists(epoll_create1 "${CFG_HEADERS}" HAVE_EPOLL_CREATE1)
+endif(IS_PY3)
 check_symbol_exists(execv        "${CFG_HEADERS}" HAVE_EXECV)
 check_symbol_exists(fchdir       "${CFG_HEADERS}" HAVE_FCHDIR)
 check_symbol_exists(fchmod       "${CFG_HEADERS}" HAVE_FCHMOD)
@@ -552,7 +689,9 @@ check_symbol_exists(ftell64      "${CFG_HEADERS}" HAVE_FTELL64)
 check_symbol_exists(ftello       "${CFG_HEADERS}" HAVE_FTELLO)
 check_symbol_exists(ftime        "${CFG_HEADERS}" HAVE_FTIME)
 check_symbol_exists(ftruncate    "${CFG_HEADERS}" HAVE_FTRUNCATE)
+if(IS_PY2)
 check_symbol_exists(getcwd       "${CFG_HEADERS}" HAVE_GETCWD)
+endif(IS_PY2)
 check_symbol_exists(getc_unlocked   "${CFG_HEADERS}" HAVE_GETC_UNLOCKED)
 check_symbol_exists(getgroups       "${CFG_HEADERS}" HAVE_GETGROUPS)
 check_symbol_exists(getitimer    "${CFG_HEADERS}" HAVE_GETITIMER)
@@ -577,7 +716,7 @@ check_symbol_exists(kill         "${CFG_HEADERS}" HAVE_KILL)
 check_symbol_exists(killpg       "${CFG_HEADERS}" HAVE_KILLPG)
 check_symbol_exists(kqueue       "${CFG_HEADERS}" HAVE_KQUEUE)
 check_symbol_exists(lchflags     "${CFG_HEADERS}" HAVE_LCHFLAGS)
-check_symbol_exists(lchmod       "${CFG_HEADERS}" HAVE_LCHMOD)
+python_check_function(lchmod HAVE_LCHMOD)
 check_symbol_exists(lchown       "${CFG_HEADERS}" HAVE_LCHOWN)
 check_symbol_exists(link         "${CFG_HEADERS}" HAVE_LINK)
 check_symbol_exists(lstat        "${CFG_HEADERS}" HAVE_LSTAT)
@@ -641,6 +780,72 @@ check_symbol_exists(waitpid      "${CFG_HEADERS}" HAVE_WAITPID)
 check_symbol_exists(wcscoll      "${CFG_HEADERS}" HAVE_WCSCOLL)
 check_symbol_exists(_getpty      "${CFG_HEADERS}" HAVE__GETPTY)
 
+if(IS_PY3)
+check_symbol_exists(accept4      "${CFG_HEADERS}" HAVE_ACCEPT4)
+check_symbol_exists(dup3         "${CFG_HEADERS}" HAVE_DUP3)
+check_symbol_exists(faccessat    "${CFG_HEADERS}" HAVE_FACCESSAT)
+check_symbol_exists(fchmodat     "${CFG_HEADERS}" HAVE_FCHMODAT)
+check_symbol_exists(fchownat     "${CFG_HEADERS}" HAVE_FCHOWNAT)
+check_symbol_exists(fexecve      "${CFG_HEADERS}" HAVE_FEXECVE)
+check_symbol_exists(fdopendir    "${CFG_HEADERS}" HAVE_FDOPENDIR)
+check_symbol_exists(fstatat      "${CFG_HEADERS}" HAVE_FSTATAT)
+check_symbol_exists(futimens     "${CFG_HEADERS}" HAVE_FUTIMENS)
+check_symbol_exists(futimes      "${CFG_HEADERS}" HAVE_FUTIMES)
+check_symbol_exists(futimesat    "${CFG_HEADERS}" HAVE_FUTIMESAT)
+check_symbol_exists(getentropy   "${CFG_HEADERS}" HAVE_GETENTROPY)
+check_symbol_exists(getpriority  "${CFG_HEADERS}" HAVE_GETPRIORITY)
+check_symbol_exists(getgrouplist "${CFG_HEADERS}" HAVE_GETGROUPLIST)
+check_symbol_exists(htole64      "${CFG_HEADERS}" HAVE_HTOLE64)
+check_symbol_exists(if_nameindex "${CFG_HEADERS}" HAVE_IF_NAMEINDEX)
+check_symbol_exists(linkat       "${CFG_HEADERS}" HAVE_LINKAT)
+check_symbol_exists(lockf        "${CFG_HEADERS}" HAVE_LOCKF)
+check_symbol_exists(lutimes      "${CFG_HEADERS}" HAVE_LUTIMES)
+check_symbol_exists(mbrtowc      "${CFG_HEADERS}" HAVE_MBRTOWC)
+check_symbol_exists(memrchr      "${CFG_HEADERS}" HAVE_MEMRCHR)
+check_symbol_exists(mkdirat      "${CFG_HEADERS}" HAVE_MKDIRAT)
+check_symbol_exists(mkfifoat     "${CFG_HEADERS}" HAVE_MKFIFOAT)
+check_symbol_exists(mknodat      "${CFG_HEADERS}" HAVE_MKNODAT)
+check_symbol_exists(openat       "${CFG_HEADERS}" HAVE_OPENAT)
+check_symbol_exists(pipe2        "${CFG_HEADERS}" HAVE_PIPE2)
+check_symbol_exists(posix_fadvise          "${CFG_HEADERS}" HAVE_POSIX_FADVISE)
+check_symbol_exists(posix_fallocate        "${CFG_HEADERS}" HAVE_POSIX_FALLOCATE)
+check_symbol_exists(pread                  "${CFG_HEADERS}" HAVE_PREAD)
+check_symbol_exists(prlimit                "${CFG_HEADERS}" HAVE_PRLIMIT)
+
+cmake_push_check_state()
+list(APPEND CMAKE_REQUIRED_LIBRARIES pthread)
+check_symbol_exists(pthread_kill           "${CFG_HEADERS}" HAVE_PTHREAD_KILL)
+cmake_pop_check_state()
+
+check_symbol_exists(pwrite                 "${CFG_HEADERS}" HAVE_PWRITE)
+check_symbol_exists(readlinkat             "${CFG_HEADERS}" HAVE_READLINKAT)
+check_symbol_exists(readv                  "${CFG_HEADERS}" HAVE_READV)
+check_symbol_exists(renameat               "${CFG_HEADERS}" HAVE_RENAMEAT)
+check_symbol_exists(sched_rr_get_interval  "${CFG_HEADERS}" HAVE_SCHED_RR_GET_INTERVAL)
+check_symbol_exists(sched_setaffinity      "${CFG_HEADERS}" HAVE_SCHED_SETAFFINITY)
+check_symbol_exists(sched_setparam         "${CFG_HEADERS}" HAVE_SCHED_SETPARAM)
+check_symbol_exists(sched_setscheduler     "${CFG_HEADERS}" HAVE_SCHED_SETSCHEDULER)
+check_symbol_exists(sendfile               "${CFG_HEADERS}" HAVE_SENDFILE)
+check_symbol_exists(sethostname            "${CFG_HEADERS}" HAVE_SETHOSTNAME)
+check_symbol_exists(setpriority            "${CFG_HEADERS}" HAVE_SETPRIORITY)
+check_symbol_exists(sched_get_priority_max "${CFG_HEADERS}" HAVE_SCHED_GET_PRIORITY_MAX)
+check_symbol_exists(sigaltstack            "${CFG_HEADERS}" HAVE_SIGALTSTACK)
+check_symbol_exists(sigpending             "${CFG_HEADERS}" HAVE_SIGPENDING)
+check_symbol_exists(sigtimedwait           "${CFG_HEADERS}" HAVE_SIGTIMEDWAIT)
+check_symbol_exists(sigwait                "${CFG_HEADERS}" HAVE_SIGWAIT)
+check_symbol_exists(sigwaitinfo            "${CFG_HEADERS}" HAVE_SIGWAITINFO)
+check_symbol_exists(strlcpy                "${CFG_HEADERS}" HAVE_STRLCPY)
+check_symbol_exists(symlinkat              "${CFG_HEADERS}" HAVE_SYMLINKAT)
+check_symbol_exists(sync                   "${CFG_HEADERS}" HAVE_SYNC)
+check_symbol_exists(unlinkat               "${CFG_HEADERS}" HAVE_UNLINKAT)
+check_symbol_exists(utimensat              "${CFG_HEADERS}" HAVE_UTIMENSAT)
+check_symbol_exists(waitid                 "${CFG_HEADERS}" HAVE_WAITID)
+check_symbol_exists(wcsftime               "${CFG_HEADERS}" HAVE_WCSFTIME)
+check_symbol_exists(wcsxfrm                "${CFG_HEADERS}" HAVE_WCSXFRM)
+check_symbol_exists(wmemcmp                "${CFG_HEADERS}" HAVE_WMEMCMP)
+check_symbol_exists(writev                 "${CFG_HEADERS}" HAVE_WRITEV)
+endif(IS_PY3)
+
 check_struct_has_member("struct stat" st_mtim.tv_nsec "${CFG_HEADERS}" HAVE_STAT_TV_NSEC)
 check_struct_has_member("struct stat" st_mtimespec.tv_nsec "${CFG_HEADERS}"    HAVE_STAT_TV_NSEC2)
 check_struct_has_member("struct stat" st_birthtime "${CFG_HEADERS}"    HAVE_STRUCT_STAT_ST_BIRTHTIME)
@@ -651,6 +856,28 @@ check_struct_has_member("struct stat" st_flags   "${CFG_HEADERS}"    HAVE_STRUCT
 check_struct_has_member("struct stat" st_gen     "${CFG_HEADERS}"    HAVE_STRUCT_STAT_ST_GEN)
 check_struct_has_member("struct stat" st_rdev    "${CFG_HEADERS}"    HAVE_STRUCT_STAT_ST_RDEV)
 
+#######################################################################
+#
+# Check for gcc x64 inline assembler
+#
+#######################################################################
+
+if(IS_PY3)
+
+# Check for x64 gcc inline assembler
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_gcc_asm_for_x64.c)
+file(WRITE ${check_src} "int main () {
+  __asm__ __volatile__ (\"movq %rcx, %rax\");
+}
+")
+python_platform_test(
+  HAVE_GCC_ASM_FOR_X64
+  "Checking for x64 gcc inline assembler"
+  ${check_src}
+  DIRECT
+  )
+
+endif(IS_PY3)
 
 #######################################################################
 #
@@ -712,6 +939,16 @@ python_platform_test_run(
   DIRECT
   )
 
+# The short float repr introduced in Python 3.1 requires the
+# correctly-rounded string <-> double conversion functions from
+# Python/dtoa.c, which in turn require that the FPU uses 53-bit
+# rounding; this is a problem on x86, where the x87 FPU has a default
+# rounding precision of 64 bits.  For gcc/x86, we can fix this by
+# using inline assembler to get and set the x87 FPU control word.
+
+# This inline assembler syntax may also work for suncc and icc,
+# so we try it on all platforms.
+
 # Check whether we can use gcc inline assembler to get and set x87 control word
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_gcc_asm_for_x87.c)
 file(WRITE ${check_src} "int main() {
@@ -726,6 +963,26 @@ python_platform_test(
   ${check_src}
   DIRECT
   )
+
+if(IS_PY3)
+
+# Check whether we can use gcc inline assembler to get and set mc68881 fpcr
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_gcc_asm_for_mc68881.c)
+file(WRITE ${check_src} "int main() {
+  unsigned int fpcr;
+  __asm__ __volatile__ (\"fmove.l %%fpcr,%0\" : \"=g\" (fpcr));
+  __asm__ __volatile__ (\"fmove.l %0,%%fpcr\" : : \"g\" (fpcr));
+}
+")
+python_platform_test(
+  HAVE_GCC_ASM_FOR_MC68881
+  "Checking whether we can use gcc inline assembler to get and set mc68881 fpcr"
+  ${check_src}
+  DIRECT
+  )
+
+endif(IS_PY3)
+
 
 # Check for x87-style double rounding
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_x87_double_rounding.c)
@@ -783,9 +1040,34 @@ python_platform_test_run(
   DIRECT
   )
 
-foreach(func
-  acosh asinh atanh copysign erf erfc expm1 finite gamma
-  hypot lgamma log1p round tgamma)
+if(IS_PY3)
+# Check whether log1p drops the sign of negative zero
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_log1p_drops_zero_sign.c)
+file(WRITE ${check_src} "#include <math.h>
+#include <stdlib.h>
+int main() {
+  /* Fail if the signs of log1p(-0.) and -0. can be distinguished. */
+  if (atan2(log1p(-0.), -1.) == atan2(-0., -1.))
+      return 0;
+  else
+      return 1;
+}
+")
+python_platform_test_run(
+  LOG1P_DROPS_ZERO_SIGN
+  "Checking whether log1p drops the sign of negative zero"
+  ${check_src}
+  INVERT
+  )
+endif(IS_PY3)
+
+set(_funcs acosh asinh atanh copysign erf erfc expm1 finite gamma
+  hypot lgamma log1p round tgamma
+  )
+if(IS_PY3)
+  list(APPEND _funcs log2)
+endif(IS_PY3)
+foreach(func ${_funcs})
   string(TOUPPER ${func} _func_upper)
   check_function_exists(${func} HAVE_${_func_upper})
 endforeach()
@@ -831,6 +1113,59 @@ else(GETTIMEOFDAY_WITH_TZ)
   set(GETTIMEOFDAY_NO_TZ 1)
 endif(GETTIMEOFDAY_WITH_TZ)
 
+if(IS_PY3)
+
+check_function_exists(clock_getres HAVE_CLOCK_GETRES)
+if(NOT HAVE_CLOCK_GETRES)
+  cmake_push_check_state()
+  set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_lib_rt_clock_getres.c)
+  file(WRITE ${check_src} "/* Override any GCC internal prototype to avoid an error.
+  Use char because int might match the return type of a GCC
+  builtin and then its argument prototype would still apply.  */
+  #ifdef __cplusplus
+  extern \"C\"
+  #endif
+  char clock_getres ();
+  int main () { return clock_getres (); }
+  ")
+  list(APPEND CMAKE_REQUIRED_LIBRARIES rt)
+  python_platform_test(
+    HAVE_CLOCK_GETRES
+    "Checking for clock_getres in -lrt"
+    ${check_src}
+    DIRECT
+    )
+  cmake_pop_check_state()
+endif()
+
+check_function_exists(clock_gettime HAVE_CLOCK_GETTIME)
+if(NOT HAVE_CLOCK_GETTIME)
+  cmake_push_check_state()
+  set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_lib_rt_clock_gettime.c)
+  file(WRITE ${check_src} "/* Override any GCC internal prototype to avoid an error.
+    Use char because int might match the return type of a GCC
+    builtin and then its argument prototype would still apply.  */
+    #ifdef __cplusplus
+    extern \"C\"
+    #endif
+    char clock_gettime ();
+    int main () { return clock_gettime (); }
+  ")
+  list(APPEND CMAKE_REQUIRED_LIBRARIES rt)
+  python_platform_test(
+    HAVE_CLOCK_GETTIME
+    "Checking for clock_gettime in -lrt"
+    ${check_src}
+    DIRECT
+    )
+  cmake_pop_check_state()
+  if(HAVE_CLOCK_GETTIME)
+    set(TIMEMODULE_LIB rt)
+  endif()
+endif()
+
+endif(IS_PY3)
+
 #######################################################################
 #
 # unicode 
@@ -838,8 +1173,11 @@ endif(GETTIMEOFDAY_WITH_TZ)
 #######################################################################
 
 #ucs2
-set(PY_UNICODE_TYPE "unsigned short")
 set(HAVE_USABLE_WCHAR_T 0)
+
+if(IS_PY2)
+
+set(PY_UNICODE_TYPE "unsigned short")
 set(Py_UNICODE_SIZE 2)
 
 if("${Py_UNICODE_SIZE}" STREQUAL "${SIZEOF_WCHAR_T}")
@@ -872,8 +1210,7 @@ else("${Py_UNICODE_SIZE}" STREQUAL "${SIZEOF_WCHAR_T}")
 
 endif("${Py_UNICODE_SIZE}" STREQUAL "${SIZEOF_WCHAR_T}")
 
-
-
+endif(IS_PY2)
 
 #######################################################################
 #
@@ -986,12 +1323,14 @@ cmake_pop_check_state()
 cmake_push_check_state()
 set(CFG_HEADERS_SAVE ${CFG_HEADERS})
 
+if(IS_PY2)
 set(ATHEOS_THREADS 0)
 set(BEOS_THREADS 0)
 set(C_THREADS 0)
 set(HURD_C_THREADS 0)
 set(MACH_C_THREADS 0)
 set(HAVE_PTH 0) # GNU PTH threads
+endif(IS_PY2)
 
 set(HAVE_PTHREAD_DESTRUCTOR 0) # for Solaris 2.6
 add_cond(CFG_HEADERS  HAVE_PTHREAD_H  pthread.h)
@@ -1205,6 +1544,10 @@ check_type_exists("int64_t" "${CFG_HEADERS}" HAVE_INT64_T)
 check_type_exists("uint32_t" "${CFG_HEADERS}" HAVE_UINT32_T)
 check_type_exists("int32_t" "${CFG_HEADERS}" HAVE_INT32_T)
 
+if(IS_PY3)
+check_type_exists("__uint128_t" "${CFG_HEADERS}" HAVE_GCC_UINT128_T)
+endif(IS_PY3)
+
 check_type_exists(socklen_t sys/socket.h HAVE_SOCKLEN_T)
 if(NOT HAVE_SOCKLEN_T)
   set(socklen int)
@@ -1285,6 +1628,63 @@ if(HAVE_C_CHAR_UNSIGNED AND NOT CMAKE_C_COMPILER_ID MATCHES "^GNU$")
   set(__CHAR_UNSIGNED__ 1)
 endif(HAVE_C_CHAR_UNSIGNED AND NOT CMAKE_C_COMPILER_ID MATCHES "^GNU$")
 
+if(IS_PY3)
+
+# Check if the dirent structure of a d_type field and DT_UNKNOWN is defined
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_dirent_d_type.c)
+file(WRITE ${check_src} "#include <dirent.h>
+int main() {
+  struct dirent entry;
+  return entry.d_type == DT_UNKNOWN;
+}
+")
+python_platform_test(
+  HAVE_DIRENT_D_TYPE
+  "Checking if the dirent structure of a d_type field"
+  ${check_src}
+  DIRECT
+  )
+
+# Check if the Linux getrandom() syscall is available
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_getrandom_syscall.c)
+file(WRITE ${check_src} "#include <sys/syscall.h>
+int main() {
+  char buffer[1];
+  const size_t buflen = sizeof(buffer);
+  const int flags = 0;
+  /* ignore the result, Python checks for ENOSYS at runtime */
+  (void)syscall(SYS_getrandom, buffer, buflen, flags);
+  return 0;
+}
+")
+python_platform_test(
+  HAVE_GETRANDOM_SYSCALL
+  "Checking for the Linux getrandom() syscall"
+  ${check_src}
+  DIRECT
+  )
+
+# check if the getrandom() function is available
+# the test was written for the Solaris function of <sys/random.h>
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_getrandom.c)
+file(WRITE ${check_src} "#include <sys/random.h>
+int main() {
+  char buffer[1];
+  const size_t buflen = sizeof(buffer);
+  const int flags = 0;
+  /* ignore the result, Python checks for ENOSYS at runtime */
+  (void)getrandom(buffer, buflen, flags);
+  return 0;
+}
+")
+python_platform_test(
+  HAVE_GETRANDOM
+  "Checking for the getrandom() function"
+  ${check_src}
+  DIRECT
+  )
+
+endif(IS_PY3)
 
 #######################################################################
 #
@@ -1292,12 +1692,63 @@ endif(HAVE_C_CHAR_UNSIGNED AND NOT CMAKE_C_COMPILER_ID MATCHES "^GNU$")
 #
 #######################################################################
 
+if(IS_PY2)
 check_c_source_compiles("
         void f(char*,...)__attribute((format(PyArg_ParseTuple, 1, 2))) {}; 
         int main() {f(NULL);} "
         HAVE_ATTRIBUTE_FORMAT_PARSETUPLE)
+endif(IS_PY2)
 
 check_c_source_compiles("#include <unistd.h>\n int main() {getpgrp(0);}" GETPGRP_HAVE_ARG)
+
+if(IS_PY3)
+# Check for inline
+set(USE_INLINE 0)
+foreach(inline_type inline __inline__ __inline)
+  set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_c_${inline_type}.c)
+  file(WRITE ${check_src} "#ifndef __cplusplus
+  typedef int foo_t;
+  static ${inline_type} foo_t static_foo () {return 0; }
+  ${inline_type} foo_t foo () {return 0; }
+  int main() { return 0; }
+  #endif
+  ")
+  python_platform_test(
+    HAVE_${inline_type}
+    "Checking for ${inline_type}"
+    ${check_src}
+    DIRECT
+    )
+  if(HAVE_${inline_type})
+    set(USE_INLINE 1)
+    break()
+  endif()
+endforeach()
+if(USE_INLINE AND NOT inline_type STREQUAL "inline")
+  # XXX Need to define <inline_type> as inline
+endif()
+
+# Check for append_history in -lreadline
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_lib_readline_append_history.c)
+file(WRITE ${check_src} "/* Override any GCC internal prototype to avoid an error.
+  Use char because int might match the return type of a GCC
+  builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern \"C\"
+#endif
+char append_history ();
+int main () { return append_history (); }
+")
+cmake_push_check_state()
+list(APPEND CMAKE_REQUIRED_LIBRARIES readline)
+python_platform_test(
+  HAVE_RL_APPEND_HISTORY
+  "Checking for append_history in -lreadline"
+  ${check_src}
+  DIRECT
+  )
+cmake_pop_check_state()
+endif(IS_PY3)
 
 check_c_source_runs("#include <unistd.h>\n int main() {
         int val1 = nice(1); 
@@ -1409,6 +1860,167 @@ set(HAVE_BROKEN_PIPE_BUF 0)
 if(CMAKE_SYSTEM MATCHES AIX)
   set(HAVE_BROKEN_PIPE_BUF 1)
 endif(CMAKE_SYSTEM MATCHES AIX)
+
+if(IS_PY3)
+
+# Define if aligned memory access is required
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/aligned_required.c)
+file(WRITE ${check_src} "int main()
+{
+    char s[16];
+    int i, *p1, *p2;
+    for (i=0; i < 16; i++)
+        s[i] = i;
+    p1 = (int*)(s+1);
+    p2 = (int*)(s+2);
+    if (*p1 == *p2)
+        return 1;
+    return 0;
+}
+")
+python_platform_test_run(
+  HAVE_ALIGNED_REQUIRED
+  "Checking aligned memory access is required"
+  ${check_src}
+  INVERT
+  )
+
+# Define if mbstowcs(NULL, "text", 0) does not return the number of wide
+# chars that would be converted.
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_broken_mbstowcs.c)
+file(WRITE ${check_src} "#include <stdio.h>
+#include<stdlib.h>
+int main() {
+    size_t len = -1;
+    const char *str = \"text\";
+    len = mbstowcs(NULL, str, 0);
+    return (len != 4);
+}
+")
+python_platform_test_run(
+  HAVE_BROKEN_MBSTOWCS
+  "Checking for broken mbstowcs"
+  ${check_src}
+  INVERT
+  )
+
+# Check whether the compiler supports computed gotos
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_computed_gotos.c)
+file(WRITE ${check_src} "int main(int argc, char **argv)
+  {
+      static void *targets[1] = { &&LABEL1 };
+      goto LABEL2;
+  LABEL1:
+      return 0;
+  LABEL2:
+      goto *targets[0];
+      return 1;
+  }
+")
+python_platform_test_run(
+  HAVE_COMPUTED_GOTOS
+  "Checking whether ${CMAKE_C_COMPILER_ID} supports computed gotos"
+  ${check_src}
+  DIRECT
+  )
+
+# Availability of -O2
+cmake_push_check_state()
+list(APPEND CMAKE_REQUIRED_DEFINITIONS -O2)
+check_c_source_compiles("int main () {return 0;}" have_O2)
+cmake_pop_check_state()
+
+# _FORTIFY_SOURCE wrappers for memmove and bcopy are incorrect:
+# http://sourceware.org/ml/libc-alpha/2010-12/msg00009.html
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_glibc_memmove_bug.c)
+file(WRITE ${check_src} "#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+void foo(void *p, void *q) { memmove(p, q, 19); }
+int main() {
+  char a[32] = \"123456789000000000\";
+  foo(&a[9], a);
+  if (strcmp(a, \"123456789123456789000000000\") != 0)
+    return 1;
+  foo(a, &a[9]);
+  if (strcmp(a, \"123456789000000000\") != 0)
+    return 1;
+  return 0;
+}
+")
+cmake_push_check_state()
+add_cond(CMAKE_REQUIRED_DEFINITIONS have_O2 "-O2;-D_FORTIFY_SOURCE=2")
+python_platform_test_run(
+  HAVE_GLIBC_MEMMOVE_BUG
+  "Checking for glibc _FORTIFY_SOURCE/memmove bug"
+  ${check_src}
+  INVERT
+  )
+cmake_pop_check_state()
+
+# HAVE_IPA_PURE_CONST_BUG
+if(HAVE_GCC_ASM_FOR_X87 AND CMAKE_C_COMPILER_ID MATCHES "GNU")
+  # Some versions of gcc miscompile inline asm:
+  # http://gcc.gnu.org/bugzilla/show_bug.cgi?id=46491
+  # http://gcc.gnu.org/ml/gcc/2010-11/msg00366.html
+  set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_ipa_pure_const_bug.c)
+  file(WRITE ${check_src} "__attribute__((noinline)) int
+  foo(int *p) {
+    int r;
+    asm ( \"movl \\$6, (%1)\\n\\t\"
+          \"xorl %0, %0\\n\\t\"
+          : \"=r\" (r) : \"r\" (p) : \"memory\"
+    );
+    return r;
+  }
+  int main() {
+    int p = 8;
+    if ((foo(&p) ? : p) != 6)
+      return 1;
+    return 0;
+  }
+  ")
+  python_platform_test_run(
+    HAVE_IPA_PURE_CONST_BUG
+    "Checking for gcc ipa-pure-const bug"
+    ${check_src}
+    INVERT
+    )
+endif()
+
+# Check for stdatomic.h
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_stdatomic_h.c)
+file(WRITE ${check_src} "#include <stdatomic.h>
+atomic_int value = ATOMIC_VAR_INIT(1);
+_Atomic void *py_atomic_address = (void*) &value;
+int main() {
+  int loaded_value = atomic_load(&value);
+  return 0;
+}
+")
+python_platform_test(
+  HAVE_STD_ATOMIC
+  "Checking for stdatomic.h"
+  ${check_src}
+  DIRECT
+  )
+
+# Has builtin atomics
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_builtin_atomic.c)
+file(WRITE ${check_src} "volatile int val = 1;
+int main() {
+  __atomic_load_n(&val, __ATOMIC_SEQ_CST);
+  return 0;
+}
+")
+python_platform_test(
+  HAVE_BUILTIN_ATOMIC
+  "Checking for GCC >= 4.7 __atomic builtins"
+  ${check_src}
+  DIRECT
+  )
+
+endif(IS_PY3)
 
 if(HAVE_LONG_LONG)
   # Checking for %lld and %llu printf() format support
@@ -1523,6 +2135,11 @@ if(ZLIB_LIBRARY)
 endif(ZLIB_LIBRARY)
 
 ############################################
+
+if(IS_PY3)
+# Check for CAN_RAW_FD_FRAMES
+check_c_source_compiles("#include <linux/can/raw.h>\n int main () { int can_raw_fd_frames = CAN_RAW_FD_FRAMES; }" HAVE_LINUX_CAN_RAW_FD_FRAMES)
+endif(IS_PY3)
 
 set(HAVE_OSX105_SDK 0)
 if(APPLE)
