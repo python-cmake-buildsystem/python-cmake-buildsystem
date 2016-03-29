@@ -514,9 +514,13 @@ if(BUILD_SHARED)
 
         # Build 'python3stub.lib' before linking 'python3.dll'
         set(python3stub_lib ${CMAKE_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}/${CMAKE_CFG_INTDIR}/python3stub.lib)
+        set(machine X86)
+        if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
+            set(machine X64)
+        endif()
         add_custom_command(
             TARGET ${targetname} PRE_LINK
-            COMMAND lib /nologo /def:${pythonstub_def} /out:${python3stub_lib} /MACHINE:X64
+            COMMAND lib /nologo /def:${pythonstub_def} /out:${python3stub_lib} /MACHINE:${machine}
             COMMENT "Rebuilding python3stub.lib"
             VERBATIM
         )
