@@ -1192,31 +1192,41 @@ set(HAVE_USABLE_WCHAR_T 0)
 
 if(IS_PY2)
 
-set(PY_UNICODE_TYPE "unsigned short")
-set(Py_UNICODE_SIZE 2)
+if(Py_USING_UNICODE AND NOT DEFINED Py_UNICODE_SIZE)
+  if(HAVE_UCS4_TCL)
+    message(STATUS "Defaulting Py_UNICODE_SIZE to 4 because HAVE_UCS4_TCL is set")
+    set(Py_UNICODE_SIZE 4)
+  else()
+    # Py_UNICODE defaults to two-byte mode
+    set(Py_UNICODE_SIZE 2)
+  endif()
+endif()
 
 if("${Py_UNICODE_SIZE}" STREQUAL "${SIZEOF_WCHAR_T}")
   set(PY_UNICODE_TYPE wchar_t)
   set(HAVE_USABLE_WCHAR_T 1)
-  message(STATUS "Using wchar_t for unicode")
+  message(STATUS "Using wchar_t for unicode [Py_UNICODE_SIZE: ${Py_UNICODE_SIZE}]")
 else()
 
   if("${Py_UNICODE_SIZE}" STREQUAL "${SIZEOF_SHORT}")
     set(PY_UNICODE_TYPE "unsigned short")
     set(HAVE_USABLE_WCHAR_T 0)
-    message(STATUS "Using unsigned short for unicode")
+    message(STATUS "Using unsigned short for unicode [Py_UNICODE_SIZE: ${Py_UNICODE_SIZE}]")
   else()
 
     if("${Py_UNICODE_SIZE}" STREQUAL "${SIZEOF_LONG}")
       set(PY_UNICODE_TYPE "unsigned long")
       set(HAVE_USABLE_WCHAR_T 0)
-      message(STATUS "Using unsigned long for unicode")
+      message(STATUS "Using unsigned long for unicode [Py_UNICODE_SIZE: ${Py_UNICODE_SIZE}]")
     else()
 
       if(Py_USING_UNICODE)
-        message(SEND_ERROR "No usable unicode type found, disable Py_USING_UNICODE to be able to build Python")
+        message(SEND_ERROR "No usable unicode type found for [Py_UNICODE_SIZE: ${Py_UNICODE_SIZE}]
+Two paths forward:
+(1) set Py_UNICODE_SIZE to either ${SIZEOF_WCHAR_T}, ${SIZEOF_SHORT} or ${SIZEOF_LONG}
+(2) disable Py_USING_UNICODE option")
       else()
-        message(STATUS "No usable unicode type found")
+        message(STATUS "No usable unicode type found [Py_USING_UNICODE: ${Py_USING_UNICODE}]")
       endif()
 
     endif()
