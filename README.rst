@@ -127,6 +127,10 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
     installed into lib64/python2.7/lib-dynload instead of
     lib/python2.7/lib-dynload.
 
+  Py_USING_UNICODE             (only for python2, defaults to ON)
+    Enable unicode support. By default, ucs2 is used. It can be
+    forced to ucs4 setting Py_UNICODE_SIZE to 4.
+
   EXTRA_PYTHONPATH=dir1:dir2    (defaults to "")
     Colon (:) separated list of extra directories to add to the compiled-in
     PYTHONPATH.
