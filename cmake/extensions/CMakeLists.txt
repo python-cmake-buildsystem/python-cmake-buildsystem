@@ -411,6 +411,12 @@ if(NOT WITH_THREAD)
     )
 endif()
 
+if(WIN32)
+    list(APPEND libmpdec_config_${libmpdec_config}
+        _CRT_SECURE_NO_WARNINGS MASM
+    )
+endif()
+
 # Uncomment for extra functionality:
 #list(APPEND libmpdec_config_${libmpdec_config} EXTRA_FUNCTIONALITY)
 
