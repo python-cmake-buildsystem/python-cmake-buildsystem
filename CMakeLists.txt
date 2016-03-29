@@ -549,4 +549,11 @@ install(
     DESTINATION ${CONFIG_INSTALL_DIR} COMPONENT Development
 )
 
+# Install License
+set(license_destination ${PYTHONHOME})
+if(INSTALL_WINDOWS_TRADITIONAL)
+  set(license_destination .)
+endif()
+install(FILES ${SRC_DIR}/LICENSE DESTINATION ${license_destination} COMPONENT Runtime RENAME LICENSE.txt)
+
 endif()
