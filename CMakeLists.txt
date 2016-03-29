@@ -209,13 +209,13 @@ endif()
 if(IS_PY3)
 set(WITH_HASH_ALGORITHM "default" CACHE STRING "Define hash algorithm for str, bytes and memoryview.")
 set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "default" "siphash24" "fnv")
-endif(IS_PY3)
+endif()
 
 # This is the major version number of Python
 set(LIBPYTHON_VERSION ${PY_VERSION_MAJOR}.${PY_VERSION_MINOR})
 if(MSVC)
     set(LIBPYTHON_VERSION ${PY_VERSION_MAJOR}${PY_VERSION_MINOR})
-endif(MSVC)
+endif()
 set(LIBPYTHON python${LIBPYTHON_VERSION})
 
 # Proceed to the configure checks
@@ -223,7 +223,7 @@ include(cmake/ConfigureChecks.cmake)
 
 if(NOT BUILD_SHARED AND NOT BUILD_STATIC)
     message(FATAL_ERROR "One or both of BUILD_SHARED or BUILD_STATIC must be set")
-endif(NOT BUILD_SHARED AND NOT BUILD_STATIC)
+endif()
 
 # Set PYTHONHOME
 set(LIBDIR "Lib") # See Lib/distutils/sysconfig.py - function 'get_python_lib'
@@ -252,7 +252,7 @@ endif()
 set(INCLUDE_INSTALL_DIR include/${LIBPYTHON})
 if(MSVC)
     set(INCLUDE_INSTALL_DIR include)
-endif(MSVC)
+endif()
 # Build tree directory
 set(BIN_BUILD_DIR ${CMAKE_BINARY_DIR}/bin)
 set(CONFIG_BUILD_DIR ${CMAKE_BINARY_DIR}/${CONFIG_INSTALL_DIR})
@@ -284,7 +284,7 @@ elseif(WIN32)
                                           # live along side the python executable.
                                           # See function '_init_posix()' and '_init_non_posix()'
                                           # in 'Lib/sysconfig.py'
-endif(UNIX)
+endif()
 
 # Install 'pyconfig.h'
 install(FILES ${PYCONFIG_BUILD_DIR}/pyconfig.h
@@ -316,7 +316,7 @@ if(MSVC)
     append_if_absent(CMAKE_C_FLAGS "/Zm200")
     string(REPLACE "/Ob2" "/Ob1" CMAKE_C_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE}) # InlineFunctionExpansion=1
     set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" CACHE STRING "Flags used by the compiler during release builds" FORCE)
-endif(MSVC)
+endif()
 
 if(NOT HAVE_POSITION_INDEPENDENT_CODE AND NOT WIN32)
     append_if_absent(CMAKE_C_FLAGS "-fPIC")
@@ -325,9 +325,9 @@ endif()
 # Useful additional variables that extensions can use.
 if(UNIX AND NOT APPLE)
     set(LINUX ON)
-else(UNIX AND NOT APPLE)
+else()
     set(LINUX OFF)
-endif(UNIX AND NOT APPLE)
+endif()
 
 # Clear PythonTargets.cmake
 file(WRITE ${CONFIG_BUILD_DIR}/PythonTargets.cmake "")
@@ -366,7 +366,7 @@ add_custom_target(clinic
     COMMENT "Running 'Argument Clinic' over all source files"
     VERBATIM
 )
-endif(IS_PY3)
+endif()
 
 # Add target to generate 'Include/graminit.h' and 'Python/graminit.c'
 add_custom_target(generate_graminit
@@ -460,7 +460,7 @@ if(UNIX)
     set(MAKEFILE_LDSHARED_FLAGS "-shared")
     if(APPLE)
         set(MAKEFILE_LDSHARED_FLAGS "-dynamiclib -headerpad_max_install_names -undefined dynamic_lookup")
-    endif(APPLE)
+    endif()
     configure_file(cmake/makefile-variables.in
                    ${BIN_BUILD_DIR}/Makefile @ONLY)
     install(FILES ${BIN_BUILD_DIR}/Makefile
@@ -471,7 +471,7 @@ if(UNIX)
     install(FILES ${SRC_DIR}/install-sh ${SRC_DIR}/Modules/makesetup
             DESTINATION ${PYTHONHOME}/config/)
 
-endif(UNIX)
+endif()
 
 # Create an empty lib-dynload folder, even if we don't have any extensions
 # to go in there.  bin/python uses this to auto-determine the exec_prefix
@@ -496,8 +496,8 @@ if(BUILD_TESTING)
         set(EXTRATESTOPTS )
       endif()
       add_test(NAME ${unittest} COMMAND ${PYTHON_WRAPPER_COMMAND} ${TESTPYTHON} ${TESTPROG} ${TESTOPTS} ${EXTRATESTOPTS} ${unittest})
-    endforeach(unittest)
-endif(BUILD_TESTING)
+    endforeach()
+endif()
 
 
 if(HAVE_CONFIGURE_PACKAGE_CONFIG_FILE AND HAVE_WRITE_BASIC_PACKAGE_VERSION_FILE)
@@ -549,4 +549,4 @@ install(
     DESTINATION ${CONFIG_INSTALL_DIR} COMPONENT Development
 )
 
-endif(HAVE_CONFIGURE_PACKAGE_CONFIG_FILE AND HAVE_WRITE_BASIC_PACKAGE_VERSION_FILE)
+endif()

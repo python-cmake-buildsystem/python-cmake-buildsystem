@@ -5,21 +5,21 @@ file(GLOB_RECURSE libfiles RELATIVE ${libdir} "${libdir}/*")
 
 if(UNIX)
     set(plat_subdir "plat-linux2")
-endif(UNIX)
+endif()
 
 foreach(file ${libfiles})
     # Don't install files for other platforms
     string(REGEX MATCH "^plat-" is_platform_file "${file}")
     if(plat_subdir)
         string(REGEX MATCH "^${plat_subdir}" is_matching_platform_file "${file}")
-    endif(plat_subdir)
+    endif()
 
     # Exclude tests if BUILD_TESTING is OFF
     string(REGEX MATCH "^test" is_test "${file}")
     set(include_file 1)
     if(NOT BUILD_TESTING AND is_test)
         set(include_file 0)
-    endif(NOT BUILD_TESTING AND is_test)
+    endif()
 
     if(include_file AND (NOT is_platform_file OR is_matching_platform_file))
         get_filename_component(path ${file} PATH)
@@ -31,8 +31,8 @@ foreach(file ${libfiles})
         # Install
         install(FILES ${libdir}/${file} DESTINATION ${PYTHONHOME}/${path})
 
-    endif(include_file AND (NOT is_platform_file OR is_matching_platform_file))
-endforeach(file)
+    endif()
+endforeach()
 
 if(PY_VERSION VERSION_LESS "2.7.5")
   # Setup landmark allowing to run the interpreter from a build tree. See 'getpath.c' for details.
