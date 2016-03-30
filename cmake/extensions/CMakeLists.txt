@@ -233,21 +233,25 @@ elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
 elseif("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "arm")
   set(_libffi_system_dir "arm")
 endif()
+# Common ctypes sources
+set(ctypes_COMMON_SOURCES
+    _ctypes/_ctypes.c
+    _ctypes/callbacks.c
+    _ctypes/callproc.c
+    _ctypes/stgdict.c
+    _ctypes/cfield.c
+)
 # ctypes is different on Windows
 if(WIN32)
     if(MINGW)
     add_python_extension(_ctypes
-        SOURCES _ctypes/_ctypes.c
-                _ctypes/callbacks.c
-                _ctypes/callproc.c
-                _ctypes/cfield.c
+        SOURCES ${ctypes_COMMON_SOURCES}
                 _ctypes/libffi_mingw/closures.c
                 _ctypes/libffi_mingw/debug.c
                 _ctypes/libffi_mingw/prep_cif.c
                 _ctypes/libffi_mingw/raw_api.c
                 _ctypes/libffi_mingw/${_libffi_system_dir}/ffi.c
                 _ctypes/libffi_mingw/${_libffi_system_dir}/win32.S
-                _ctypes/stgdict.c
         INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi/src/${_libffi_system_dir}
                     ${SRC_DIR}/Modules/_ctypes/libffi/include
         DEFINITIONS X86_WIN32
@@ -260,12 +264,8 @@ if(WIN32)
           set(_ctype_arch_impl win32.c)
       endif()
       add_python_extension(_ctypes
-          SOURCES _ctypes/_ctypes.c
-                  _ctypes/callbacks.c
-                  _ctypes/callproc.c
-                  _ctypes/cfield.c
+          SOURCES ${ctypes_COMMON_SOURCES}
                   _ctypes/malloc_closure.c
-                  _ctypes/stgdict.c
                   _ctypes/libffi_msvc/prep_cif.c
                   _ctypes/libffi_msvc/ffi.c
                   _ctypes/libffi_msvc/${_ctype_arch_impl}
@@ -276,22 +276,19 @@ if(WIN32)
 else()
     set(_libffi_system_extra_src)
     if(APPLE)
-        # TODO - Jc:02/20/2013
-        #add_python_extension(_ctypes
-        #    SOURCES _ctypes/_ctypes.c
-        #            _ctypes/callbacks.c
-        #            _ctypes/callproc.c
-        #            _ctypes/cfield.c
-        #            _ctypes/libffi_osx/src/closures.c
-        #            _ctypes/libffi_osx/${_libffi_system_dir}/ffi.c
-        #            _ctypes/libffi_osx/${_libffi_system_dir}/ffi64.c
-        #            _ctypes/libffi_osx/src/prep_cif.c
-        #            _ctypes/stgdict.c
-        #            _ctypes/libffi_osx/${_libffi_system_dir}/sysv.S
-        #            _ctypes/libffi_osx/${_libffi_system_dir}/darwin64.S
-        #    INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi/src/${_libffi_system_dir}
-        #                ${SRC_DIR}/Modules/_ctypes/libffi/include
-        #)
+        add_python_extension(_ctypes
+            SOURCES ${ctypes_COMMON_SOURCES}
+                    _ctypes/malloc_closure.c
+                    _ctypes/darwin/dlfcn_simple.c
+                    _ctypes/libffi_osx/ffi.c
+                    _ctypes/libffi_osx/x86/darwin64.S
+                    _ctypes/libffi_osx/x86/x86-darwin.S
+                    _ctypes/libffi_osx/x86/x86-ffi_darwin.c
+                    _ctypes/libffi_osx/x86/x86-ffi64.c
+            INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi_osx/include
+                        ${SRC_DIR}/Modules/_ctypes/darwin
+            DEFINITIONS MACOSX
+        )
     else()
         if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
           set(_libffi_system_extra_src
@@ -300,13 +297,9 @@ else()
                 )
         endif()
         add_python_extension(_ctypes
-            SOURCES _ctypes/_ctypes.c
-                    _ctypes/callbacks.c
-                    _ctypes/callproc.c
-                    _ctypes/cfield.c
+            SOURCES ${ctypes_COMMON_SOURCES}
                     _ctypes/libffi/src/closures.c
                     _ctypes/libffi/src/prep_cif.c
-                    _ctypes/stgdict.c
                     _ctypes/libffi/src/${_libffi_system_dir}/ffi.c
                     _ctypes/libffi/src/${_libffi_system_dir}/sysv.S
                     ${_libffi_system_extra_src}
