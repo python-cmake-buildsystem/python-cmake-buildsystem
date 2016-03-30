@@ -189,6 +189,13 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
     Associated python extensions are: SQLITE3
     Following CMake variables can manually be set: SQLITE3_INCLUDE_PATH, SQLITE3_LIBRARY
 
+  CMAKE_OSX_SDK                (MacOSX, default is autodetected, e.g 'macosx10.06')
+    By default, the variable is automatically set running `xcrun` and/or `xcodebuild`. Note that its
+    value can also be expicitly set when doing a clean configuration either by adding a cache entry in
+    `cmake-gui` or by passing the argument `-DCMAKE_OSX_SDK:STRING=macosx10.6` when running `cmake`.
+    Then, this variable is used to initialize `CMAKE_OSX_SYSROOT`, `CMAKE_OSX_DEPLOYMENT_TARGET`
+    and `MACOSX_DEPLOYMENT_TARGET` variables.
+
 
 Cross-compiling
 ---------------
