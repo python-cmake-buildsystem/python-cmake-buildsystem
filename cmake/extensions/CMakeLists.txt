@@ -276,18 +276,19 @@ if(WIN32)
 else()
     set(_libffi_system_extra_src)
     if(APPLE)
-        # TODO - Jc:02/20/2013
-        #add_python_extension(_ctypes
-        #    SOURCES ${ctypes_COMMON_SOURCES}
-        #            _ctypes/libffi_osx/src/closures.c
-        #            _ctypes/libffi_osx/${_libffi_system_dir}/ffi.c
-        #            _ctypes/libffi_osx/${_libffi_system_dir}/ffi64.c
-        #            _ctypes/libffi_osx/src/prep_cif.c
-        #            _ctypes/libffi_osx/${_libffi_system_dir}/sysv.S
-        #            _ctypes/libffi_osx/${_libffi_system_dir}/darwin64.S
-        #    INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi/src/${_libffi_system_dir}
-        #                ${SRC_DIR}/Modules/_ctypes/libffi/include
-        #)
+        add_python_extension(_ctypes
+            SOURCES ${ctypes_COMMON_SOURCES}
+                    _ctypes/malloc_closure.c
+                    _ctypes/darwin/dlfcn_simple.c
+                    _ctypes/libffi_osx/ffi.c
+                    _ctypes/libffi_osx/x86/darwin64.S
+                    _ctypes/libffi_osx/x86/x86-darwin.S
+                    _ctypes/libffi_osx/x86/x86-ffi_darwin.c
+                    _ctypes/libffi_osx/x86/x86-ffi64.c
+            INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi_osx/include
+                        ${SRC_DIR}/Modules/_ctypes/darwin
+            DEFINITIONS MACOSX
+        )
     else()
         if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
           set(_libffi_system_extra_src
