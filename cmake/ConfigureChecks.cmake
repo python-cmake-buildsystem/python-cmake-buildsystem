@@ -156,7 +156,11 @@ message(STATUS "${_msg} - ${ABIFLAGS}")
 set(_msg "Checking SOABI")
 string(TOLOWER ${CMAKE_SYSTEM_NAME} lc_system_name)
 # XXX This should be improved.
-set(PLATFORM_TRIPLET "${CMAKE_SYSTEM_PROCESSOR}-${lc_system_name}")
+if(APPLE)
+  set(PLATFORM_TRIPLET "${lc_system_name}")
+else()
+  set(PLATFORM_TRIPLET "${CMAKE_SYSTEM_PROCESSOR}-${lc_system_name}")
+endif()
 set(SOABI "cpython-${PY_VERSION_MAJOR}${PY_VERSION_MINOR}${ABIFLAGS}-${PLATFORM_TRIPLET}")
 message(STATUS "${_msg} - ${SOABI}")
 
