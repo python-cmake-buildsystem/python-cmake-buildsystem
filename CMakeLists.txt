@@ -12,6 +12,14 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Release")
 endif()
 
+if(APPLE)
+  set(_msg "Checking which MACOSX_DEPLOYMENT_TARGET to use")
+  message(STATUS "${_msg}")
+  include(cmake/PythonAutoDetectOSX.cmake)
+  set(MACOSX_DEPLOYMENT_TARGET ${CMAKE_OSX_DEPLOYMENT_TARGET})
+  message(STATUS "${_msg} - ${MACOSX_DEPLOYMENT_TARGET}")
+endif()
+
 project(Python C ASM)
 
 if(POLICY CMP0042)
