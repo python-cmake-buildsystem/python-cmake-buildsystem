@@ -87,6 +87,11 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
     Note that all previously set BUILTIN_<extension> options are ignored and
     reset to their original value.
 
+  WITH_STATIC_DEPENDENCIES=ON|OFF    (defaults to OFF, available only on UNIX)
+    If this is set to ON then cmake will compile statically libpython and all
+    extensions. External dependencies (ncurses, sqlite, ...) will be builtin
+    only if they are available as static libraries.
+
   BUILD_WININST=ON|OFF (defaults to ON)
     If enabled, build the 'Windows Installer' program for distutils if not
     already provided in the source tree.
