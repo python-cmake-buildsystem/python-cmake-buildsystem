@@ -17,7 +17,8 @@ foreach(file ${libfiles})
     # Exclude tests if BUILD_TESTING is OFF
     string(REGEX MATCH "^test" is_test "${file}")
     set(include_file 1)
-    if(NOT BUILD_TESTING AND is_test)
+
+    if(is_test AND (NOT BUILD_TESTING OR NOT INSTALL_TEST))
         set(include_file 0)
     endif()
 

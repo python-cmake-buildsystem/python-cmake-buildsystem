@@ -106,6 +106,9 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
   INSTALL_MANUAL=ON|OFF (defaults to ON)
     If enabled, install manuals.
 
+  INSTALL_TEST=ON|OFF (defaults to ON)
+    If enabled, install test files.
+
   ENABLE_<extension>=ON|OFF     (defaults to ON)
   BUILTIN_<extension>=ON|OFF    (defaults to OFF except for POSIX, PWD and
                                  NT extensions which are builtin by default)
