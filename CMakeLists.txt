@@ -49,6 +49,7 @@ else()
   set(BUILD_WININST_ALWAYS OFF)
 endif()
 option(INSTALL_DEVELOPMENT "Install files required to develop C extensions" ON)
+option(INSTALL_MANUAL "Install man files" ON)
 
 # Append an item to a string if it does not already contain it.  Any additional
 # arguments are treated as extra "set" arguments
@@ -521,9 +522,11 @@ if(UNIX)
     endif()
 
     # Install manual
-    set(_install_man FILES ${SRC_DIR}/Misc/python.man DESTINATION share/man/man1 COMPONENT Runtime)
-    install(${_install_man} RENAME python${LIBPYTHON_VERSION}.1)
-    install(${_install_man} RENAME python${PY_VERSION_MAJOR}.1)
+    if(INSTALL_MANUAL)
+        set(_install_man FILES ${SRC_DIR}/Misc/python.man DESTINATION share/man/man1 COMPONENT Runtime)
+        install(${_install_man} RENAME python${LIBPYTHON_VERSION}.1)
+        install(${_install_man} RENAME python${PY_VERSION_MAJOR}.1)
+    endif()
 
 endif()
 

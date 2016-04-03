@@ -103,6 +103,9 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
   INSTALL_DEVELOPMENT=ON|OFF (defaults to ON)
     If enabled, install files required to develop C extensions.
 
+  INSTALL_MANUAL=ON|OFF (defaults to ON)
+    If enabled, install manuals.
+
   ENABLE_<extension>=ON|OFF     (defaults to ON)
   BUILTIN_<extension>=ON|OFF    (defaults to OFF except for POSIX, PWD and
                                  NT extensions which are builtin by default)
