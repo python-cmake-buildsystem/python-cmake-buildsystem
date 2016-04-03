@@ -48,6 +48,7 @@ else()
   set(BUILD_WININST OFF)
   set(BUILD_WININST_ALWAYS OFF)
 endif()
+option(INSTALL_DEVELOPMENT "Install files required to develop C extensions" ON)
 
 # Append an item to a string if it does not already contain it.  Any additional
 # arguments are treated as extra "set" arguments
@@ -323,8 +324,11 @@ elseif(WIN32)
 endif()
 
 # Install 'pyconfig.h'
-install(FILES ${PYCONFIG_BUILD_DIR}/pyconfig.h
-        DESTINATION ${INCLUDE_INSTALL_DIR}/)
+if(INSTALL_DEVELOPMENT)
+    install(FILES ${PYCONFIG_BUILD_DIR}/pyconfig.h
+            DESTINATION ${INCLUDE_INSTALL_DIR}/
+            COMPONENT Development)
+endif()
 
 # Set include directories
 include_directories(${INCLUDE_BUILD_DIR})
@@ -486,11 +490,14 @@ if(UNIX)
                   ${CMAKE_BINARY_DIR}/Misc/python-${PY_VERSION_MAJOR}.pc @ONLY)
     configure_file(cmake/python.pc.in
                   ${CMAKE_BINARY_DIR}/Misc/python.pc @ONLY)
-    install(FILES
-                ${CMAKE_BINARY_DIR}/Misc/python-${LIBPYTHON_VERSION}.pc
-                ${CMAKE_BINARY_DIR}/Misc/python-${PY_VERSION_MAJOR}.pc
-                ${CMAKE_BINARY_DIR}/Misc/python.pc
-            DESTINATION lib/pkgconfig)
+    if(INSTALL_DEVELOPMENT)
+        install(FILES
+                    ${CMAKE_BINARY_DIR}/Misc/python-${LIBPYTHON_VERSION}.pc
+                    ${CMAKE_BINARY_DIR}/Misc/python-${PY_VERSION_MAJOR}.pc
+                    ${CMAKE_BINARY_DIR}/Misc/python.pc
+                DESTINATION lib/pkgconfig
+                COMPONENT Development)
+    endif()
 
     # Makefile
     set(MAKEFILE_LDSHARED_FLAGS "-shared")
@@ -499,13 +506,19 @@ if(UNIX)
     endif()
     configure_file(cmake/makefile-variables.in
                    ${BIN_BUILD_DIR}/Makefile @ONLY)
-    install(FILES ${BIN_BUILD_DIR}/Makefile
-            DESTINATION ${PYTHONHOME}/config/
-            RENAME Makefile)
+    if(INSTALL_DEVELOPMENT)
+        install(FILES ${BIN_BUILD_DIR}/Makefile
+                DESTINATION ${PYTHONHOME}/config/
+                RENAME Makefile
+                COMPONENT Development)
+    endif()
 
     # Utility scripts
-    install(FILES ${SRC_DIR}/install-sh ${SRC_DIR}/Modules/makesetup
-            DESTINATION ${PYTHONHOME}/config/)
+    if(INSTALL_DEVELOPMENT)
+        install(FILES ${SRC_DIR}/install-sh ${SRC_DIR}/Modules/makesetup
+                DESTINATION ${PYTHONHOME}/config/
+                COMPONENT Development)
+    endif()
 
     # Install manual
     set(_install_man FILES ${SRC_DIR}/Misc/python.man DESTINATION share/man/man1 COMPONENT Runtime)
@@ -582,13 +595,19 @@ write_basic_package_version_file(
     COMPATIBILITY SameMajorVersion
 )
 
-# Install 'PythonTargets.cmake', 'PythonConfig.cmake' and 'PythonConfigVersion.cmake
-install(EXPORT PythonTargets FILE PythonTargets.cmake DESTINATION ${CONFIG_INSTALL_DIR})
+if(INSTALL_DEVELOPMENT)
+    # Install 'PythonTargets.cmake', 'PythonConfig.cmake' and 'PythonConfigVersion.cmake
+    install(EXPORT PythonTargets
+        FILE PythonTargets.cmake
+        DESTINATION ${CONFIG_INSTALL_DIR} COMPONENT Development)
 
-install(
-    FILES ${python_install_config} ${python_config_version}
-    DESTINATION ${CONFIG_INSTALL_DIR} COMPONENT Development
-)
+    install(
+        FILES ${python_install_config} ${python_config_version}
+        DESTINATION ${CONFIG_INSTALL_DIR} COMPONENT Development
+    )
+endif()
+
+endif()
 
 # Install License
 set(license_destination ${PYTHONHOME})
@@ -596,5 +615,3 @@ if(INSTALL_WINDOWS_TRADITIONAL)
   set(license_destination .)
 endif()
 install(FILES ${SRC_DIR}/LICENSE DESTINATION ${license_destination} COMPONENT Runtime RENAME LICENSE.txt)
-
-endif()

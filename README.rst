@@ -100,6 +100,9 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
     If enabled, always build 'Windows Installer' program for distutils even
     if it is already provided in the source tree.
 
+  INSTALL_DEVELOPMENT=ON|OFF (defaults to ON)
+    If enabled, install files required to develop C extensions.
+
   ENABLE_<extension>=ON|OFF     (defaults to ON)
   BUILTIN_<extension>=ON|OFF    (defaults to OFF except for POSIX, PWD and
                                  NT extensions which are builtin by default)

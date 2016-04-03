@@ -435,7 +435,7 @@ if(UNIX)
 endif()
 
 # Build python libraries
-function(add_libpython name type)
+function(add_libpython name type install component)
     add_library(${name} ${type} ${LIBPYTHON_SOURCES})
     target_link_libraries(${name} ${LIBPYTHON_TARGET_LIBRARIES})
 
@@ -461,15 +461,18 @@ function(add_libpython name type)
     # Export target
     set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS ${name})
 
-    install(TARGETS ${name} EXPORT PythonTargets
-        ARCHIVE DESTINATION ${LIBPYTHON_ARCHIVEDIR}
-        LIBRARY DESTINATION ${LIBPYTHON_LIBDIR}
-        RUNTIME DESTINATION ${LIBPYTHON_LIBDIR}
-    )
+    if(install)
+        install(TARGETS ${name} EXPORT PythonTargets
+            ARCHIVE DESTINATION ${LIBPYTHON_ARCHIVEDIR}
+            LIBRARY DESTINATION ${LIBPYTHON_LIBDIR}
+            RUNTIME DESTINATION ${LIBPYTHON_LIBDIR}
+            COMPONENT ${component}
+        )
+    endif()
 endfunction()
 
 if(BUILD_SHARED)
-    add_libpython(libpython-shared SHARED)
+    add_libpython(libpython-shared SHARED 1 Runtime)
     set_target_properties(libpython-shared PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}
     )
@@ -554,7 +557,7 @@ if(BUILD_SHARED)
 endif()
 
 if(BUILD_STATIC)
-    add_libpython(libpython-static STATIC)
+    add_libpython(libpython-static STATIC ${INSTALL_DEVELOPMENT} Development)
     if(HAVE_TARGET_COMPILE_DEFINITIONS)
         target_compile_definitions(libpython-static PUBLIC Py_NO_ENABLE_SHARED)
     else()
@@ -565,6 +568,9 @@ if(BUILD_STATIC)
     set_target_properties(libpython-static PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_STATIC_ARCHIVEDIR}
     )
-    install(TARGETS libpython-static ARCHIVE DESTINATION ${PYTHONHOME}/config/)
-
+    if(INSTALL_DEVELOPMENT)
+        install(TARGETS libpython-static
+            ARCHIVE DESTINATION ${PYTHONHOME}/config/
+            COMPONENT Development)
+    endif()
 endif()

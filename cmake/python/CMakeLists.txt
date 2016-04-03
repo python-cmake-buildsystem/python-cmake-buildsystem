@@ -95,4 +95,6 @@ configure_file(
     ${BIN_BUILD_DIR}/python-gdb.py
     COPYONLY
 )
-install(FILES ${SRC_GDB_HOOKS} DESTINATION ${BIN_INSTALL_DIR} COMPONENT Runtime)
+if(INSTALL_DEVELOPMENT)
+    install(FILES ${SRC_GDB_HOOKS} DESTINATION ${BIN_INSTALL_DIR} COMPONENT Development)
+endif()
