@@ -143,7 +143,7 @@ endif()
 set(DYNLOAD_SOURCES
   )
 
-if(UNIX)
+if(UNIX AND HAVE_DLOPEN)
     list(APPEND DYNLOAD_SOURCES
         ${SRC_DIR}/Python/dynload_shlib.c
     )
@@ -354,9 +354,11 @@ configure_file(
 
 # Collect libpython target libraries
 set(LIBPYTHON_TARGET_LIBRARIES
-  ${HAVE_LIBDL}
   ${builtin_link_libraries}
   )
+if(HAVE_LIBDL)
+  list(APPEND LIBPYTHON_TARGET_LIBRARIES ${HAVE_LIBDL})
+endif()
 if(WITH_THREAD)
     list(APPEND LIBPYTHON_TARGET_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
 endif()
