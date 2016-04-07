@@ -177,14 +177,16 @@ if(UNIX)
         _multiprocessing/socket_connection.c
     )
     set(_multiprocessing3_SOURCES )
+    if(HAVE_SEM_OPEN AND NOT POSIX_SEMAPHORES_NOT_ENABLED)
+        list(APPEND _multiprocessing${PY_VERSION_MAJOR}_SOURCES
+            _multiprocessing/semaphore.c
+        )
+    endif()
     add_python_extension(_multiprocessing
         SOURCES _multiprocessing/multiprocessing.c
-                _multiprocessing/semaphore.c
                 ${_multiprocessing${PY_VERSION_MAJOR}_SOURCES}
+        REQUIRES WITH_THREAD
     )
-    if(ENABLE_MULTIPROCESSING AND CMAKE_C_COMPILER_ID MATCHES GNU)
-        set_property(SOURCE ${SRC_DIR}/Modules/semaphore.c PROPERTY COMPILE_FLAGS -Wimplicit-function-declaration)
-    endif()
 elseif(WIN32)
     set(_multiprocessing2_SOURCES
         _multiprocessing/pipe_connection.c
