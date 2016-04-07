@@ -91,7 +91,7 @@ add_python_extension(time BUILTIN REQUIRES HAVE_LIBM SOURCES timemodule.c LIBRAR
 add_python_extension(unicodedata SOURCES unicodedata.c)
 
 # Python3
-add_python_extension(_thread BUILTIN REQUIRES IS_PY3 SOURCES _threadmodule.c)
+add_python_extension(_thread BUILTIN REQUIRES IS_PY3 WITH_THREAD SOURCES _threadmodule.c)
 add_python_extension(atexit BUILTIN REQUIRES IS_PY3 SOURCES atexitmodule.c) # Register functions to be run at interpreter-shutdown
 add_python_extension(_codecs BUILTIN REQUIRES IS_PY3 SOURCES _codecsmodule.c) # access to the builtin codecs and codec registry
 add_python_extension(faulthandler BUILTIN REQUIRES IS_PY3 SOURCES faulthandler.c)
