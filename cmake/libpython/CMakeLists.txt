@@ -367,7 +367,7 @@ if(WIN32 AND IS_PY3)
 endif()
 
 set(LIBPYTHON_FROZEN_SOURCES )
-if(IS_PY3)
+if(IS_PY3 AND NOT CMAKE_CROSSCOMPILING)
 
 # Build _freeze_importlib executable
 add_executable(_freeze_importlib
@@ -403,6 +403,8 @@ add_custom_target(freeze_modules DEPENDS ${LIBPYTHON_FROZEN_SOURCES})
 
 endif()
 
+if(NOT CMAKE_CROSSCOMPILING)
+
 # Build pgen executable
 set(PGEN2_SOURCES
     ${SRC_DIR}/Parser/parsetok.c
@@ -421,6 +423,8 @@ add_executable(pgen
     ${SRC_DIR}/Parser/printgrammar.c
     ${SRC_DIR}/Parser/pgenmain.c
 )
+
+endif()
 
 # Collect libpython sources
 set(LIBPYTHON_SOURCES

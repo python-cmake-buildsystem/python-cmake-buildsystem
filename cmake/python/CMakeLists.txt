@@ -48,7 +48,7 @@ if(WIN32)
         )
 endif()
 
-if(UNIX AND PY_VERSION VERSION_GREATER "2.7.4")
+if(UNIX AND PY_VERSION VERSION_GREATER "2.7.4" AND NOT CMAKE_CROSSCOMPILING)
     # Setup landmark allowing to run the interpreter from a build tree. See 'getpath.c' for details.
     add_custom_command(
         OUTPUT ${BIN_BUILD_DIR}/pybuilddir.txt ${EXTENSION_BUILD_DIR}/_sysconfigdata.py
@@ -69,7 +69,7 @@ if(UNIX AND PY_VERSION VERSION_GREATER "2.7.4")
         DESTINATION ${PYTHONHOME}/)
 endif()
 
-if(UNIX)
+if(UNIX AND NOT CMAKE_CROSSCOMPILING)
   install(CODE
 "message(STATUS \"Creating Python executable symlinks...\")
 execute_process(

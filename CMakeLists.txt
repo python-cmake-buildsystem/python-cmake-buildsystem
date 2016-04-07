@@ -399,6 +399,8 @@ if(BUILD_WININST)
     add_subdirectory(cmake/PC/bdist_wininst CMakeBuild/bdist_wininst)
 endif()
 
+if(NOT CMAKE_CROSSCOMPILING)
+
 # Add target to run "Argument Clinic" over all source files
 if(IS_PY3)
 add_custom_target(clinic
@@ -463,6 +465,8 @@ add_custom_target(generate_python_ast_c
     COMMENT "Generating '${SRC_DIR}/Python/Python-ast.c'"
     VERBATIM
 )
+
+endif()
 
 # If needed, copy 'asdl.py' and 'Python.asdl' into build directory so that 'test_asdl_parser' passes.
 set(_asdl_subdir ${LIBDIR})
