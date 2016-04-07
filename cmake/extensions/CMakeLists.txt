@@ -417,6 +417,9 @@ endif()
 # Uncomment for extra functionality:
 #list(APPEND libmpdec_config_${libmpdec_config} EXTRA_FUNCTIONALITY)
 
+if(ENABLE_DECIMAL)
+    message(STATUS "extension_decimal: libmpdec_config [${libmpdec_config}]")
+endif()
 add_python_extension(_decimal
     SOURCES
         _decimal/_decimal.c
