@@ -13,7 +13,6 @@ extern void initimp(void);
 extern void initsignal(void);
 extern void init_sre(void);
 extern void init_symtable(void);
-extern void initthread(void);
 extern void init_weakref(void);
 extern void initxxsubtype(void);
 extern void initzipimport(void);
@@ -39,7 +38,6 @@ struct _inittab _PyImport_Inittab[] = {
     {"_sre", init_sre},
     {"_symtable", init_symtable},
     {"sys", NULL},
-    {"thread", initthread},
     {"_warnings", _PyWarnings_Init},
     {"_weakref", init_weakref},
     {"xxsubtype", initxxsubtype},

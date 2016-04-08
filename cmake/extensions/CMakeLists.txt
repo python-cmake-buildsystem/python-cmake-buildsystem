@@ -87,11 +87,15 @@ add_python_extension(_random ${MSVC_BUILTIN} SOURCES _randommodule.c)
 add_python_extension(strop ${MSVC_BUILTIN} REQUIRES IS_PY2 SOURCES stropmodule.c)
 add_python_extension(_struct ${MSVC_BUILTIN} SOURCES _struct.c)
 add_python_extension(_testcapi SOURCES _testcapimodule.c)
+set(thread2_NAME thread)
+set(thread3_NAME _thread)
+set(thread2_SOURCES ${SRC_DIR}/Modules/threadmodule.c)
+set(thread3_SOURCES ${SRC_DIR}/Modules/_threadmodule.c)
+add_python_extension(${thread${PY_VERSION_MAJOR}_NAME} BUILTIN REQUIRES WITH_THREAD SOURCES ${thread${PY_VERSION_MAJOR}_SOURCES})
 add_python_extension(time BUILTIN REQUIRES HAVE_LIBM SOURCES timemodule.c LIBRARIES ${M_LIBRARIES} ${TIMEMODULE_LIB})
 add_python_extension(unicodedata SOURCES unicodedata.c)
 
 # Python3
-add_python_extension(_thread BUILTIN REQUIRES IS_PY3 WITH_THREAD SOURCES _threadmodule.c)
 add_python_extension(atexit BUILTIN REQUIRES IS_PY3 SOURCES atexitmodule.c) # Register functions to be run at interpreter-shutdown
 add_python_extension(_codecs BUILTIN REQUIRES IS_PY3 SOURCES _codecsmodule.c) # access to the builtin codecs and codec registry
 add_python_extension(faulthandler BUILTIN REQUIRES IS_PY3 SOURCES faulthandler.c)

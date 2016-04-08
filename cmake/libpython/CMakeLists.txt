@@ -167,11 +167,8 @@ endif()
 
 set(THREAD_SOURCES )
 if(WITH_THREAD)
-    set(THREAD2_SOURCES ${SRC_DIR}/Modules/threadmodule.c)
-    set(THREAD3_SOURCES ${SRC_DIR}/Modules/_threadmodule.c)
     list(APPEND THREAD_SOURCES
         ${SRC_DIR}/Python/thread.c
-        ${THREAD${PY_VERSION_MAJOR}_SOURCES}
     )
 endif()
 
