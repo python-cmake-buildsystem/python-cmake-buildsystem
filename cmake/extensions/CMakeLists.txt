@@ -325,7 +325,7 @@ set(libmpdec_config_x64          CONFIG_64 ASM)
 set(libmpdec_config_uint128      CONFIG_64 ANSI HAVE_UINT128_T)
 set(libmpdec_config_ansi64       CONFIG_64 ANSI)
 set(libmpdec_config_ppro         CONFIG_32 PPRO ASM)
-set(libmpdec_config_ansi32       CONFIG_32 PPRO)
+set(libmpdec_config_ansi32       CONFIG_32 PPRO) # XXX Is ANSI needed here ?
 set(libmpdec_config_ansi_legacy  CONFIG_32 ANSI LEGACY_COMPILER)
 set(libmpdec_config_universal    UNIVERSAL)
 
