@@ -529,15 +529,21 @@ add_python_extension(${bz2_${PY_VERSION_MAJOR}_NAME}
     LIBRARIES ${BZIP2_LIBRARIES}
     INCLUDEDIRS ${BZIP2_INCLUDE_DIR}
 )
+set(curses_common_REQUIRES CURSES_LIBRARIES)
+set(curses_common_LIBRARIES ${CURSES_LIBRARIES})
+if(WITH_STATIC_DEPENDENCIES)
+    list(APPEND curses_common_REQUIRES TINFO_LIBRARY GPM_LIBRARY)
+    list(APPEND curses_common_LIBRARIES ${TINFO_LIBRARY} ${GPM_LIBRARY})
+endif()
 add_python_extension(_curses_panel
-    REQUIRES CURSES_LIBRARIES PANEL_LIBRARIES "HAVE_PANEL_H OR HAVE_NCURSES_PANEL_H"
+    REQUIRES ${curses_common_REQUIRES} PANEL_LIBRARIES "HAVE_PANEL_H OR HAVE_NCURSES_PANEL_H"
     SOURCES _curses_panel.c
-    LIBRARIES ${CURSES_LIBRARIES} ${PANEL_LIBRARIES}
+    LIBRARIES ${curses_common_LIBRARIES} ${PANEL_LIBRARIES}
 )
 add_python_extension(_curses
-    REQUIRES CURSES_LIBRARIES
+    REQUIRES ${curses_common_REQUIRES}
     SOURCES _cursesmodule.c
-    LIBRARIES ${CURSES_LIBRARIES}
+    LIBRARIES ${curses_common_LIBRARIES}
 )
 set(dbm2_SOURCES dbmmodule.c)
 set(dbm3_SOURCES _dbmmodule.c)
