@@ -143,7 +143,7 @@ endif()
 set(DYNLOAD_SOURCES
   )
 
-if(UNIX)
+if(UNIX AND HAVE_DLOPEN)
     list(APPEND DYNLOAD_SOURCES
         ${SRC_DIR}/Python/dynload_shlib.c
     )
@@ -167,11 +167,8 @@ endif()
 
 set(THREAD_SOURCES )
 if(WITH_THREAD)
-    set(THREAD2_SOURCES ${SRC_DIR}/Modules/threadmodule.c)
-    set(THREAD3_SOURCES ${SRC_DIR}/Modules/_threadmodule.c)
     list(APPEND THREAD_SOURCES
         ${SRC_DIR}/Python/thread.c
-        ${THREAD${PY_VERSION_MAJOR}_SOURCES}
     )
 endif()
 
@@ -354,21 +351,23 @@ configure_file(
 
 # Collect libpython target libraries
 set(LIBPYTHON_TARGET_LIBRARIES
-  ${HAVE_LIBDL}
   ${builtin_link_libraries}
   )
+if(HAVE_LIBDL)
+  list(APPEND LIBPYTHON_TARGET_LIBRARIES ${HAVE_LIBDL})
+endif()
 if(WITH_THREAD)
     list(APPEND LIBPYTHON_TARGET_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
 endif()
 if(UNIX)
-    list(APPEND LIBPYTHON_TARGET_LIBRARIES ${HAVE_LIBUTIL} ${HAVE_LIBM})
+    list(APPEND LIBPYTHON_TARGET_LIBRARIES ${LIBUTIL_LIBRARIES} ${M_LIBRARIES})
 endif()
 if(WIN32 AND IS_PY3)
     list(APPEND LIBPYTHON_TARGET_LIBRARIES ws2_32) # Required by signalmodule
 endif()
 
 set(LIBPYTHON_FROZEN_SOURCES )
-if(IS_PY3)
+if(IS_PY3 AND NOT CMAKE_CROSSCOMPILING)
 
 # Build _freeze_importlib executable
 add_executable(_freeze_importlib
@@ -404,6 +403,8 @@ add_custom_target(freeze_modules DEPENDS ${LIBPYTHON_FROZEN_SOURCES})
 
 endif()
 
+if(NOT CMAKE_CROSSCOMPILING)
+
 # Build pgen executable
 set(PGEN2_SOURCES
     ${SRC_DIR}/Parser/parsetok.c
@@ -423,6 +424,8 @@ add_executable(pgen
     ${SRC_DIR}/Parser/pgenmain.c
 )
 
+endif()
+
 # Collect libpython sources
 set(LIBPYTHON_SOURCES
     ${LIBPYTHON_OMIT_FROZEN_SOURCES}
@@ -435,7 +438,7 @@ if(UNIX)
 endif()
 
 # Build python libraries
-function(add_libpython name type)
+function(add_libpython name type install component)
     add_library(${name} ${type} ${LIBPYTHON_SOURCES})
     target_link_libraries(${name} ${LIBPYTHON_TARGET_LIBRARIES})
 
@@ -461,15 +464,18 @@ function(add_libpython name type)
     # Export target
     set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS ${name})
 
-    install(TARGETS ${name} EXPORT PythonTargets
-        ARCHIVE DESTINATION ${LIBPYTHON_ARCHIVEDIR}
-        LIBRARY DESTINATION ${LIBPYTHON_LIBDIR}
-        RUNTIME DESTINATION ${LIBPYTHON_LIBDIR}
-    )
+    if(install)
+        install(TARGETS ${name} EXPORT PythonTargets
+            ARCHIVE DESTINATION ${LIBPYTHON_ARCHIVEDIR}
+            LIBRARY DESTINATION ${LIBPYTHON_LIBDIR}
+            RUNTIME DESTINATION ${LIBPYTHON_LIBDIR}
+            COMPONENT ${component}
+        )
+    endif()
 endfunction()
 
 if(BUILD_SHARED)
-    add_libpython(libpython-shared SHARED)
+    add_libpython(libpython-shared SHARED 1 Runtime)
     set_target_properties(libpython-shared PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}
     )
@@ -554,7 +560,7 @@ if(BUILD_SHARED)
 endif()
 
 if(BUILD_STATIC)
-    add_libpython(libpython-static STATIC)
+    add_libpython(libpython-static STATIC ${INSTALL_DEVELOPMENT} Development)
     if(HAVE_TARGET_COMPILE_DEFINITIONS)
         target_compile_definitions(libpython-static PUBLIC Py_NO_ENABLE_SHARED)
     else()
@@ -565,6 +571,9 @@ if(BUILD_STATIC)
     set_target_properties(libpython-static PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_STATIC_ARCHIVEDIR}
     )
-    install(TARGETS libpython-static ARCHIVE DESTINATION ${PYTHONHOME}/config/)
-
+    if(INSTALL_DEVELOPMENT)
+        install(TARGETS libpython-static
+            ARCHIVE DESTINATION ${PYTHONHOME}/config/
+            COMPONENT Development)
+    endif()
 endif()

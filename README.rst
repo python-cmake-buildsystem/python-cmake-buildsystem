@@ -87,6 +87,11 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
     Note that all previously set BUILTIN_<extension> options are ignored and
     reset to their original value.
 
+  WITH_STATIC_DEPENDENCIES=ON|OFF    (defaults to OFF, available only on UNIX)
+    If this is set to ON then cmake will compile statically libpython and all
+    extensions. External dependencies (ncurses, sqlite, ...) will be builtin
+    only if they are available as static libraries.
+
   BUILD_WININST=ON|OFF (defaults to ON)
     If enabled, build the 'Windows Installer' program for distutils if not
     already provided in the source tree.
@@ -94,6 +99,15 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
   BUILD_WININST_ALWAYS=ON|OFF (defaults to OFF)
     If enabled, always build 'Windows Installer' program for distutils even
     if it is already provided in the source tree.
+
+  INSTALL_DEVELOPMENT=ON|OFF (defaults to ON)
+    If enabled, install files required to develop C extensions.
+
+  INSTALL_MANUAL=ON|OFF (defaults to ON)
+    If enabled, install manuals.
+
+  INSTALL_TEST=ON|OFF (defaults to ON)
+    If enabled, install test files.
 
   ENABLE_<extension>=ON|OFF     (defaults to ON)
   BUILTIN_<extension>=ON|OFF    (defaults to OFF except for POSIX, PWD and

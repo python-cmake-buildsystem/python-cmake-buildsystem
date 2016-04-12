@@ -48,6 +48,9 @@ else()
   set(BUILD_WININST OFF)
   set(BUILD_WININST_ALWAYS OFF)
 endif()
+option(INSTALL_DEVELOPMENT "Install files required to develop C extensions" ON)
+option(INSTALL_MANUAL "Install man files" ON)
+option(INSTALL_TEST "Install test files" ON)
 
 # Append an item to a string if it does not already contain it.  Any additional
 # arguments are treated as extra "set" arguments
@@ -96,6 +99,34 @@ option(WITH_DOC_STRINGS "Enable if you want documentation strings in extension m
 set(Py_DEBUG OFF) # TODO - Build debugging interpreter
 option(WITH_PYMALLOC "Define if you want to compile in Python-specific mallocs" ON)
 option(WITH_THREAD "Compile in rudimentary thread support" ON)
+if(UNIX)
+    option(WITH_STATIC_DEPENDENCIES "Restrict extensions and external dependencies to static libraries" OFF)
+    if(WITH_STATIC_DEPENDENCIES)
+        if(NOT POLICY CMP0065)
+            set(_reason " because option supported only with CMake >= 3.4. Current CMAKE_VERSION [${CMAKE_VERSION}]")
+            set(WITH_STATIC_DEPENDENCIES OFF CACHE BOOL "Forced to OFF${_reason}" FORCE)
+            message(WARNING "Forcing WITH_STATIC_DEPENDENCIES to OFF${_reason}")
+        else()
+            cmake_policy(SET CMP0065 NEW)
+
+            set(_reason " because of WITH_STATIC_DEPENDENCIES=ON")
+
+            set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_STATIC_LIBRARY_SUFFIX})
+            message(STATUS "Setting CMAKE_FIND_LIBRARY_SUFFIXES to \"${CMAKE_STATIC_LIBRARY_SUFFIX}\"${_reason}")
+
+            set(BUILD_EXTENSIONS_AS_BUILTIN ON CACHE BOOL "Forced to ON${_reason}" FORCE)
+            message(STATUS "Setting BUILD_EXTENSIONS_AS_BUILTIN to ON${_reason}")
+
+            set(BUILD_SHARED OFF CACHE BOOL "Forced to OFF${_reason}" FORCE)
+            message(STATUS "Setting BUILD_SHARED to OFF${_reason}")
+
+            set(BUILD_STATIC ON CACHE BOOL "Forced to ON${_reason}" FORCE)
+            message(STATUS "Setting BUILD_STATIC to ON${_reason}")
+        endif()
+    endif()
+else()
+    set(WITH_STATIC_DEPENDENCIES 0)
+endif()
 
 # Detect source directory
 set(_landmark "pyconfig.h.in") # CMake will look for this file.
@@ -295,8 +326,11 @@ elseif(WIN32)
 endif()
 
 # Install 'pyconfig.h'
-install(FILES ${PYCONFIG_BUILD_DIR}/pyconfig.h
-        DESTINATION ${INCLUDE_INSTALL_DIR}/)
+if(INSTALL_DEVELOPMENT)
+    install(FILES ${PYCONFIG_BUILD_DIR}/pyconfig.h
+            DESTINATION ${INCLUDE_INSTALL_DIR}/
+            COMPONENT Development)
+endif()
 
 # Set include directories
 include_directories(${INCLUDE_BUILD_DIR})
@@ -365,6 +399,8 @@ if(BUILD_WININST)
     add_subdirectory(cmake/PC/bdist_wininst CMakeBuild/bdist_wininst)
 endif()
 
+if(NOT CMAKE_CROSSCOMPILING)
+
 # Add target to run "Argument Clinic" over all source files
 if(IS_PY3)
 add_custom_target(clinic
@@ -430,6 +466,8 @@ add_custom_target(generate_python_ast_c
     VERBATIM
 )
 
+endif()
+
 # If needed, copy 'asdl.py' and 'Python.asdl' into build directory so that 'test_asdl_parser' passes.
 set(_asdl_subdir ${LIBDIR})
 if(WIN32)
@@ -458,11 +496,14 @@ if(UNIX)
                   ${CMAKE_BINARY_DIR}/Misc/python-${PY_VERSION_MAJOR}.pc @ONLY)
     configure_file(cmake/python.pc.in
                   ${CMAKE_BINARY_DIR}/Misc/python.pc @ONLY)
-    install(FILES
-                ${CMAKE_BINARY_DIR}/Misc/python-${LIBPYTHON_VERSION}.pc
-                ${CMAKE_BINARY_DIR}/Misc/python-${PY_VERSION_MAJOR}.pc
-                ${CMAKE_BINARY_DIR}/Misc/python.pc
-            DESTINATION lib/pkgconfig)
+    if(INSTALL_DEVELOPMENT)
+        install(FILES
+                    ${CMAKE_BINARY_DIR}/Misc/python-${LIBPYTHON_VERSION}.pc
+                    ${CMAKE_BINARY_DIR}/Misc/python-${PY_VERSION_MAJOR}.pc
+                    ${CMAKE_BINARY_DIR}/Misc/python.pc
+                DESTINATION lib/pkgconfig
+                COMPONENT Development)
+    endif()
 
     # Makefile
     set(MAKEFILE_LDSHARED_FLAGS "-shared")
@@ -471,18 +512,26 @@ if(UNIX)
     endif()
     configure_file(cmake/makefile-variables.in
                    ${BIN_BUILD_DIR}/Makefile @ONLY)
-    install(FILES ${BIN_BUILD_DIR}/Makefile
-            DESTINATION ${PYTHONHOME}/config/
-            RENAME Makefile)
+    if(INSTALL_DEVELOPMENT)
+        install(FILES ${BIN_BUILD_DIR}/Makefile
+                DESTINATION ${PYTHONHOME}/config/
+                RENAME Makefile
+                COMPONENT Development)
+    endif()
 
     # Utility scripts
-    install(FILES ${SRC_DIR}/install-sh ${SRC_DIR}/Modules/makesetup
-            DESTINATION ${PYTHONHOME}/config/)
+    if(INSTALL_DEVELOPMENT)
+        install(FILES ${SRC_DIR}/install-sh ${SRC_DIR}/Modules/makesetup
+                DESTINATION ${PYTHONHOME}/config/
+                COMPONENT Development)
+    endif()
 
     # Install manual
-    set(_install_man FILES ${SRC_DIR}/Misc/python.man DESTINATION share/man/man1 COMPONENT Runtime)
-    install(${_install_man} RENAME python${LIBPYTHON_VERSION}.1)
-    install(${_install_man} RENAME python${PY_VERSION_MAJOR}.1)
+    if(INSTALL_MANUAL)
+        set(_install_man FILES ${SRC_DIR}/Misc/python.man DESTINATION share/man/man1 COMPONENT Runtime)
+        install(${_install_man} RENAME python${LIBPYTHON_VERSION}.1)
+        install(${_install_man} RENAME python${PY_VERSION_MAJOR}.1)
+    endif()
 
 endif()
 
@@ -554,13 +603,19 @@ write_basic_package_version_file(
     COMPATIBILITY SameMajorVersion
 )
 
-# Install 'PythonTargets.cmake', 'PythonConfig.cmake' and 'PythonConfigVersion.cmake
-install(EXPORT PythonTargets FILE PythonTargets.cmake DESTINATION ${CONFIG_INSTALL_DIR})
+if(INSTALL_DEVELOPMENT)
+    # Install 'PythonTargets.cmake', 'PythonConfig.cmake' and 'PythonConfigVersion.cmake
+    install(EXPORT PythonTargets
+        FILE PythonTargets.cmake
+        DESTINATION ${CONFIG_INSTALL_DIR} COMPONENT Development)
 
-install(
-    FILES ${python_install_config} ${python_config_version}
-    DESTINATION ${CONFIG_INSTALL_DIR} COMPONENT Development
-)
+    install(
+        FILES ${python_install_config} ${python_config_version}
+        DESTINATION ${CONFIG_INSTALL_DIR} COMPONENT Development
+    )
+endif()
+
+endif()
 
 # Install License
 set(license_destination ${PYTHONHOME})
@@ -568,5 +623,3 @@ if(INSTALL_WINDOWS_TRADITIONAL)
   set(license_destination .)
 endif()
 install(FILES ${SRC_DIR}/LICENSE DESTINATION ${license_destination} COMPONENT Runtime RENAME LICENSE.txt)
-
-endif()

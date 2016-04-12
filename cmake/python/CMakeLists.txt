@@ -17,7 +17,10 @@ if(BUILD_SHARED)
     target_link_libraries(python libpython-shared)
 else()
     target_link_libraries(python libpython-static)
-    set_target_properties(python PROPERTIES COMPILE_DEFINITIONS Py_NO_ENABLE_SHARED)
+    set_target_properties(python PROPERTIES
+        COMPILE_DEFINITIONS Py_NO_ENABLE_SHARED
+        ENABLE_EXPORTS ON
+    )
 endif()
 
 if(MSVC)
@@ -45,7 +48,7 @@ if(WIN32)
         )
 endif()
 
-if(UNIX AND PY_VERSION VERSION_GREATER "2.7.4")
+if(UNIX AND PY_VERSION VERSION_GREATER "2.7.4" AND NOT CMAKE_CROSSCOMPILING)
     # Setup landmark allowing to run the interpreter from a build tree. See 'getpath.c' for details.
     add_custom_command(
         OUTPUT ${BIN_BUILD_DIR}/pybuilddir.txt ${EXTENSION_BUILD_DIR}/_sysconfigdata.py
@@ -66,7 +69,7 @@ if(UNIX AND PY_VERSION VERSION_GREATER "2.7.4")
         DESTINATION ${PYTHONHOME}/)
 endif()
 
-if(UNIX)
+if(UNIX AND NOT CMAKE_CROSSCOMPILING)
   install(CODE
 "message(STATUS \"Creating Python executable symlinks...\")
 execute_process(
@@ -92,4 +95,6 @@ configure_file(
     ${BIN_BUILD_DIR}/python-gdb.py
     COPYONLY
 )
-install(FILES ${SRC_GDB_HOOKS} DESTINATION ${BIN_INSTALL_DIR} COMPONENT Runtime)
+if(INSTALL_DEVELOPMENT)
+    install(FILES ${SRC_GDB_HOOKS} DESTINATION ${BIN_INSTALL_DIR} COMPONENT Development)
+endif()

@@ -87,11 +87,15 @@ add_python_extension(_random ${MSVC_BUILTIN} SOURCES _randommodule.c)
 add_python_extension(strop ${MSVC_BUILTIN} REQUIRES IS_PY2 SOURCES stropmodule.c)
 add_python_extension(_struct ${MSVC_BUILTIN} SOURCES _struct.c)
 add_python_extension(_testcapi SOURCES _testcapimodule.c)
+set(thread2_NAME thread)
+set(thread3_NAME _thread)
+set(thread2_SOURCES ${SRC_DIR}/Modules/threadmodule.c)
+set(thread3_SOURCES ${SRC_DIR}/Modules/_threadmodule.c)
+add_python_extension(${thread${PY_VERSION_MAJOR}_NAME} BUILTIN REQUIRES WITH_THREAD SOURCES ${thread${PY_VERSION_MAJOR}_SOURCES})
 add_python_extension(time BUILTIN REQUIRES HAVE_LIBM SOURCES timemodule.c LIBRARIES ${M_LIBRARIES} ${TIMEMODULE_LIB})
 add_python_extension(unicodedata SOURCES unicodedata.c)
 
 # Python3
-add_python_extension(_thread BUILTIN REQUIRES IS_PY3 SOURCES _threadmodule.c)
 add_python_extension(atexit BUILTIN REQUIRES IS_PY3 SOURCES atexitmodule.c) # Register functions to be run at interpreter-shutdown
 add_python_extension(_codecs BUILTIN REQUIRES IS_PY3 SOURCES _codecsmodule.c) # access to the builtin codecs and codec registry
 add_python_extension(faulthandler BUILTIN REQUIRES IS_PY3 SOURCES faulthandler.c)
@@ -177,14 +181,16 @@ if(UNIX)
         _multiprocessing/socket_connection.c
     )
     set(_multiprocessing3_SOURCES )
+    if(HAVE_SEM_OPEN AND NOT POSIX_SEMAPHORES_NOT_ENABLED)
+        list(APPEND _multiprocessing${PY_VERSION_MAJOR}_SOURCES
+            _multiprocessing/semaphore.c
+        )
+    endif()
     add_python_extension(_multiprocessing
         SOURCES _multiprocessing/multiprocessing.c
-                _multiprocessing/semaphore.c
                 ${_multiprocessing${PY_VERSION_MAJOR}_SOURCES}
+        REQUIRES WITH_THREAD
     )
-    if(ENABLE_MULTIPROCESSING AND CMAKE_C_COMPILER_ID MATCHES GNU)
-        set_property(SOURCE ${SRC_DIR}/Modules/semaphore.c PROPERTY COMPILE_FLAGS -Wimplicit-function-declaration)
-    endif()
 elseif(WIN32)
     set(_multiprocessing2_SOURCES
         _multiprocessing/pipe_connection.c
@@ -319,7 +325,7 @@ set(libmpdec_config_x64          CONFIG_64 ASM)
 set(libmpdec_config_uint128      CONFIG_64 ANSI HAVE_UINT128_T)
 set(libmpdec_config_ansi64       CONFIG_64 ANSI)
 set(libmpdec_config_ppro         CONFIG_32 PPRO ASM)
-set(libmpdec_config_ansi32       CONFIG_32 PPRO)
+set(libmpdec_config_ansi32       CONFIG_32 PPRO) # XXX Is ANSI needed here ?
 set(libmpdec_config_ansi_legacy  CONFIG_32 ANSI LEGACY_COMPILER)
 set(libmpdec_config_universal    UNIVERSAL)
 
@@ -415,6 +421,9 @@ endif()
 # Uncomment for extra functionality:
 #list(APPEND libmpdec_config_${libmpdec_config} EXTRA_FUNCTIONALITY)
 
+if(ENABLE_DECIMAL)
+    message(STATUS "extension_decimal: libmpdec_config [${libmpdec_config}]")
+endif()
 add_python_extension(_decimal
     SOURCES
         _decimal/_decimal.c
@@ -529,15 +538,21 @@ add_python_extension(${bz2_${PY_VERSION_MAJOR}_NAME}
     LIBRARIES ${BZIP2_LIBRARIES}
     INCLUDEDIRS ${BZIP2_INCLUDE_DIR}
 )
+set(curses_common_REQUIRES CURSES_LIBRARIES)
+set(curses_common_LIBRARIES ${CURSES_LIBRARIES})
+if(WITH_STATIC_DEPENDENCIES)
+    list(APPEND curses_common_REQUIRES TINFO_LIBRARY GPM_LIBRARY)
+    list(APPEND curses_common_LIBRARIES ${TINFO_LIBRARY} ${GPM_LIBRARY})
+endif()
 add_python_extension(_curses_panel
-    REQUIRES CURSES_LIBRARIES PANEL_LIBRARIES "HAVE_PANEL_H OR HAVE_NCURSES_PANEL_H"
+    REQUIRES ${curses_common_REQUIRES} PANEL_LIBRARIES "HAVE_PANEL_H OR HAVE_NCURSES_PANEL_H"
     SOURCES _curses_panel.c
-    LIBRARIES ${CURSES_LIBRARIES} ${PANEL_LIBRARIES}
+    LIBRARIES ${curses_common_LIBRARIES} ${PANEL_LIBRARIES}
 )
 add_python_extension(_curses
-    REQUIRES CURSES_LIBRARIES
+    REQUIRES ${curses_common_REQUIRES}
     SOURCES _cursesmodule.c
-    LIBRARIES ${CURSES_LIBRARIES}
+    LIBRARIES ${curses_common_LIBRARIES}
 )
 set(dbm2_SOURCES dbmmodule.c)
 set(dbm3_SOURCES _dbmmodule.c)
