@@ -3,14 +3,35 @@ machine:
     - docker
 
 dependencies:
+  cache_directories:
+    - "~/docker"
   override:
     - docker info
+
+    - if [[ -e ~/docker/cross-compiler-android-arm.tar ]]; then docker load -i ~/docker/cross-compiler-android-arm.tar; fi
     - docker pull thewtex/cross-compiler-android-arm
+    - mkdir -p ~/docker; docker save thewtex/cross-compiler-android-arm > ~/docker/cross-compiler-android-arm.tar
+
+    - if [[ -e ~/docker/cross-compiler-linux-armv6.tar ]]; then docker load -i ~/docker/cross-compiler-linux-armv6.tar; fi
     - docker pull thewtex/cross-compiler-linux-armv6
+    - mkdir -p ~/docker; docker save thewtex/cross-compiler-linux-armv6 > ~/docker/cross-compiler-linux-armv6.tar
+
+    - if [[ -e ~/docker/cross-compiler-linux-armv7.tar ]]; then docker load -i ~/docker/cross-compiler-linux-armv7.tar; fi
     - docker pull thewtex/cross-compiler-linux-armv7
+    - mkdir -p ~/docker; docker save thewtex/cross-compiler-linux-armv7 > ~/docker/cross-compiler-linux-armv7.tar
+
+    - if [[ -e ~/docker/cross-compiler-linux-ppc64le.tar ]]; then docker load -i ~/docker/cross-compiler-linux-ppc64le.tar; fi
     - docker pull thewtex/cross-compiler-linux-ppc64le
+    - mkdir -p ~/docker; docker save thewtex/cross-compiler-linux-ppc64le > ~/docker/cross-compiler-linux-ppc64le.tar
+
+    - if [[ -e ~/docker/cross-compiler-linux-x64.tar ]]; then docker load -i ~/docker/cross-compiler-linux-x64.tar; fi
     - docker pull thewtex/cross-compiler-linux-x64
+    - mkdir -p ~/docker; docker save thewtex/cross-compiler-linux-x64 > ~/docker/cross-compiler-linux-x64.tar
+
+    - if [[ -e ~/docker/cross-compiler-linux-x86.tar ]]; then docker load -i ~/docker/cross-compiler-linux-x86.tar; fi
     - docker pull thewtex/cross-compiler-linux-x86
+    - mkdir -p ~/docker; docker save thewtex/cross-compiler-linux-x86 > ~/docker/cross-compiler-linux-x86.tar
+
     - cd $HOME && git clone git://github.com/python-cmake-buildsystem/python-cmake-buildsystem --branch dashboard --depth 1 scripts
 
 test:
