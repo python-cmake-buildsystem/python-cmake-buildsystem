@@ -41,20 +41,8 @@ CMAKE_TOOLCHAIN_FILE:FILEPATH=$ENV{CMAKE_TOOLCHAIN_FILE}
 ")
 endif()
 
-function(downloadFile url dest)
- file(DOWNLOAD ${url} ${dest} STATUS status)
- list(GET status 0 error_code)
- list(GET status 1 error_msg)
- if(error_code)
-   message(FATAL_ERROR "error: Failed to download ${url} - ${error_msg}")
- endif()
-endfunction()
-
-# Download and include driver script
-set(url https://raw.githubusercontent.com/python-cmake-buildsystem/python-cmake-buildsystem/dashboard/python_common.cmake)
-set(dest ${CTEST_SCRIPT_DIRECTORY}/python_common.cmake)
-downloadfile(${url} ${dest})
-include(${dest})
+# Include driver script
+include(${CTEST_SCRIPT_DIRECTORY}/python_common.cmake)
 
 # Upload link to travis
 #set(travis_url "/tmp/travis.url")
