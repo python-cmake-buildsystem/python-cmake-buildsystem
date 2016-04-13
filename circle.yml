@@ -1,0 +1,54 @@
+machine:
+  services:
+    - docker
+
+dependencies:
+  cache_directories:
+    - "~/docker"
+  override:
+    - docker info
+
+    - if [[ -e ~/docker/cross-compiler-android-arm.tar ]]; then docker load -i ~/docker/cross-compiler-android-arm.tar; fi
+    - docker pull thewtex/cross-compiler-android-arm
+    - mkdir -p ~/docker; docker save thewtex/cross-compiler-android-arm > ~/docker/cross-compiler-android-arm.tar
+
+    - if [[ -e ~/docker/cross-compiler-linux-armv6.tar ]]; then docker load -i ~/docker/cross-compiler-linux-armv6.tar; fi
+    - docker pull thewtex/cross-compiler-linux-armv6
+    - mkdir -p ~/docker; docker save thewtex/cross-compiler-linux-armv6 > ~/docker/cross-compiler-linux-armv6.tar
+
+    - if [[ -e ~/docker/cross-compiler-linux-armv7.tar ]]; then docker load -i ~/docker/cross-compiler-linux-armv7.tar; fi
+    - docker pull thewtex/cross-compiler-linux-armv7
+    - mkdir -p ~/docker; docker save thewtex/cross-compiler-linux-armv7 > ~/docker/cross-compiler-linux-armv7.tar
+
+    - if [[ -e ~/docker/cross-compiler-linux-ppc64le.tar ]]; then docker load -i ~/docker/cross-compiler-linux-ppc64le.tar; fi
+    - docker pull thewtex/cross-compiler-linux-ppc64le
+    - mkdir -p ~/docker; docker save thewtex/cross-compiler-linux-ppc64le > ~/docker/cross-compiler-linux-ppc64le.tar
+
+    - if [[ -e ~/docker/cross-compiler-linux-x64.tar ]]; then docker load -i ~/docker/cross-compiler-linux-x64.tar; fi
+    - docker pull thewtex/cross-compiler-linux-x64
+    - mkdir -p ~/docker; docker save thewtex/cross-compiler-linux-x64 > ~/docker/cross-compiler-linux-x64.tar
+
+    - if [[ -e ~/docker/cross-compiler-linux-x86.tar ]]; then docker load -i ~/docker/cross-compiler-linux-x86.tar; fi
+    - docker pull thewtex/cross-compiler-linux-x86
+    - mkdir -p ~/docker; docker save thewtex/cross-compiler-linux-x86 > ~/docker/cross-compiler-linux-x86.tar
+
+    - cd $HOME && git clone git://github.com/jcfr/python-cmake-buildsystem --branch dashboard-circleci --depth 1 scripts
+
+test:
+  override:
+
+    # Python 2.7.11
+    - docker run --rm -e PY_VERSION=2.7.11 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/scripts:/usr/scripts thewtex/cross-compiler-android-arm ctest -S /usr/scripts/circle_dashboard.cmake -VV
+    - docker run --rm -e PY_VERSION=2.7.11 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/scripts:/usr/scripts thewtex/cross-compiler-linux-armv6 ctest -S /usr/scripts/circle_dashboard.cmake -VV
+    - docker run --rm -e PY_VERSION=2.7.11 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/scripts:/usr/scripts thewtex/cross-compiler-linux-armv7 ctest -S /usr/scripts/circle_dashboard.cmake -VV
+    - docker run --rm -e PY_VERSION=2.7.11 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/scripts:/usr/scripts thewtex/cross-compiler-linux-ppc64le python ctest -S /usr/scripts/circle_dashboard.cmake -VV
+    - docker run --rm -e PY_VERSION=2.7.11 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/scripts:/usr/scripts thewtex/cross-compiler-linux-x64 python ctest -S /usr/scripts/circle_dashboard.cmake -VV
+    - docker run --rm -e PY_VERSION=2.7.11 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/scripts:/usr/scripts thewtex/cross-compiler-linux-x86 ctest -S /usr/scripts/circle_dashboard.cmake -VV
+
+    # Python 3.5.1
+    - docker run --rm -e PY_VERSION=3.5.1 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/scripts:/usr/scripts thewtex/cross-compiler-android-arm ctest -S /usr/scripts/circle_dashboard.cmake -VV
+    - docker run --rm -e PY_VERSION=3.5.1 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/scripts:/usr/scripts thewtex/cross-compiler-linux-armv6 ctest -S /usr/scripts/circle_dashboard.cmake -VV
+    - docker run --rm -e PY_VERSION=3.5.1 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/scripts:/usr/scripts thewtex/cross-compiler-linux-armv7 ctest -S /usr/scripts/circle_dashboard.cmake -VV
+    - docker run --rm -e PY_VERSION=3.5.1 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/scripts:/usr/scripts thewtex/cross-compiler-linux-ppc64le python ctest -S /usr/scripts/circle_dashboard.cmake -VV
+    - docker run --rm -e PY_VERSION=3.5.1 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/scripts:/usr/scripts thewtex/cross-compiler-linux-x64 python ctest -S /usr/scripts/circle_dashboard.cmake -VV
+    - docker run --rm -e PY_VERSION=3.5.1 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/scripts:/usr/scripts thewtex/cross-compiler-linux-x86 ctest -S /usr/scripts/circle_dashboard.cmake -VV
