@@ -1,0 +1,25 @@
+machine:
+  services:
+    - docker
+
+dependencies:
+  override:
+    - docker info
+    - docker pull thewtex/cross-compiler-android-arm
+    - docker pull thewtex/cross-compiler-browser-asmjs
+    - docker pull thewtex/cross-compiler-linux-armv6
+    - docker pull thewtex/cross-compiler-linux-armv7
+    - docker pull thewtex/cross-compiler-linux-ppc64le
+    - docker pull thewtex/cross-compiler-linux-x64
+    - docker pull thewtex/cross-compiler-linux-x86
+    - cd $HOME && git clone git://github.com/jcfr/python-cmake-buildsystem --branch dashboard-circleci --depth 1 dashboards
+
+test:
+  override:
+    - docker run --rm -e PY_VERSION=2.7.11 -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/dashboards:/usr/dashboards thewtex/cross-compiler-android-arm ctest -S /usr/python-cmake-buildsystem-dashboard/circle_dashboard.cmake -VV
+    - docker run --rm -e PY_VERSION=2.7.11 -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/dashboards:/usr/dashboards thewtex/cross-compiler-browser-asmjs ctest -S /usr/python-cmake-buildsystem-dashboard/circle_dashboard.cmake -VV
+    - docker run --rm -e PY_VERSION=2.7.11 -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/dashboards:/usr/dashboards thewtex/cross-compiler-linux-armv6 ctest -S /usr/python-cmake-buildsystem-dashboard/circle_dashboard.cmake -VV
+    - docker run --rm -e PY_VERSION=2.7.11 -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/dashboards:/usr/dashboards thewtex/cross-compiler-linux-armv7 ctest -S /usr/python-cmake-buildsystem-dashboard/circle_dashboard.cmake -VV
+    - docker run --rm -e PY_VERSION=2.7.11 -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/dashboards:/usr/dashboards thewtex/cross-compiler-linux-ppc64le python ctest -S /usr/python-cmake-buildsystem-dashboard/circle_dashboard.cmake -VV
+    - docker run --rm -e PY_VERSION=2.7.11 -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/dashboards:/usr/dashboards thewtex/cross-compiler-linux-x64 python ctest -S /usr/python-cmake-buildsystem-dashboard/circle_dashboard.cmake -VV
+    - docker run --rm -e PY_VERSION=2.7.11 -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/dashboards:/usr/dashboards thewtex/cross-compiler-linux-x86 ctest -S /usr/python-cmake-buildsystem-dashboard/circle_dashboard.cmake -VV
