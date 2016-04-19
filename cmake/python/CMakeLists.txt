@@ -48,11 +48,12 @@ if(WIN32)
         )
 endif()
 
-if(UNIX AND PY_VERSION VERSION_GREATER "2.7.4" AND NOT CMAKE_CROSSCOMPILING)
+if(UNIX AND PY_VERSION VERSION_GREATER "2.7.4")
     # Setup landmark allowing to run the interpreter from a build tree. See 'getpath.c' for details.
     add_custom_command(
         OUTPUT ${BIN_BUILD_DIR}/pybuilddir.txt ${EXTENSION_BUILD_DIR}/_sysconfigdata.py
-        COMMAND ${PYTHON_WRAPPER_COMMAND} $<TARGET_FILE:python> -E -S -m sysconfig --generate-posix-vars
+        COMMAND ${PYTHON_WRAPPER_COMMAND}
+          ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> -E -S -m sysconfig --generate-posix-vars
         COMMAND ${CMAKE_COMMAND}
           -DBIN_BUILD_DIR:PATH=${BIN_BUILD_DIR}
           -DPYTHON_BINARY_DIR:PATH=${CMAKE_BINARY_DIR}

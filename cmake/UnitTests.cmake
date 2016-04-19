@@ -10,7 +10,7 @@ set(cmd "${cmd}print('Discovered %d tests' % len(filenames))\\n")
 set(cmd "${cmd}\")")
 
 add_custom_target(list_unittests
-    $<TARGET_FILE:python> -c "${cmd}"
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> -c "${cmd}"
     DEPENDS python
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     COMMENT "Display list of python unittests"

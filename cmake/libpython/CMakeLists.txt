@@ -367,7 +367,7 @@ if(WIN32 AND IS_PY3)
 endif()
 
 set(LIBPYTHON_FROZEN_SOURCES )
-if(IS_PY3 AND NOT CMAKE_CROSSCOMPILING)
+if(IS_PY3)
 
 # Build _freeze_importlib executable
 add_executable(_freeze_importlib
@@ -384,11 +384,11 @@ set(LIBPYTHON_FROZEN_SOURCES
 add_custom_command(
   OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
   COMMAND
-    $<TARGET_FILE:_freeze_importlib>
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
       ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
       ${SRC_DIR}/Python/importlib_external.h
   COMMAND
-    $<TARGET_FILE:_freeze_importlib>
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
       ${SRC_DIR}/Lib/importlib/_bootstrap.py
       ${SRC_DIR}/Python/importlib.h
   DEPENDS
@@ -402,8 +402,6 @@ add_custom_command(
 add_custom_target(freeze_modules DEPENDS ${LIBPYTHON_FROZEN_SOURCES})
 
 endif()
-
-if(NOT CMAKE_CROSSCOMPILING)
 
 # Build pgen executable
 set(PGEN2_SOURCES
@@ -423,8 +421,6 @@ add_executable(pgen
     ${SRC_DIR}/Parser/printgrammar.c
     ${SRC_DIR}/Parser/pgenmain.c
 )
-
-endif()
 
 # Collect libpython sources
 set(LIBPYTHON_SOURCES
