@@ -26,6 +26,10 @@ if(POLICY CMP0042)
     cmake_policy(SET CMP0042 OLD)
 endif()
 
+if(CMAKE_CROSSCOMPILING)
+    cmake_minimum_required(VERSION 3.3) # Version introducing CROSSCOMPILING_EMULATOR
+endif()
+
 # Include helper functions
 include(cmake/CMakeChecks.cmake)
 include(cmake/Extensions.cmake)
@@ -399,12 +403,10 @@ if(BUILD_WININST)
     add_subdirectory(cmake/PC/bdist_wininst CMakeBuild/bdist_wininst)
 endif()
 
-if(NOT CMAKE_CROSSCOMPILING)
-
 # Add target to run "Argument Clinic" over all source files
 if(IS_PY3)
 add_custom_target(clinic
-    COMMAND $<TARGET_FILE:python> ${SRC_DIR}/Tools/clinic/clinic.py --make
+    COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> ${SRC_DIR}/Tools/clinic/clinic.py --make
     DEPENDS python
     WORKING_DIRECTORY ${SRC_DIR}
     COMMENT "Running 'Argument Clinic' over all source files"
@@ -414,7 +416,7 @@ endif()
 
 # Add target to generate 'Include/graminit.h' and 'Python/graminit.c'
 add_custom_target(generate_graminit
-    COMMAND $<TARGET_FILE:pgen>
+    COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:pgen>
         ${SRC_DIR}/Grammar/Grammar
         ${PROJECT_BINARY_DIR}/CMakeFiles/graminit.h
         ${PROJECT_BINARY_DIR}/CMakeFiles/graminit.c
@@ -432,7 +434,7 @@ add_custom_target(generate_graminit
 
 # Add target to generate 'opcode.h' header file
 add_custom_target(generate_opcode_h
-    COMMAND $<TARGET_FILE:python> ${SRC_DIR}/Tools/scripts/generate_opcode_h.py
+    COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> ${SRC_DIR}/Tools/scripts/generate_opcode_h.py
         ${SRC_DIR}/Lib/opcode.py
         ${PROJECT_BINARY_DIR}/CMakeFiles/opcode.h
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -446,7 +448,7 @@ add_custom_target(generate_opcode_h
 
 # Add target to generate 'Include/Python-ast.h' from 'Python.asdl'
 add_custom_target(generate_python_ast_h
-    COMMAND $<TARGET_FILE:python> ${SRC_DIR}/Parser/asdl_c.py
+    COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> ${SRC_DIR}/Parser/asdl_c.py
         -h ${SRC_DIR}/Include
         ${SRC_DIR}/Parser/Python.asdl
     DEPENDS python
@@ -457,7 +459,7 @@ add_custom_target(generate_python_ast_h
 
 # Add target to generate 'Python/Python-ast.c' from 'Python.asdl'
 add_custom_target(generate_python_ast_c
-    COMMAND $<TARGET_FILE:python> ${SRC_DIR}/Parser/asdl_c.py
+    COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> ${SRC_DIR}/Parser/asdl_c.py
         -c ${SRC_DIR}/Python
         ${SRC_DIR}/Parser/Python.asdl
     DEPENDS python
@@ -465,8 +467,6 @@ add_custom_target(generate_python_ast_c
     COMMENT "Generating '${SRC_DIR}/Python/Python-ast.c'"
     VERBATIM
 )
-
-endif()
 
 # If needed, copy 'asdl.py' and 'Python.asdl' into build directory so that 'test_asdl_parser' passes.
 set(_asdl_subdir ${LIBDIR})
@@ -550,6 +550,7 @@ if(BUILD_TESTING)
     else()
       set(TESTPYTHON $<TARGET_FILE:python> ${TESTPYTHONOPTS})
     endif()
+    set(TESTPYTHON ${CMAKE_CROSSCOMPILING_EMULATOR} ${TESTPYTHON})
     include(cmake/UnitTests.cmake)
     foreach(unittest ${unittests})
       set(EXTRATESTOPTS -v)
