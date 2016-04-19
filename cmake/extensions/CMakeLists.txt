@@ -252,18 +252,18 @@ set(ctypes_COMMON_SOURCES
 # ctypes is different on Windows
 if(WIN32)
     if(MINGW)
-    add_python_extension(_ctypes
-        SOURCES ${ctypes_COMMON_SOURCES}
-                _ctypes/libffi_mingw/closures.c
-                _ctypes/libffi_mingw/debug.c
-                _ctypes/libffi_mingw/prep_cif.c
-                _ctypes/libffi_mingw/raw_api.c
-                _ctypes/libffi_mingw/${_libffi_system_dir}/ffi.c
-                _ctypes/libffi_mingw/${_libffi_system_dir}/win32.S
-        INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi/src/${_libffi_system_dir}
-                    ${SRC_DIR}/Modules/_ctypes/libffi/include
-        DEFINITIONS X86_WIN32
-      )
+      add_python_extension(_ctypes
+          SOURCES ${ctypes_COMMON_SOURCES}
+                  _ctypes/libffi_mingw/closures.c
+                  _ctypes/libffi_mingw/debug.c
+                  _ctypes/libffi_mingw/prep_cif.c
+                  _ctypes/libffi_mingw/raw_api.c
+                  _ctypes/libffi_mingw/${_libffi_system_dir}/ffi.c
+                  _ctypes/libffi_mingw/${_libffi_system_dir}/win32.S
+          INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi/src/${_libffi_system_dir}
+                      ${SRC_DIR}/Modules/_ctypes/libffi/include
+          DEFINITIONS X86_WIN32
+        )
     else() # Visual Studio
       if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
           enable_language(ASM_MASM)
