@@ -22,33 +22,33 @@ if(CMAKE_VERSION VERSION_LESS 2.8.12)
     endif()
 endif()
 
-set(MSVC_BUILTIN )
-if(MSVC)
-    set(MSVC_BUILTIN BUILTIN)
+set(WIN32_BUILTIN )
+if(WIN32)
+    set(WIN32_BUILTIN BUILTIN)
 endif()
 
 # XXX Following modules are missing:
 # lzma
 
-add_python_extension(array ${MSVC_BUILTIN} SOURCES arraymodule.c)
-add_python_extension(audioop ${MSVC_BUILTIN} SOURCES audioop.c)
-add_python_extension(_bisect ${MSVC_BUILTIN} SOURCES _bisectmodule.c)
-add_python_extension(cmath REQUIRES HAVE_LIBM ${MSVC_BUILTIN} SOURCES _math.c cmathmodule.c LIBRARIES ${M_LIBRARIES})
-add_python_extension(_codecs_cn ${MSVC_BUILTIN} SOURCES cjkcodecs/_codecs_cn.c)
-add_python_extension(_codecs_hk ${MSVC_BUILTIN} SOURCES cjkcodecs/_codecs_hk.c)
-add_python_extension(_codecs_iso2022 ${MSVC_BUILTIN} SOURCES cjkcodecs/_codecs_iso2022.c)
-add_python_extension(_codecs_jp ${MSVC_BUILTIN} SOURCES cjkcodecs/_codecs_jp.c)
-add_python_extension(_codecs_kr ${MSVC_BUILTIN} SOURCES cjkcodecs/_codecs_kr.c)
-add_python_extension(_codecs_tw ${MSVC_BUILTIN} SOURCES cjkcodecs/_codecs_tw.c)
+add_python_extension(array ${WIN32_BUILTIN} SOURCES arraymodule.c)
+add_python_extension(audioop ${WIN32_BUILTIN} SOURCES audioop.c)
+add_python_extension(_bisect ${WIN32_BUILTIN} SOURCES _bisectmodule.c)
+add_python_extension(cmath REQUIRES HAVE_LIBM ${WIN32_BUILTIN} SOURCES _math.c cmathmodule.c LIBRARIES ${M_LIBRARIES})
+add_python_extension(_codecs_cn ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_cn.c)
+add_python_extension(_codecs_hk ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_hk.c)
+add_python_extension(_codecs_iso2022 ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_iso2022.c)
+add_python_extension(_codecs_jp ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_jp.c)
+add_python_extension(_codecs_kr ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_kr.c)
+add_python_extension(_codecs_tw ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_tw.c)
 add_python_extension(_collections ALWAYS_BUILTIN SOURCES _collectionsmodule.c) # Container types
-add_python_extension(cPickle ${MSVC_BUILTIN} REQUIRES IS_PY2 SOURCES cPickle.c)
+add_python_extension(cPickle ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES cPickle.c)
 set(crypt2_NAME crypt)
 set(crypt2_SOURCES cryptmodule.c)
 set(crypt3_NAME _crypt)
 set(crypt3_SOURCES _cryptmodule.c)
 add_python_extension(${crypt${PY_VERSION_MAJOR}_NAME} REQUIRES HAVE_LIBCRYPT SOURCES ${crypt${PY_VERSION_MAJOR}_SOURCES} LIBRARIES ${HAVE_LIBCRYPT})
-add_python_extension(cStringIO ${MSVC_BUILTIN} REQUIRES IS_PY2 SOURCES cStringIO.c)
-add_python_extension(_csv ${MSVC_BUILTIN} SOURCES _csv.c)
+add_python_extension(cStringIO ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES cStringIO.c)
+add_python_extension(_csv ${WIN32_BUILTIN} SOURCES _csv.c)
 add_python_extension(_ctypes_test SOURCES _ctypes/_ctypes_test.c)
 set(datetime2_NAME datetime)
 set(datetime2_SOURCES datetimemodule.c)
@@ -57,14 +57,14 @@ set(datetime3_SOURCES _datetimemodule.c)
 if(UNIX)
   list(APPEND datetime${PY_VERSION_MAJOR}_SOURCES timemodule.c)
 endif()
-add_python_extension(${datetime${PY_VERSION_MAJOR}_NAME} ${MSVC_BUILTIN} REQUIRES HAVE_LIBM BUILTIN SOURCES ${datetime${PY_VERSION_MAJOR}_SOURCES} LIBRARIES ${M_LIBRARIES})
+add_python_extension(${datetime${PY_VERSION_MAJOR}_NAME} ${WIN32_BUILTIN} REQUIRES HAVE_LIBM BUILTIN SOURCES ${datetime${PY_VERSION_MAJOR}_SOURCES} LIBRARIES ${M_LIBRARIES})
 #if(ENABLE_DATETIME AND CMAKE_C_COMPILER_ID MATCHES GNU)
 #    set_property(SOURCE ${SRC_DIR}/Modules/datetimemodule.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
 #endif()
-add_python_extension(_functools ${MSVC_BUILTIN} SOURCES _functoolsmodule.c) # Tools for working with functions and callable objects
-add_python_extension(future_builtins ${MSVC_BUILTIN} REQUIRES IS_PY2 SOURCES future_builtins.c)
-add_python_extension(_heapq ${MSVC_BUILTIN} SOURCES _heapqmodule.c)
-add_python_extension(_hotshot ${MSVC_BUILTIN} REQUIRES IS_PY2 SOURCES _hotshot.c)
+add_python_extension(_functools ${WIN32_BUILTIN} SOURCES _functoolsmodule.c) # Tools for working with functions and callable objects
+add_python_extension(future_builtins ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES future_builtins.c)
+add_python_extension(_heapq ${WIN32_BUILTIN} SOURCES _heapqmodule.c)
+add_python_extension(_hotshot ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES _hotshot.c)
 add_python_extension(_io BUILTIN SOURCES
     _io/_iomodule.c
     _io/bufferedio.c
@@ -74,18 +74,18 @@ add_python_extension(_io BUILTIN SOURCES
     _io/stringio.c
     _io/textio.c
 )
-add_python_extension(itertools ${MSVC_BUILTIN} SOURCES itertoolsmodule.c) # Functions creating iterators for efficient looping
-add_python_extension(_json ${MSVC_BUILTIN} SOURCES _json.c)
-add_python_extension(_locale ${MSVC_BUILTIN} SOURCES _localemodule.c) # access to ISO C locale support
-add_python_extension(_lsprof ${MSVC_BUILTIN} SOURCES _lsprof.c rotatingtree.c)
-add_python_extension(math ${MSVC_BUILTIN} SOURCES _math.c mathmodule.c)
-add_python_extension(mmap ${MSVC_BUILTIN} SOURCES mmapmodule.c)
-add_python_extension(_multibytecodec ${MSVC_BUILTIN} SOURCES cjkcodecs/multibytecodec.c)
-add_python_extension(operator ${MSVC_BUILTIN} REQUIRES IS_PY2 SOURCES operator.c)
-add_python_extension(parser ${MSVC_BUILTIN} SOURCES parsermodule.c)
-add_python_extension(_random ${MSVC_BUILTIN} SOURCES _randommodule.c)
-add_python_extension(strop ${MSVC_BUILTIN} REQUIRES IS_PY2 SOURCES stropmodule.c)
-add_python_extension(_struct ${MSVC_BUILTIN} SOURCES _struct.c)
+add_python_extension(itertools ${WIN32_BUILTIN} SOURCES itertoolsmodule.c) # Functions creating iterators for efficient looping
+add_python_extension(_json ${WIN32_BUILTIN} SOURCES _json.c)
+add_python_extension(_locale ${WIN32_BUILTIN} SOURCES _localemodule.c) # access to ISO C locale support
+add_python_extension(_lsprof ${WIN32_BUILTIN} SOURCES _lsprof.c rotatingtree.c)
+add_python_extension(math ${WIN32_BUILTIN} SOURCES _math.c mathmodule.c)
+add_python_extension(mmap ${WIN32_BUILTIN} SOURCES mmapmodule.c)
+add_python_extension(_multibytecodec ${WIN32_BUILTIN} SOURCES cjkcodecs/multibytecodec.c)
+add_python_extension(operator ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES operator.c)
+add_python_extension(parser ${WIN32_BUILTIN} SOURCES parsermodule.c)
+add_python_extension(_random ${WIN32_BUILTIN} SOURCES _randommodule.c)
+add_python_extension(strop ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES stropmodule.c)
+add_python_extension(_struct ${WIN32_BUILTIN} SOURCES _struct.c)
 add_python_extension(_testcapi SOURCES _testcapimodule.c)
 set(thread2_NAME thread)
 set(thread3_NAME _thread)
@@ -100,7 +100,7 @@ add_python_extension(atexit BUILTIN REQUIRES IS_PY3 SOURCES atexitmodule.c) # Re
 add_python_extension(_codecs BUILTIN REQUIRES IS_PY3 SOURCES _codecsmodule.c) # access to the builtin codecs and codec registry
 add_python_extension(faulthandler BUILTIN REQUIRES IS_PY3 SOURCES faulthandler.c)
 add_python_extension(_opcode BUILTIN REQUIRES IS_PY3 SOURCES _opcode.c)
-add_python_extension(_operator ${MSVC_BUILTIN} REQUIRES IS_PY3 SOURCES _operator.c)
+add_python_extension(_operator ${WIN32_BUILTIN} REQUIRES IS_PY3 SOURCES _operator.c)
 add_python_extension(_pickle BUILTIN REQUIRES IS_PY3 SOURCES _pickle.c)
 add_python_extension(_sre BUILTIN REQUIRES IS_PY3 SOURCES _sre.c) # Fredrik Lundh's new regular expressions
 add_python_extension(_stat BUILTIN REQUIRES IS_PY3 SOURCES _stat.c) # stat.h interface
@@ -457,7 +457,7 @@ else()
     set(_pyexpat_definitions XML_STATIC)
     if(UNIX)
         list(APPEND _pyexpat_definitions HAVE_EXPAT_CONFIG_H)
-    elseif(MSVC)
+    elseif(WIN32)
         list(APPEND _pyexpat_definitions COMPILED_FROM_DSP)
     endif()
     add_python_extension(pyexpat
@@ -469,7 +469,7 @@ else()
         INCLUDEDIRS ${SRC_DIR}/Modules/expat
     )
     set(_elementtree_definitions USE_PYEXPAT_CAPI)
-    if(MSVC)
+    if(WIN32)
         list(APPEND _elementtree_definitions COMPILED_FROM_DSP)
     endif()
     add_python_extension(_elementtree
@@ -487,20 +487,20 @@ if(NOT WIN32 AND OPENSSL_LIBRARIES)
   set(HASH_NOT_AVAILABLE OFF)
 endif()
 
-add_python_extension(_md5 REQUIRES HASH_NOT_AVAILABLE ${MSVC_BUILTIN} SOURCES md5.c md5module.c)
-add_python_extension(_sha REQUIRES HASH_NOT_AVAILABLE ${MSVC_BUILTIN} SOURCES shamodule.c)
-add_python_extension(_sha256 REQUIRES HASH_NOT_AVAILABLE ${MSVC_BUILTIN} SOURCES sha256module.c)
-add_python_extension(_sha512 REQUIRES HASH_NOT_AVAILABLE ${MSVC_BUILTIN} SOURCES sha512module.c)
+add_python_extension(_md5 REQUIRES HASH_NOT_AVAILABLE ${WIN32_BUILTIN} SOURCES md5.c md5module.c)
+add_python_extension(_sha REQUIRES HASH_NOT_AVAILABLE ${WIN32_BUILTIN} SOURCES shamodule.c)
+add_python_extension(_sha256 REQUIRES HASH_NOT_AVAILABLE ${WIN32_BUILTIN} SOURCES sha256module.c)
+add_python_extension(_sha512 REQUIRES HASH_NOT_AVAILABLE ${WIN32_BUILTIN} SOURCES sha512module.c)
 
 else()
 
 # We always compile these even when OpenSSL is available (issue #14693).
 # It's harmless and the object code is tiny (40-50 KB per module,
 # only loaded when actually used).
-add_python_extension(_md5 ${MSVC_BUILTIN} SOURCES md5module.c)
-add_python_extension(_sha1 ${MSVC_BUILTIN} SOURCES sha1module.c)
-add_python_extension(_sha256 ${MSVC_BUILTIN} SOURCES sha256module.c)
-add_python_extension(_sha512 ${MSVC_BUILTIN} SOURCES sha512module.c)
+add_python_extension(_md5 ${WIN32_BUILTIN} SOURCES md5module.c)
+add_python_extension(_sha1 ${WIN32_BUILTIN} SOURCES sha1module.c)
+add_python_extension(_sha256 ${WIN32_BUILTIN} SOURCES sha256module.c)
+add_python_extension(_sha512 ${WIN32_BUILTIN} SOURCES sha512module.c)
 
 endif()
 
@@ -518,7 +518,7 @@ if(ZLIB_LIBRARY)
 endif()
 add_python_extension(binascii
     REQUIRES ${binascii_REQUIRES}
-    ${MSVC_BUILTIN}
+    ${WIN32_BUILTIN}
     SOURCES binascii.c
     DEFINITIONS ${binascii_DEFINITIONS}
     LIBRARIES ${binascii_LIBRARIES}
