@@ -46,7 +46,7 @@ function(downloadFile url dest)
 endfunction()
 
 # Download and include driver script
-set(url https://raw.githubusercontent.com/davidsansome/python-cmake-buildsystem/dashboard/python_common.cmake)
+set(url https://raw.githubusercontent.com/python-cmake-buildsystem/python-cmake-buildsystem/dashboard/python_common.cmake)
 set(dest ${CTEST_SCRIPT_DIRECTORY}/python_common.cmake)
 downloadfile(${url} ${dest})
 include(${dest})
