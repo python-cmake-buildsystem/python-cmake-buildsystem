@@ -31,7 +31,7 @@ if(platform STREQUAL "x64")
 elseif(CTEST_CMAKE_GENERATOR MATCHES "Win64")
   set(platform "x64")
 endif()
-set(CTEST_BUILD_NAME "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}-VS-${platform}-$ENV{CONFIGURATION}_${what}_${commit}")
+set(CTEST_BUILD_NAME "${PY_VERSION}-VS-${platform}-$ENV{CONFIGURATION}_${what}_${commit}")
 set(CTEST_BUILD_FLAGS "")
 set(CTEST_TEST_ARGS PARALLEL_LEVEL 8)
 
