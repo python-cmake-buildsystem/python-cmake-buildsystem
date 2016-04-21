@@ -16,11 +16,6 @@ MS_WIN32 - Code specific to the MS Win32 (and Win64) API (obsolete, this covers 
 MS_WINDOWS - Code specific to Windows, but all versions.
 Py_ENABLE_SHARED - Code if the Python core is built as a DLL.
 
-Also note that neither "_M_IX86" or "_MSC_VER" should be used for
-any purpose other than "Windows Intel x86 specific" and "Microsoft
-compiler specific".  Therefore, these should be very rare.
-
-
 NOTE: The following symbols are deprecated:
 NT, USE_DL_EXPORT, USE_DL_IMPORT, DL_EXPORT, DL_IMPORT
 MS_CORE_DLL.
@@ -111,19 +106,7 @@ WIN32 is still required for the locale module.
 
 /* set the COMPILER */
 #ifdef MS_WIN64
-#if defined(_M_IA64)
-#define COMPILER _Py_PASTE_VERSION("64 bit (Itanium)")
-#define MS_WINI64
-#elif defined(_M_X64) || defined(_M_AMD64)
-#ifdef __INTEL_COMPILER
-#define COMPILER ("[ICC v." _Py_STRINGIZE(__INTEL_COMPILER) " 64 bit (amd64) with MSC v." _Py_STRINGIZE(_MSC_VER) " CRT]")
-#else
-#define COMPILER _Py_PASTE_VERSION("64 bit (AMD64)")
-#endif /* __INTEL_COMPILER */
-#define MS_WINX64
-#else
 #define COMPILER _Py_PASTE_VERSION("64 bit (Unknown)")
-#endif
 #endif /* MS_WIN64 */
 
 /* set the version macros for the windows headers */
@@ -174,15 +157,7 @@ typedef _W64 int ssize_t;
 #define HAVE_SSIZE_T 1
 
 #if defined(MS_WIN32) && !defined(MS_WIN64)
-#ifdef _M_IX86
-#ifdef __INTEL_COMPILER
-#define COMPILER ("[ICC v." _Py_STRINGIZE(__INTEL_COMPILER) " 32 bit (Intel) with MSC v." _Py_STRINGIZE(_MSC_VER) " CRT]")
-#else
-#define COMPILER _Py_PASTE_VERSION("32 bit (Intel)")
-#endif /* __INTEL_COMPILER */
-#else
 #define COMPILER _Py_PASTE_VERSION("32 bit (Unknown)")
-#endif
 #endif /* MS_WIN32 && !MS_WIN64 */
 
 typedef int pid_t;
