@@ -356,6 +356,9 @@ elseif(WIN32)
                                           # live along side the python executable.
                                           # See function '_init_posix()' and '_init_non_posix()'
                                           # in 'Lib/sysconfig.py'
+    if(MINGW)
+      set(PYCONFIG_BUILD_DIR cmake/config-mingw)
+    endif()
 endif()
 
 # Install 'pyconfig.h'

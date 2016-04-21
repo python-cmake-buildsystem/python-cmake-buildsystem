@@ -3,9 +3,9 @@
 
 /* pyconfig.h.  NOT Generated automatically by configure.
 
-This is a manually maintained version used for the Watcom,
-Borland and Microsoft Visual C++ compilers.  It is a
-standard part of the Python distribution.
+This is a manually maintained version (initially based
+on "PC/pyconfig.h") used for (i686|x86_64)-w64-mingw32
+toolchains (provided by MXE).
 
 WINDOWS DEFINES:
 The code specific to Windows should be wrapped around one of
@@ -29,18 +29,6 @@ WIN32 is still required for the locale module.
 #  define Py_BUILD_CORE
 #endif /* USE_DL_EXPORT */
 
-
-#define HAVE_IO_H
-#define HAVE_SYS_UTIME_H
-#define HAVE_TEMPNAM
-#define HAVE_TMPFILE
-#define HAVE_TMPNAM
-#define HAVE_CLOCK
-#define HAVE_STRERROR
-#ifdef HAVE_IO_H
-#include <io.h>
-#endif
-
 #define HAVE_HYPOT
 #define HAVE_STRFTIME
 #define DONT_HAVE_SIG_ALARM
@@ -61,67 +49,53 @@ WIN32 is still required for the locale module.
 #define USE_SOCKET
 #endif
 
-
-/* Compiler specific defines */
-
 /* ------------------------------------------------------------------------*/
-/* Microsoft C defines _MSC_VER */
-#ifdef _MSC_VER
+/* (i686|x86_64)-w64-mingw32 toolchains defines __MINGW32__ */
+#ifndef __MINGW32__
+# error "This file is should be used with MingW compiler"
+#endif
 
-/* We want COMPILER to expand to a string containing _MSC_VER's *value*.
- * This is horridly tricky, because the stringization operator only works
- * on macro arguments, and doesn't evaluate macros passed *as* arguments.
- * Attempts simpler than the following appear doomed to produce "_MSC_VER"
- * literally in the string.
- */
 #define _Py_PASTE_VERSION(SUFFIX) \
-  ("[MSC v." _Py_STRINGIZE(_MSC_VER) " " SUFFIX "]")
-/* e.g., this produces, after compile-time string catenation,
- *   ("[MSC v.1200 32 bit (Intel)]")
- *
- * _Py_STRINGIZE(_MSC_VER) expands to
- * _Py_STRINGIZE1((_MSC_VER)) expands to
- * _Py_STRINGIZE2(_MSC_VER) but as this call is the result of token-pasting
- *      it's scanned again for macros and so further expands to (under MSVC 6)
- * _Py_STRINGIZE2(1200) which then expands to
- * "1200"
- */
-#define _Py_STRINGIZE(X) _Py_STRINGIZE1((X))
-#define _Py_STRINGIZE1(X) _Py_STRINGIZE2 ## X
-#define _Py_STRINGIZE2(X) #X
+  ("\n[GCC v" __VERSION__ " " SUFFIX "]")
 
-/* MSVC defines _WINxx to differentiate the windows platform types
+#ifndef COMPILER
+#  ifdef __MINGW64__
+#    define COMPILER _Py_PASTE_VERSION("64 bit (AMD64)")
+#  else
+#    define COMPILER _Py_PASTE_VERSION("32 bit (i686)")
+#  endif
+#endif /* !COMPILER */
 
-   Note that for compatibility reasons _WIN32 is defined on Win32
+/* MinGW defines __MINGWxx__ to differentiate the windows platform types
+
+   Note that for compatibility reasons __MINGW32__ is defined on Win32
    *and* on Win64. For the same reasons, in Python, MS_WIN32 is
    defined on Win32 *and* Win64. Win32 only code must therefore be
    guarded as follows:
     #if defined(MS_WIN32) && !defined(MS_WIN64)
-   Some modules are disabled on Itanium processors, therefore we
-   have MS_WINI64 set for those targets, otherwise MS_WINX64
 */
-#ifdef _WIN64
-#define MS_WIN64
+
+#if !defined(MS_WIN64) && defined(__MINGW64__)
+#  define MS_WIN64
 #endif
 
-/* set the COMPILER */
 #ifdef MS_WIN64
-#define COMPILER _Py_PASTE_VERSION("64 bit (Unknown)")
-#endif /* MS_WIN64 */
+#  define MS_WINX64
+#endif
 
 /* set the version macros for the windows headers */
 #ifdef MS_WINX64
 /* 64 bit only runs on XP or greater */
-#define Py_WINVER _WIN32_WINNT_WINXP
-#define Py_NTDDI NTDDI_WINXP
+#  define Py_WINVER _WIN32_WINNT_WINXP
+#  define Py_NTDDI NTDDI_WINXP
 #else
 /* Python 2.6+ requires Windows 2000 or greater */
-#ifdef _WIN32_WINNT_WIN2K
-#define Py_WINVER _WIN32_WINNT_WIN2K
-#else
-#define Py_WINVER 0x0500
-#endif
-#define Py_NTDDI NTDDI_WIN2KSP4
+#  ifdef _WIN32_WINNT_WIN2K
+#    define Py_WINVER _WIN32_WINNT_WIN2K
+#  else
+#    define Py_WINVER 0x0500
+#  endif
+#  define Py_NTDDI NTDDI_WIN2KSP4
 #endif
 
 /* We only set these values when building Python - we don't want to force
@@ -132,35 +106,19 @@ WIN32 is still required for the locale module.
    determines at runtime they are available.
 */
 #if defined(Py_BUILD_CORE) || defined(Py_BUILD_CORE_MODULE)
-#ifndef NTDDI_VERSION
-#define NTDDI_VERSION Py_NTDDI
-#endif
-#ifndef WINVER
-#define WINVER Py_WINVER
-#endif
-#ifndef _WIN32_WINNT
-#define _WIN32_WINNT Py_WINVER
-#endif
-#endif
-
-/* _W64 is not defined for VC6 or eVC4 */
-#ifndef _W64
-#define _W64
-#endif
+#  ifndef NTDDI_VERSION
+#    define NTDDI_VERSION Py_NTDDI
+#  endif
+#  ifndef WINVER
+#    define WINVER Py_WINVER
+#  endif
+#  ifndef _WIN32_WINNT
+#    define _WIN32_WINNT Py_WINVER
+#  endif
+#endif /* defined(Py_BUILD_CORE) || defined(Py_BUILD_CORE_MODULE) */
 
 /* Define like size_t, omitting the "unsigned" */
-#ifdef MS_WIN64
-typedef __int64 ssize_t;
-#else
-typedef _W64 int ssize_t;
-#endif
 #define HAVE_SSIZE_T 1
-
-#if defined(MS_WIN32) && !defined(MS_WIN64)
-#define COMPILER _Py_PASTE_VERSION("32 bit (Unknown)")
-#endif /* MS_WIN32 && !MS_WIN64 */
-
-typedef int pid_t;
 
 #include <float.h>
 #define Py_IS_NAN _isnan
@@ -168,18 +126,21 @@ typedef int pid_t;
 #define Py_IS_FINITE(X) _finite(X)
 #define copysign _copysign
 
-#define hypot _hypot
-
-#endif /* _MSC_VER */
-
 #include <basetsd.h>
 
 /* ------------------------------------------------------------------------*/
 /* End of compilers - finish up */
 
-#ifndef NO_STDIO_H
-#  include <stdio.h>
-#endif
+#define HAVE_IO_H
+#define HAVE_SYS_UTIME_H
+#define HAVE_TEMPNAM
+#define HAVE_TMPFILE
+#define HAVE_TMPNAM
+#define HAVE_CLOCK
+#define HAVE_STRERROR
+
+#include <io.h>
+#include <stdio.h>
 
 /* 64 bit ints are usually spelt __int64 unless compiler has overridden */
 #define HAVE_LONG_LONG 1
@@ -220,7 +181,6 @@ Py_NO_ENABLE_SHARED to find out.  Also support MS_NO_COREDLL for b/w compat */
 /* maintain "win32" sys.platform for backward compatibility of Python code,
    the Win64 API should be close enough to the Win32 API to make this
    preferable */
-#  define PLATFORM "win32"
 #  define SIZEOF_VOID_P 8
 #  define SIZEOF_TIME_T 8
 #  define SIZEOF_OFF_T 4
@@ -234,7 +194,6 @@ Py_NO_ENABLE_SHARED to find out.  Also support MS_NO_COREDLL for b/w compat */
    should define this. */
 #  define HAVE_LARGEFILE_SUPPORT
 #elif defined(MS_WIN32)
-#  define PLATFORM "win32"
 #  define HAVE_LARGEFILE_SUPPORT
 #  define SIZEOF_VOID_P 4
 #  define SIZEOF_OFF_T 4
@@ -261,7 +220,7 @@ Py_NO_ENABLE_SHARED to find out.  Also support MS_NO_COREDLL for b/w compat */
 #define HAVE_UINTPTR_T 1
 #define HAVE_INTPTR_T 1
 
-#endif
+#endif /* MS_WIN32 */
 
 /* define signed and unsigned exact-width 32-bit and 64-bit types, used in the
    implementation of Python long integers. */
@@ -330,7 +289,7 @@ Py_NO_ENABLE_SHARED to find out.  Also support MS_NO_COREDLL for b/w compat */
 #define HAVE_DIRECT_H 1
 
 /* Define if you have dirent.h.  */
-/* #define DIRENT 1 */
+#define HAVE_DIRENT_H 1
 
 /* Define to the type of elements in the array set by `getgroups'.
    Usually this is either `int' or `gid_t'.  */
