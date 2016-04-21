@@ -39,8 +39,7 @@ set(dashboard_binary_name "python-cmake-buildsystem/build")
 set(dashboard_model Experimental)
 set(dashboard_track AppVeyor-CI)
 
-set(dashboard_cache "BUILD_SHARED:BOOL=ON
-BUILD_STATIC:BOOL=OFF
+set(dashboard_cache "BUILD_LIBPYTHON_SHARED:BOOL=ON
 PY_VERSION_MAJOR:STRING=${PY_VERSION_MAJOR}
 PY_VERSION_MINOR:STRING=${PY_VERSION_MINOR}
 PY_VERSION_PATCH:STRING=${PY_VERSION_PATCH}
