@@ -34,19 +34,6 @@ WIN32 is still required for the locale module.
 #  define Py_BUILD_CORE
 #endif /* USE_DL_EXPORT */
 
-/* Visual Studio 2005 introduces deprecation warnings for
-   "insecure" and POSIX functions. The insecure functions should
-   be replaced by *_s versions (according to Microsoft); the
-   POSIX functions by _* versions (which, according to Microsoft,
-   would be ISO C conforming). Neither renaming is feasible, so
-   we just silence the warnings. */
-
-#ifndef _CRT_SECURE_NO_DEPRECATE
-#define _CRT_SECURE_NO_DEPRECATE 1
-#endif
-#ifndef _CRT_NONSTDC_NO_DEPRECATE
-#define _CRT_NONSTDC_NO_DEPRECATE 1
-#endif
 
 #define HAVE_IO_H
 #define HAVE_SYS_UTIME_H
@@ -206,18 +193,11 @@ typedef int pid_t;
 #define Py_IS_FINITE(X) _finite(X)
 #define copysign _copysign
 
-/* VS 2010 and above already defines hypot as _hypot */
-#if _MSC_VER < 1600
 #define hypot _hypot
-#endif
 
 #endif /* _MSC_VER */
 
-/* define some ANSI types that are not defined in earlier Win headers */
-#if defined(_MSC_VER) && _MSC_VER >= 1200
-/* This file only exists in VC 6.0 or higher */
 #include <basetsd.h>
-#endif
 
 /* ------------------------------------------------------------------------*/
 /* The Borland compiler defines __BORLANDC__ */
@@ -348,12 +328,7 @@ Py_NO_ENABLE_SHARED to find out.  Also support MS_NO_COREDLL for b/w compat */
 #  define SIZEOF_FPOS_T 8
 #  define SIZEOF_HKEY 4
 #  define SIZEOF_SIZE_T 4
-  /* MS VS2005 changes time_t to an 64-bit type on all platforms */
-#  if defined(_MSC_VER) && _MSC_VER >= 1400
 #  define SIZEOF_TIME_T 8
-#  else
-#  define SIZEOF_TIME_T 4
-#  endif
 #endif
 
 #ifdef _DEBUG
@@ -370,19 +345,8 @@ Py_NO_ENABLE_SHARED to find out.  Also support MS_NO_COREDLL for b/w compat */
 #define SIZEOF_DOUBLE 8
 #define SIZEOF_FLOAT 4
 
-/* VC 7.1 has them and VC 6.0 does not.  VC 6.0 has a version number of 1200.
-   Microsoft eMbedded Visual C++ 4.0 has a version number of 1201 and doesn't
-   define these.
-   If some compiler does not provide them, modify the #if appropriately. */
-#if defined(_MSC_VER)
-#if _MSC_VER > 1300
 #define HAVE_UINTPTR_T 1
 #define HAVE_INTPTR_T 1
-#else
-/* VC6, VS 2002 and eVC4 don't support the C99 LL suffix for 64-bit integer literals */
-#define Py_LL(x) x##I64
-#endif  /* _MSC_VER > 1200  */
-#endif  /* _MSC_VER */
 
 #endif
 
@@ -428,9 +392,7 @@ Py_NO_ENABLE_SHARED to find out.  Also support MS_NO_COREDLL for b/w compat */
 #define HAVE_COPYSIGN 1
 
 /* Define to 1 if you have the `round' function. */
-#if _MSC_VER >= 1800
 #define HAVE_ROUND 1
-#endif
 
 /* Define to 1 if you have the `isinf' macro. */
 #define HAVE_DECL_ISINF 1
