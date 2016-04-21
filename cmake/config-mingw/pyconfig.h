@@ -200,68 +200,6 @@ typedef int pid_t;
 #include <basetsd.h>
 
 /* ------------------------------------------------------------------------*/
-/* The Borland compiler defines __BORLANDC__ */
-/* XXX These defines are likely incomplete, but should be easy to fix. */
-#ifdef __BORLANDC__
-#define COMPILER "[Borland]"
-
-#ifdef _WIN32
-/* tested with BCC 5.5 (__BORLANDC__ >= 0x0550)
- */
-
-typedef int pid_t;
-/* BCC55 seems to understand __declspec(dllimport), it is used in its
-   own header files (winnt.h, ...) - so we can do nothing and get the default*/
-
-#undef HAVE_SYS_UTIME_H
-#define HAVE_UTIME_H
-#define HAVE_DIRENT_H
-
-/* rename a few functions for the Borland compiler */
-#include <io.h>
-#define _chsize chsize
-#define _setmode setmode
-
-#else /* !_WIN32 */
-#error "Only Win32 and later are supported"
-#endif /* !_WIN32 */
-
-#endif /* BORLANDC */
-
-/* ------------------------------------------------------------------------*/
-/* egcs/gnu-win32 defines __GNUC__ and _WIN32 */
-#if defined(__GNUC__) && defined(_WIN32)
-/* XXX These defines are likely incomplete, but should be easy to fix.
-   They should be complete enough to build extension modules. */
-/* Suggested by Rene Liebscher <R.Liebscher@gmx.de> to avoid a GCC 2.91.*
-   bug that requires structure imports.  More recent versions of the
-   compiler don't exhibit this bug.
-*/
-#if (__GNUC__==2) && (__GNUC_MINOR__<=91)
-#warning "Please use an up-to-date version of gcc! (>2.91 recommended)"
-#endif
-
-#define COMPILER "[gcc]"
-#define hypot _hypot
-#define PY_LONG_LONG long long
-#define PY_LLONG_MIN LLONG_MIN
-#define PY_LLONG_MAX LLONG_MAX
-#define PY_ULLONG_MAX ULLONG_MAX
-#endif /* GNUC */
-
-/* ------------------------------------------------------------------------*/
-/* lcc-win32 defines __LCC__ */
-#if defined(__LCC__)
-/* XXX These defines are likely incomplete, but should be easy to fix.
-   They should be complete enough to build extension modules. */
-
-#define COMPILER "[lcc-win32]"
-typedef int pid_t;
-/* __declspec() is supported here too - do nothing to get the defaults */
-
-#endif /* LCC */
-
-/* ------------------------------------------------------------------------*/
 /* End of compilers - finish up */
 
 #ifndef NO_STDIO_H
