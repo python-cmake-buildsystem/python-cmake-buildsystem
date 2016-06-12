@@ -65,7 +65,11 @@ option(BUILD_EXTENSIONS_AS_BUILTIN "Default all modules as builtin to libpython"
 option(USE_LIB64 "Search for dependencies and install to prefix/lib64 instead of prefix/lib" OFF)
 if(WIN32)
   option(INSTALL_WINDOWS_TRADITIONAL "Install the executable and extensions in the traditional location" OFF)
-  option(BUILD_WININST "Build 'Windows Installer' program for distutils if not already provided in the source tree." ON)
+  set(_build_wininst_default ON)
+  if(CMAKE_CROSSCOMPILING)
+    set(_build_wininst_default OFF)
+  endif()
+  option(BUILD_WININST "Build 'Windows Installer' program for distutils if not already provided in the source tree." ${_build_wininst_default})
   cmake_dependent_option(BUILD_WININST_ALWAYS "Always build 'Windows installer' program even if provided in the source tree." OFF "BUILD_WININST" OFF)
 else()
   set(INSTALL_WINDOWS_TRADITIONAL OFF)
@@ -281,7 +285,7 @@ endif()
 
 # This is the major version number of Python
 set(LIBPYTHON_VERSION ${PY_VERSION_MAJOR}.${PY_VERSION_MINOR})
-if(MSVC)
+if(WIN32)
     set(LIBPYTHON_VERSION ${PY_VERSION_MAJOR}${PY_VERSION_MINOR})
 endif()
 set(LIBPYTHON python${LIBPYTHON_VERSION})
@@ -352,6 +356,9 @@ elseif(WIN32)
                                           # live along side the python executable.
                                           # See function '_init_posix()' and '_init_non_posix()'
                                           # in 'Lib/sysconfig.py'
+    if(MINGW)
+      set(PYCONFIG_BUILD_DIR cmake/config-mingw)
+    endif()
 endif()
 
 # Install 'pyconfig.h'

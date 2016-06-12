@@ -89,11 +89,11 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
     extensions. External dependencies (ncurses, sqlite, ...) will be builtin
     only if they are available as static libraries.
 
-  BUILD_WININST=ON|OFF (defaults to ON)
+  BUILD_WININST=ON|OFF (only for windows, defaults to ON if not crosscompiling)
     If enabled, build the 'Windows Installer' program for distutils if not
     already provided in the source tree.
 
-  BUILD_WININST_ALWAYS=ON|OFF (defaults to OFF)
+  BUILD_WININST_ALWAYS=ON|OFF (only for windows, defaults to OFF)
     If enabled, always build 'Windows Installer' program for distutils even
     if it is already provided in the source tree.
 
