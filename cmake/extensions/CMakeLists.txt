@@ -304,6 +304,7 @@ else()
                 _ctypes/libffi/src/${_libffi_system_dir}/unix64.S
                 )
         endif()
+        configure_file(${CMAKE_SOURCE_DIR}/cmake/fficonfig.h.in ${CMAKE_SOURCE_DIR}/cmake/fficonfig.h)
         add_python_extension(_ctypes
             SOURCES ${ctypes_COMMON_SOURCES}
                     _ctypes/libffi/src/closures.c
