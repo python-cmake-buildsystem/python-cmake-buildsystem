@@ -106,7 +106,7 @@
 
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */
-#cmakedefine LT_OBJDIR ".libs/"
+#cmakedefine LT_OBJDIR "@LT_OBJDIR@"
 
 /* Define to 1 if your C compiler doesn't accept -c and -o together. */
 /* #undef NO_MINUS_C_MINUS_O */
@@ -133,10 +133,10 @@
 #define PACKAGE_VERSION "3.0.10rc0"
 
 /* The size of `double', as computed by sizeof. */
-#cmakedefine SIZEOF_DOUBLE 8
+#cmakedefine SIZEOF_DOUBLE @SIZEOF_DOUBLE@
 
 /* The size of `long double', as computed by sizeof. */
-#cmakedefine SIZEOF_LONG_DOUBLE 16
+#cmakedefine SIZEOF_LONG_DOUBLE @SIZEOF_LONG_DOUBLE@
 
 /* If using the C implementation of alloca, define if you know the
    direction of stack growth for your system; otherwise it will be
