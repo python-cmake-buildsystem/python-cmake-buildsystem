@@ -1029,6 +1029,18 @@ check_c_source_compiles("
         int main() {bar();}"
         HAVE_HIDDEN_VISIBILITY_ATTRIBUTE)
 
+check_c_source_compiles("
+        #include <sys/types.h>
+        #include <sys/mman.h>
+        #include <unistd.h>
+
+        #ifndef MAPANONYMOUS
+        #define MAP_ANONYMOUS MAP_ANON
+        #endif
+
+        int main() {int a = MAP_ANONYMOUS;}" HAVE_MMAP_ANON)
+
+
 # Check whether assembler supports .cfi_* directives
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_as_cfi_pseudo_op.c)
 file(WRITE ${check_src} "int main() {
