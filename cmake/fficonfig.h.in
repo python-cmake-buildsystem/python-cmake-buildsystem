@@ -13,7 +13,7 @@
 /* #undef C_ALLOCA */
 
 /* Define to the flags needed for the .section .eh_frame directive. */
-#cmakedefine EH_FRAME_FLAGS "aw"
+#define EH_FRAME_FLAGS "aw"
 
 /* Define this if you want extra debugging. */
 /* #undef FFI_DEBUG */
@@ -112,25 +112,25 @@
 /* #undef NO_MINUS_C_MINUS_O */
 
 /* Name of package */
-#cmakedefine PACKAGE "libffi"
+#define PACKAGE "libffi"
 
 /* Define to the address where bug reports for this package should be sent. */
-#cmakedefine PACKAGE_BUGREPORT "http://gcc.gnu.org/bugs.html"
+#define PACKAGE_BUGREPORT "http://gcc.gnu.org/bugs.html"
 
 /* Define to the full name of this package. */
-#cmakedefine PACKAGE_NAME "libffi"
+#define PACKAGE_NAME "libffi"
 
 /* Define to the full name and version of this package. */
 #cmakedefine PACKAGE_STRING "libffi 3.0.10rc0"
 
 /* Define to the one symbol short name of this package. */
-#cmakedefine PACKAGE_TARNAME "libffi"
+#define PACKAGE_TARNAME "libffi"
 
 /* Define to the home page for this package. */
-#cmakedefine PACKAGE_URL ""
+#define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#cmakedefine PACKAGE_VERSION "3.0.10rc0"
+#define PACKAGE_VERSION "3.0.10rc0"
 
 /* The size of `double', as computed by sizeof. */
 #cmakedefine SIZEOF_DOUBLE 8
@@ -154,7 +154,7 @@
 /* #undef USING_PURIFY */
 
 /* Version number of package */
-#cmakedefine VERSION "3.0.10rc0"
+#define VERSION "3.0.10rc0"
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */
