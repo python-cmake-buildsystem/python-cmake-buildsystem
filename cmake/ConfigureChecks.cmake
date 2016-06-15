@@ -1022,6 +1022,11 @@ python_platform_test(
   )
 
 
+check_c_source_compiles("
+        __attribute__((visibility(\"default\")))
+        int bar(void) {};
+        int main() {bar();}"
+        HAVE_HIDDEN_VISIBILITY_ATTRIBUTE)
 
 # Check whether assembler supports .cfi_* directives
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_as_cfi_pseudo_op.c)
