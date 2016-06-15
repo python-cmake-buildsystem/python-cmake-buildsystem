@@ -1041,6 +1041,26 @@ check_c_source_compiles("
         int main() {int a = MAP_ANONYMOUS;}" HAVE_MMAP_ANON)
 
 
+check_c_source_runs("
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/mman.h>
+#include <fcntl.h>
+int main(void) {
+  int devzero;
+  void *retval;
+  devzero = open(\"/dev/zero\", O_RDWR);
+  if (-1 == devzero) {
+    exit(1);
+  }
+  retval = mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_SHARED, devzero, 0);
+  if (retval == (void *)-1) {
+    exit(1);
+  }
+  exit(0);
+}" HAVE_MMAP_DEV_ZERO)
+
+
 # Check whether assembler supports .cfi_* directives
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_as_cfi_pseudo_op.c)
 file(WRITE ${check_src} "int main() {
