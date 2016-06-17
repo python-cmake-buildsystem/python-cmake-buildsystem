@@ -532,7 +532,7 @@ if(BUILD_SHARED)
         target_link_libraries(${targetname} ${python3stub_lib})
     endif()
 
-    if(IS_PY3 AND UNIX AND NOT APPLE)
+    if(IS_PY3 AND (LINUX OR BSD))
         add_library(${targetname} SHARED ${PROJECT_SOURCE_DIR}/cmake/empty.c)
         set_target_properties(${targetname} PROPERTIES
             LINK_FLAGS "-Wl,--no-as-needed"
