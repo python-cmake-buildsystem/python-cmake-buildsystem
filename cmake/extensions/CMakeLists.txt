@@ -304,6 +304,16 @@ else()
                 _ctypes/libffi/src/${_libffi_system_dir}/unix64.S
                 )
         endif()
+        # To facilitate an eventual contribution of the configuration
+        # of fficonfig.h to the upstream project, corresponding tests
+        # in ConfigureChecks.cmake are labeled using this convention:
+        # * "libffi specific"
+        # * "libffi and cpython"
+        set(LIBFFI_VERSION "3.1")
+        configure_file(
+          ${CMAKE_SOURCE_DIR}/cmake/fficonfig.h.in
+          ${INCLUDE_BUILD_DIR}/fficonfig.h
+          )
         add_python_extension(_ctypes
             SOURCES ${ctypes_COMMON_SOURCES}
                     _ctypes/libffi/src/closures.c
@@ -313,7 +323,8 @@ else()
                     ${_libffi_system_extra_src}
             INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi/src/${_libffi_system_dir}
                         ${SRC_DIR}/Modules/_ctypes/libffi/include
-                        ${CMAKE_SOURCE_DIR}/cmake # For ffi.h and fficonfig.h
+                        ${INCLUDE_BUILD_DIR}      # For fficonfig.h
+                        ${CMAKE_SOURCE_DIR}/cmake # For ffi.h
         )
     endif()
 endif()
