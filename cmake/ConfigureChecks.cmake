@@ -1035,8 +1035,19 @@ endif()
 #     is VMS, where text files have record structure.
 
 # libffi specific: Check whether assembler supports .ascii.
-# TODO
-set(HAVE_AS_ASCII_PSEUDO_OP 1)
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_as_ascii_pseudo_op.c)
+file(WRITE ${check_src} "
+int main () {
+asm (\".ascii \\\"string\\\"\");
+return 0;
+}
+")
+python_platform_test(
+  HAVE_AS_ASCII_PSEUDO_OP
+  "Checking whether assembler supports .ascii"
+  ${check_src}
+  DIRECT
+  )
 
 # libffi specific: Check whether assembler supports .cfi_* directives
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_as_cfi_pseudo_op.c)
