@@ -1019,9 +1019,9 @@ endif()
 
 # libffi specific: Check whether assembler supports .cfi_* directives
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_as_cfi_pseudo_op.c)
-file(WRITE ${check_src} "int main() {
-    __asm__ __volatile__ (\".cfi_startproc\n\t.cfi_endproc\");
-}
+file(WRITE ${check_src} "
+asm(\".cfi_startproc\\n\\t.cfi_endproc\");
+int main (){return 0;}
 ")
 python_platform_test(
   HAVE_AS_CFI_PSEUDO_OP
