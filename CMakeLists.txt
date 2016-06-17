@@ -401,7 +401,7 @@ if(NOT HAVE_POSITION_INDEPENDENT_CODE AND NOT WIN32)
 endif()
 
 # Useful additional variables that extensions can use.
-if(UNIX AND NOT APPLE)
+if(CMAKE_SYSTEM MATCHES Linux)
     set(LINUX ON)
 else()
     set(LINUX OFF)
