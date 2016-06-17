@@ -195,7 +195,7 @@ if(IS_PY3)
   check_symbol_exists("dirfd" "sys/types.h;dirent.h" HAVE_DIRFD)
 endif()
 
-check_include_files(alloca.h HAVE_ALLOCA_H)
+check_include_files(alloca.h HAVE_ALLOCA_H) # libffi and cpython
 check_include_files(asm/types.h HAVE_ASM_TYPES_H)
 check_include_files(arpa/inet.h HAVE_ARPA_INET_H)
 check_include_files(bluetooth/bluetooth.h HAVE_BLUETOOTH_BLUETOOTH_H)
@@ -203,13 +203,13 @@ check_include_files(bluetooth.h HAVE_BLUETOOTH_H)
 check_include_files(conio.h HAVE_CONIO_H)
 check_include_files(curses.h HAVE_CURSES_H)
 check_include_files(direct.h HAVE_DIRECT_H)
-check_include_files(dlfcn.h HAVE_DLFCN_H)
+check_include_files(dlfcn.h HAVE_DLFCN_H) # libffi and cpython
 check_include_files(errno.h HAVE_ERRNO_H)
 check_include_files(fcntl.h HAVE_FCNTL_H)
 check_include_files(fpu_control.h HAVE_FPU_CONTROL_H)
 check_include_files(grp.h HAVE_GRP_H)
 check_include_files(ieeefp.h HAVE_IEEEFP_H)
-check_include_files(inttypes.h HAVE_INTTYPES_H)
+check_include_files(inttypes.h HAVE_INTTYPES_H) # libffi and cpython
 check_include_files(io.h HAVE_IO_H)
 check_include_files(langinfo.h HAVE_LANGINFO_H)
 check_include_files(libintl.h HAVE_LIBINTL_H)
@@ -234,7 +234,7 @@ check_include_files("${LINUX_CAN_HEADERS};linux/can/bcm.h" HAVE_LINUX_CAN_BCM_H)
 check_include_files("${LINUX_CAN_HEADERS};linux/can/raw.h" HAVE_LINUX_CAN_RAW_H)
 endif()
 
-check_include_files(memory.h HAVE_MEMORY_H)
+check_include_files(memory.h HAVE_MEMORY_H) # libffi and cpython
 check_include_files(minix/config.h HAVE_MINIX_CONFIG_H)
 check_include_files(ncurses.h HAVE_NCURSES_H)
 check_include_files(ncurses/panel.h HAVE_NCURSES_PANEL_H)
@@ -252,10 +252,10 @@ check_include_files(semaphore.h HAVE_SEMAPHORE_H)
 check_include_files(shadow.h HAVE_SHADOW_H)
 check_include_files(signal.h HAVE_SIGNAL_H)
 check_include_files(spawn.h HAVE_SPAWN_H)
-check_include_files(stdint.h HAVE_STDINT_H)
-check_include_files(stdlib.h HAVE_STDLIB_H)
-check_include_files(strings.h HAVE_STRINGS_H)
-check_include_files(string.h HAVE_STRING_H)
+check_include_files(stdint.h HAVE_STDINT_H)   # libffi and cpython
+check_include_files(stdlib.h HAVE_STDLIB_H)   # libffi and cpython
+check_include_files(strings.h HAVE_STRINGS_H) # libffi and cpython
+check_include_files(string.h HAVE_STRING_H)   # libffi and cpython
 check_include_files(stropts.h HAVE_STROPTS_H)
 check_include_files(sysexits.h HAVE_SYSEXITS_H)
 check_include_files(sys/audioio.h HAVE_SYS_AUDIOIO_H)
@@ -266,19 +266,19 @@ check_include_files(sys/file.h HAVE_SYS_FILE_H)
 check_include_files(sys/loadavg.h HAVE_SYS_LOADAVG_H)
 check_include_files(sys/lock.h HAVE_SYS_LOCK_H)
 check_include_files(sys/mkdev.h HAVE_SYS_MKDEV_H)
-check_include_files(sys/mman.h HAVE_SYS_MMAN_H)
+check_include_files(sys/mman.h HAVE_SYS_MMAN_H) # libffi and cpython
 check_include_files(sys/modem.h HAVE_SYS_MODEM_H)
 check_include_files(sys/param.h HAVE_SYS_PARAM_H)
 check_include_files(sys/poll.h HAVE_SYS_POLL_H)
 check_include_files(sys/resource.h HAVE_SYS_RESOURCE_H)
 check_include_files(sys/select.h HAVE_SYS_SELECT_H)
 check_include_files(sys/statvfs.h HAVE_SYS_STATVFS_H)
-check_include_files(sys/stat.h HAVE_SYS_STAT_H)
+check_include_files(sys/stat.h HAVE_SYS_STAT_H) # libffi and cpython
 check_include_files(sys/timeb.h HAVE_SYS_TIMEB_H)
 check_include_files(sys/termio.h HAVE_SYS_TERMIO_H)
 check_include_files(sys/times.h HAVE_SYS_TIMES_H)
 check_include_files(sys/time.h HAVE_SYS_TIME_H)
-check_include_files(sys/types.h HAVE_SYS_TYPES_H)
+check_include_files(sys/types.h HAVE_SYS_TYPES_H) # libffi and cpython
 check_include_files(sys/un.h HAVE_SYS_UN_H)
 check_include_files(sys/utsname.h HAVE_SYS_UTSNAME_H)
 check_include_files(sys/wait.h HAVE_SYS_WAIT_H)
@@ -287,11 +287,11 @@ check_include_files(term.h HAVE_TERM_H)
 if(IS_PY2)
 check_include_files(thread.h HAVE_THREAD_H)
 endif()
-check_include_files(unistd.h HAVE_UNISTD_H)
+check_include_files(unistd.h HAVE_UNISTD_H) # libffi and cpython
 check_include_files(util.h HAVE_UTIL_H)
 check_include_files(utime.h HAVE_UTIME_H)
 check_include_files(wchar.h HAVE_WCHAR_H)
-check_include_files("stdlib.h;stdarg.h;string.h;float.h" STDC_HEADERS)
+check_include_files("stdlib.h;stdarg.h;string.h;float.h" STDC_HEADERS) # libffi and cpython
 
 check_include_files(stdarg.h HAVE_STDARG_PROTOTYPES)
 
@@ -583,13 +583,13 @@ add_cond(CMAKE_EXTRA_INCLUDE_FILES HAVE_WCHAR_H wchar.h)
 
 TEST_BIG_ENDIAN(WORDS_BIGENDIAN)
 
-check_type_size(double SIZEOF_DOUBLE)
+check_type_size(double SIZEOF_DOUBLE) # libffi and cpython
 check_type_size(float SIZEOF_FLOAT)
 check_type_size(fpos_t SIZEOF_FPOS_T)
 check_type_size(int SIZEOF_INT)
 check_type_size(long SIZEOF_LONG)
 check_type_size("long double" SIZEOF_LONG_DOUBLE)
-set(HAVE_LONG_DOUBLE ${SIZEOF_LONG_DOUBLE})
+set(HAVE_LONG_DOUBLE ${SIZEOF_LONG_DOUBLE}) # libffi and cpython
 check_type_size("long long" SIZEOF_LONG_LONG)
 set(HAVE_LONG_LONG ${SIZEOF_LONG_LONG})
 check_type_size(off_t SIZEOF_OFF_T)
@@ -676,6 +676,7 @@ endif()
 set(CFG_HEADERS ${CFG_HEADERS} time.h stdio.h math.h)
 
 check_symbol_exists(alarm        "${CFG_HEADERS}" HAVE_ALARM)
+check_symbol_exists(alloca       "${CFG_HEADERS}" HAVE_ALLOCA) # libffi and cpython
 check_symbol_exists(altzone      "${CFG_HEADERS}" HAVE_ALTZONE)
 check_symbol_exists(bind_textdomain_codeset "${CFG_HEADERS}" HAVE_BIND_TEXTDOMAIN_CODESET)
 check_symbol_exists(chflags      "${CFG_HEADERS}" HAVE_CHFLAGS)
@@ -751,11 +752,12 @@ check_symbol_exists(lchown       "${CFG_HEADERS}" HAVE_LCHOWN)
 check_symbol_exists(link         "${CFG_HEADERS}" HAVE_LINK)
 check_symbol_exists(lstat        "${CFG_HEADERS}" HAVE_LSTAT)
 check_symbol_exists(makedev      "${CFG_HEADERS}" HAVE_MAKEDEV)
+check_symbol_exists(memcpy       "${CFG_HEADERS}" HAVE_MEMCPY) # libffi and cpython
 check_symbol_exists(memmove      "${CFG_HEADERS}" HAVE_MEMMOVE)
 check_symbol_exists(mkfifo       "${CFG_HEADERS}" HAVE_MKFIFO)
 check_symbol_exists(mknod        "${CFG_HEADERS}" HAVE_MKNOD)
 check_symbol_exists(mktime       "${CFG_HEADERS}" HAVE_MKTIME)
-check_symbol_exists(mmap         "${CFG_HEADERS}" HAVE_MMAP)
+check_symbol_exists(mmap         "${CFG_HEADERS}" HAVE_MMAP) # libffi and cpython
 check_symbol_exists(mremap       "${CFG_HEADERS}" HAVE_MREMAP)
 check_symbol_exists(nice         "${CFG_HEADERS}" HAVE_NICE)
 check_symbol_exists(openpty      "${CFG_HEADERS}" HAVE_OPENPTY)
@@ -993,6 +995,74 @@ python_platform_test(
   ${check_src}
   DIRECT
   )
+
+
+# libffi specific: Check whether assembler supports .cfi_* directives
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_as_cfi_pseudo_op.c)
+file(WRITE ${check_src} "int main() {
+    __asm__ __volatile__ (\".cfi_startproc\n\t.cfi_endproc\");
+}
+")
+python_platform_test(
+  HAVE_AS_CFI_PSEUDO_OP
+  "Checking whether assembler supports .cfi_* directives"
+  ${check_src}
+  DIRECT
+  )
+
+# libffi specific: Check whether assembler supports PC relative relocs
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_as_x86_pcrel.c)
+file(WRITE ${check_src} "int main() {
+    __asm__ __volatile__ (\".text; ha: nop; .data; .long ha-.; .text\");
+}
+")
+python_platform_test(
+  HAVE_AS_X86_PCREL
+  "Checking whether assembler supports PC relative relocs"
+  ${check_src}
+  DIRECT
+  )
+
+
+# libffi specific: Check compiler for symbol visibility support
+check_c_source_compiles("
+        __attribute__((visibility(\"default\")))
+        int bar(void) {};
+        int main() {bar();}"
+        HAVE_HIDDEN_VISIBILITY_ATTRIBUTE)
+
+# libffi specific: Check system for MAP_ANONYMOUS
+check_c_source_compiles("
+#include <sys/types.h>
+#include <sys/mman.h>
+#include <unistd.h>
+
+#ifndef MAP_ANONYMOUS
+#define MAP_ANONYMOUS MAP_ANON
+#endif
+
+int main() {int a = MAP_ANONYMOUS;}"
+HAVE_MMAP_ANON)
+
+# libffi specific: Check for /dev/zero support for anonymous memory maps
+check_c_source_runs("
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/mman.h>
+#include <fcntl.h>
+int main(void) {
+  int devzero;
+  void *retval;
+  devzero = open(\"/dev/zero\", O_RDWR);
+  if (-1 == devzero) {
+    exit(1);
+  }
+  retval = mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_SHARED, devzero, 0);
+  if (retval == (void *)-1) {
+    exit(1);
+  }
+  exit(0);
+}" HAVE_MMAP_DEV_ZERO)
 
 if(IS_PY3)
 

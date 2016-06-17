@@ -304,6 +304,11 @@ else()
                 _ctypes/libffi/src/${_libffi_system_dir}/unix64.S
                 )
         endif()
+        # To facilitate an eventual contribution of the configuration
+        # of fficonfig.h to the upstream project, corresponding tests
+        # in ConfigureChecks.cmake are labeled using this convention:
+        # * "libffi specific"
+        # * "libffi and cpython"
         configure_file(
           ${CMAKE_SOURCE_DIR}/cmake/fficonfig.h.in
           ${INCLUDE_BUILD_DIR}/fficonfig.h
