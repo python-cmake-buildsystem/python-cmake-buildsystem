@@ -1063,8 +1063,19 @@ python_platform_test(
   )
 
 # libffi specific: Check whether assembler supports .string.
-# TODO
-set(HAVE_AS_STRING_PSEUDO_OP 1)
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_as_string_pseudo_op.c)
+file(WRITE ${check_src} "
+int main () {
+asm (\".string \\\"string\\\"\");
+return 0;
+}
+")
+python_platform_test(
+  HAVE_AS_STRING_PSEUDO_OP
+  "Checking whether assembler supports .string"
+  ${check_src}
+  DIRECT
+  )
 
 # libffi specific: Check whether assembler supports unwind section type.
 # TODO
