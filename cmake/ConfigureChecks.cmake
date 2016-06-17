@@ -606,6 +606,10 @@ check_type_size(wchar_t SIZEOF_WCHAR_T)
 check_type_size(_Bool SIZEOF__BOOL)
 set(HAVE_C99_BOOL ${SIZEOF__BOOL})
 
+# libffi specific: Check whether more than one size of the long double type is supported
+# TODO
+set(HAVE_LONG_DOUBLE_VARIANT 0)
+
 set(AIX_GENUINE_CPLUSPLUS 0)
 
 set(WITH_DYLD 0)
@@ -996,6 +1000,19 @@ python_platform_test(
   DIRECT
   )
 
+# libffi specific: Cannot use PROT_EXEC on this target, so, we revert to alternative means
+# XXX In autoconf system, it was set to true if target matches *arm*-apple-darwin*
+if(NOT DEFINED FFI_EXEC_TRAMPOLINE_TABLE)
+  set(FFI_EXEC_TRAMPOLINE_TABLE 0)
+endif()
+
+# libffi specific: Define this if you want to enable pax emulated trampolines
+# On PaX enable kernels that have MPROTECT enable we can't use PROT_EXEC.
+# XXX Add option 'FFI_MMAP_EXEC_EMUTRAMP_PAX'.
+if(NOT DEFINED FFI_MMAP_EXEC_EMUTRAMP_PAX)
+  set(FFI_MMAP_EXEC_EMUTRAMP_PAX 0)
+endif()
+
 # libffi specific: Check whether read-only mmap of a plain file works
 if(NOT DEFINED HAVE_MMAP_FILE)
   set(msg "Checking whether read-only mmap of a plain file works")
@@ -1017,6 +1034,10 @@ endif()
 #     read() to the same fd.  The only system known to have a problem here
 #     is VMS, where text files have record structure.
 
+# libffi specific: Check whether assembler supports .ascii.
+# TODO
+set(HAVE_AS_ASCII_PSEUDO_OP 1)
+
 # libffi specific: Check whether assembler supports .cfi_* directives
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_as_cfi_pseudo_op.c)
 file(WRITE ${check_src} "
@@ -1029,6 +1050,14 @@ python_platform_test(
   ${check_src}
   DIRECT
   )
+
+# libffi specific: Check whether assembler supports .string.
+# TODO
+set(HAVE_AS_STRING_PSEUDO_OP 1)
+
+# libffi specific: Check whether assembler supports unwind section type.
+# TODO
+set(HAVE_AS_X86_64_UNWIND_SECTION_TYPE 1)
 
 # libffi specific: Check whether assembler supports PC relative relocs
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_as_x86_pcrel.c)
@@ -1043,6 +1072,10 @@ python_platform_test(
   DIRECT
   )
 
+
+# libffi specific: Check whether symbols are underscored
+# TODO
+set(SYMBOL_UNDERSCORE 0)
 
 # libffi specific: Check compiler for symbol visibility support
 check_c_source_compiles("

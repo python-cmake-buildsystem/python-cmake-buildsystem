@@ -18,6 +18,12 @@
 /* Define this if you want extra debugging. */
 /* #undef FFI_DEBUG */
 
+/* Cannot use PROT_EXEC on this target, so, we revert to alternative means */
+#cmakedefine FFI_EXEC_TRAMPOLINE_TABLE 1
+
+/* Define this if you want to enable pax emulated trampolines */
+#cmakedefine FFI_MMAP_EXEC_EMUTRAMP_PAX 1
+
 /* Cannot use malloc on this target, so, we revert to alternative means */
 /* #undef FFI_MMAP_EXEC_WRIT */
 
@@ -34,6 +40,9 @@
    */
 #cmakedefine HAVE_ALLOCA_H 1
 
+/* Define if your assembler supports .ascii. */
+#cmakedefine HAVE_AS_ASCII_PSEUDO_OP 1
+
 /* Define if your assembler supports .cfi_* directives. */
 #cmakedefine HAVE_AS_CFI_PSEUDO_OP 1
 
@@ -43,6 +52,12 @@
 /* Define if your assembler and linker support unaligned PC relative relocs.
    */
 /* #undef HAVE_AS_SPARC_UA_PCREL */
+
+/* Define if your assembler supports .string. */
+#cmakedefine HAVE_AS_STRING_PSEUDO_OP 1
+
+/* Define if your assembler supports unwind section type. */
+#cmakedefine HAVE_AS_X86_64_UNWIND_SECTION_TYPE 1
 
 /* Define if your assembler supports PC relative relocs. */
 #cmakedefine HAVE_AS_X86_PCREL 1
@@ -58,6 +73,9 @@
 
 /* Define if you have the long double type and it is bigger than a double */
 #cmakedefine HAVE_LONG_DOUBLE 1
+
+/* Define if you support more than one size of the long double type */
+#cmakedefine HAVE_LONG_DOUBLE_VARIANT 1
 
 /* Define to 1 if you have the `memcpy' function. */
 #cmakedefine HAVE_MEMCPY 1
@@ -148,6 +166,9 @@
 /* Define to 1 if you have the ANSI C header files. */
 #cmakedefine STDC_HEADERS 1
 
+/* Define if symbols are underscored. */
+#cmakedefine SYMBOL_UNDERSCORE 1
+
 /* Define this if you are using Purify and want to suppress spurious messages.
    */
 /* #undef USING_PURIFY */
@@ -167,6 +188,8 @@
 # endif
 #endif
 
+/* Define to `unsigned int' if <sys/types.h> does not define. */
+/* #undef size_t */
 
 #ifdef HAVE_HIDDEN_VISIBILITY_ATTRIBUTE
 #ifdef LIBFFI_ASM
