@@ -676,6 +676,7 @@ endif()
 set(CFG_HEADERS ${CFG_HEADERS} time.h stdio.h math.h)
 
 check_symbol_exists(alarm        "${CFG_HEADERS}" HAVE_ALARM)
+check_symbol_exists(alloca       "${CFG_HEADERS}" HAVE_ALLOCA)
 check_symbol_exists(altzone      "${CFG_HEADERS}" HAVE_ALTZONE)
 check_symbol_exists(bind_textdomain_codeset "${CFG_HEADERS}" HAVE_BIND_TEXTDOMAIN_CODESET)
 check_symbol_exists(chflags      "${CFG_HEADERS}" HAVE_CHFLAGS)
