@@ -309,6 +309,7 @@ else()
         # in ConfigureChecks.cmake are labeled using this convention:
         # * "libffi specific"
         # * "libffi and cpython"
+        set(LIBFFI_VERSION "3.1")
         configure_file(
           ${CMAKE_SOURCE_DIR}/cmake/fficonfig.h.in
           ${INCLUDE_BUILD_DIR}/fficonfig.h

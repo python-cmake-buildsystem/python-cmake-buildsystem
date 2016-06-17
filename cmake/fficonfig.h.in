@@ -21,10 +21,10 @@
 /* Cannot use malloc on this target, so, we revert to alternative means */
 /* #undef FFI_MMAP_EXEC_WRIT */
 
-/* Define this is you do not want support for the raw API. */
+/* Define this if you do not want support for the raw API. */
 /* #undef FFI_NO_RAW_API */
 
-/* Define this is you do not want support for aggregate types. */
+/* Define this if you do not want support for aggregate types. */
 /* #undef FFI_NO_STRUCTS */
 
 /* Define to 1 if you have `alloca', as a function or macro. */
@@ -111,13 +111,13 @@
 #define PACKAGE "libffi"
 
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "http://gcc.gnu.org/bugs.html"
+#define PACKAGE_BUGREPORT "http://github.com/atgreen/libffi/issues"
 
 /* Define to the full name of this package. */
 #define PACKAGE_NAME "libffi"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "libffi 3.0.10rc0"
+#define PACKAGE_STRING "libffi @LIBFFI_VERSION@"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "libffi"
@@ -126,7 +126,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "3.0.10rc0"
+#define PACKAGE_VERSION "@LIBFFI_VERSION@"
 
 /* The size of `double', as computed by sizeof. */
 #cmakedefine SIZEOF_DOUBLE @SIZEOF_DOUBLE@
@@ -150,7 +150,7 @@
 /* #undef USING_PURIFY */
 
 /* Version number of package */
-#define VERSION "3.0.10rc0"
+#define VERSION "@LIBFFI_VERSION@"
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */
