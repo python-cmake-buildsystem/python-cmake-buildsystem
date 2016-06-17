@@ -996,6 +996,26 @@ python_platform_test(
   DIRECT
   )
 
+# libffi specific: Check whether read-only mmap of a plain file works
+if(NOT DEFINED HAVE_MMAP_FILE)
+  set(msg "Checking whether read-only mmap of a plain file works")
+  message(STATUS "${msg}")
+  set(value 1)
+  set(status "yes")
+  if(NOT HAVE_SYS_MMAN_H OR NOT HAVE_MMAP)
+    set(value 0)
+    set(status "no")
+  endif()
+  message(STATUS "${msg} - ${status}")
+  set(HAVE_MMAP_FILE "${value}" CACHE INTERNAL "Have support for mmap_file")
+endif()
+
+# libffi specific: check whether mmap works
+# XXX Add a system to this blacklist if
+#     mmap(0, stat_size, PROT_READ, MAP_PRIVATE, fd, 0) doesn't return a
+#     memory area containing the same data that you'd get if you applied
+#     read() to the same fd.  The only system known to have a problem here
+#     is VMS, where text files have record structure.
 
 # libffi specific: Check whether assembler supports .cfi_* directives
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_as_cfi_pseudo_op.c)
