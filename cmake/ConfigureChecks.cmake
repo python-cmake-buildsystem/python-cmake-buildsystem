@@ -1094,6 +1094,9 @@ python_platform_test(
   DIRECT
   )
 
+# libffi specific: Check whether .eh_frame sections should be read-only.
+# TODO
+set(HAVE_RO_EH_FRAME 1)
 
 # libffi specific: Check whether symbols are underscored
 # TODO
