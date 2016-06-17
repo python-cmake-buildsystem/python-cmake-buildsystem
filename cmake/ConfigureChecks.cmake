@@ -304,7 +304,7 @@ check_include_files(sys/ioctl.h HAVE_SYS_IOCTL_H)
 check_include_files("sys/types.h;sys/kern_control.h" HAVE_SYS_KERN_CONTROL_H)
 check_include_files(sys/sendfile.h HAVE_SYS_SENDFILE_H)
 check_include_files(sys/syscall.h HAVE_SYS_SYSCALL_H)
-check_include_files(sys/domain.h HAVE_SYS_SYS_DOMAIN_H)
+check_include_files(sys/sys_domain.h HAVE_SYS_SYS_DOMAIN_H)
 check_include_files(sys/uio.h HAVE_SYS_UIO_H)
 check_include_files(sys/xattr.h HAVE_SYS_XATTR_H)
 
