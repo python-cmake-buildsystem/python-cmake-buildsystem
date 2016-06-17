@@ -304,6 +304,7 @@ else()
                 _ctypes/libffi/src/${_libffi_system_dir}/unix64.S
                 )
         endif()
+        # Note that checks only required by libffi are identified by comment "# libffi specific"
         configure_file(
           ${CMAKE_SOURCE_DIR}/cmake/fficonfig.h.in
           ${INCLUDE_BUILD_DIR}/fficonfig.h

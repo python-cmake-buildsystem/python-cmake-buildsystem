@@ -997,7 +997,7 @@ python_platform_test(
   )
 
 
-# Check whether assembler supports .cfi_* directives
+# libffi specific: Check whether assembler supports .cfi_* directives
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_as_cfi_pseudo_op.c)
 file(WRITE ${check_src} "int main() {
     __asm__ __volatile__ (\".cfi_startproc\n\t.cfi_endproc\");
@@ -1010,7 +1010,7 @@ python_platform_test(
   DIRECT
   )
 
-# Check whether assembler supports PC relative relocs
+# libffi specific: Check whether assembler supports PC relative relocs
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_as_x86_pcrel.c)
 file(WRITE ${check_src} "int main() {
     __asm__ __volatile__ (\".text; ha: nop; .data; .long ha-.; .text\");
@@ -1024,12 +1024,14 @@ python_platform_test(
   )
 
 
+# libffi specific: Check compiler for symbol visibility support
 check_c_source_compiles("
         __attribute__((visibility(\"default\")))
         int bar(void) {};
         int main() {bar();}"
         HAVE_HIDDEN_VISIBILITY_ATTRIBUTE)
 
+# libffi specific: Check system for MAP_ANONYMOUS
 check_c_source_compiles("
         #include <sys/types.h>
         #include <sys/mman.h>
@@ -1041,7 +1043,7 @@ check_c_source_compiles("
 
         int main() {int a = MAP_ANONYMOUS;}" HAVE_MMAP_ANON)
 
-
+# libffi specific: Check for /dev/zero support for anonymous memory maps
 check_c_source_runs("
 #include <stdlib.h>
 #include <sys/types.h>
@@ -1845,6 +1847,7 @@ check_c_source_compiles("
         HAVE_ATTRIBUTE_FORMAT_PARSETUPLE)
 endif()
 
+# libffi specific
 check_c_source_compiles("#include <unistd.h>\n int main() {getpgrp(0);}" GETPGRP_HAVE_ARG)
 
 check_c_source_compiles("#include <unistd.h>\n int main() {setpgrp(0, 0);}" SETPGRP_HAVE_ARG)
