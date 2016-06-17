@@ -1765,6 +1765,8 @@ endif()
 
 check_c_source_compiles("#include <unistd.h>\n int main() {getpgrp(0);}" GETPGRP_HAVE_ARG)
 
+check_c_source_compiles("#include <unistd.h>\n int main() {setpgrp(0, 0);}" SETPGRP_HAVE_ARG)
+
 if(IS_PY3)
 # Check for inline
 set(USE_INLINE 0)
