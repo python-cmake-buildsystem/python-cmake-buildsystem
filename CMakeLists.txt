@@ -407,6 +407,12 @@ else()
     set(LINUX OFF)
 endif()
 
+if(CMAKE_SYSTEM MATCHES BSD)  # Any BSD deriviative
+    set(BSD ON)
+else()
+    set(BSD OFF)
+endif()
+
 # Clear PythonTargets.cmake
 file(WRITE ${CONFIG_BUILD_DIR}/PythonTargets.cmake "")
 
