@@ -280,7 +280,7 @@ endif()
 
 if(IS_PY3)
 set(WITH_HASH_ALGORITHM "default" CACHE STRING "Define hash algorithm for str, bytes and memoryview.")
-set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "default" "siphash24" "fnv")
+set_property(CACHE WITH_HASH_ALGORITHM PROPERTY STRINGS "default" "siphash24" "fnv")
 endif()
 
 # This is the major version number of Python
