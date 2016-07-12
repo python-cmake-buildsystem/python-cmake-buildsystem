@@ -35,6 +35,13 @@ set(dashboard_cache "PY_VERSION_MAJOR:STRING=${PY_VERSION_MAJOR}
 PY_VERSION_MINOR:STRING=${PY_VERSION_MINOR}
 PY_VERSION_PATCH:STRING=${PY_VERSION_PATCH}
 ")
+if($ENV{TRAVIS_OS_NAME} STREQUAL "osx" AND ${PY_VERSION} VERSION_GREATER "3.5.0")
+  set(dashboard_cache "${dashboard_cache}
+OPENSSL_ROOT_DIR:PATH=/usr/local/opt/openssl
+")
+endif()
+
+message("dashboard_cache:${dashboard_cache}")
 
 function(downloadFile url dest)
  file(DOWNLOAD ${url} ${dest} STATUS status)
