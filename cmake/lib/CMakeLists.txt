@@ -26,8 +26,8 @@ foreach(file ${libfiles})
         get_filename_component(path ${file} PATH)
 
         # Copy lib files to build tree
-        file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/${PYTHONHOME}/${path})
-        file(COPY ${libdir}/${file} DESTINATION ${CMAKE_BINARY_DIR}/${PYTHONHOME}/${path})
+        file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/${PYTHONHOME}/${path})
+        file(COPY ${libdir}/${file} DESTINATION ${PROJECT_BINARY_DIR}/${PYTHONHOME}/${path})
 
         # Install
         install(FILES ${libdir}/${file} DESTINATION ${PYTHONHOME}/${path})

@@ -311,7 +311,7 @@ else()
         # * "libffi and cpython"
         set(LIBFFI_VERSION "3.1")
         configure_file(
-          ${CMAKE_SOURCE_DIR}/cmake/fficonfig.h.in
+          ${PROJECT_SOURCE_DIR}/cmake/fficonfig.h.in
           ${INCLUDE_BUILD_DIR}/fficonfig.h
           )
         add_python_extension(_ctypes
@@ -324,7 +324,7 @@ else()
             INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi/src/${_libffi_system_dir}
                         ${SRC_DIR}/Modules/_ctypes/libffi/include
                         ${INCLUDE_BUILD_DIR}      # For fficonfig.h
-                        ${CMAKE_SOURCE_DIR}/cmake # For ffi.h
+                        ${PROJECT_SOURCE_DIR}/cmake # For ffi.h
         )
     endif()
 endif()

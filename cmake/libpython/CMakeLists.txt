@@ -2,7 +2,7 @@ add_definitions(-DPy_BUILD_CORE)
 add_definitions(-DNDEBUG)
 
 set(MODULE_SOURCES # Equivalent to MODULE_OBJS in Makefile.pre
-    ${CMAKE_BINARY_DIR}/CMakeFiles/config.c
+    ${PROJECT_BINARY_DIR}/CMakeFiles/config.c
     ${SRC_DIR}/Modules/gcmodule.c
     ${SRC_DIR}/Modules/main.c
 )
@@ -347,8 +347,8 @@ foreach(ext ${builtin_extensions})
 endforeach()
 
 configure_file(
-    ${CMAKE_SOURCE_DIR}/cmake/config_${PY_VERSION_MAJOR}.c.in
-    ${CMAKE_BINARY_DIR}/CMakeFiles/config.c
+    ${PROJECT_SOURCE_DIR}/cmake/config_${PY_VERSION_MAJOR}.c.in
+    ${PROJECT_BINARY_DIR}/CMakeFiles/config.c
     )
 
 # Collect libpython target libraries
@@ -449,8 +449,8 @@ function(add_libpython name type install component)
 
     set_target_properties(${name} PROPERTIES
         OUTPUT_NAME ${LIBPYTHON}${ABIFLAGS}
-        LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_LIBDIR}
-        RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_LIBDIR}
+        LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR}
+        RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR}
         INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/${LIBPYTHON_LIBDIR}
     )
     if(HAVE_POSITION_INDEPENDENT_CODE)
@@ -475,7 +475,7 @@ endfunction()
 if(BUILD_SHARED)
     add_libpython(libpython-shared SHARED 1 Runtime)
     set_target_properties(libpython-shared PROPERTIES
-        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}
+        ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}
     )
     if(APPLE)
         # HACK For python <= 2.7.3, this fix link error related to undefined _environ symbol and
@@ -493,7 +493,7 @@ if(BUILD_SHARED)
         # XXX Add BuildPython3_dDef
 
         # Generate 'python3stub.def'
-        set(pythonstub_def ${CMAKE_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}/${CMAKE_CFG_INTDIR}/python3stub.def)
+        set(pythonstub_def ${PROJECT_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}/${CMAKE_CFG_INTDIR}/python3stub.def)
         add_custom_command(
             OUTPUT ${pythonstub_def}
             COMMAND ${CMAKE_COMMAND}
@@ -510,14 +510,14 @@ if(BUILD_SHARED)
         add_library(${targetname} SHARED ${SRC_DIR}/PC/python3dll.c ${SRC_DIR}/PC/python3.def)
         set_target_properties(${targetname} PROPERTIES
             OUTPUT_NAME python3
-            LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_LIBDIR}
-            RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_LIBDIR}
+            LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR}
+            RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR}
             INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/${LIBPYTHON_LIBDIR}
         )
         add_dependencies(${targetname} generate_libpythonstub_def)
 
         # Build 'python3stub.lib' before linking 'python3.dll'
-        set(python3stub_lib ${CMAKE_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}/${CMAKE_CFG_INTDIR}/python3stub.lib)
+        set(python3stub_lib ${PROJECT_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}/${CMAKE_CFG_INTDIR}/python3stub.lib)
         set(machine X86)
         if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
             set(machine X64)
@@ -537,8 +537,8 @@ if(BUILD_SHARED)
         set_target_properties(${targetname} PROPERTIES
             LINK_FLAGS "-Wl,--no-as-needed"
             OUTPUT_NAME python3
-            LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_LIBDIR}
-            RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_LIBDIR}
+            LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR}
+            RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR}
             INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/${LIBPYTHON_LIBDIR}
         )
         target_link_libraries(${targetname} libpython-shared)
@@ -567,7 +567,7 @@ if(BUILD_STATIC)
         )
     endif()
     set_target_properties(libpython-static PROPERTIES
-        ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${LIBPYTHON_STATIC_ARCHIVEDIR}
+        ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_STATIC_ARCHIVEDIR}
     )
     if(INSTALL_DEVELOPMENT)
         install(TARGETS libpython-static

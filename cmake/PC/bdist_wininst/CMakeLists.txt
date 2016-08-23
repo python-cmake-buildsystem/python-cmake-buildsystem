@@ -25,7 +25,7 @@ set(WININST_SOURCES
 set(WININST_INSTALL_DIR ${PYTHONHOME}/distutils/command)
 
 # Build tree directory
-set(WININST_BUILD_DIR ${CMAKE_BINARY_DIR}/${WININST_INSTALL_DIR})
+set(WININST_BUILD_DIR ${PROJECT_BINARY_DIR}/${WININST_INSTALL_DIR})
 
 # Compiler version
 set(version "unknown")
