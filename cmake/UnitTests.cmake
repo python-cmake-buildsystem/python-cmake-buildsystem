@@ -12,7 +12,7 @@ set(cmd "${cmd}\")")
 add_custom_target(list_unittests
     ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> -c "${cmd}"
     DEPENDS python
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
     COMMENT "Display list of python unittests"
     VERBATIM
 )

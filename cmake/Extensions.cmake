@@ -172,7 +172,7 @@ function(add_python_extension name)
         #     configuring and using 'add_python_extension_CMakeLists.txt.in'.
         file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${target_name}-src)
         configure_file(
-            ${CMAKE_SOURCE_DIR}/cmake/add_python_extension_CMakeLists.txt.in
+            ${PROJECT_SOURCE_DIR}/cmake/add_python_extension_CMakeLists.txt.in
             ${CMAKE_CURRENT_BINARY_DIR}/${target_name}-src/CMakeLists.txt
         )
         add_subdirectory(
@@ -194,7 +194,7 @@ function(add_python_extension name)
                 SUFFIX .pyd
             )
         endif()
-        
+
         if(APPLE)
             set_target_properties(${target_name} PROPERTIES
                 LINK_FLAGS -Wl,-undefined,dynamic_lookup
@@ -204,7 +204,7 @@ function(add_python_extension name)
 
         # Turn off the "lib" prefix and add any compiler definitions
         set_target_properties(${target_name} PROPERTIES
-            ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/${ARCHIVEDIR}
+            ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${ARCHIVEDIR}
             LIBRARY_OUTPUT_DIRECTORY ${EXTENSION_BUILD_DIR}
             RUNTIME_OUTPUT_DIRECTORY ${EXTENSION_BUILD_DIR}
             OUTPUT_NAME "${name}"
