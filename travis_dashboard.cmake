@@ -14,9 +14,6 @@ string(REGEX MATCH "([0-9])\\.([0-9]+)\\.([0-9]+)" _match ${PY_VERSION})
 if(_match STREQUAL "")
   message(FATAL_ERROR "Environment variable 'PY_VERSION' is improperly set.")
 endif()
-set(PY_VERSION_MAJOR ${CMAKE_MATCH_1})
-set(PY_VERSION_MINOR ${CMAKE_MATCH_2})
-set(PY_VERSION_PATCH ${CMAKE_MATCH_3})
 
 set(what "#$ENV{TRAVIS_PULL_REQUEST}")
 if($ENV{TRAVIS_PULL_REQUEST} STREQUAL "false")
@@ -31,9 +28,7 @@ set(CTEST_TEST_ARGS PARALLEL_LEVEL 8)
 set(dashboard_model Experimental)
 set(dashboard_track Travis-CI)
 
-set(dashboard_cache "PY_VERSION_MAJOR:STRING=${PY_VERSION_MAJOR}
-PY_VERSION_MINOR:STRING=${PY_VERSION_MINOR}
-PY_VERSION_PATCH:STRING=${PY_VERSION_PATCH}
+set(dashboard_cache "PY_VERSION:STRING=${PY_VERSION}
 ")
 if($ENV{TRAVIS_OS_NAME} STREQUAL "osx" AND ${PY_VERSION} VERSION_GREATER "3.5.0")
   set(dashboard_cache "${dashboard_cache}

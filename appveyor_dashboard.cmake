@@ -12,9 +12,6 @@ string(REGEX MATCH "([0-9])\\.([0-9]+)\\.([0-9]+)" _match ${PY_VERSION})
 if(_match STREQUAL "")
   message(FATAL_ERROR "Environment variable 'PY_VERSION' is improperly set.")
 endif()
-set(PY_VERSION_MAJOR ${CMAKE_MATCH_1})
-set(PY_VERSION_MINOR ${CMAKE_MATCH_2})
-set(PY_VERSION_PATCH ${CMAKE_MATCH_3})
 
 set(what "$ENV{APPVEYOR_PULL_REQUEST_TITLE}_#$ENV{APPVEYOR_PULL_REQUEST_NUMBER}")
 if("$ENV{APPVEYOR_PULL_REQUEST_NUMBER}" STREQUAL "")
@@ -40,9 +37,7 @@ set(dashboard_model Experimental)
 set(dashboard_track AppVeyor-CI)
 
 set(dashboard_cache "BUILD_LIBPYTHON_SHARED:BOOL=ON
-PY_VERSION_MAJOR:STRING=${PY_VERSION_MAJOR}
-PY_VERSION_MINOR:STRING=${PY_VERSION_MINOR}
-PY_VERSION_PATCH:STRING=${PY_VERSION_PATCH}
+PY_VERSION:STRING=${PY_VERSION}
 ")
 
 function(downloadFile url dest)
