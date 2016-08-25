@@ -69,7 +69,7 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
 
   DOWNLOAD_SOURCES=ON|OFF      (defaults to ON)
     Download, check MD5 sum and extract python sources in the parent directory.
-    Source archive is downloaded from http://www.python.org/ftp/python/2.7.12/Python-2.7.12.tgz
+    Source archive is downloaded from http://www.python.org/ftp/python
 
   BUILD_LIBPYTHON_SHARED=ON|OFF (defaults to OFF)
     Build libpython as a shared library (.so or .dll) or a static library
@@ -228,7 +228,7 @@ these before running make::
 Remarks
 -------
 
-Note: Currently, multiple versions of Python 2.7 are supported. This
+Note: Currently, multiple versions of Python 2.7 and 3.5 are supported. This
 repository is maintained separately from Python itself it needs to be manually
 updated whenever there is a new release of Python.
 
