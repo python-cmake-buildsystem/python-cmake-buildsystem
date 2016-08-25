@@ -58,6 +58,9 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
 
 ::
 
+  PYTHON_VERSION=major.minor.patch (defaults to 2.7.11)
+    The version of Python to build.
+
   CMAKE_BUILD_TYPE=Debug|Release
     Build with debugging symbols or with optimisations.
 
