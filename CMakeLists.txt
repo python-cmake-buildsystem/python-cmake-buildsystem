@@ -248,7 +248,7 @@ string(REGEX REPLACE "[0-9]\\.[0-9]+\\.([0-9]+)" "\\1"
 set(PY_VERSION "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}")
 message(STATUS "PY_VERSION: ${PY_VERSION}")
 if(NOT DEFINED _download_${PY_VERSION}_md5)
-    message(FATAL_ERROR "error: unknown python version '${PY_VERSION}'. Valid version should match '2.7.[3-11]' or '3.5.[1-2]'")
+    message(FATAL_ERROR "error: unknown python version '${PY_VERSION}'. Valid version should match '2.7.[3-12]' or '3.5.[1-2]'")
 endif()
 
 # Convenience boolean variables to easily test python version
