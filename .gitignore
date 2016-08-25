@@ -32,3 +32,7 @@ tags
 # Ignore Python source directories
 cython-*/
 Python-*/
+
+# Ignore Python source archives
+Python-*.tgz
+Python-*.zip
