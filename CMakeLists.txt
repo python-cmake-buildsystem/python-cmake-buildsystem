@@ -33,7 +33,7 @@ if(CMAKE_CROSSCOMPILING)
     cmake_minimum_required(VERSION 3.3) # Version introducing CROSSCOMPILING_EMULATOR
 endif()
 
-if(WIN32 AND "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+if(MSVC AND "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     set(CMAKE_DEBUG_POSTFIX "_d")
 endif()
 
