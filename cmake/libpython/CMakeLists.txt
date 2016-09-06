@@ -215,6 +215,9 @@ elseif(WIN32)
             Py_ENABLE_SHARED
             MS_DLL_ID="${ms_dll_id}"
         )
+    if(MSVC)
+        add_compile_options(/wd4101 /wd4018 /wd4244 /wd4996)
+    endif()
 endif()
 
 set(THREAD_SOURCES )
