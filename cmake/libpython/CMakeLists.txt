@@ -597,6 +597,17 @@ function(add_libpython name type install component)
             FRAMEWORK DESTINATION ${CMAKE_INSTALL_PREFIX}
             COMPONENT ${component}
         )
+	if(BUILD_FRAMEWORK)
+	    install(CODE "
+		message(STATUS \"Creating Python library framework symlinks...\")
+		execute_process(
+		    COMMAND
+			\${CMAKE_COMMAND} -E create_symlink \"../${FRAMEWORK_NAME}\" libpython${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.dylib
+		    WORKING_DIRECTORY
+			\"${CMAKE_INSTALL_PREFIX}/${FRAMEWORK_DIR_PREFIX}/lib\"
+		)
+	    ")
+	endif()
     endif()
 endfunction()
 

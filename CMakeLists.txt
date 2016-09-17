@@ -82,6 +82,8 @@ if(APPLE)
   if(BUILD_FRAMEWORK)
       set(BUILD_LIBPYTHON_SHARED ON CACHE BOOL "Forced to ON because of BUILD_FRAMEWORK=ON" FORCE)
   endif()
+  set(FRAMEWORK_DIR_ROOT Python.framework)
+  set(FRAMEWORK_DIR_PREFIX ${FRAMEWORK_DIR_ROOT}/Versions/${PY_VERSION_MAJOR}.${PY_VERSION_MINOR})
 else()
   set(BUILD_FRAMEWORK OFF)
 endif()
@@ -443,6 +445,9 @@ if(USE_LIB64)
     set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS ON)
     set(LIBDIR "lib64")
 endif()
+if(BUILD_FRAMEWORK)
+    set(LIBDIR ${FRAMEWORK_DIR_PREFIX}/lib)
+endif()
 set(PYTHONHOME "${LIBDIR}/${LIBPYTHON}")
 
 # Install tree directory
@@ -450,8 +455,15 @@ set(BIN_INSTALL_DIR bin)                         # Contains the python executabl
 if(INSTALL_WINDOWS_TRADITIONAL)
     set(BIN_INSTALL_DIR .)                       # Contains the python executable
 endif()
+if(BUILD_FRAMEWORK)
+    set(BIN_INSTALL_DIR ${FRAMEWORK_DIR_PREFIX}/bin)
+endif()
+set(SHARE_INSTALL_DIR share)
+if(BUILD_FRAMEWORK)
+    set(SHARE_INSTALL_DIR ${FRAMEWORK_DIR_PREFIX}/share)
+endif()
 set(LD_VERSION ${LIBPYTHON_VERSION}${ABIFLAGS})
-set(CONFIG_INSTALL_DIR share/${LIBPYTHON})
+set(CONFIG_INSTALL_DIR ${SHARE_INSTALL_DIR}/${LIBPYTHON})
 set(EXTENSION_INSTALL_DIR ${PYTHONHOME}/lib-dynload)
 
 if (${LIBPYTHON_VERSION} GREATER 3.1)
@@ -466,6 +478,10 @@ endif()
 set(INCLUDE_INSTALL_DIR include/python${LD_VERSION})
 if(MSVC)
     set(INCLUDE_INSTALL_DIR include/python${PY_VERSION_MAJOR}.${PY_VERSION_MINOR})
+endif()
+if(BUILD_FRAMEWORK)
+    set(REL_INCLUDE_INSTALL_DIR include/python${PY_VERSION_MAJOR}.${PY_VERSION_MINOR})
+    set(INCLUDE_INSTALL_DIR ${FRAMEWORK_DIR_PREFIX}/include/python${PY_VERSION_MAJOR}.${PY_VERSION_MINOR})
 endif()
 # Build tree directory
 set(BIN_BUILD_DIR ${PROJECT_BINARY_DIR}/bin)
@@ -717,7 +733,7 @@ if(UNIX)
                     ${PROJECT_BINARY_DIR}/Misc/python-${LIBPYTHON_VERSION}.pc
                     ${PROJECT_BINARY_DIR}/Misc/python-${PY_VERSION_MAJOR}.pc
                     ${PROJECT_BINARY_DIR}/Misc/python.pc
-                DESTINATION lib/pkgconfig
+                DESTINATION ${LIBDIR}/pkgconfig
                 COMPONENT Development)
     endif()
 
@@ -744,7 +760,7 @@ if(UNIX)
 
     # Install manual
     if(INSTALL_MANUAL)
-        set(_install_man FILES ${SRC_DIR}/Misc/python.man DESTINATION share/man/man1 COMPONENT Runtime)
+        set(_install_man FILES ${SRC_DIR}/Misc/python.man DESTINATION ${SHARE_INSTALL_DIR}/man/man1 COMPONENT Runtime)
         install(${_install_man} RENAME python${LIBPYTHON_VERSION}.1)
         install(${_install_man} RENAME python${PY_VERSION_MAJOR}.1)
     endif()
