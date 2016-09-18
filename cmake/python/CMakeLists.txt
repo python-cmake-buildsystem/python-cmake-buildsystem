@@ -59,7 +59,7 @@ if(UNIX AND PY_VERSION VERSION_GREATER "2.7.4")
     add_custom_command(
         OUTPUT ${BIN_BUILD_DIR}/pybuilddir.txt ${EXTENSION_BUILD_DIR}/${_sysconfigdata_py}
         COMMAND ${PYTHON_WRAPPER_COMMAND}
-          ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> -E -S -m sysconfig --generate-posix-vars
+          ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> -S -m sysconfig --generate-posix-vars
         COMMAND ${CMAKE_COMMAND}
           -DBIN_BUILD_DIR:PATH=${BIN_BUILD_DIR}
           -DSYSCONFIGDATA_PY:STRING=${_sysconfigdata_py}

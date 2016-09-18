@@ -645,7 +645,9 @@ set(WITH_DYLD 0)
 set(WITH_NEXT_FRAMEWORK 0)
 if(APPLE)
   set(WITH_DYLD 1)
-  set(WITH_NEXT_FRAMEWORK 0) # TODO: See --enable-framework option.
+  if(BUILD_FRAMEWORK)
+      set(WITH_NEXT_FRAMEWORK 1) # TODO: See --enable-framework option.
+  endif()
 endif()
 
 if(HAVE_LONG_LONG)
