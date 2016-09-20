@@ -7,6 +7,10 @@ if(UNIX)
     set(plat_subdir "plat-linux2")
 endif()
 
+if(APPLE)
+    set(plat_subdir "plat-darwin")
+endif()
+
 foreach(file ${libfiles})
     # Don't install files for other platforms
     string(REGEX MATCH "^plat-" is_platform_file "${file}")
