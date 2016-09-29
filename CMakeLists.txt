@@ -509,6 +509,9 @@ if(UNIX)
     set(PYCONFIG_BUILD_DIR ${BIN_BUILD_DIR})
     configure_file(cmake/config-unix/pyconfig.h.in
                    ${PYCONFIG_BUILD_DIR}/pyconfig.h)
+    file(GENERATE
+         OUTPUT $<TARGET_FILE_DIR:python>/pyconfig.h
+         INPUT ${PYCONFIG_BUILD_DIR}/pyconfig.h)
 elseif(WIN32)
     set(PYCONFIG_BUILD_DIR ${SRC_DIR}/PC) # In a windows build tree, 'pyconfig.h' is NOT required to
                                           # live along side the python executable.
@@ -747,9 +750,12 @@ if(UNIX)
         set(MAKEFILE_LDSHARED_FLAGS "-dynamiclib -headerpad_max_install_names -undefined dynamic_lookup")
     endif()
     configure_file(cmake/makefile-variables.in
-                   ${BIN_BUILD_DIR}/Makefile @ONLY)
+                   ${BIN_BUILD_DIR}/Makefile.in @ONLY)
+    file(GENERATE
+         OUTPUT $<TARGET_FILE_DIR:python>/Makefile
+         INPUT ${BIN_BUILD_DIR}/Makefile.in)
     if(INSTALL_DEVELOPMENT)
-        install(FILES ${BIN_BUILD_DIR}/Makefile
+        install(FILES $<TARGET_FILE_DIR:python>/Makefile
                 DESTINATION ${LIB_CONFIG_INSTALL_DIR}
                 RENAME Makefile
                 COMPONENT Development)
