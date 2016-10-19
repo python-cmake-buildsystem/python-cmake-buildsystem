@@ -585,7 +585,7 @@ function(add_libpython name type install component)
             MACOSX_FRAMEWORK_SHORT_VERSION_STRING "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}"
             MACOSX_FRAMEWORK_BUNDLE_VERSION "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}"
             MACOSX_RPATH ON
-            OUTPUT_NAME Python
+            OUTPUT_NAME ${FRAMEWORK_NAME}
         )
     endif()
 
