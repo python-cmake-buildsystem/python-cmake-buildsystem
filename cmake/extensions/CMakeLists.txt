@@ -1,3 +1,4 @@
+if(${MSVC_VERSION})
 # XXX Because of CMake issue #8170 disable ctypes support when using
 #     "Visual Studio 2008 Win64" generator.
 if("${MSVC_VERSION}" VERSION_EQUAL 1500 AND ${CMAKE_SIZEOF_VOID_P} EQUAL 8)
@@ -20,6 +21,7 @@ if(CMAKE_VERSION VERSION_LESS 2.8.12)
         set(ENABLE_CTYPES OFF CACHE BOOL "${warn}" FORCE)
         set(ENABLE_CTYPES_TEST OFF CACHE BOOL "${warn}" FORCE)
     endif()
+endif()
 endif()
 
 set(WIN32_BUILTIN )
