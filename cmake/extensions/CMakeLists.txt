@@ -1,18 +1,18 @@
-if(${MSVC_VERSION})
-# XXX Because of CMake issue #8170 disable ctypes support when using
-#     "Visual Studio 2008 Win64" generator.
-if("${MSVC_VERSION}" VERSION_EQUAL 1500 AND ${CMAKE_SIZEOF_VOID_P} EQUAL 8)
+if(MSVC_VERSION)
+  # XXX Because of CMake issue #8170 disable ctypes support when using
+  #     "Visual Studio 2008 Win64" generator.
+  if("${MSVC_VERSION}" VERSION_EQUAL 1500 AND ${CMAKE_SIZEOF_VOID_P} EQUAL 8)
     set(warn "Disable 'ctypes' and 'ctypes_test' extensions when using 'Visual Studio 2008 Win64' generator. See http://public.kitware.com/Bug/view.php?id=8170 for more details.")
     if(NOT DEFINED ENABLE_CTYPES OR ENABLE_CTYPES OR NOT DEFINED ENABLE_CTYPES_TEST OR ENABLE_CTYPES_TEST)
         message(WARNING ${warn})
     endif()
     set(ENABLE_CTYPES OFF CACHE BOOL "${warn}" FORCE)
     set(ENABLE_CTYPES_TEST OFF CACHE BOOL "${warn}" FORCE)
-endif()
-# XXX Because of CMake issue #11536, disable ctypes support when using
-#     CMake < 2.8.12 with "Visual Studio 2010" and "Visual Studio 2010 Win64"
-#     generator.
-if(CMAKE_VERSION VERSION_LESS 2.8.12)
+  endif()
+  # XXX Because of CMake issue #11536, disable ctypes support when using
+  #     CMake < 2.8.12 with "Visual Studio 2010" and "Visual Studio 2010 Win64"
+  #     generator.
+  if(CMAKE_VERSION VERSION_LESS 2.8.12)
     if("${MSVC_VERSION}" VERSION_EQUAL 1600)
         set(warn "Disable 'ctypes' and 'ctypes_test' extensions when using CMake < 2.8.12 with any 'Visual Studio 2010' generators. See http://public.kitware.com/Bug/view.php?id=11536 for more details.")
         if(NOT DEFINED ENABLE_CTYPES OR ENABLE_CTYPES OR NOT DEFINED ENABLE_CTYPES_TEST OR ENABLE_CTYPES_TEST)
@@ -21,7 +21,7 @@ if(CMAKE_VERSION VERSION_LESS 2.8.12)
         set(ENABLE_CTYPES OFF CACHE BOOL "${warn}" FORCE)
         set(ENABLE_CTYPES_TEST OFF CACHE BOOL "${warn}" FORCE)
     endif()
-endif()
+  endif()
 endif()
 
 set(WIN32_BUILTIN )
