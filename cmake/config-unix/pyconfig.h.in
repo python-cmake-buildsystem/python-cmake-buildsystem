@@ -1160,7 +1160,9 @@
 #cmakedefine _GNU_SOURCE 1
 
 /* This must be defined on some systems to enable large file support. */
+#ifndef _LARGEFILE_SOURCE
 #cmakedefine _LARGEFILE_SOURCE @_LARGEFILE_SOURCE@
+#endif
 
 /* This must be defined on AIX systems to enable large file support. */
 #cmakedefine _LARGE_FILES
