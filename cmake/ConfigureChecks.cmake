@@ -540,6 +540,18 @@ elseif(CMAKE_SYSTEM MATCHES "QNX\\-6\\.3\\.2$")
   # defining NI_NUMERICHOST.
 
   set(define_xopen_source 0)
+
+elseif(CMAKE_SYSTEM MATCHES "VxWorks\\-7$")
+
+  # VxWorks-7
+
+  # On VxWorks-7, defining _XOPEN_SOURCE or _POSIX_C_SOURCE 
+  # leads to a failure in select.h because sys/types.h fails
+  # to define FD_SETSIZE.
+  # Reported by Martin Oberhuber as V7COR-4651.
+
+  set(define_xopen_source 0)
+
 endif()
 
 if(define_xopen_source)
