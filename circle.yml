@@ -8,29 +8,14 @@ dependencies:
   override:
     - docker info
 
-    - if [[ -e ~/docker/dockcross-android-arm.tar ]]; then docker load -i ~/docker/dockcross-android-arm.tar; fi
-    - docker pull dockcross/android-arm
-    - mkdir -p ~/docker; docker save dockcross/android-arm > ~/docker/dockcross-android-arm.tar
+    - pip install scikit-ci-addons==0.8.0
 
-    - if [[ -e ~/docker/dockcross-linux-armv6.tar ]]; then docker load -i ~/docker/dockcross-linux-armv6.tar; fi
-    - docker pull dockcross/linux-armv6
-    - mkdir -p ~/docker; docker save dockcross/linux-armv6 > ~/docker/dockcross-linux-armv6.tar
-
-    - if [[ -e ~/docker/dockcross-linux-armv7.tar ]]; then docker load -i ~/docker/dockcross-linux-armv7.tar; fi
-    - docker pull dockcross/linux-armv7
-    - mkdir -p ~/docker; docker save dockcross/linux-armv7 > ~/docker/dockcross-linux-armv7.tar
-
-    - if [[ -e ~/docker/dockcross-linux-ppc64le.tar ]]; then docker load -i ~/docker/dockcross-linux-ppc64le.tar; fi
-    - docker pull dockcross/linux-ppc64le
-    - mkdir -p ~/docker; docker save dockcross/linux-ppc64le > ~/docker/dockcross-linux-ppc64le.tar
-
-    - if [[ -e ~/docker/dockcross-linux-x64.tar ]]; then docker load -i ~/docker/dockcross-linux-x64.tar; fi
-    - docker pull dockcross/linux-x64
-    - mkdir -p ~/docker; docker save dockcross/linux-x64 > ~/docker/dockcross-linux-x64.tar
-
-    - if [[ -e ~/docker/dockcross-linux-x86.tar ]]; then docker load -i ~/docker/dockcross-linux-x86.tar; fi
-    - docker pull dockcross/linux-x86
-    - mkdir -p ~/docker; docker save dockcross/linux-x86 > ~/docker/dockcross-linux-x86.tar
+    - ci_addons docker load-pull-save dockcross/android-arm
+    - ci_addons docker load-pull-save dockcross/linux-armv6
+    - ci_addons docker load-pull-save dockcross/linux-armv7
+    - ci_addons docker load-pull-save dockcross/linux-ppc64le
+    - ci_addons docker load-pull-save dockcross/linux-x64
+    - ci_addons docker load-pull-save dockcross/linux-x86
 
     - cd $HOME && git clone git://github.com/python-cmake-buildsystem/python-cmake-buildsystem --branch dashboard --depth 1 scripts
 
