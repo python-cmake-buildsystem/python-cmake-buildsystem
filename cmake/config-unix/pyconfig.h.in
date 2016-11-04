@@ -1463,7 +1463,9 @@
 #cmakedefine _INCLUDE__STDC_A1_SOURCE 1
 
 /* This must be defined on some systems to enable large file support. */
+#ifndef _LARGEFILE_SOURCE
 #cmakedefine _LARGEFILE_SOURCE @_LARGEFILE_SOURCE@
+#endif
 
 /* This must be defined on AIX systems to enable large file support. */
 #cmakedefine _LARGE_FILES
