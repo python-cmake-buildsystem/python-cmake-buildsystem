@@ -1,4 +1,6 @@
 machine:
+  python:
+    version: 2.7.11
   services:
     - docker
 
@@ -17,23 +19,32 @@ dependencies:
     - ci_addons docker load-pull-save dockcross/linux-x64
     - ci_addons docker load-pull-save dockcross/linux-x86
 
+    - |
+      for image in $(docker images | grep dockcross/[^base] | cut -f1 -d" "); do
+        docker run ${image} > ~/bin/${image////-}; chmod u+x ~/bin/${image////-}
+      done
+
     - cd $HOME && git clone git://github.com/python-cmake-buildsystem/python-cmake-buildsystem --branch dashboard --depth 1 scripts
 
 test:
   override:
+    - echo "-e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH ~/scripts:/usr/scripts" > CIRCLE_ARGS
+    - echo "ctest -S /usr/scripts/circle_dashboard.cmake -VV" > TEST_COMMAND
 
     # Python 2.7.12
-    - docker run --rm -e PY_VERSION=2.7.12 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/scripts:/usr/scripts dockcross/android-arm ctest -S /usr/scripts/circle_dashboard.cmake -VV
-    - docker run --rm -e PY_VERSION=2.7.12 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/scripts:/usr/scripts dockcross/linux-armv6 ctest -S /usr/scripts/circle_dashboard.cmake -VV
-    - docker run --rm -e PY_VERSION=2.7.12 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/scripts:/usr/scripts dockcross/linux-armv7 ctest -S /usr/scripts/circle_dashboard.cmake -VV
-    - docker run --rm -e PY_VERSION=2.7.12 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/scripts:/usr/scripts dockcross/linux-ppc64le ctest -S /usr/scripts/circle_dashboard.cmake -VV
-    - docker run --rm -e PY_VERSION=2.7.12 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/scripts:/usr/scripts dockcross/linux-x64 ctest -S /usr/scripts/circle_dashboard.cmake -VV
-    - docker run --rm -e PY_VERSION=2.7.12 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/scripts:/usr/scripts dockcross/linux-x86 ctest -S /usr/scripts/circle_dashboard.cmake -VV
+    - echo "-e PY_VERSION=2.7.12 $CIRCLE_ARGS" > DOCKER_ARGS
+    #- dockcross-android-arm   -a "$(<DOCKER_ARGS)" $(<TEST_COMMAND)
+    #- dockcross-linux-armv6   -a "$(<DOCKER_ARGS)" $(<TEST_COMMAND)
+    #- dockcross-linux-armv7   -a "$(<DOCKER_ARGS)" $(<TEST_COMMAND)
+    #- dockcross-linux-ppc64le -a "$(<DOCKER_ARGS)" $(<TEST_COMMAND)
+    - dockcross-linux-x64     -a "$(<DOCKER_ARGS)" $(<TEST_COMMAND)
+    - dockcross-linux-x86     -a "$(<DOCKER_ARGS)" $(<TEST_COMMAND)
 
     # Python 3.5.1
-    - docker run --rm -e PY_VERSION=3.5.1 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/scripts:/usr/scripts dockcross/android-arm ctest -S /usr/scripts/circle_dashboard.cmake -VV
-    - docker run --rm -e PY_VERSION=3.5.1 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/scripts:/usr/scripts dockcross/linux-armv6 ctest -S /usr/scripts/circle_dashboard.cmake -VV
-    - docker run --rm -e PY_VERSION=3.5.1 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/scripts:/usr/scripts dockcross/linux-armv7 ctest -S /usr/scripts/circle_dashboard.cmake -VV
-    - docker run --rm -e PY_VERSION=3.5.1 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/scripts:/usr/scripts dockcross/linux-ppc64le ctest -S /usr/scripts/circle_dashboard.cmake -VV
-    - docker run --rm -e PY_VERSION=3.5.1 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/scripts:/usr/scripts dockcross/linux-x64 ctest -S /usr/scripts/circle_dashboard.cmake -VV
-    - docker run --rm -e PY_VERSION=3.5.1 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v ~/python-cmake-buildsystem:/usr/python-cmake-buildsystem:ro -v ~/scripts:/usr/scripts dockcross/linux-x86 ctest -S /usr/scripts/circle_dashboard.cmake -VV
+    - echo "-e PY_VERSION=3.5.1 $CIRCLE_ARGS" > DOCKER_ARGS
+    #- dockcross-android-arm   -a "$(<DOCKER_ARGS)" $(<TEST_COMMAND)
+    #- dockcross-linux-armv6   -a "$(<DOCKER_ARGS)" $(<TEST_COMMAND)
+    #- dockcross-linux-armv7   -a "$(<DOCKER_ARGS)" $(<TEST_COMMAND)
+    #- dockcross-linux-ppc64le -a "$(<DOCKER_ARGS)" $(<TEST_COMMAND)
+    - dockcross-linux-x64     -a "$(<DOCKER_ARGS)" $(<TEST_COMMAND)
+    - dockcross-linux-x86     -a "$(<DOCKER_ARGS)" $(<TEST_COMMAND)
