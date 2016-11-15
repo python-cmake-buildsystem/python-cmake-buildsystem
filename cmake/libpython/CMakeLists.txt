@@ -480,7 +480,6 @@ function(add_libpython name type install component)
         OUTPUT_NAME ${LIBPYTHON}${ABIFLAGS}
         LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR}
         RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR}
-        INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/${LIBPYTHON_LIBDIR}
     )
     if(HAVE_POSITION_INDEPENDENT_CODE)
         set_target_properties(${name} PROPERTIES
@@ -500,6 +499,10 @@ function(add_libpython name type install component)
             MACOSX_FRAMEWORK_BUNDLE_VERSION "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}"
             MACOSX_RPATH ON
             OUTPUT_NAME ${FRAMEWORK_NAME}
+        )
+    else()
+        set_target_properties(${name} PROPERTIES
+            INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/${LIBPYTHON_LIBDIR}
         )
     endif()
 
