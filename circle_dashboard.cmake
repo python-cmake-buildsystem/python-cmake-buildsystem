@@ -31,7 +31,7 @@ set(dashboard_binary_name build)
 set(dashboard_model Experimental)
 set(dashboard_track Circle-CI)
 
-set(dashboard_cache "PY_VERSION:STRING=${PY_VERSION}
+set(dashboard_cache "PYTHON_VERSION:STRING=${PY_VERSION}
 ")
 
 # Toolchain

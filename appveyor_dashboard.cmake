@@ -37,7 +37,7 @@ set(dashboard_model Experimental)
 set(dashboard_track AppVeyor-CI)
 
 set(dashboard_cache "BUILD_LIBPYTHON_SHARED:BOOL=ON
-PY_VERSION:STRING=${PY_VERSION}
+PYTHON_VERSION:STRING=${PY_VERSION}
 ")
 
 function(downloadFile url dest)

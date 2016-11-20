@@ -28,7 +28,7 @@ set(CTEST_TEST_ARGS PARALLEL_LEVEL 8)
 set(dashboard_model Experimental)
 set(dashboard_track Travis-CI)
 
-set(dashboard_cache "PY_VERSION:STRING=${PY_VERSION}
+set(dashboard_cache "PYTHON_VERSION:STRING=${PY_VERSION}
 ")
 if($ENV{TRAVIS_OS_NAME} STREQUAL "osx" AND ${PY_VERSION} VERSION_GREATER "3.5.0")
   set(dashboard_cache "${dashboard_cache}
