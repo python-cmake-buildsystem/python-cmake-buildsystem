@@ -303,6 +303,10 @@ else()
                 _ctypes/libffi/src/${_libffi_system_dir}/ffi64.c
                 _ctypes/libffi/src/${_libffi_system_dir}/unix64.S
                 )
+        elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i686")
+          set(_libffi_system_extra_src
+                _ctypes/libffi/src/${_libffi_system_dir}/win32.S
+                )
         endif()
         # To facilitate an eventual contribution of the configuration
         # of fficonfig.h to the upstream project, corresponding tests
