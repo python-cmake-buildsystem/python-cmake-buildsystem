@@ -1,0 +1,14 @@
+env:
+  - IMAGE=linux-x86 PY_VERSION=2.7.12
+  - IMAGE=linux-x86 PY_VERSION=3.5.2
+command:
+  - |
+    if [[ $STEP == "dependencies" ]]; then
+      ci_addons docker load-pull-save dockcross/$IMAGE
+      docker run dockcross/$IMAGE > ~/bin/dockcross-$IMAGE; chmod u+x ~/bin/dockcross-$IMAGE
+    fi
+  - |
+    if [[ $STEP == "test" ]]; then
+      DOCKER_ARGS="-e PY_VERSION=$PY_VERSION -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v $HOME/scripts:/usr/scripts"
+      dockcross-$IMAGE  -a "$DOCKER_ARGS" ctest -S /usr/scripts/circle_dashboard.cmake -VV
+    fi

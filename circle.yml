@@ -11,36 +11,21 @@ dependencies:
   override:
     - docker info
 
-    - pip install scikit-ci-addons==0.8.0
+    - curl -fsSL https://git.io/v2Ifs -o ~/bin/circleci-matrix
+    - chmod +x ~/bin/circleci-matrix
 
-    #- ci_addons docker load-pull-save dockcross/android-arm
-    #- ci_addons docker load-pull-save dockcross/linux-armv6
-    #- ci_addons docker load-pull-save dockcross/linux-armv7
-    #- ci_addons docker load-pull-save dockcross/linux-ppc64le
-    #- ci_addons docker load-pull-save dockcross/linux-x64
-    - ci_addons docker load-pull-save dockcross/linux-x86
-
-    - |
-      for image in $(docker images | grep dockcross/[^base] | cut -f1 -d" "); do
-        docker run ${image} > ~/bin/${image////-}; chmod u+x ~/bin/${image////-}
-      done
+    - pip install -U scikit-ci-addons
 
     - cd $HOME && git clone git://github.com/python-cmake-buildsystem/python-cmake-buildsystem --branch dashboard --depth 1 scripts
 
+    - circleci-matrix:
+        parallel: true
+        environment:
+            STEP: dependencies
+
 test:
   override:
-    # Python 2.7.12
-    #- dockcross-android-arm   -a "-e PY_VERSION=2.7.12 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v $HOME/scripts:/usr/scripts" ctest -S /usr/scripts/circle_dashboard.cmake -VV
-    #- dockcross-linux-armv6   -a "-e PY_VERSION=2.7.12 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v $HOME/scripts:/usr/scripts" ctest -S /usr/scripts/circle_dashboard.cmake -VV
-    #- dockcross-linux-armv7   -a "-e PY_VERSION=2.7.12 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v $HOME/scripts:/usr/scripts" ctest -S /usr/scripts/circle_dashboard.cmake -VV
-    #- dockcross-linux-ppc64le -a "-e PY_VERSION=2.7.12 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v $HOME/scripts:/usr/scripts" ctest -S /usr/scripts/circle_dashboard.cmake -VV
-    #- dockcross-linux-x64     -a "-e PY_VERSION=2.7.12 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v $HOME/scripts:/usr/scripts" ctest -S /usr/scripts/circle_dashboard.cmake -VV
-    - dockcross-linux-x86     -a "-e PY_VERSION=2.7.12 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v $HOME/scripts:/usr/scripts" ctest -S /usr/scripts/circle_dashboard.cmake -VV
-
-    # Python 3.5.1
-    #- dockcross-android-arm   -a "-e PY_VERSION=3.5.1 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v $HOME/scripts:/usr/scripts" ctest -S /usr/scripts/circle_dashboard.cmake -VV
-    #- dockcross-linux-armv6   -a "-e PY_VERSION=3.5.1 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v $HOME/scripts:/usr/scripts" ctest -S /usr/scripts/circle_dashboard.cmake -VV
-    #- dockcross-linux-armv7   -a "-e PY_VERSION=3.5.1 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v $HOME/scripts:/usr/scripts" ctest -S /usr/scripts/circle_dashboard.cmake -VV
-    #- dockcross-linux-ppc64le -a "-e PY_VERSION=3.5.1 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v $HOME/scripts:/usr/scripts" ctest -S /usr/scripts/circle_dashboard.cmake -VV
-    #- dockcross-linux-x64     -a "-e PY_VERSION=3.5.1 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v $HOME/scripts:/usr/scripts" ctest -S /usr/scripts/circle_dashboard.cmake -VV
-    - dockcross-linux-x86     -a "-e PY_VERSION=3.5.1 -e CIRCLE_SHA1 -e CIRCLE_PR_NUMBER -e CIRCLE_BRANCH -v $HOME/scripts:/usr/scripts" ctest -S /usr/scripts/circle_dashboard.cmake -VV
+    - circleci-matrix:
+        parallel: true
+        environment:
+            STEP: test
