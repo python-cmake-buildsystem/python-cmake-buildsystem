@@ -1,12 +1,9 @@
 machine:
-  python:
-    version: 2.7.11
   services:
     - docker
 
 dependencies:
   cache_directories:
-    - ~/.pyenv
     - ~/docker
   override:
     - docker info
@@ -14,7 +11,7 @@ dependencies:
     - curl -fsSL https://git.io/v2Ifs -o ~/bin/circleci-matrix
     - chmod +x ~/bin/circleci-matrix
 
-    - pip install -U scikit-ci-addons
+    - pip install --user -U scikit-ci-addons
 
     - cd $HOME && git clone git://github.com/python-cmake-buildsystem/python-cmake-buildsystem --branch dashboard --depth 1 scripts
 
