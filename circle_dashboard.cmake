@@ -1,6 +1,10 @@
 # Client maintainer: jchris.fillionr@kitware.com
-set(CTEST_SITE "docker-thewtex-crosscompilers")
-set(CTEST_DASHBOARD_ROOT /usr)
+if("$ENV{DEFAULT_DOCKCROSS_IMAGE}" STREQUAL "")
+  message(FATAL_ERROR "Environment variable 'DEFAULT_DOCKCROSS_IMAGE' is not set")
+endif()
+set(CTEST_SITE "$ENV{DEFAULT_DOCKCROSS_IMAGE}")
+set(CTEST_DASHBOARD_ROOT /work)
+set(CTEST_SOURCE_DIRECTORY /work)
 string(SUBSTRING $ENV{CIRCLE_SHA1} 0 7 commit)
 
 # Extract major/minor/patch python versions
@@ -23,6 +27,7 @@ set(CTEST_CMAKE_GENERATOR "Ninja")
 set(CTEST_BUILD_FLAGS "-j4")
 set(CTEST_TEST_ARGS PARALLEL_LEVEL 8)
 
+set(dashboard_binary_name build)
 set(dashboard_model Experimental)
 set(dashboard_track Circle-CI)
 
