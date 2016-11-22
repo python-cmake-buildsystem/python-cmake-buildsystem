@@ -277,7 +277,7 @@ if(WIN32)
                   _ctypes/libffi_msvc/prep_cif.c
                   _ctypes/libffi_msvc/ffi.c
                   _ctypes/libffi_msvc/${_ctype_arch_impl}
-          REQUIRES BUILD_SHARED
+          REQUIRES BUILD_LIBPYTHON_SHARED
           INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi_msvc
         )
     endif()

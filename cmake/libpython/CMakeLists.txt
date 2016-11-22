@@ -472,7 +472,7 @@ function(add_libpython name type install component)
     endif()
 endfunction()
 
-if(BUILD_SHARED)
+if(BUILD_LIBPYTHON_SHARED)
     add_libpython(libpython-shared SHARED 1 Runtime)
     set_target_properties(libpython-shared PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}
@@ -557,7 +557,7 @@ if(BUILD_SHARED)
 
 endif()
 
-if(BUILD_STATIC)
+if(NOT BUILD_LIBPYTHON_SHARED)
     add_libpython(libpython-static STATIC ${INSTALL_DEVELOPMENT} Development)
     if(HAVE_TARGET_COMPILE_DEFINITIONS)
         target_compile_definitions(libpython-static PUBLIC Py_NO_ENABLE_SHARED)
