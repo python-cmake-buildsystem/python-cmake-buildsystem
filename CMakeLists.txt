@@ -30,7 +30,7 @@ if(POLICY CMP0042)
 endif()
 
 if(CMAKE_CROSSCOMPILING)
-    cmake_minimum_required(VERSION 3.3) # Version introducing CROSSCOMPILING_EMULATOR
+    cmake_minimum_required(VERSION 3.6) # CROSSCOMPILING_EMULATOR support in add_custom_command
 endif()
 
 # Include helper functions
