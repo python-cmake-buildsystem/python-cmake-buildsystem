@@ -383,16 +383,22 @@ set(LIBPYTHON_FROZEN_SOURCES
   ${SRC_DIR}/Python/importlib_external.h
   ${SRC_DIR}/Python/importlib.h
 )
+
+
+if(CMAKE_CROSSCOMPILING AND CMAKE_CROSSCOMPILING_EMULATOR) # set command for importlib generation
+    set(freeze_importlib_command "${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>")
+else()
+    set(freeze_importlib_command _freeze_importlib)
+endif()
+#message(FATAL_ERROR "freeze_importlib_command ${freeze_importlib_command}")
 add_custom_command(
   OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
-  COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
-      ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
-      ${SRC_DIR}/Python/importlib_external.h
-  COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
-      ${SRC_DIR}/Lib/importlib/_bootstrap.py
-      ${SRC_DIR}/Python/importlib.h
+  COMMAND _freeze_importlib
+        ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
+        ${SRC_DIR}/Python/importlib_external.h
+  COMMAND _freeze_importlib
+        ${SRC_DIR}/Lib/importlib/_bootstrap.py
+        ${SRC_DIR}/Python/importlib.h
   DEPENDS
     _freeze_importlib
     ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
