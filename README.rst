@@ -45,7 +45,7 @@ How to use this buildsystem:
 
 .. note::
 
-  By default, the build system will download the python 2.7.12 source from
+  By default, the build system will download the python 3.5.2 source from
   http://www.python.org/ftp/python/
 
 
@@ -58,7 +58,7 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
 
 ::
 
-  PYTHON_VERSION=major.minor.patch (defaults to 2.7.12)
+  PYTHON_VERSION=major.minor.patch (defaults to 3.5.2)
     The version of Python to build.
 
   CMAKE_BUILD_TYPE=Debug|Release
