@@ -308,12 +308,15 @@ set(BIN_INSTALL_DIR bin)                         # Contains the python executabl
 if(INSTALL_WINDOWS_TRADITIONAL)
     set(BIN_INSTALL_DIR .)                       # Contains the python executable
 endif()
+set(LD_VERSION ${LIBPYTHON_VERSION}${ABIFLAGS})
 set(CONFIG_INSTALL_DIR share/${LIBPYTHON})
 set(EXTENSION_INSTALL_DIR ${PYTHONHOME}/lib-dynload)
+set(LIB_CONFIG_INSTALL_DIR ${PYTHONHOME}/config-${LD_VERSION})
+
 if(INSTALL_WINDOWS_TRADITIONAL)
     set(EXTENSION_INSTALL_DIR DLLs)
 endif()
-set(INCLUDE_INSTALL_DIR include/${LIBPYTHON})
+set(INCLUDE_INSTALL_DIR include/python${LD_VERSION})
 if(MSVC)
     set(INCLUDE_INSTALL_DIR include)
 endif()
@@ -538,7 +541,7 @@ if(UNIX)
                    ${BIN_BUILD_DIR}/Makefile @ONLY)
     if(INSTALL_DEVELOPMENT)
         install(FILES ${BIN_BUILD_DIR}/Makefile
-                DESTINATION ${PYTHONHOME}/config/
+                DESTINATION ${LIB_CONFIG_INSTALL_DIR}
                 RENAME Makefile
                 COMPONENT Development)
     endif()
@@ -546,7 +549,7 @@ if(UNIX)
     # Utility scripts
     if(INSTALL_DEVELOPMENT)
         install(FILES ${SRC_DIR}/install-sh ${SRC_DIR}/Modules/makesetup
-                DESTINATION ${PYTHONHOME}/config/
+                DESTINATION ${LIB_CONFIG_INSTALL_DIR}
                 COMPONENT Development)
     endif()
 
