@@ -155,14 +155,14 @@ endif()
 message(STATUS "${_msg} - ${ABIFLAGS}")
 
 set(_msg "Checking SOABI")
-string(TOLOWER ${CMAKE_SYSTEM_NAME} lc_system_name)
-# XXX This should be improved.
-if(APPLE)
-  set(PLATFORM_TRIPLET "${lc_system_name}")
-else()
-  set(PLATFORM_TRIPLET "${CMAKE_SYSTEM_PROCESSOR}-${lc_system_name}")
+try_run(PLATFORM_RUN PLATFORM_COMPILE
+        ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/cmake/platform.c
+        RUN_OUTPUT_VARIABLE PLATFORM_TRIPLET)
+if(NOT PLATFORM_COMPILE)
+  message(FATAL_ERROR "We could not determine the platform. Please clean the ${CMAKE_PROJECT_NAME} environment and try again...")
 endif()
 set(SOABI "cpython-${PY_VERSION_MAJOR}${PY_VERSION_MINOR}${ABIFLAGS}-${PLATFORM_TRIPLET}")
+
 message(STATUS "${_msg} - ${SOABI}")
 
 endif()
