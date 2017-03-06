@@ -259,14 +259,6 @@ if(PY_VERSION_MAJOR VERSION_GREATER 2)
     set(IS_PY2 0)
 endif()
 
-# Convenience boolean variables to easily test the type of python library being build
-set(BUILD_STATIC 1)
-set(BUILD_SHARED 0)
-if(BUILD_LIBPYTHON_SHARED)
-  set(BUILD_STATIC 0)
-  set(BUILD_SHARED 1)
-endif()
-
 # Options depending of the python version
 if(IS_PY2)
   option(Py_USING_UNICODE "Enable unicode support" ON)
@@ -296,10 +288,6 @@ set(LIBPYTHON python${LIBPYTHON_VERSION})
 
 # Proceed to the configure checks
 include(cmake/ConfigureChecks.cmake)
-
-if(NOT BUILD_SHARED AND NOT BUILD_STATIC)
-    message(FATAL_ERROR "One or both of BUILD_SHARED or BUILD_STATIC must be set")
-endif()
 
 # Set PYTHONHOME
 set(LIBDIR "Lib") # See Lib/distutils/sysconfig.py - function 'get_python_lib'
@@ -417,7 +405,7 @@ file(WRITE ${CONFIG_BUILD_DIR}/PythonTargets.cmake "")
 # Define python executable wrapper command to ensure
 # python executable resolves the expected python library.
 set(PYTHON_WRAPPER_COMMAND )
-if(BUILD_SHARED AND UNIX)
+if(BUILD_LIBPYTHON_SHARED AND UNIX)
     set(_envvar LD_LIBRARY_PATH)
     if(APPLE)
         set(_envvar DYLD_LIBRARY_PATH)
