@@ -363,6 +363,7 @@ if(UNIX)
 endif()
 if(WIN32 AND IS_PY3)
     list(APPEND LIBPYTHON_TARGET_LIBRARIES ws2_32) # Required by signalmodule
+    list(APPEND LIBPYTHON_TARGET_LIBRARIES version) # Required by sysmodule
 endif()
 
 set(LIBPYTHON_FROZEN_SOURCES )
