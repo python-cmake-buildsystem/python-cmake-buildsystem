@@ -237,13 +237,10 @@ set(PYTHON_COMMON_SOURCES
     ${SRC_DIR}/Python/traceback.c
     ${SRC_DIR}/Python/_warnings.c
 )
+
 if(UNIX)
     list(APPEND PYTHON_COMMON_SOURCES
         ${SRC_DIR}/Python/frozenmain.c
-    )
-else()
-    list(APPEND PYTHON_COMMON_SOURCES
-        ${SRC_DIR}/Python/frozen.c
     )
 endif()
 
@@ -366,15 +363,23 @@ if(UNIX)
 endif()
 if(WIN32 AND IS_PY3)
     list(APPEND LIBPYTHON_TARGET_LIBRARIES ws2_32) # Required by signalmodule
+    list(APPEND LIBPYTHON_TARGET_LIBRARIES version) # Required by sysmodule
 endif()
 
 set(LIBPYTHON_FROZEN_SOURCES )
 if(IS_PY3)
 
+# Windows needs PyImport_FrozenModules declared...
+if(WIN32)
+  set(FROZENMODULES_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/frozenmodules.c)
+endif()
+
 # Build _freeze_importlib executable
+
 add_executable(_freeze_importlib
   ${SRC_DIR}/Programs/_freeze_importlib.c
   ${LIBPYTHON_OMIT_FROZEN_SOURCES}
+  ${FROZENMODULES_SOURCE}
   )
 target_link_libraries(_freeze_importlib ${LIBPYTHON_TARGET_LIBRARIES})
 
@@ -383,16 +388,16 @@ set(LIBPYTHON_FROZEN_SOURCES
   ${SRC_DIR}/Python/importlib_external.h
   ${SRC_DIR}/Python/importlib.h
 )
+
+
 add_custom_command(
   OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
-  COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
-      ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
-      ${SRC_DIR}/Python/importlib_external.h
-  COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
-      ${SRC_DIR}/Lib/importlib/_bootstrap.py
-      ${SRC_DIR}/Python/importlib.h
+  COMMAND _freeze_importlib
+        ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
+        ${SRC_DIR}/Python/importlib_external.h
+  COMMAND _freeze_importlib
+        ${SRC_DIR}/Lib/importlib/_bootstrap.py
+        ${SRC_DIR}/Python/importlib.h
   DEPENDS
     _freeze_importlib
     ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
@@ -428,17 +433,14 @@ add_executable(pgen
 set(LIBPYTHON_SOURCES
     ${LIBPYTHON_OMIT_FROZEN_SOURCES}
     ${LIBPYTHON_FROZEN_SOURCES}
+    ${SRC_DIR}/Python/frozen.c
 )
-if(UNIX)
-    list(APPEND LIBPYTHON_SOURCES
-        ${SRC_DIR}/Python/frozen.c
-    )
-endif()
 
 # Build python libraries
 function(add_libpython name type install component)
     add_library(${name} ${type} ${LIBPYTHON_SOURCES})
     target_link_libraries(${name} ${LIBPYTHON_TARGET_LIBRARIES})
+    add_dependencies(${name} freeze_modules)
 
     if(MSVC)
         # Explicitly disable COMDAT folding. Note that this was not required
@@ -506,6 +508,21 @@ if(BUILD_LIBPYTHON_SHARED)
         )
         add_custom_target(generate_libpythonstub_def DEPENDS ${pythonstub_def})
 
+        # Build 'python3stub.lib' before linking 'python3.dll'
+        set(python3stub_lib ${PROJECT_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}/${CMAKE_CFG_INTDIR}/python3stub.lib)
+        set(machine X86)
+        if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
+            set(machine X64)
+        endif()
+        add_custom_command(
+            OUTPUT ${python3stub_lib}
+            COMMAND lib /nologo /def:${pythonstub_def} /out:${python3stub_lib} /MACHINE:${machine}
+            COMMENT "Rebuilding python3stub.lib"
+            DEPENDS generate_libpythonstub_def
+            VERBATIM
+        )
+        add_custom_target(generate_libpython3stub_lib DEPENDS ${python3stub_lib})
+
         # Build 'python3.dll'
         add_library(${targetname} SHARED ${SRC_DIR}/PC/python3dll.c ${SRC_DIR}/PC/python3.def)
         set_target_properties(${targetname} PROPERTIES
@@ -514,21 +531,7 @@ if(BUILD_LIBPYTHON_SHARED)
             RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR}
             INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/${LIBPYTHON_LIBDIR}
         )
-        add_dependencies(${targetname} generate_libpythonstub_def)
-
-        # Build 'python3stub.lib' before linking 'python3.dll'
-        set(python3stub_lib ${PROJECT_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}/${CMAKE_CFG_INTDIR}/python3stub.lib)
-        set(machine X86)
-        if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
-            set(machine X64)
-        endif()
-        add_custom_command(
-            TARGET ${targetname} PRE_LINK
-            COMMAND lib /nologo /def:${pythonstub_def} /out:${python3stub_lib} /MACHINE:${machine}
-            COMMENT "Rebuilding python3stub.lib"
-            VERBATIM
-        )
-
+        add_dependencies(${targetname} generate_libpython3stub_lib)
         target_link_libraries(${targetname} ${python3stub_lib})
     endif()
 
