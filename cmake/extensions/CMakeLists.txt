@@ -3,8 +3,10 @@ if(WIN32)
     set(WIN32_BUILTIN BUILTIN)
 endif()
 
+set(PY3_BUILTIN )
 set(PY3_ALWAYS_BUILTIN )
 if(IS_PY3)
+    set(PY3_BUILTIN BUILTIN)
     set(PY3_ALWAYS_BUILTIN ALWAYS_BUILTIN)
 endif()
 
@@ -18,7 +20,7 @@ add_python_extension(_codecs_iso2022 ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_
 add_python_extension(_codecs_jp ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_jp.c)
 add_python_extension(_codecs_kr ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_kr.c)
 add_python_extension(_codecs_tw ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_tw.c)
-add_python_extension(_collections ALWAYS_BUILTIN SOURCES _collectionsmodule.c) # Container types
+add_python_extension(_collections ${WIN32_BUILTIN} ${PY3_BUILTIN} SOURCES _collectionsmodule.c) # Container types
 add_python_extension(cPickle ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES cPickle.c)
 set(crypt2_NAME crypt)
 set(crypt2_SOURCES cryptmodule.c)
@@ -37,11 +39,11 @@ if(PY_VERSION VERSION_EQUAL "3.2")
 elseif(PY_VERSION VERSION_LESS_EQUAL "3.1")
   list(APPEND datetime${PY_VERSION_MAJOR}_SOURCES timemodule.c)
 endif()
-add_python_extension(${datetime${PY_VERSION_MAJOR}_NAME} ${WIN32_BUILTIN} REQUIRES HAVE_LIBM BUILTIN SOURCES ${datetime${PY_VERSION_MAJOR}_SOURCES} LIBRARIES ${M_LIBRARIES})
+add_python_extension(${datetime${PY_VERSION_MAJOR}_NAME} ${WIN32_BUILTIN} REQUIRES HAVE_LIBM SOURCES ${datetime${PY_VERSION_MAJOR}_SOURCES} LIBRARIES ${M_LIBRARIES})
 #if(ENABLE_DATETIME AND CMAKE_C_COMPILER_ID MATCHES GNU)
 #    set_property(SOURCE ${SRC_DIR}/Modules/datetimemodule.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
 #endif()
-add_python_extension(_functools ${WIN32_BUILTIN} SOURCES _functoolsmodule.c DEFINITIONS Py_BUILD_CORE) # Tools for working with functions and callable objects
+add_python_extension(_functools ${WIN32_BUILTIN} ${PY3_BUILTIN} SOURCES _functoolsmodule.c DEFINITIONS Py_BUILD_CORE) # Tools for working with functions and callable objects
 add_python_extension(future_builtins ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES future_builtins.c)
 add_python_extension(_heapq ${WIN32_BUILTIN} SOURCES _heapqmodule.c)
 add_python_extension(_hotshot ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES _hotshot.c)
@@ -60,11 +62,11 @@ if(WIN32 AND EXISTS ${SRC_DIR}/Modules/_io/winconsoleio.c)
         ${SRC_DIR}/Modules/_io/winconsoleio.c
         )
 endif()
-add_python_extension(_io ${PY3_ALWAYS_BUILTIN} SOURCES ${_io_SOURCES} DEFINITIONS Py_BUILD_CORE)
+add_python_extension(_io ${WIN32_BUILTIN} ${PY3_ALWAYS_BUILTIN} SOURCES ${_io_SOURCES} DEFINITIONS Py_BUILD_CORE)
 
-add_python_extension(itertools ${WIN32_BUILTIN} SOURCES itertoolsmodule.c) # Functions creating iterators for efficient looping
+add_python_extension(itertools ${WIN32_BUILTIN} ${PY3_BUILTIN} SOURCES itertoolsmodule.c) # Functions creating iterators for efficient looping
 add_python_extension(_json ${WIN32_BUILTIN} SOURCES _json.c)
-add_python_extension(_locale ${WIN32_BUILTIN} SOURCES _localemodule.c) # access to ISO C locale support
+add_python_extension(_locale ${WIN32_BUILTIN} ${PY3_BUILTIN} SOURCES _localemodule.c) # access to ISO C locale support
 add_python_extension(_lsprof ${WIN32_BUILTIN} SOURCES _lsprof.c rotatingtree.c)
 add_python_extension(math ${WIN32_BUILTIN} REQUIRES HAVE_LIBM SOURCES _math.c mathmodule.c LIBRARIES ${M_LIBRARIES})
 add_python_extension(mmap ${WIN32_BUILTIN} SOURCES mmapmodule.c)
@@ -88,16 +90,16 @@ set(time_SOURCES timemodule.c)
 if(PY_VERSION VERSION_EQUAL "3.2")
   list(APPEND datetime${PY_VERSION_MAJOR}_SOURCES _time.c)
 endif()
-add_python_extension(time BUILTIN REQUIRES HAVE_LIBM SOURCES ${time_SOURCES} DEFINITIONS Py_BUILD_CORE LIBRARIES ${M_LIBRARIES} ${TIMEMODULE_LIB})
+add_python_extension(time ${WIN32_BUILTIN} ${PY3_BUILTIN} REQUIRES HAVE_LIBM SOURCES ${time_SOURCES} DEFINITIONS Py_BUILD_CORE LIBRARIES ${M_LIBRARIES} ${TIMEMODULE_LIB})
 add_python_extension(unicodedata SOURCES unicodedata.c)
 
 # Python3
 add_python_extension(atexit BUILTIN REQUIRES IS_PY3 SOURCES atexitmodule.c) # Register functions to be run at interpreter-shutdown
 add_python_extension(_codecs BUILTIN SOURCES _codecsmodule.c) # access to the builtin codecs and codec registry
 add_python_extension(faulthandler ALWAYS_BUILTIN REQUIRES IS_PY3 SOURCES faulthandler.c)
-add_python_extension(_opcode BUILTIN REQUIRES IS_PY3 SOURCES _opcode.c)
-add_python_extension(_operator ${WIN32_BUILTIN} REQUIRES IS_PY3 SOURCES _operator.c)
-add_python_extension(_pickle BUILTIN REQUIRES IS_PY3 SOURCES _pickle.c)
+add_python_extension(_opcode ${WIN32_BUILTIN} REQUIRES IS_PY3 SOURCES _opcode.c)
+add_python_extension(_operator BUILTIN REQUIRES IS_PY3 SOURCES _operator.c)
+add_python_extension(_pickle ${WIN32_BUILTIN} REQUIRES IS_PY3 SOURCES _pickle.c)
 add_python_extension(_sre BUILTIN SOURCES _sre.c) # Fredrik Lundh's new regular expressions
 add_python_extension(_stat BUILTIN REQUIRES IS_PY3 SOURCES _stat.c) # stat.h interface
 add_python_extension(_symtable BUILTIN SOURCES symtablemodule.c)
@@ -128,7 +130,7 @@ endif()
 # Python 3.6
 if(PY_VERSION VERSION_GREATER_EQUAL "3.6")
     # asyncio speedups
-    add_python_extension(_asyncio BUILTIN SOURCES _asynciomodule.c)
+    add_python_extension(_asyncio SOURCES _asynciomodule.c)
     # blake module
     set(_blake2_SOURCES
         _blake2/blake2module.c
@@ -143,9 +145,9 @@ endif()
 # Python 3.7
 if(PY_VERSION VERSION_GREATER_EQUAL "3.7")
     add_python_extension(_abc BUILTIN SOURCES _abc.c)
-    add_python_extension(_contextvars BUILTIN SOURCES _contextvarsmodule.c)
-    add_python_extension(_queue BUILTIN SOURCES _queuemodule.c)
-    add_python_extension(_uuid BUILTIN REQUIRES UUID_LIBRARY "HAVE_UUID_H OR HAVE_UUID_UUID_H" SOURCES _uuidmodule.c LIBRARIES ${UUID_LIBRARY})
+    add_python_extension(_contextvars ${WIN32_BUILTIN} SOURCES _contextvarsmodule.c)
+    add_python_extension(_queue SOURCES _queuemodule.c)
+    add_python_extension(_uuid REQUIRES UUID_LIBRARY "HAVE_UUID_H OR HAVE_UUID_UUID_H" SOURCES _uuidmodule.c LIBRARIES ${UUID_LIBRARY})
     add_python_extension(_xxtestfuzz SOURCES _xxtestfuzz/_xxtestfuzz.c
                                              _xxtestfuzz/fuzzer.c
     )
@@ -193,7 +195,7 @@ add_python_extension(termios REQUIRES UNIX SOURCES termios.c)
 
 # Python3: UNIX-only extensions
 add_python_extension(errno BUILTIN UNIX SOURCES errnomodule.c)
-add_python_extension(_posixsubprocess BUILTIN REQUIRES IS_PY3 UNIX SOURCES _posixsubprocess.c)
+add_python_extension(_posixsubprocess REQUIRES IS_PY3 UNIX SOURCES _posixsubprocess.c)
 
 # MacOSX-only extensions
 set(_scproxy2_SOURCES ${SRC_DIR}/Mac/Modules/_scproxy.c)
@@ -304,7 +306,7 @@ else()
     list(APPEND _socket_SOURCES timemodule.c)
     endif()
     add_python_extension(_socket
-        REQUIRES HAVE_LIBM BUILTIN
+        REQUIRES HAVE_LIBM
         SOURCES ${_socket_SOURCES}
         LIBRARIES ${M_LIBRARIES}
     )
