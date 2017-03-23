@@ -29,6 +29,12 @@ if(MSVC)
     set_target_properties(python PROPERTIES LINK_FLAGS /STACK:2000000)
 endif()
 
+if(BUILD_FRAMEWORK)
+    set_target_properties(python PROPERTIES
+        INSTALL_RPATH "@loader_path/../../../.."
+    )
+endif()
+
 # Export target
 set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS python)
 
