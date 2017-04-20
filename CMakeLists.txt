@@ -244,7 +244,7 @@ string(REGEX REPLACE "([0-9])\\..+" "\\1"
     PY_VERSION_MAJOR ${_version})
 string(REGEX REPLACE "[0-9]\\.([0-9]+)\\..+" "\\1"
     PY_VERSION_MINOR ${_version})
-string(REGEX REPLACE "[0-9]\\.[0-9]+\\.([0-9]+)" "\\1"
+string(REGEX REPLACE "[0-9]\\.[0-9]+\\.([0-9]+)[+]?" "\\1"
     PY_VERSION_PATCH ${_version})
 set(PY_VERSION "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}")
 message(STATUS "PY_VERSION: ${PY_VERSION}")
