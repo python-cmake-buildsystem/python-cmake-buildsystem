@@ -176,7 +176,7 @@ get_filename_component(SRC_DIR "${SRC_DIR}" ABSOLUTE)
 get_filename_component(_parent_dir ${CMAKE_CURRENT_BINARY_DIR} PATH)
 string(REGEX REPLACE "rc[1-9]$" "" _py_version_patch_no_rc ${PY_VERSION_PATCH})
 set(_py_version_no_rc "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${_py_version_patch_no_rc}")
-set(_download_link "http://www.python.org/ftp/python/${_py_version_no_rc}/Python-${PY_VERSION}.tgz")
+set(_download_link "https://www.python.org/ftp/python/${_py_version_no_rc}/Python-${PY_VERSION}.tgz")
 # Variable below represent the set of supported python version.
 set(_download_2.7.3_md5 "2cf641732ac23b18d139be077bd906cd")
 set(_download_2.7.4_md5 "592603cfaf4490a980e93ecb92bde44a")
