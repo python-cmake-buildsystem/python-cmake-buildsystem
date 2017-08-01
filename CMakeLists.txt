@@ -235,6 +235,12 @@ If you already downloaded the source, you could try to re-configure this project
 endif()
 message(STATUS "SRC_DIR: ${SRC_DIR}")
 
+# Apply patches
+option(PYTHON_APPLY_PATCHES "Apply patches" ON)
+if(PYTHON_APPLY_PATCHES)
+  include(cmake/PythonApplyPatches.cmake)
+endif()
+
 # Extract version from python source (Copied from FindPythonLibs.cmake)
 file(STRINGS "${SRC_DIR}/Include/patchlevel.h" python_version_str
     REGEX "^#define[ \t]+PY_VERSION[ \t]+\"[^\"]+\"")
