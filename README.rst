@@ -61,6 +61,12 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
   PYTHON_VERSION=major.minor.patch (defaults to 3.5.2)
     The version of Python to build.
 
+  PYTHON_APPLY_PATCHES=ON|OFF (defaults to ON)
+    Apply patches required to build CPython based on the system and compiler
+    found when configuring the project. Note that when cross-compiling, patches
+    coresponding to the target system are applied.
+    Patches can be found in "patches" directory.
+
   CMAKE_BUILD_TYPE=Debug|Release
     Build with debugging symbols or with optimisations.
 

@@ -84,6 +84,13 @@ set(OBJECT2_SOURCES
     ${SRC_DIR}/Objects/intobject.c
     ${SRC_DIR}/Objects/stringobject.c
 )
+if(MSVC)
+    if(EXISTS ${SRC_DIR}/PC/invalid_parameter_handler.c)
+        list(APPEND OBJECT2_SOURCES
+            ${SRC_DIR}/PC/invalid_parameter_handler.c
+        )
+    endif()
+endif()
 
 set(OBJECT3_SOURCES
     ${SRC_DIR}/Objects/accu.c
