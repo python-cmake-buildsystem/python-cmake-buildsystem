@@ -50,8 +50,9 @@ endif()
 
 if(UNIX AND PY_VERSION VERSION_GREATER "2.7.4")
     # Setup landmark allowing to run the interpreter from a build tree. See 'getpath.c' for details.
+
     add_custom_command(
-        OUTPUT ${BIN_BUILD_DIR}/pybuilddir.txt ${EXTENSION_BUILD_DIR}/_sysconfigdata.py
+      OUTPUT ${BIN_BUILD_DIR}/pybuilddir.txt ${EXTENSION_BUILD_DIR}/_generated_sysconfigdata.timestamp
         COMMAND ${PYTHON_WRAPPER_COMMAND}
           ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> -E -S -m sysconfig --generate-posix-vars
         COMMAND ${CMAKE_COMMAND}
@@ -64,7 +65,7 @@ if(UNIX AND PY_VERSION VERSION_GREATER "2.7.4")
         DEPENDS python
         )
     add_custom_target(update_sysconfig ALL
-        DEPENDS ${BIN_BUILD_DIR}/pybuilddir.txt ${EXTENSION_BUILD_DIR}/_sysconfigdata.py
+        DEPENDS ${BIN_BUILD_DIR}/pybuilddir.txt ${EXTENSION_BUILD_DIR}/_generated_sysconfigdata.timestamp
         )
     install( DIRECTORY ${EXTENSION_BUILD_DIR}/
         DESTINATION ${PYTHONHOME}/
