@@ -66,8 +66,10 @@ if(UNIX AND PY_VERSION VERSION_GREATER "2.7.4")
     add_custom_target(update_sysconfig ALL
         DEPENDS ${BIN_BUILD_DIR}/pybuilddir.txt ${EXTENSION_BUILD_DIR}/_sysconfigdata.py
         )
-    install(FILES ${EXTENSION_BUILD_DIR}/_sysconfigdata.py
-        DESTINATION ${PYTHONHOME}/)
+    install( DIRECTORY ${EXTENSION_BUILD_DIR}/
+        DESTINATION ${PYTHONHOME}/
+        PATTERN "_sysconfigdata*.py"
+        )
 endif()
 
 if(UNIX AND NOT CMAKE_CROSSCOMPILING)

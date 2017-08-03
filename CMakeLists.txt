@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.6)
 
-set(PYTHON_VERSION "3.5.2" CACHE STRING "The version of Python to build.")
+set(PYTHON_VERSION "3.6.2" CACHE STRING "The version of Python to build.")
 
 string(REPLACE "." ";" VERSION_LIST ${PYTHON_VERSION})
 list(GET VERSION_LIST 0 PY_VERSION_MAJOR)
@@ -191,6 +191,8 @@ set(_download_2.7.12_md5 "88d61f82e3616a4be952828b3694109d")
 set(_download_2.7.13_md5 "17add4bf0ad0ec2f08e0cae6d205c700")
 set(_download_3.5.1_md5 "be78e48cdfc1a7ad90efff146dce6cfe")
 set(_download_3.5.2_md5 "3fe8434643a78630c61c6464fe2e7e72")
+set(_download_3.6.2_md5 "e1a36bfffdd1d3a780b1825daf16e56c")
+
 set(_extracted_dir "Python-${PY_VERSION}")
 
 if(NOT EXISTS ${SRC_DIR}/${_landmark} AND DOWNLOAD_SOURCES)
@@ -249,7 +251,7 @@ string(REGEX REPLACE "[0-9]\\.[0-9]+\\.([0-9]+)[+]?" "\\1"
 set(PY_VERSION "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}")
 message(STATUS "PY_VERSION: ${PY_VERSION}")
 if(NOT DEFINED _download_${PY_VERSION}_md5)
-    message(FATAL_ERROR "error: unknown python version '${PY_VERSION}'. Valid version should match '2.7.[3-13]' or '3.5.[1-2]'")
+    message(FATAL_ERROR "error: unknown python version '${PY_VERSION}'. Valid version should match '2.7.[3-13]' or '3.5.[1-2]' or '3.6.2'")
 endif()
 
 # Apply patches
@@ -578,7 +580,7 @@ endif()
 # to go in there.  bin/python uses this to auto-determine the exec_prefix
 # and properly generate the _sysconfigdata.py
 file(MAKE_DIRECTORY "${EXTENSION_BUILD_DIR}")
-install(CODE "file(MAKE_DIRECTORY \"\${CMAKE_INSTALL_PREFIX}/${EXTENSION_INSTALL_DIR}\")")
+install(CODE "file(MAKE_DIRECTORY \"\$ENV{DESTDIR}/\${CMAKE_INSTALL_PREFIX}/${EXTENSION_INSTALL_DIR}\")")
 
 if(BUILD_TESTING)
     set(TESTOPTS -l)
