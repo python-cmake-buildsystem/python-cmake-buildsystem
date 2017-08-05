@@ -14,6 +14,7 @@ configuration:
 
 environment:
   matrix:
+  - PY_VERSION: 3.6.2
   - PY_VERSION: 3.5.1
     GENERATOR: Visual Studio 12 2013
   - PY_VERSION: 3.5.1
