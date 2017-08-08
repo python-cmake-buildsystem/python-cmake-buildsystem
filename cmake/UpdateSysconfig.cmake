@@ -35,10 +35,27 @@ endif()
 file(READ ${_pybuilddir}.backup PYBUILDDIR)
 
 # Copy _sysconfigdata.py
+file( GLOB SYSCONFIG_FILE
+      LIST_DIRECTORIES false
+      ${BIN_BUILD_DIR}/${PYBUILDDIR}/_sysconfigdata*.py
+)
+
+list( LENGTH SYSCONFIG_FILE LEN_SYSCONFIG_FILE )
+
+if( NOT LEN_SYSCONFIG_FILE EQUAL 1 )
+  message( FATAL_ERROR "expecting single sysconfig in ${SYSCONFIG_FILE}, got ${LEN_SYSCONFIG_FILE}")
+endif()
+
 execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  ${BIN_BUILD_DIR}/${PYBUILDDIR}/_sysconfigdata.py
-  ${PYTHON_BINARY_DIR}/${EXTENSION_INSTALL_DIR}/_sysconfigdata.py
-  )
+  ${SYSCONFIG_FILE}
+  ${PYTHON_BINARY_DIR}/${EXTENSION_INSTALL_DIR}/
+)
+
+execute_process(COMMAND ${CMAKE_COMMAND} -E touch
+  ${PYTHON_BINARY_DIR}/${EXTENSION_INSTALL_DIR}/_generated_sysconfigdata.timestamp
+)
+
+
 
 # Create new file
 file(WRITE "${_pybuilddir}" "${EXTENSION_INSTALL_DIR}")
