@@ -8,6 +8,10 @@ find_program(PATCH_EXECUTABLE
         "$ENV{ProgramFiles${_x86}}/GnuWin32/bin"
         "$ENV{ProgramFiles}/Git/bin"
         "$ENV{ProgramFiles${_x86}}/Git/bin"
+        "$ENV{LOCALAPPDATA}/Programs/Git/bin"
+        "$ENV{LOCALAPPDATA}/Programs/Git/usr/bin"
+        "$ENV{APPDATA}/Programs/Git/bin"
+        "$ENV{APPDATA}/Programs/Git/usr/bin"
   )
 if(NOT PATCH_EXECUTABLE)
   message(FATAL_ERROR "Could NOT find patch (missing: PATCH_EXECUTABLE)")
