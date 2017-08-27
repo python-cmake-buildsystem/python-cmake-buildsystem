@@ -376,7 +376,10 @@ if(UNIX)
     list(APPEND LIBPYTHON_TARGET_LIBRARIES ${LIBUTIL_LIBRARIES} ${M_LIBRARIES})
 endif()
 if(WIN32 AND IS_PY3)
-    list(APPEND LIBPYTHON_TARGET_LIBRARIES ws2_32) # Required by signalmodule
+    list(APPEND LIBPYTHON_TARGET_LIBRARIES
+        ws2_32 # Required by signalmodule
+        version #
+    )
 endif()
 
 set(LIBPYTHON_FROZEN_SOURCES )
