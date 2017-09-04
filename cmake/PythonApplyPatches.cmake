@@ -1,21 +1,9 @@
 
-set(_x86 "(x86)")  # Indirection required to avoid error related to CMP0053
-find_program(PATCH_EXECUTABLE
-  NAME patch
-  PATHS "$ENV{ProgramFiles}/Git/usr/bin"
-        "$ENV{ProgramFiles${_x86}}/Git/usr/bin"
-        "$ENV{ProgramFiles}/GnuWin32/bin"
-        "$ENV{ProgramFiles${_x86}}/GnuWin32/bin"
-        "$ENV{ProgramFiles}/Git/bin"
-        "$ENV{ProgramFiles${_x86}}/Git/bin"
-        "$ENV{LOCALAPPDATA}/Programs/Git/bin"
-        "$ENV{LOCALAPPDATA}/Programs/Git/usr/bin"
-        "$ENV{APPDATA}/Programs/Git/bin"
-        "$ENV{APPDATA}/Programs/Git/usr/bin"
+set(CMAKE_MODULE_PATH
+  ${CMAKE_CURRENT_LIST_DIR}
+  ${CMAKE_MODULE_PATH}
   )
-if(NOT PATCH_EXECUTABLE)
-  message(FATAL_ERROR "Could NOT find patch (missing: PATCH_EXECUTABLE)")
-endif()
+find_package(Patch REQUIRED)
 
 set(patches_dir "${Python_SOURCE_DIR}/patches")
 
@@ -39,7 +27,7 @@ function(_apply_patches _subdir)
       continue()
     endif()
     execute_process(
-      COMMAND ${PATCH_EXECUTABLE} --quiet -p1 -i ${patches_dir}/${patch}
+      COMMAND ${Patch_EXECUTABLE} --quiet -p1 -i ${patches_dir}/${patch}
       WORKING_DIRECTORY ${SRC_DIR}
       RESULT_VARIABLE result
       ERROR_VARIABLE error
