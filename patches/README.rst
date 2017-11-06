@@ -22,6 +22,7 @@ Patches are organized per python version. Patches specific to a system,
 a system+compiler, or a system+compiler+compiler_version are organized in
 corresponding sub-directories::
 
+  patches/<PY_VERSION_MAJOR>.<PY_VERSION_MINOR>
   patches/<PYTHON_VERSION>
   patches/<PYTHON_VERSION>/<CMAKE_SYSTEM_NAME>
   patches/<PYTHON_VERSION>/<CMAKE_SYSTEM_NAME>-<CMAKE_C_COMPILER_ID>
