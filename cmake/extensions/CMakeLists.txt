@@ -168,7 +168,7 @@ set(winreg3_NAME winreg)
 add_python_extension(${winreg${PY_VERSION_MAJOR}_NAME} REQUIRES WIN32 BUILTIN SOURCES ${SRC_DIR}/PC/${winreg${PY_VERSION_MAJOR}_NAME}.c)
 
 # Python3: Windows-only extensions
-add_python_extension(overlapped
+add_python_extension(_overlapped
     REQUIRES WIN32 IS_PY3
     SOURCES ${SRC_DIR}/Modules/overlapped.c
     LIBRARIES ws2_32
