@@ -54,6 +54,7 @@ function(_apply_patches _subdir)
 endfunction()
 
 # Apply patches
+_apply_patches("${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}")
 _apply_patches("${PY_VERSION}")
 _apply_patches("${PY_VERSION}/${CMAKE_SYSTEM_NAME}")
 _apply_patches("${PY_VERSION}/${CMAKE_SYSTEM_NAME}-${CMAKE_C_COMPILER_ID}")
