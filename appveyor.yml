@@ -14,15 +14,34 @@ configuration:
 
 environment:
   matrix:
-  - PY_VERSION: 3.5.1
+  # 3.6
+  - PY_VERSION: 3.6.2
     GENERATOR: Visual Studio 12 2013
-  - PY_VERSION: 3.5.1
+  - PY_VERSION: 3.6.2
     GENERATOR: Visual Studio 12 2013 Win64
-  - PY_VERSION: 2.7.13
-  - PY_VERSION: 2.7.13
-    GENERATOR: Visual Studio 12 2013 Win64
-  - PY_VERSION: 2.7.13
+  - PY_VERSION: 3.6.2
+    GENERATOR: Visual Studio 14 2015
+  - PY_VERSION: 3.6.2
     GENERATOR: Visual Studio 14 2015 Win64
+  # 3.5
+  - PY_VERSION: 3.5.4
+    GENERATOR: Visual Studio 12 2013
+  - PY_VERSION: 3.5.4
+    GENERATOR: Visual Studio 12 2013 Win64
+  - PY_VERSION: 3.5.4
+    GENERATOR: Visual Studio 14 2015
+  - PY_VERSION: 3.5.4
+    GENERATOR: Visual Studio 14 2015 Win64
+  # 2.7
+  - PY_VERSION: 2.7.14
+    GENERATOR: Visual Studio 12 2013 Win64
+  - PY_VERSION: 2.7.14
+    GENERATOR: Visual Studio 14 2015 Win64
+  - PY_VERSION: 2.7.14
+    GENERATOR: Visual Studio 12 2013 Win64
+  - PY_VERSION: 2.7.14
+    GENERATOR: Visual Studio 14 2015 Win64
+  - PY_VERSION: 2.7.13
   - PY_VERSION: 2.7.12
   - PY_VERSION: 2.7.11
   - PY_VERSION: 2.7.10
