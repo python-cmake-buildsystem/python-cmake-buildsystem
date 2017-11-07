@@ -1,35 +1,14 @@
 os:
   - linux
-  - osx
 
 language: c
 
 compiler:
  - gcc
- - clang
 
 env:
- # 3.6
- - PY_VERSION=3.6.2
- - PY_VERSION=3.6.1
- # 3.5
- - PY_VERSION=3.5.4
- - PY_VERSION=3.5.3
- - PY_VERSION=3.5.2
- - PY_VERSION=3.5.1
- # 2.7
- - PY_VERSION=2.7.14
- - PY_VERSION=2.7.13
- - PY_VERSION=2.7.12
- - PY_VERSION=2.7.11
- - PY_VERSION=2.7.10
- - PY_VERSION=2.7.9
- - PY_VERSION=2.7.8
- - PY_VERSION=2.7.7
- - PY_VERSION=2.7.6
- - PY_VERSION=2.7.5
- - PY_VERSION=2.7.4
- - PY_VERSION=2.7.3
+ global:
+  - secure: "fjp3C/ftKPLF01wClsWXI2wz4pfgSIwiF8VUUOCjMkgLSIPWQROI3yGdZRuG7KBKBng/ssRRJ/IW98v4lRzkbx3WK6wsyubzE5+a3JSyxNB47mS1ZDIspOWhjGAbtUg5sStkE2pwWl87jpIq5HZr2ugKcR5ShSaNcbv/YrUGdD0="
 
 sudo: false
 
@@ -46,9 +25,19 @@ addons:
 before_script:
  - wget -P /tmp/ https://raw.githubusercontent.com/davidsansome/python-cmake-buildsystem/dashboard/travis_dashboard.cmake
 
+install:
+ - wget https://raw.githubusercontent.com/scikit-build/scikit-ci-addons/master/travis/enable-worker-remote-access.sh -O ../enable-worker-remote-access.sh
+ - chmod u+x ../enable-worker-remote-access.sh
+
 script:
  - ctest -V -S /tmp/travis_dashboard.cmake
 
 after_script:
  - cat ${TRAVIS_BUILD_DIR}-build/CMakeCache.txt
+
+after_success:
+ - ../enable-worker-remote-access.sh
+
+after_failure:
+ - ../enable-worker-remote-access.sh
 
