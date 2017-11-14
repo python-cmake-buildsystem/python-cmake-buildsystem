@@ -513,6 +513,7 @@ if(BUILD_LIBPYTHON_SHARED)
         set(pythonstub_def ${PROJECT_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}/${CMAKE_CFG_INTDIR}/python3stub.def)
         add_custom_command(
             OUTPUT ${pythonstub_def}
+            DEPENDS ${SRC_DIR}/PC/python3.def
             COMMAND ${CMAKE_COMMAND}
                 -DINPUT_DEF_FILE:PATH=${SRC_DIR}/PC/python3.def
                 -DOUTPUT_DEF_FILE:PATH=${PROJECT_BINARY_DIR}/CMakeFiles/python3stub.def
@@ -521,7 +522,22 @@ if(BUILD_LIBPYTHON_SHARED)
                 ${PROJECT_BINARY_DIR}/CMakeFiles/python3stub.def
                 ${pythonstub_def}
         )
-        add_custom_target(generate_libpythonstub_def DEPENDS ${pythonstub_def})
+
+        # Build 'python3stub.lib' before linking 'python3.dll'
+        # Obtain canonical absolute filename of python3stub.lib in python3stub_lib
+        get_filename_component (python3stub_lib "${LIBPYTHON_ARCHIVEDIR}/${CMAKE_CFG_INTDIR}/python3stub.lib" ABSOLUTE BASE_DIR ${CMAKE_BINARY_DIR})
+        set(machine X86)
+        if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
+            set(machine X64)
+        endif()
+        add_custom_command(
+            OUTPUT ${python3stub_lib}
+            DEPENDS ${pythonstub_def}
+            COMMAND lib /nologo /def:${pythonstub_def} /out:${python3stub_lib} /MACHINE:${machine}
+            COMMENT "Rebuilding ${python3stub_lib}"
+            VERBATIM
+        )
+        add_custom_target(generate_python3stub_lib DEPENDS ${python3stub_lib})
 
         # Build 'python3.dll'
         add_library(${targetname} SHARED ${SRC_DIR}/PC/python3dll.c ${SRC_DIR}/PC/python3.def)
@@ -531,21 +547,7 @@ if(BUILD_LIBPYTHON_SHARED)
             RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR}
             INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/${LIBPYTHON_LIBDIR}
         )
-        add_dependencies(${targetname} generate_libpythonstub_def)
-
-        # Build 'python3stub.lib' before linking 'python3.dll'
-        set(python3stub_lib ${PROJECT_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}/${CMAKE_CFG_INTDIR}/python3stub.lib)
-        set(machine X86)
-        if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
-            set(machine X64)
-        endif()
-        add_custom_command(
-            TARGET ${targetname} PRE_LINK
-            COMMAND lib /nologo /def:${pythonstub_def} /out:${python3stub_lib} /MACHINE:${machine}
-            COMMENT "Rebuilding python3stub.lib"
-            VERBATIM
-        )
-
+        add_dependencies(${targetname} generate_python3stub_lib)
         target_link_libraries(${targetname} ${python3stub_lib})
     endif()
 
