@@ -12,17 +12,26 @@ platform:
 configuration:
   - Release
 
+# Default GENERATOR is set to "Visual Studio 9 2008"
+# See https://github.com/python-cmake-buildsystem/python-cmake-buildsystem/blob/dashboard/appveyor_dashboard.cmake
 environment:
   matrix:
-  - PY_VERSION: 3.5.1
-    GENERATOR: Visual Studio 12 2013
-  - PY_VERSION: 3.5.1
-    GENERATOR: Visual Studio 12 2013 Win64
-  - PY_VERSION: 2.7.14
-  - PY_VERSION: 2.7.14
-    GENERATOR: Visual Studio 12 2013 Win64
+  - PY_VERSION: 3.6.4
+    GENERATOR: Visual Studio 14 2015 Win64
+  - PY_VERSION: 3.6.4
+    GENERATOR: Visual Studio 14 2015
+
+  - PY_VERSION: 3.5.5
+    GENERATOR: Visual Studio 14 2015 Win64
+  - PY_VERSION: 3.5.5
+    GENERATOR: Visual Studio 14 2015
+
   - PY_VERSION: 2.7.14
     GENERATOR: Visual Studio 14 2015 Win64
+  - PY_VERSION: 2.7.14
+    GENERATOR: Visual Studio 12 2013 Win64
+
+  - PY_VERSION: 2.7.14
   - PY_VERSION: 2.7.13
   - PY_VERSION: 2.7.12
   - PY_VERSION: 2.7.11
