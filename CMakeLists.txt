@@ -177,7 +177,7 @@ get_filename_component(_parent_dir ${CMAKE_CURRENT_BINARY_DIR} PATH)
 string(REGEX REPLACE "rc[1-9]$" "" _py_version_patch_no_rc ${PY_VERSION_PATCH})
 set(_py_version_no_rc "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${_py_version_patch_no_rc}")
 set(_download_link "https://www.python.org/ftp/python/${_py_version_no_rc}/Python-${PY_VERSION}.tgz")
-# Variable below represent the set of supported python version.
+# Variable below represent the set of available python version.
 set(_download_2.7.3_md5 "2cf641732ac23b18d139be077bd906cd")
 set(_download_2.7.4_md5 "592603cfaf4490a980e93ecb92bde44a")
 set(_download_2.7.5_md5 "b4f01a1d0ba0b46b05c73b2ac909b1df")
@@ -200,6 +200,9 @@ if(NOT EXISTS ${SRC_DIR}/${_landmark} AND DOWNLOAD_SOURCES)
         message(STATUS "${_filename} already downloaded")
     else()
         message(STATUS "Downloading ${_download_link}")
+        if(NOT DEFINED _download_${PY_VERSION}_md5)
+            message(FATAL_ERROR "Selected PY_VERSION [${PY_VERSION}] is not associated with any checksum. Consider updating this CMakeLists.txt setting _download_${PY_VERSION}_md5 variable")
+        endif()
         file(
           DOWNLOAD ${_download_link} ${_archive_filepath}
           EXPECTED_MD5 ${_download_${PY_VERSION}_md5}
@@ -249,7 +252,7 @@ string(REGEX REPLACE "[0-9]\\.[0-9]+\\.([0-9]+)[+]?" "\\1"
 set(PY_VERSION "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}")
 message(STATUS "PY_VERSION: ${PY_VERSION}")
 if(NOT DEFINED _download_${PY_VERSION}_md5)
-    message(FATAL_ERROR "error: unknown python version '${PY_VERSION}'. Valid version should match '2.7.[3-13]' or '3.5.[1-2]'")
+    message(WARNING "warning: selected python version '${PY_VERSION}' is not tested. Tested version should match '2.7.[3-13]' or '3.5.[1-2]'")
 endif()
 
 # Apply patches
