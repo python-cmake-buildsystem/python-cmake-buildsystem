@@ -1,5 +1,5 @@
 env:
-  - IMAGE=linux-x86 PY_VERSION=2.7.13
+  - IMAGE=linux-x86 PY_VERSION=2.7.14
   - IMAGE=linux-x86 PY_VERSION=3.5.2
 command:
   - |
