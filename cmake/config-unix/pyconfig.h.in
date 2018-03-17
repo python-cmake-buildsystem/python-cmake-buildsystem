@@ -1052,6 +1052,9 @@
 /* Define to 1 if you have the <sys/sys_domain.h> header file. [Python 3] */
 #cmakedefine HAVE_SYS_SYS_DOMAIN_H 1
 
+/* Define to 1 if you have the <sys/sysmacros.h> header file. */
+#cmakedefine HAVE_SYS_SYSMACROS_H 1
+
 /* Define to 1 if you have the <sys/termio.h> header file. */
 #cmakedefine HAVE_SYS_TERMIO_H 1
 
