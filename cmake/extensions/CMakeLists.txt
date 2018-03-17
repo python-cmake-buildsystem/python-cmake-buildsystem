@@ -470,16 +470,25 @@ if(EXPAT_LIBRARIES AND EXPAT_INCLUDE_DIRS)
     )
 else()
     set(_pyexpat_definitions XML_STATIC)
+    set(_pyexpat_SOURCES
+        pyexpat.c
+        expat/xmlparse.c
+        expat/xmlrole.c
+        expat/xmltok.c
+        )
     if(UNIX)
         list(APPEND _pyexpat_definitions HAVE_EXPAT_CONFIG_H)
+        # bpo-30947: Python uses best available entropy sources to
+        # call XML_SetHashSalt(), expat entropy sources are not needed
+        list(APPEND _pyexpat_definitions XML_POOR_ENTROPY)
     elseif(WIN32)
         list(APPEND _pyexpat_definitions COMPILED_FROM_DSP)
+        if(EXISTS "${SRC_DIR}/Modules/expat/loadlibrary.c")
+            list(APPEND _pyexpat_SOURCES "${SRC_DIR}/Modules/expat/loadlibrary.c")
+        endif()
     endif()
     add_python_extension(pyexpat
-        SOURCES pyexpat.c
-                expat/xmlparse.c
-                expat/xmlrole.c
-                expat/xmltok.c
+        SOURCES ${_pyexpat_SOURCES}
         DEFINITIONS ${_pyexpat_definitions}
         INCLUDEDIRS ${SRC_DIR}/Modules/expat
     )
