@@ -3,7 +3,28 @@ set(CMAKE_MODULE_PATH
   ${CMAKE_CURRENT_LIST_DIR}
   ${CMAKE_MODULE_PATH}
   )
-find_package(Patch REQUIRED)
+
+if(NOT DEFINED PATCH_COMMAND)
+  find_package(Git)
+  if(Git_FOUND)
+    set(PATCH_COMMAND ${GIT_EXECUTABLE} apply)
+  else()
+    find_package(Patch)
+    if(Patch_FOUND)
+      # Since support for git diffs which copy or rename files was
+      # added in patch 2.7, we can not use older version.
+      if("${Patch_VERSION}" VERSION_EQUAL "2.7.0" OR "${Patch_VERSION}" VERSION_GREATER "2.7.0")
+        set(PATCH_COMMAND ${Patch_EXECUTABLE} --quiet -p1 -i)
+      else()
+        set(_reason "Found Patch executable [${Patch_EXECUTABLE}] version [${Patch_VERSION}] older than 2.7.0 missing support for copy or rename files.")
+      endif()
+    endif()
+  endif()
+endif()
+
+if(NOT DEFINED PATCH_COMMAND)
+  message(FATAL_ERROR "Could NOT find a suitable version of Git or Patch executable to apply patches. ${_reason}")
+endif()
 
 set(patches_dir "${Python_SOURCE_DIR}/patches")
 
@@ -32,7 +53,7 @@ function(_apply_patches _subdir)
       continue()
     endif()
     execute_process(
-      COMMAND ${Patch_EXECUTABLE} --quiet -p1 -i ${patches_dir}/${patch}
+      COMMAND ${PATCH_COMMAND} ${patches_dir}/${patch}
       WORKING_DIRECTORY ${SRC_DIR}
       RESULT_VARIABLE result
       ERROR_VARIABLE error
