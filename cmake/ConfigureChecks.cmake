@@ -2149,6 +2149,8 @@ python_platform_test_run(
   INVERT
   )
 
+endif(IS_PY3)
+
 # Check whether the compiler supports computed gotos
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_computed_gotos.c)
 file(WRITE ${check_src} "int main(int argc, char **argv)
@@ -2168,6 +2170,8 @@ python_platform_test_run(
   ${check_src}
   DIRECT
   )
+
+if(IS_PY3)
 
 # Availability of -O2
 cmake_push_check_state()
@@ -2265,7 +2269,7 @@ python_platform_test(
   DIRECT
   )
 
-endif()
+endif(IS_PY3)
 
 if(HAVE_LONG_LONG)
   # Checking for %lld and %llu printf() format support
