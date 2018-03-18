@@ -7,7 +7,7 @@ set(CMAKE_MODULE_PATH
 if(NOT DEFINED PATCH_COMMAND)
   find_package(Git)
   if(Git_FOUND)
-    set(PATCH_COMMAND ${GIT_EXECUTABLE} apply)
+    set(PATCH_COMMAND ${GIT_EXECUTABLE} apply --whitespace=fix)
   else()
     find_package(Patch)
     if(Patch_FOUND)
