@@ -398,6 +398,7 @@ include_directories(${SRC_DIR}/Python)
 
 # Set cflags used by all components
 if(CMAKE_C_COMPILER_ID MATCHES GNU)
+    append_if_absent(CMAKE_C_FLAGS "-std=c99")
     append_if_absent(CMAKE_C_FLAGS "-Wall")
     append_if_absent(CMAKE_C_FLAGS "-Wstrict-prototypes")
     append_if_absent(CMAKE_C_FLAGS "-fno-strict-aliasing")
