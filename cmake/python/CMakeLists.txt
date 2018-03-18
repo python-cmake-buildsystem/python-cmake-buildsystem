@@ -50,23 +50,30 @@ endif()
 
 if(UNIX AND PY_VERSION VERSION_GREATER "2.7.4")
     # Setup landmark allowing to run the interpreter from a build tree. See 'getpath.c' for details.
+    set(_sysconfigdata_py "_sysconfigdata.py")
+    if("${PY_VERSION}" VERSION_EQUAL "3.6.0" OR "${PY_VERSION}" VERSION_GREATER "3.6.0")
+        # XXX Add support for _PYTHON_SYSCONFIGDATA_NAME env. variable
+        set(MULTIARCH "")
+        set(_sysconfigdata_py "_sysconfigdata_${ABIFLAGS}_${PY_PLATFORM}_${MULTIARCH}.py")
+    endif()
     add_custom_command(
-        OUTPUT ${BIN_BUILD_DIR}/pybuilddir.txt ${EXTENSION_BUILD_DIR}/_sysconfigdata.py
+        OUTPUT ${BIN_BUILD_DIR}/pybuilddir.txt ${EXTENSION_BUILD_DIR}/${_sysconfigdata_py}
         COMMAND ${PYTHON_WRAPPER_COMMAND}
           ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> -E -S -m sysconfig --generate-posix-vars
         COMMAND ${CMAKE_COMMAND}
           -DBIN_BUILD_DIR:PATH=${BIN_BUILD_DIR}
+          -DSYSCONFIGDATA_PY:STRING=${_sysconfigdata_py}
           -DPYTHON_BINARY_DIR:PATH=${PROJECT_BINARY_DIR}
           -DEXTENSION_INSTALL_DIR:PATH=${EXTENSION_INSTALL_DIR}
           -P ${PROJECT_SOURCE_DIR}/cmake/UpdateSysconfig.cmake
-        COMMENT "Relocate _sysconfigdata.py and update pybuilddir.txt"
+        COMMENT "Relocate ${_sysconfigdata_py} and update pybuilddir.txt"
         WORKING_DIRECTORY ${BIN_BUILD_DIR}
         DEPENDS python
         )
     add_custom_target(update_sysconfig ALL
-        DEPENDS ${BIN_BUILD_DIR}/pybuilddir.txt ${EXTENSION_BUILD_DIR}/_sysconfigdata.py
+        DEPENDS ${BIN_BUILD_DIR}/pybuilddir.txt ${EXTENSION_BUILD_DIR}/${_sysconfigdata_py}
         )
-    install(FILES ${EXTENSION_BUILD_DIR}/_sysconfigdata.py
+    install(FILES ${EXTENSION_BUILD_DIR}/${_sysconfigdata_py}
         DESTINATION ${PYTHONHOME}/)
 endif()
 

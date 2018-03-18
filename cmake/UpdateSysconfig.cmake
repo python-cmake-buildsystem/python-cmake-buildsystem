@@ -7,12 +7,12 @@
 #
 #  1. Backup original pybuilddir.txt to pybuilddir.txt.backup
 #  2. Read the value PYBUILDDIR written in pybuilddir.txt
-#  3. Copy the file <PYBUILDDIR>/_sysconfigdata.py to <EXTENSION_INSTALL_DIR>
+#  3. Copy the file <PYBUILDDIR>/<SYSCONFIGDATA_PY> to <EXTENSION_INSTALL_DIR>
 #  4. Create a new pybuilddir.txt file with <EXTENSION_INSTALL_DIR>
 #
 
 # Sanity checks
-foreach(var BIN_BUILD_DIR PYTHON_BINARY_DIR EXTENSION_INSTALL_DIR)
+foreach(var BIN_BUILD_DIR PYTHON_BINARY_DIR EXTENSION_INSTALL_DIR SYSCONFIGDATA_PY)
   if(NOT DEFINED ${var})
     message(FATAL_ERROR "CMake parameter -D${var} is missing !")
   endif()
@@ -34,10 +34,10 @@ endif()
 # Read PYBUILDDIR value
 file(READ ${_pybuilddir}.backup PYBUILDDIR)
 
-# Copy _sysconfigdata.py
+# Copy SYSCONFIGDATA_PY
 execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different
-  ${BIN_BUILD_DIR}/${PYBUILDDIR}/_sysconfigdata.py
-  ${PYTHON_BINARY_DIR}/${EXTENSION_INSTALL_DIR}/_sysconfigdata.py
+  ${BIN_BUILD_DIR}/${PYBUILDDIR}/${SYSCONFIGDATA_PY}
+  ${PYTHON_BINARY_DIR}/${EXTENSION_INSTALL_DIR}/${SYSCONFIGDATA_PY}
   )
 
 # Create new file
