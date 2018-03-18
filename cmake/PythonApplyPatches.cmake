@@ -8,6 +8,21 @@ if(NOT DEFINED PATCH_COMMAND)
   find_package(Git)
   if(Git_FOUND)
     set(PATCH_COMMAND ${GIT_EXECUTABLE} apply --whitespace=fix)
+    # Initialize Git repo to ensure "git apply" works when source tree
+    # is located within an already versioned tree.
+    if(NOT EXISTS "${SRC_DIR}/.git")
+      execute_process(
+        COMMAND git init
+        WORKING_DIRECTORY ${SRC_DIR}
+        RESULT_VARIABLE result
+        ERROR_VARIABLE error
+        ERROR_STRIP_TRAILING_WHITESPACE
+        OUTPUT_QUIET
+        )
+      if(NOT result EQUAL 0)
+        message(FATAL_ERROR "${output}\n${error}")
+      endif()
+    endif()
   else()
     find_package(Patch)
     if(Patch_FOUND)
