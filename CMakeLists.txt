@@ -203,6 +203,8 @@ set(_download_3.6.1_md5 "2d0fc9f3a5940707590e07f03ecb08b9")
 set(_download_3.6.2_md5 "e1a36bfffdd1d3a780b1825daf16e56c")
 set(_download_3.6.3_md5 "e9180c69ed9a878a4a8a3ab221e32fa9")
 set(_download_3.6.4_md5 "9de6494314ea199e3633211696735f65")
+# 3.7.x
+set(_download_3.7.0b2_md5 "1d49b3460cc1ac80ade91114eae53c61")
 
 set(_extracted_dir "Python-${PY_VERSION}")
 

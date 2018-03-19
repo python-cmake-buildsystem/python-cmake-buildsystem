@@ -243,13 +243,21 @@ set(PYTHON_COMMON_SOURCES
     ${SRC_DIR}/Python/pystrcmp.c
     ${SRC_DIR}/Python/Python-ast.c
     ${SRC_DIR}/Python/pythonrun.c
-    ${SRC_DIR}/Python/random.c
     ${SRC_DIR}/Python/structmember.c
     ${SRC_DIR}/Python/symtable.c
     ${SRC_DIR}/Python/sysmodule.c
     ${SRC_DIR}/Python/traceback.c
     ${SRC_DIR}/Python/_warnings.c
 )
+if(PY_VERSION VERSION_LESS "3.7")
+    list(APPEND PYTHON_COMMON_SOURCES
+        ${SRC_DIR}/Python/random.c
+    )
+else()
+    list(APPEND PYTHON_COMMON_SOURCES
+        ${SRC_DIR}/Python/bootstrap_hash.c
+    )
+endif()
 if(UNIX)
     list(APPEND PYTHON_COMMON_SOURCES
         ${SRC_DIR}/Python/frozenmain.c

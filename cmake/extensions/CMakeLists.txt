@@ -306,37 +306,46 @@ else()
             DEFINITIONS MACOSX
         )
     else()
-        if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
-          set(_libffi_system_extra_src
-                _ctypes/libffi/src/${_libffi_system_dir}/ffi64.c
-                _ctypes/libffi/src/${_libffi_system_dir}/unix64.S
+        set(_libffi_sources)
+        set(_libffi_include_dirs)
+        if(PY_VERSION VERSION_LESS "3.7")
+            if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
+                set(_libffi_system_extra_src
+                    _ctypes/libffi/src/${_libffi_system_dir}/ffi64.c
+                    _ctypes/libffi/src/${_libffi_system_dir}/unix64.S
+                    )
+            elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i686")
+                set(_libffi_system_extra_src
+                    _ctypes/libffi/src/${_libffi_system_dir}/win32.S
+                    )
+            endif()
+            # To facilitate an eventual contribution of the configuration
+            # of fficonfig.h to the upstream project, corresponding tests
+            # in ConfigureChecks.cmake are labeled using this convention:
+            # * "libffi specific"
+            # * "libffi and cpython"
+            set(LIBFFI_VERSION "3.1")
+            configure_file(
+                ${PROJECT_SOURCE_DIR}/cmake/fficonfig.h.in
+                ${INCLUDE_BUILD_DIR}/fficonfig.h
                 )
-        elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i686")
-          set(_libffi_system_extra_src
-                _ctypes/libffi/src/${_libffi_system_dir}/win32.S
+            set(_libffi_sources
+                _ctypes/libffi/src/closures.c
+                _ctypes/libffi/src/prep_cif.c
+                _ctypes/libffi/src/${_libffi_system_dir}/ffi.c
+                _ctypes/libffi/src/${_libffi_system_dir}/sysv.S
+                ${_libffi_system_extra_src}
                 )
-        endif()
-        # To facilitate an eventual contribution of the configuration
-        # of fficonfig.h to the upstream project, corresponding tests
-        # in ConfigureChecks.cmake are labeled using this convention:
-        # * "libffi specific"
-        # * "libffi and cpython"
-        set(LIBFFI_VERSION "3.1")
-        configure_file(
-          ${PROJECT_SOURCE_DIR}/cmake/fficonfig.h.in
-          ${INCLUDE_BUILD_DIR}/fficonfig.h
-          )
-        add_python_extension(_ctypes
-            SOURCES ${ctypes_COMMON_SOURCES}
-                    _ctypes/libffi/src/closures.c
-                    _ctypes/libffi/src/prep_cif.c
-                    _ctypes/libffi/src/${_libffi_system_dir}/ffi.c
-                    _ctypes/libffi/src/${_libffi_system_dir}/sysv.S
-                    ${_libffi_system_extra_src}
-            INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi/src/${_libffi_system_dir}
+            set(_libffi_include_dirs
+                INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi/src/${_libffi_system_dir}
                         ${SRC_DIR}/Modules/_ctypes/libffi/include
                         ${INCLUDE_BUILD_DIR}      # For fficonfig.h
                         ${PROJECT_SOURCE_DIR}/cmake # For ffi.h
+                )
+        endif()
+        add_python_extension(_ctypes
+            SOURCES ${ctypes_COMMON_SOURCES} ${_libffi_sources}
+            ${_libffi_include_dirs}
         )
     endif()
 endif()
