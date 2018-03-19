@@ -264,12 +264,20 @@ string(REGEX REPLACE "([0-9])\\..+" "\\1"
     PY_VERSION_MAJOR ${_version})
 string(REGEX REPLACE "[0-9]\\.([0-9]+)\\..+" "\\1"
     PY_VERSION_MINOR ${_version})
-string(REGEX REPLACE "[0-9]\\.[0-9]+\\.([0-9]+)[+]?" "\\1"
+string(REGEX REPLACE "[0-9]\\.[0-9]+\\.([0-9]+).+" "\\1"
     PY_VERSION_PATCH ${_version})
+string(REGEX REPLACE "[0-9]\\.[0-9]+\\.[0-9]+(.+)" "\\1"
+    _release_level_and_serial ${_version})
+string(REGEX REPLACE "([abc]+)[0-9]+" "\\1"
+    PY_RELEASE_LEVEL ${_release_level_and_serial})
+string(REGEX REPLACE "[abc]+([0-9]+)" "\\1"
+    PY_RELEASE_SERIAL ${_release_level_and_serial})
 set(PY_VERSION "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}")
-message(STATUS "PY_VERSION: ${PY_VERSION}")
-if(NOT DEFINED _download_${PY_VERSION}_md5)
-    message(WARNING "warning: selected python version '${PY_VERSION}' is not tested. Tested versions match '2.7.[3-15]' or '3.5.[1-5]' or `3.6.[0-4]`")
+set(PY_VERSION_LONG "${PY_VERSION}${PY_RELEASE_LEVEL}${PY_RELEASE_SERIAL}")
+message(STATUS "PY_VERSION     : ${PY_VERSION}")
+message(STATUS "PY_VERSION_LONG: ${PY_VERSION_LONG}")
+if(NOT DEFINED _download_${PY_VERSION_LONG}_md5)
+    message(WARNING "warning: selected python version '${PY_VERSION_LONG}' is not tested. Tested versions match '2.7.[3-14]' or '3.5.[1-5]' or `3.6.[0-4]`")
 endif()
 
 set(PYTHON_VERSION "${PY_VERSION}" CACHE STRING "The version of Python to build." FORCE)
