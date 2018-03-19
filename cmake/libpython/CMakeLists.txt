@@ -168,10 +168,16 @@ elseif(WIN32)
         ${SRC_DIR}/PC/dl_nt.c
         ${SRC_DIR}/Python/dynload_win.c
         )
+    set(ms_dll_id "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}")
+    if(${CMAKE_SIZEOF_VOID_P} EQUAL 4)
+      set(ms_dll_id "${ms_dll_id}-32")
+    endif()
     set_property(
         SOURCE ${SRC_DIR}/PC/dl_nt.c
-        PROPERTY COMPILE_DEFINITIONS Py_ENABLE_SHARED
-    )
+        PROPERTY COMPILE_DEFINITIONS
+            Py_ENABLE_SHARED
+            MS_DLL_ID="${ms_dll_id}"
+        )
 endif()
 
 set(THREAD_SOURCES )
@@ -377,6 +383,12 @@ if(UNIX)
 endif()
 if(WIN32 AND IS_PY3)
     list(APPEND LIBPYTHON_TARGET_LIBRARIES ws2_32) # Required by signalmodule
+    if(PYTHON_VERSION VERSION_EQUAL "3.5" OR PYTHON_VERSION VERSION_GREATER "3.5")
+        list(APPEND LIBPYTHON_TARGET_LIBRARIES version) # Required by sysmodule
+    endif()
+    if(PYTHON_VERSION VERSION_EQUAL "3.6" OR PYTHON_VERSION VERSION_GREATER "3.6")
+        list(APPEND LIBPYTHON_TARGET_LIBRARIES shlwapi) # Required by PC/getpathp
+    endif()
 endif()
 
 set(LIBPYTHON_FROZEN_SOURCES )

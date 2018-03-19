@@ -1,0 +1,43 @@
+From 6028e7fdf121745c587a11f35b68ced05a78a254 Mon Sep 17 00:00:00 2001
+From: Ned Deily <nad@acm.org>
+Date: Wed, 5 Feb 2014 16:52:26 -0800
+Subject: [PATCH 3/3] Backport "Issue #20374: Avoid compiler warnings when
+ compiling readline with libedit."
+
+See python/cpython@b0fd12d
+---
+ Modules/readline.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/Modules/readline.c b/Modules/readline.c
+index 0e46d4e..67056ad 100644
+--- a/Modules/readline.c
++++ b/Modules/readline.c
+@@ -735,15 +735,24 @@ on_hook(PyObject *func)
+     return result;
+ }
+ 
++
+ static int
++#if defined(_RL_FUNCTION_TYPEDEF)
+ on_startup_hook(void)
++#else
++on_startup_hook()
++#endif
+ {
+     return on_hook(startup_hook);
+ }
+ 
+ #ifdef HAVE_RL_PRE_INPUT_HOOK
+ static int
++#if defined(_RL_FUNCTION_TYPEDEF)
+ on_pre_input_hook(void)
++#else
++on_pre_input_hook()
++#endif
+ {
+     return on_hook(pre_input_hook);
+ }
+-- 
+2.5.0
+

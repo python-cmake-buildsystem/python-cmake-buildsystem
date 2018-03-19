@@ -15,6 +15,7 @@ Makefile
 
 # Ignore all dotfiles...
 .*
+!.gitattributes
 !.circleci-matrix.yml
 !.travis.yml
 

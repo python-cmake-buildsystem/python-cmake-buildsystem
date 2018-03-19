@@ -58,6 +58,16 @@ endif()
 if(Patch_EXECUTABLE AND NOT TARGET Patch::patch)
   add_executable(Patch::patch IMPORTED)
   set_property(TARGET Patch::patch PROPERTY IMPORTED_LOCATION ${Patch_EXECUTABLE})
+
+  execute_process(COMMAND ${Patch_EXECUTABLE} --version
+                  OUTPUT_VARIABLE patch_version
+                  ERROR_QUIET
+                  OUTPUT_STRIP_TRAILING_WHITESPACE
+                  )
+  set(_patch_version_regex ".*patch ([0-9]+\\.[0-9]+\\.[0-9]+)")
+  if(patch_version MATCHES "${_patch_version_regex}")
+    set(Patch_VERSION ${CMAKE_MATCH_1})
+  endif()
 endif()
 
 unset(_patch_path)
@@ -65,4 +75,5 @@ unset(_doc)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Patch
-                                  REQUIRED_VARS Patch_EXECUTABLE)
+                                  REQUIRED_VARS Patch_EXECUTABLE
+                                  VERSION_VAR Patch_VERSION)

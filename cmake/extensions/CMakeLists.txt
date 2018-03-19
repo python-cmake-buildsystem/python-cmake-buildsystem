@@ -65,7 +65,8 @@ add_python_extension(_functools ${WIN32_BUILTIN} SOURCES _functoolsmodule.c) # T
 add_python_extension(future_builtins ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES future_builtins.c)
 add_python_extension(_heapq ${WIN32_BUILTIN} SOURCES _heapqmodule.c)
 add_python_extension(_hotshot ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES _hotshot.c)
-add_python_extension(_io BUILTIN SOURCES
+
+set(_io_SOURCES
     _io/_iomodule.c
     _io/bufferedio.c
     _io/bytesio.c
@@ -73,7 +74,14 @@ add_python_extension(_io BUILTIN SOURCES
     _io/iobase.c
     _io/stringio.c
     _io/textio.c
-)
+    )
+if(WIN32 AND EXISTS ${SRC_DIR}/Modules/_io/winconsoleio.c)
+    list(APPEND _io_SOURCES
+        ${SRC_DIR}/Modules/_io/winconsoleio.c
+        )
+endif()
+add_python_extension(_io BUILTIN SOURCES ${_io_SOURCES})
+
 add_python_extension(itertools ${WIN32_BUILTIN} SOURCES itertoolsmodule.c) # Functions creating iterators for efficient looping
 add_python_extension(_json ${WIN32_BUILTIN} SOURCES _json.c)
 add_python_extension(_locale ${WIN32_BUILTIN} SOURCES _localemodule.c) # access to ISO C locale support
@@ -470,16 +478,25 @@ if(EXPAT_LIBRARIES AND EXPAT_INCLUDE_DIRS)
     )
 else()
     set(_pyexpat_definitions XML_STATIC)
+    set(_pyexpat_SOURCES
+        pyexpat.c
+        expat/xmlparse.c
+        expat/xmlrole.c
+        expat/xmltok.c
+        )
     if(UNIX)
         list(APPEND _pyexpat_definitions HAVE_EXPAT_CONFIG_H)
+        # bpo-30947: Python uses best available entropy sources to
+        # call XML_SetHashSalt(), expat entropy sources are not needed
+        list(APPEND _pyexpat_definitions XML_POOR_ENTROPY)
     elseif(WIN32)
         list(APPEND _pyexpat_definitions COMPILED_FROM_DSP)
+        if(EXISTS "${SRC_DIR}/Modules/expat/loadlibrary.c")
+            list(APPEND _pyexpat_SOURCES "${SRC_DIR}/Modules/expat/loadlibrary.c")
+        endif()
     endif()
     add_python_extension(pyexpat
-        SOURCES pyexpat.c
-                expat/xmlparse.c
-                expat/xmlrole.c
-                expat/xmltok.c
+        SOURCES ${_pyexpat_SOURCES}
         DEFINITIONS ${_pyexpat_definitions}
         INCLUDEDIRS ${SRC_DIR}/Modules/expat
     )

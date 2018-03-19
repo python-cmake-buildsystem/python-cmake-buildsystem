@@ -263,11 +263,13 @@ check_include_files(sys/event.h HAVE_SYS_EVENT_H)
 check_include_files(sys/file.h HAVE_SYS_FILE_H)
 check_include_files(sys/loadavg.h HAVE_SYS_LOADAVG_H)
 check_include_files(sys/lock.h HAVE_SYS_LOCK_H)
+check_include_files(sys/sysmacros.h HAVE_SYS_SYSMACROS_H)
 check_include_files(sys/mkdev.h HAVE_SYS_MKDEV_H)
 check_include_files(sys/mman.h HAVE_SYS_MMAN_H) # libffi and cpython
 check_include_files(sys/modem.h HAVE_SYS_MODEM_H)
 check_include_files(sys/param.h HAVE_SYS_PARAM_H)
 check_include_files(sys/poll.h HAVE_SYS_POLL_H)
+check_include_files(sys/random.h HAVE_SYS_RANDOM_H)
 check_include_files(sys/resource.h HAVE_SYS_RESOURCE_H)
 check_include_files(sys/select.h HAVE_SYS_SELECT_H)
 check_include_files(sys/statvfs.h HAVE_SYS_STATVFS_H)
@@ -659,6 +661,8 @@ set(CFG_HEADERS )
 
 add_cond(CFG_HEADERS HAVE_SYS_EPOLL_H sys/epoll.h)
 add_cond(CFG_HEADERS HAVE_SYS_EVENT_H sys/event.h)
+add_cond(CFG_HEADERS HAVE_SYS_RANDOM_H sys/random.h)
+add_cond(CFG_HEADERS HAVE_SYS_SYSMACROS_H sys/sysmacros.h)
 add_cond(CFG_HEADERS HAVE_SYS_TYPES_H sys/types.h)
 add_cond(CFG_HEADERS HAVE_SYS_TIME_H sys/time.h)
 add_cond(CFG_HEADERS HAVE_SYS_FILE_H sys/file.h)
@@ -763,7 +767,7 @@ check_symbol_exists(getpagesize  "${CFG_HEADERS}" HAVE_GETPAGESIZE)
 check_symbol_exists(getpgid      "${CFG_HEADERS}" HAVE_GETPGID)
 check_symbol_exists(getpgrp      "${CFG_HEADERS}" HAVE_GETPGRP)
 check_symbol_exists(getpid       "${CFG_HEADERS}" HAVE_GETPID)
-check_symbol_exists(getpriority  "${CFG_HEADERS}" HAVE_GETPRIORITY)
+python_check_function(getpriority HAVE_GETPRIORITY)
 check_symbol_exists(getpwent     "${CFG_HEADERS}" HAVE_GETPWENT)
 check_symbol_exists(getresgid    "${CFG_HEADERS}" HAVE_GETRESGID)
 check_symbol_exists(getresuid    "${CFG_HEADERS}" HAVE_GETRESUID)
@@ -856,7 +860,7 @@ check_symbol_exists(futimens     "${CFG_HEADERS}" HAVE_FUTIMENS)
 check_symbol_exists(futimes      "${CFG_HEADERS}" HAVE_FUTIMES)
 check_symbol_exists(futimesat    "${CFG_HEADERS}" HAVE_FUTIMESAT)
 check_symbol_exists(getentropy   "${CFG_HEADERS}" HAVE_GETENTROPY)
-check_symbol_exists(getpriority  "${CFG_HEADERS}" HAVE_GETPRIORITY)
+python_check_function(getpriority HAVE_GETPRIORITY)
 check_symbol_exists(getgrouplist "${CFG_HEADERS}" HAVE_GETGROUPLIST)
 check_symbol_exists(htole64      "${CFG_HEADERS}" HAVE_HTOLE64)
 check_symbol_exists(if_nameindex "${CFG_HEADERS}" HAVE_IF_NAMEINDEX)
@@ -1679,6 +1683,7 @@ if(HAVE_READLINE_READLINE_H)
   check_symbol_exists(rl_completion_suppress_append      "${CFG_HEADERS}" HAVE_RL_COMPLETION_SUPPRESS_APPEND)
   check_symbol_exists(rl_completion_matches       "${CFG_HEADERS}" HAVE_RL_COMPLETION_MATCHES)
   check_symbol_exists(rl_pre_input_hook           "${CFG_HEADERS}" HAVE_RL_PRE_INPUT_HOOK)
+  check_symbol_exists(rl_resize_terminal          "${CFG_HEADERS}" HAVE_RL_RESIZE_TERMINAL)
 
   set(CFG_HEADERS ${CFG_HEADERS_SAVE})
   cmake_pop_check_state()
@@ -2145,6 +2150,8 @@ python_platform_test_run(
   INVERT
   )
 
+endif(IS_PY3)
+
 # Check whether the compiler supports computed gotos
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_computed_gotos.c)
 file(WRITE ${check_src} "int main(int argc, char **argv)
@@ -2164,6 +2171,8 @@ python_platform_test_run(
   ${check_src}
   DIRECT
   )
+
+if(IS_PY3)
 
 # Availability of -O2
 cmake_push_check_state()
@@ -2261,7 +2270,7 @@ python_platform_test(
   DIRECT
   )
 
-endif()
+endif(IS_PY3)
 
 if(HAVE_LONG_LONG)
   # Checking for %lld and %llu printf() format support

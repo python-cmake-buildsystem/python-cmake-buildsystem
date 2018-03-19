@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.6)
 
-set(PYTHON_VERSION "3.5.2" CACHE STRING "The version of Python to build.")
+set(PYTHON_VERSION "3.6.4" CACHE STRING "The version of Python to build.")
 
 string(REPLACE "." ";" VERSION_LIST ${PYTHON_VERSION})
 list(GET VERSION_LIST 0 PY_VERSION_MAJOR)
@@ -178,6 +178,7 @@ string(REGEX REPLACE "rc[1-9]$" "" _py_version_patch_no_rc ${PY_VERSION_PATCH})
 set(_py_version_no_rc "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${_py_version_patch_no_rc}")
 set(_download_link "https://www.python.org/ftp/python/${_py_version_no_rc}/Python-${PY_VERSION}.tgz")
 # Variable below represent the set of available python version.
+# 2.7.x
 set(_download_2.7.3_md5 "2cf641732ac23b18d139be077bd906cd")
 set(_download_2.7.4_md5 "592603cfaf4490a980e93ecb92bde44a")
 set(_download_2.7.5_md5 "b4f01a1d0ba0b46b05c73b2ac909b1df")
@@ -190,8 +191,19 @@ set(_download_2.7.11_md5 "6b6076ec9e93f05dd63e47eb9c15728b")
 set(_download_2.7.12_md5 "88d61f82e3616a4be952828b3694109d")
 set(_download_2.7.13_md5 "17add4bf0ad0ec2f08e0cae6d205c700")
 set(_download_2.7.14_md5 "cee2e4b33ad3750da77b2e85f2f8b724")
+# 3.5.x
 set(_download_3.5.1_md5 "be78e48cdfc1a7ad90efff146dce6cfe")
 set(_download_3.5.2_md5 "3fe8434643a78630c61c6464fe2e7e72")
+set(_download_3.5.3_md5 "6192f0e45f02575590760e68c621a488")
+set(_download_3.5.4_md5 "2ed4802b7a2a7e40d2e797272bf388ec")
+set(_download_3.5.5_md5 "7c825b747d25c11e669e99b912398585")
+# 3.6.x
+set(_download_3.6.0_md5 "3f7062ccf8be76491884d0e47ac8b251")
+set(_download_3.6.1_md5 "2d0fc9f3a5940707590e07f03ecb08b9")
+set(_download_3.6.2_md5 "e1a36bfffdd1d3a780b1825daf16e56c")
+set(_download_3.6.3_md5 "e9180c69ed9a878a4a8a3ab221e32fa9")
+set(_download_3.6.4_md5 "9de6494314ea199e3633211696735f65")
+
 set(_extracted_dir "Python-${PY_VERSION}")
 
 if(NOT EXISTS ${SRC_DIR}/${_landmark} AND DOWNLOAD_SOURCES)
@@ -253,7 +265,7 @@ string(REGEX REPLACE "[0-9]\\.[0-9]+\\.([0-9]+)[+]?" "\\1"
 set(PY_VERSION "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}")
 message(STATUS "PY_VERSION: ${PY_VERSION}")
 if(NOT DEFINED _download_${PY_VERSION}_md5)
-    message(WARNING "warning: selected python version '${PY_VERSION}' is not tested. Tested versions match '2.7.[3-14]' or '3.5.[1-2]'")
+    message(WARNING "warning: selected python version '${PY_VERSION}' is not tested. Tested versions match '2.7.[3-14]' or '3.5.[1-5]' or `3.6.[0-4]`")
 endif()
 
 # Apply patches
@@ -386,6 +398,9 @@ include_directories(${SRC_DIR}/Python)
 
 # Set cflags used by all components
 if(CMAKE_C_COMPILER_ID MATCHES GNU)
+    if(PYTHON_VERSION VERSION_EQUAL "3.6" OR PYTHON_VERSION VERSION_GREATER "3.6")
+        append_if_absent(CMAKE_C_FLAGS "-std=c99")
+    endif()
     append_if_absent(CMAKE_C_FLAGS "-Wall")
     append_if_absent(CMAKE_C_FLAGS "-Wstrict-prototypes")
     append_if_absent(CMAKE_C_FLAGS "-fno-strict-aliasing")

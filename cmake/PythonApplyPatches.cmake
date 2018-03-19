@@ -3,7 +3,43 @@ set(CMAKE_MODULE_PATH
   ${CMAKE_CURRENT_LIST_DIR}
   ${CMAKE_MODULE_PATH}
   )
-find_package(Patch REQUIRED)
+
+if(NOT DEFINED PATCH_COMMAND)
+  find_package(Git)
+  if(Git_FOUND)
+    set(PATCH_COMMAND ${GIT_EXECUTABLE} apply --whitespace=fix)
+    # Initialize Git repo to ensure "git apply" works when source tree
+    # is located within an already versioned tree.
+    if(NOT EXISTS "${SRC_DIR}/.git")
+      execute_process(
+        COMMAND git init
+        WORKING_DIRECTORY ${SRC_DIR}
+        RESULT_VARIABLE result
+        ERROR_VARIABLE error
+        ERROR_STRIP_TRAILING_WHITESPACE
+        OUTPUT_QUIET
+        )
+      if(NOT result EQUAL 0)
+        message(FATAL_ERROR "${output}\n${error}")
+      endif()
+    endif()
+  else()
+    find_package(Patch)
+    if(Patch_FOUND)
+      # Since support for git diffs which copy or rename files was
+      # added in patch 2.7, we can not use older version.
+      if("${Patch_VERSION}" VERSION_EQUAL "2.7.0" OR "${Patch_VERSION}" VERSION_GREATER "2.7.0")
+        set(PATCH_COMMAND ${Patch_EXECUTABLE} --quiet -p1 -i)
+      else()
+        set(_reason "Found Patch executable [${Patch_EXECUTABLE}] version [${Patch_VERSION}] older than 2.7.0 missing support for copy or rename files.")
+      endif()
+    endif()
+  endif()
+endif()
+
+if(NOT DEFINED PATCH_COMMAND)
+  message(FATAL_ERROR "Could NOT find a suitable version of Git or Patch executable to apply patches. ${_reason}")
+endif()
 
 set(patches_dir "${Python_SOURCE_DIR}/patches")
 
@@ -32,7 +68,7 @@ function(_apply_patches _subdir)
       continue()
     endif()
     execute_process(
-      COMMAND ${Patch_EXECUTABLE} --quiet -p1 -i ${patches_dir}/${patch}
+      COMMAND ${PATCH_COMMAND} ${patches_dir}/${patch}
       WORKING_DIRECTORY ${SRC_DIR}
       RESULT_VARIABLE result
       ERROR_VARIABLE error
@@ -53,13 +89,20 @@ function(_apply_patches _subdir)
   message(STATUS "")
 endfunction()
 
+set(_py_version ${PY_VERSION})
+if("${PY_VERSION}" VERSION_LESS "3.0" AND
+    ("${PY_VERSION}" VERSION_EQUAL "2.7.13" OR "${PY_VERSION}" VERSION_GREATER "2.7.13"))
+  set(_py_version "2.7.13")
+  message(STATUS "Using ${_py_version} patches for 2.7.13 <= PY_VERSION < 3.0.0")
+endif()
+
 # Apply patches
 _apply_patches("${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}")
-_apply_patches("${PY_VERSION}")
-_apply_patches("${PY_VERSION}/${CMAKE_SYSTEM_NAME}")
-_apply_patches("${PY_VERSION}/${CMAKE_SYSTEM_NAME}-${CMAKE_C_COMPILER_ID}")
+_apply_patches("${_py_version}")
+_apply_patches("${_py_version}/${CMAKE_SYSTEM_NAME}")
+_apply_patches("${_py_version}/${CMAKE_SYSTEM_NAME}-${CMAKE_C_COMPILER_ID}")
 set(_version ${CMAKE_C_COMPILER_VERSION})
 if(MSVC)
   set(_version ${MSVC_VERSION})
 endif()
-_apply_patches("${PY_VERSION}/${CMAKE_SYSTEM_NAME}-${CMAKE_C_COMPILER_ID}/${_version}")
+_apply_patches("${_py_version}/${CMAKE_SYSTEM_NAME}-${CMAKE_C_COMPILER_ID}/${_version}")
