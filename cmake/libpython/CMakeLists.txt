@@ -168,10 +168,16 @@ elseif(WIN32)
         ${SRC_DIR}/PC/dl_nt.c
         ${SRC_DIR}/Python/dynload_win.c
         )
+    set(ms_dll_id "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}")
+    if(${CMAKE_SIZEOF_VOID_P} EQUAL 4)
+      set(ms_dll_id "${ms_dll_id}-32")
+    endif()
     set_property(
         SOURCE ${SRC_DIR}/PC/dl_nt.c
-        PROPERTY COMPILE_DEFINITIONS Py_ENABLE_SHARED
-    )
+        PROPERTY COMPILE_DEFINITIONS
+            Py_ENABLE_SHARED
+            MS_DLL_ID="${ms_dll_id}"
+        )
 endif()
 
 set(THREAD_SOURCES )
