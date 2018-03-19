@@ -1683,6 +1683,7 @@ if(HAVE_READLINE_READLINE_H)
   check_symbol_exists(rl_completion_suppress_append      "${CFG_HEADERS}" HAVE_RL_COMPLETION_SUPPRESS_APPEND)
   check_symbol_exists(rl_completion_matches       "${CFG_HEADERS}" HAVE_RL_COMPLETION_MATCHES)
   check_symbol_exists(rl_pre_input_hook           "${CFG_HEADERS}" HAVE_RL_PRE_INPUT_HOOK)
+  check_symbol_exists(rl_resize_terminal          "${CFG_HEADERS}" HAVE_RL_RESIZE_TERMINAL)
 
   set(CFG_HEADERS ${CFG_HEADERS_SAVE})
   cmake_pop_check_state()

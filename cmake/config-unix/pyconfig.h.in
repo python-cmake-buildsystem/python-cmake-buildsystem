@@ -754,6 +754,9 @@
 /* Define if you have readline 4.0 */
 #cmakedefine HAVE_RL_PRE_INPUT_HOOK 1
 
+/* Define if you have readline 4.0 */
+#cmakedefine HAVE_RL_RESIZE_TERMINAL 1
+
 /* Define to 1 if you have the `round' function. */
 #cmakedefine HAVE_ROUND 1
 
