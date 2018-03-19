@@ -278,6 +278,8 @@ if(NOT DEFINED _download_${PY_VERSION_LONG}_md5)
     message(WARNING "warning: selected python version '${PY_VERSION_LONG}' is not tested. Tested versions match '2.7.[3-14]' or '3.5.[1-5]' or `3.6.[0-4]`")
 endif()
 
+set(PYTHON_VERSION "${PY_VERSION}" CACHE STRING "The version of Python to build." FORCE)
+
 # Apply patches
 option(PYTHON_APPLY_PATCHES "Apply patches" ON)
 if(PYTHON_APPLY_PATCHES)
