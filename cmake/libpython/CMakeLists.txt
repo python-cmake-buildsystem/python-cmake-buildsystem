@@ -383,6 +383,9 @@ if(UNIX)
 endif()
 if(WIN32 AND IS_PY3)
     list(APPEND LIBPYTHON_TARGET_LIBRARIES ws2_32) # Required by signalmodule
+    if(PYTHON_VERSION VERSION_EQUAL "3.5" OR PYTHON_VERSION VERSION_GREATER "3.5")
+        list(APPEND LIBPYTHON_TARGET_LIBRARIES version) # Required by sysmodule
+    endif()
 endif()
 
 set(LIBPYTHON_FROZEN_SOURCES )
