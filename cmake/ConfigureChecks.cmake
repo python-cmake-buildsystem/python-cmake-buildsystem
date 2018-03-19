@@ -192,6 +192,7 @@ check_include_files(arpa/inet.h HAVE_ARPA_INET_H)
 check_include_files(bluetooth/bluetooth.h HAVE_BLUETOOTH_BLUETOOTH_H)
 check_include_files(bluetooth.h HAVE_BLUETOOTH_H)
 check_include_files(conio.h HAVE_CONIO_H)
+check_include_files(crypt.h HAVE_CRYPT_H)
 check_include_files(curses.h HAVE_CURSES_H)
 check_include_files(direct.h HAVE_DIRECT_H)
 check_include_files(dlfcn.h HAVE_DLFCN_H) # libffi and cpython
@@ -916,6 +917,11 @@ check_struct_has_member("struct stat" st_flags   "${CFG_HEADERS}"    HAVE_STRUCT
 check_struct_has_member("struct stat" st_gen     "${CFG_HEADERS}"    HAVE_STRUCT_STAT_ST_GEN)
 check_struct_has_member("struct stat" st_rdev    "${CFG_HEADERS}"    HAVE_STRUCT_STAT_ST_RDEV)
 
+if(IS_PY3)
+check_struct_has_member("struct passwd" pw_gecos  "${CFG_HEADERS}" HAVE_STRUCT_PASSWD_PW_GECOS)
+check_struct_has_member("struct passwd" pw_passwd "${CFG_HEADERS}" HAVE_STRUCT_PASSWD_PW_PASSWD)
+endif()
+
 #######################################################################
 #
 # Check for gcc x64 inline assembler
@@ -1410,6 +1416,48 @@ if(NOT HAVE_CLOCK_GETTIME)
   endif()
 endif()
 
+cmake_push_check_state()
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/clock_settime.c)
+file(WRITE ${check_src} "
+#include <stdio.h>
+#include <time.h>
+int main() { return clock_settime(0, NULL); }
+")
+if(SUPPORT_NO_WEAK_IMPORT_FLAG)
+  set(CMAKE_REQUIRED_FLAGS "-Wl,-no_weak_imports")
+endif()
+python_platform_test(
+  HAVE_CLOCK_SETTIME
+  "Checking for clock_settime"
+  ${check_src}
+  DIRECT
+  )
+cmake_pop_check_state()
+if(NOT HAVE_CLOCK_SETTIME)
+  cmake_push_check_state()
+  set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_lib_rt_clock_settime.c)
+  file(WRITE ${check_src} "/* Override any GCC internal prototype to avoid an error.
+    Use char because int might match the return type of a GCC
+    builtin and then its argument prototype would still apply.  */
+    #ifdef __cplusplus
+    extern \"C\"
+    #endif
+    char clock_gettime ();
+    int main () { return clock_settime (); }
+  ")
+  list(APPEND CMAKE_REQUIRED_LIBRARIES rt)
+  python_platform_test(
+    HAVE_CLOCK_SETTIME
+    "Checking for clock_settime in -lrt"
+    ${check_src}
+    DIRECT
+    )
+  cmake_pop_check_state()
+  if(HAVE_CLOCK_SETTIME)
+    set(TIMEMODULE_LIB rt)
+  endif()
+endif()
+
 endif()
 
 #######################################################################
@@ -1584,6 +1632,10 @@ check_struct_has_member("struct sockaddr" sa_len "${CFG_HEADERS}" HAVE_SOCKADDR_
 check_type_size("struct sockaddr_storage" HAVE_SOCKADDR_STORAGE)
 unset(CMAKE_EXTRA_INCLUDE_FILES)
 
+set(CMAKE_EXTRA_INCLUDE_FILES "sys/types.h" "sys/socket.h" "linux/if_alg.h")
+check_type_size("struct sockaddr_alg" HAVE_SOCKADDR_ALG)
+unset(CMAKE_EXTRA_INCLUDE_FILES)
+
 set(CFG_HEADERS ${CFG_HEADERS_SAVE})
 cmake_pop_check_state()
 
@@ -1743,6 +1795,15 @@ if(HAVE_CURSES_H)
 
   check_c_source_compiles("#include <curses.h>\n int main() {int i; i = mvwdelch(0,0,0);}" MVWDELCH_IS_EXPRESSION)
 
+  check_symbol_exists(filter "${CFG_HEADERS}" HAVE_CURSES_FILTER)
+  check_symbol_exists(has_key "${CFG_HEADERS}" HAVE_CURSES_HAS_KEY)
+  check_symbol_exists(immedok "${CFG_HEADERS}" HAVE_CURSES_IMMEDOK)
+  check_symbol_exists(is_pad "${CFG_HEADERS}" HAVE_CURSES_IS_PAD)
+  check_symbol_exists(syncok "${CFG_HEADERS}" HAVE_CURSES_SYNCOK)
+  check_symbol_exists(typeahead "${CFG_HEADERS}" HAVE_CURSES_TYPEAHEAD)
+  check_symbol_exists(use_env "${CFG_HEADERS}" HAVE_CURSES_USE_ENV)
+  check_symbol_exists(wchgat "${CFG_HEADERS}" HAVE_CURSES_WCHGAT)
+
   set(CFG_HEADERS ${CFG_HEADERS_SAVE})
   cmake_pop_check_state()
 endif()
@@ -1760,6 +1821,14 @@ if(HAVE_DLFCN_H)
   set(CFG_HEADERS ${CFG_HEADERS} dlfcn.h)
   add_cond(CMAKE_REQUIRED_LIBRARIES HAVE_LIBDL "${HAVE_LIBDL}")
   check_symbol_exists(dlopen          "${CFG_HEADERS}" HAVE_DLOPEN)
+
+  check_symbol_exists(RTLD_DEEPBIND dlfcn.h HAVE_DECL_RTLD_DEEPBIND)
+  check_symbol_exists(RTLD_GLOBAL   dlfcn.h HAVE_DECL_RTLD_GLOBAL)
+  check_symbol_exists(RTLD_LAZY     dlfcn.h HAVE_DECL_RTLD_LAZY)
+  check_symbol_exists(RTLD_LOCAL    dlfcn.h HAVE_DECL_RTLD_LOCAL)
+  check_symbol_exists(RTLD_NODELETE dlfcn.h HAVE_DECL_RTLD_NODELETE)
+  check_symbol_exists(RTLD_NOLOAD   dlfcn.h HAVE_DECL_RTLD_NOLOAD)
+  check_symbol_exists(RTLD_NOW      dlfcn.h HAVE_DECL_RTLD_NOW)
 
   set(CFG_HEADERS ${CFG_HEADERS_SAVE})
   cmake_pop_check_state()

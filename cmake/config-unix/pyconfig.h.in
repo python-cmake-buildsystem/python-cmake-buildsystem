@@ -138,6 +138,9 @@
 /* Define to 1 if you have the `clock_gettime' function. [Python 3] */
 #cmakedefine HAVE_CLOCK_GETTIME 1
 
+/* Define to 1 if you have the `clock_settime' function. [Python 3.6] */
+#cmakedefine HAVE_CLOCK_SETTIME 1
+
 /* Define if the C compiler supports computed gotos. */
 #cmakedefine HAVE_COMPUTED_GOTOS 1
 
@@ -150,14 +153,29 @@
 /* Define to 1 if you have the `copysign' function. */
 #cmakedefine HAVE_COPYSIGN 1
 
+/* Define to 1 if you have the <crypt.h> header file. [Python 3.6] */
+#cmakedefine HAVE_CRYPT_H 1
+
 /* Define to 1 if you have the `ctermid' function. */
 #cmakedefine HAVE_CTERMID 1
 
 /* Define if you have the 'ctermid_r' function. */
 #cmakedefine HAVE_CTERMID_R 1
 
+/* Define if you have the 'filter' function. [Python 3.6] */
+#cmakedefine HAVE_CURSES_FILTER 1
+
 /* Define to 1 if you have the <curses.h> header file. */
 #cmakedefine HAVE_CURSES_H 1
+
+/* Define if you have the 'has_key' function. [Python 3.6] */
+#cmakedefine HAVE_CURSES_HAS_KEY 1
+
+/* Define if you have the 'immedok' function. [Python 3.6] */
+#cmakedefine HAVE_CURSES_IMMEDOK 1
+
+/* Define if you have the 'is_pad' function or macro. [Python 3.6] */
+#cmakedefine HAVE_CURSES_IS_PAD 1
 
 /* Define if you have the 'is_term_resized' function. */
 #cmakedefine HAVE_CURSES_IS_TERM_RESIZED 1
@@ -167,6 +185,18 @@
 
 /* Define if you have the 'resize_term' function. */
 #cmakedefine HAVE_CURSES_RESIZE_TERM 1
+
+/* Define if you have the 'syncok' function. [Python 3.6] */
+#cmakedefine HAVE_CURSES_SYNCOK 1
+
+/* Define if you have the 'typeahead' function. [Python 3.6] */
+#cmakedefine HAVE_CURSES_TYPEAHEAD 1
+
+/* Define if you have the 'use_env' function. [Python 3.6] */
+#cmakedefine HAVE_CURSES_USE_ENV 1
+
+/* Define if you have the 'wchgat' function. [Python 3.6] */
+#cmakedefine HAVE_CURSES_WCHGAT 1
 
 /* Define to 1 if you have the declaration of `isfinite', and to 0 if you
    don't. */
@@ -179,6 +209,33 @@
 /* Define to 1 if you have the declaration of `isnan', and to 0 if you don't.
    */
 #cmakedefine HAVE_DECL_ISNAN 1
+
+/* Define to 1 if you have the declaration of `RTLD_DEEPBIND', and to 0 if you
+   don't. [Python 3.6] */
+#cmakedefine HAVE_DECL_RTLD_DEEPBIND 1
+
+/* Define to 1 if you have the declaration of `RTLD_GLOBAL', and to 0 if you
+   don't. [Python 3.6] */
+#cmakedefine HAVE_DECL_RTLD_GLOBAL 1
+
+/* Define to 1 if you have the declaration of `RTLD_LAZY', and to 0 if you
+   don't. [Python 3.6] */
+#cmakedefine HAVE_DECL_RTLD_LAZY 1
+
+/* Define to 1 if you have the declaration of `RTLD_LOCAL', and to 0 if you
+   don't. [Python 3.6] */
+#cmakedefine HAVE_DECL_RTLD_LOCAL 1
+/* Define to 1 if you have the declaration of `RTLD_NODELETE', and to 0 if you
+   don't. [Python 3.6] */
+#cmakedefine HAVE_DECL_RTLD_NODELETE 1
+
+/* Define to 1 if you have the declaration of `RTLD_NOLOAD', and to 0 if you
+   don't. [Python 3.6] */
+#cmakedefine HAVE_DECL_RTLD_NOLOAD 1
+
+/* Define to 1 if you have the declaration of `RTLD_NOW', and to 0 if you
+   don't. [Python 3.6] */
+#cmakedefine HAVE_DECL_RTLD_NOW 1
 
 /* Define to 1 if you have the declaration of `tzname', and to 0 if you don't.
    */
@@ -880,6 +937,9 @@
 /* Define to 1 if you have the `snprintf' function. */
 #cmakedefine HAVE_SNPRINTF 1
 
+/* struct sockaddr_alg (linux/if_alg.h) [Python 3.6] */
+#cmakedefine HAVE_SOCKADDR_ALG 1
+
 /* Define if sockaddr has sa_len member */
 #cmakedefine HAVE_SOCKADDR_SA_LEN 1
 
@@ -934,6 +994,12 @@
 
 /* Define to 1 if you have the <stropts.h> header file. */
 #cmakedefine HAVE_STROPTS_H 1
+
+/* Define to 1 if `pw_gecos' is a member of `struct passwd'. [Python 3.6] */
+#cmakedefine HAVE_STRUCT_PASSWD_PW_GECOS 1
+
+/* Define to 1 if `pw_passwd' is a member of `struct passwd'. [Python 3.6] */
+#cmakedefine HAVE_STRUCT_PASSWD_PW_PASSWD 1
 
 /* Define to 1 if `st_birthtime' is a member of `struct stat'. */
 #cmakedefine HAVE_STRUCT_STAT_ST_BIRTHTIME 1
@@ -1055,7 +1121,7 @@
 /* Define to 1 if you have the <sys/sys_domain.h> header file. [Python 3] */
 #cmakedefine HAVE_SYS_SYS_DOMAIN_H 1
 
-/* Define to 1 if you have the <sys/sysmacros.h> header file. */
+/* Define to 1 if you have the <sys/sysmacros.h> header file. [Python 3.6] */
 #cmakedefine HAVE_SYS_SYSMACROS_H 1
 
 /* Define to 1 if you have the <sys/termio.h> header file. */
@@ -1413,6 +1479,9 @@
 
 /* Define if you want documentation strings in extension modules */
 #cmakedefine WITH_DOC_STRINGS 1
+
+/* Define if you want to compile in DTrace support [Python 3.6] */
+#cmakedefine WITH_DTRACE 1
 
 /* Define if you want to use the new-style (Openstep, Rhapsody, MacOS) dynamic
    linker (dyld) instead of the old-style (NextStep) dynamic linker (rld).
