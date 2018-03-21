@@ -16,6 +16,12 @@ configuration:
 # See https://github.com/python-cmake-buildsystem/python-cmake-buildsystem/blob/dashboard/appveyor_dashboard.cmake
 environment:
   matrix:
+
+  - PY_VERSION: 3.7.0b2
+    GENERATOR: Visual Studio 14 2015 Win64
+  - PY_VERSION: 3.7.0b2
+    GENERATOR: Visual Studio 14 2015
+
   - PY_VERSION: 3.6.5
     GENERATOR: Visual Studio 14 2015 Win64
   - PY_VERSION: 3.6.5
