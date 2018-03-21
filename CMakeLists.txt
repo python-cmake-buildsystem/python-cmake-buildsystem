@@ -257,32 +257,28 @@ If you already downloaded the source, you could try to re-configure this project
 endif()
 message(STATUS "SRC_DIR: ${SRC_DIR}")
 
-# Extract version from python source (Copied from FindPythonLibs.cmake)
+# Extract version string from python source (Copied from FindPythonLibs.cmake)
 file(STRINGS "${SRC_DIR}/Include/patchlevel.h" python_version_str
     REGEX "^#define[ \t]+PY_VERSION[ \t]+\"[^\"]+\"")
 string(REGEX REPLACE "^#define[ \t]+PY_VERSION[ \t]+\"([^\"]+)\".*" "\\1"
-    _version "${python_version_str}")
-string(REGEX REPLACE "([0-9])\\..+" "\\1"
-    PY_VERSION_MAJOR ${_version})
-string(REGEX REPLACE "[0-9]\\.([0-9]+)\\..+" "\\1"
-    PY_VERSION_MINOR ${_version})
-string(REGEX REPLACE "[0-9]\\.[0-9]+\\.([0-9]+).+" "\\1"
-    PY_VERSION_PATCH ${_version})
-string(REGEX REPLACE "[0-9]\\.[0-9]+\\.[0-9]+(.+)" "\\1"
-    _release_level_and_serial ${_version})
-string(REGEX REPLACE "([abc]+)[0-9]+" "\\1"
-    PY_RELEASE_LEVEL ${_release_level_and_serial})
-string(REGEX REPLACE "[abc]+([0-9]+)" "\\1"
-    PY_RELEASE_SERIAL ${_release_level_and_serial})
-set(PY_VERSION "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}")
-set(PY_VERSION_LONG "${PY_VERSION}${PY_RELEASE_LEVEL}${PY_RELEASE_SERIAL}")
+      PY_VERSION_LONG "${python_version_str}")
+
+# Extract version info and set variables PY_VERSION, PY_VERSION_(MAJOR|MINOR|PATCH), PY_RELEASE_(LEVEL|SERIAL)
+include(cmake/PythonExtractVersionInfo.cmake)
+python_extract_version_info(
+  VERSION_STRING "${PY_VERSION_LONG}"
+  )
 message(STATUS "PY_VERSION     : ${PY_VERSION}")
 message(STATUS "PY_VERSION_LONG: ${PY_VERSION_LONG}")
+
+# Check version
 if(NOT DEFINED _download_${PY_VERSION_LONG}_md5)
     message(WARNING "warning: selected python version '${PY_VERSION_LONG}' is not tested. Tested versions match '2.7.[3-14]' or '3.5.[1-5]' or `3.6.[0-4]`")
 endif()
-
-set(PYTHON_VERSION "${PY_VERSION}" CACHE STRING "The version of Python to build." FORCE)
+if(NOT "${PYTHON_VERSION}" STREQUAL "${PY_VERSION}")
+  message(STATUS "Overwriting PYTHON_VERSION with value read from 'patchlevel.h': ${PYTHON_VERSION} -> ${PY_VERSION}")
+  set(PYTHON_VERSION "${PY_VERSION}" CACHE STRING "The version of Python to build." FORCE)
+endif()
 
 # Apply patches
 option(PYTHON_APPLY_PATCHES "Apply patches" ON)
@@ -639,6 +635,19 @@ if(BUILD_TESTING)
       endif()
       add_test(NAME ${unittest} COMMAND ${PYTHON_WRAPPER_COMMAND} ${TESTPYTHON} ${TESTPROG} ${TESTOPTS} ${EXTRATESTOPTS} ${unittest})
     endforeach()
+
+    function(add_cmakescript_test testname script)
+      add_test(cmake_${testname}_test ${CMAKE_COMMAND}
+        -DTEST_${testname}:BOOL=ON
+        -P ${CMAKE_SOURCE_DIR}/${script})
+      set_tests_properties(cmake_${testname}_test PROPERTIES
+        LABELS CMake
+        PASS_REGULAR_EXPRESSION "SUCCESS")
+    endfunction()
+    add_cmakescript_test(
+        python_extract_version_info
+        cmake/PythonExtractVersionInfo.cmake
+        )
 endif()
 
 
