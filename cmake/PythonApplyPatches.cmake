@@ -6,7 +6,7 @@ set(CMAKE_MODULE_PATH
 
 if(NOT DEFINED PATCH_COMMAND)
   find_package(Git)
-  if(Git_FOUND)
+  if(Git_FOUND OR GIT_FOUND)
     set(PATCH_COMMAND ${GIT_EXECUTABLE} apply --whitespace=fix)
     # Initialize Git repo to ensure "git apply" works when source tree
     # is located within an already versioned tree.
@@ -25,7 +25,7 @@ if(NOT DEFINED PATCH_COMMAND)
     endif()
   else()
     find_package(Patch)
-    if(Patch_FOUND)
+    if(Patch_FOUND OR PATCH_FOUND)
       # Since support for git diffs which copy or rename files was
       # added in patch 2.7, we can not use older version.
       if("${Patch_VERSION}" VERSION_EQUAL "2.7.0" OR "${Patch_VERSION}" VERSION_GREATER "2.7.0")
