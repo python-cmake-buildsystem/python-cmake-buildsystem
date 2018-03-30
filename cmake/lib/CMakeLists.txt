@@ -47,8 +47,16 @@ install(CODE "find_program(
   PYTHON_EXECUTABLE python
   HINTS \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${BIN_INSTALL_DIR}
   NO_DEFAULT_PATH)
-execute_process(COMMAND \${PYTHON_EXECUTABLE} -m lib2to3.pgen2.driver
+set(wrapper)
+if(UNIX)
+  set(_envvar LD_LIBRARY_PATH)
+  if(APPLE)
+    set(_envvar DYLD_LIBRARY_PATH)
+  endif()
+  set(wrapper env \${_envvar}=\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${LIBPYTHON_LIBDIR})
+endif()
+execute_process(COMMAND \${wrapper} \${PYTHON_EXECUTABLE} -m lib2to3.pgen2.driver
   \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${PYTHONHOME}/lib2to3/Grammar.txt)
-execute_process(COMMAND \${PYTHON_EXECUTABLE} -m lib2to3.pgen2.driver
+execute_process(COMMAND \${wrapper} \${PYTHON_EXECUTABLE} -m lib2to3.pgen2.driver
   \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${PYTHONHOME}/lib2to3/PatternGrammar.txt)
 ")
