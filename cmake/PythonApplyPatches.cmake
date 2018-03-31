@@ -12,7 +12,7 @@ if(NOT DEFINED PATCH_COMMAND)
     # is located within an already versioned tree.
     if(NOT EXISTS "${SRC_DIR}/.git")
       execute_process(
-        COMMAND git init
+        COMMAND ${GIT_EXECUTABLE} init
         WORKING_DIRECTORY ${SRC_DIR}
         RESULT_VARIABLE result
         ERROR_VARIABLE error
