@@ -6,9 +6,11 @@ set(PYTHON_SOURCES
 )
 
 add_executable(python ${PYTHON_SOURCES})
-set_property(
-    TARGET python
-    PROPERTY RUNTIME_OUTPUT_DIRECTORY ${BIN_BUILD_DIR}
+set_target_properties(
+    python
+    PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${BIN_BUILD_DIR}
+    OUTPUT_NAME python${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}
     )
 target_compile_definitions(python PRIVATE Py_BUILD_CORE)
 add_definitions(-DPy_BUILD_CORE)
@@ -89,10 +91,10 @@ if(UNIX AND NOT CMAKE_CROSSCOMPILING)
   install(CODE
 "message(STATUS \"Creating Python executable symlinks...\")
 execute_process(
-  COMMAND \${CMAKE_COMMAND} -E create_symlink python
+  COMMAND \${CMAKE_COMMAND} -E create_symlink python${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}
     python${PY_VERSION_MAJOR}
-  COMMAND \${CMAKE_COMMAND} -E create_symlink python
-    python${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}
+  COMMAND \${CMAKE_COMMAND} -E create_symlink python${PY_VERSION_MAJOR}
+    python
   WORKING_DIRECTORY
     \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${BIN_INSTALL_DIR}
   )"
