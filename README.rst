@@ -49,6 +49,18 @@ How to use this buildsystem:
   http://www.python.org/ftp/python/
 
 
+3. Creating documentation
+
+.. code:: bash
+
+  python Doc/make.py
+
+.. note::
+
+  The output for documentation is under build/docs/html/cmake/index.html
+
+
+
 CMake Options
 -------------
 
