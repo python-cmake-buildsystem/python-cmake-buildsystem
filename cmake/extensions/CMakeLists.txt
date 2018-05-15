@@ -640,7 +640,7 @@ add_python_extension(_sqlite3
             _sqlite/row.c
             _sqlite/statement.c
             _sqlite/util.c
-    DEFINITIONS MODULE_NAME="sqlite3"
+    DEFINITIONS MODULE_NAME="sqlite3" SQLITE_OMIT_LOAD_EXTENSION=1
     INCLUDEDIRS ${SQLITE3_INCLUDE_PATH}
     LIBRARIES ${SQLITE3_LIBRARY}
 )
