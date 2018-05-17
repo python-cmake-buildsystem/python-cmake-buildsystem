@@ -1,3 +1,9 @@
+#.rst:
+#
+# Make cmake checks.
+#
+# This module will check if a the cmake system is well configured.
+#
 
 include(cmake/CheckCMakeCommandExists.cmake)
 include(cmake/CheckCMakePropertyExists.cmake)
