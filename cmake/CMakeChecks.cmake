@@ -1,8 +1,11 @@
 #.rst:
 #
-# Make cmake checks.
+# =================================
+# CMakeChecks --- init the builtool
+# =================================
 #
-# This module will check if a the cmake system is well configured.
+# This module will cimport some macros and wiil
+# perform some pre-flight checks.
 #
 
 include(cmake/CheckCMakeCommandExists.cmake)

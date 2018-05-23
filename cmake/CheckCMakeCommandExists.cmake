@@ -1,3 +1,17 @@
+#.rst:
+#
+# ========================================================================
+# CheckCMakeCommandExists --- test if an internal cmake command is present
+# ========================================================================
+#
+# This test will verify a cmake command is present
+#
+# .. code-block:: cmake
+#
+#    include(cmake-modules/CMakeChecks.cmake)
+#
+#
+
 
 macro(check_cmake_command_exists commandname)
   string(TOUPPER ${commandname} commandname_upper)
