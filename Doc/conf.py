@@ -5,8 +5,11 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('.'))
+import sys, os, time
+sys.path.append(os.path.abspath('tools/extensions'))
+sys.path.append(os.path.abspath('includes'))
 
-import cmakelib
+
 
 # -- General configuration ------------------------------------------------
 
