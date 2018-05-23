@@ -1,22 +1,44 @@
-.. simple doc example
+.. _cmake-index:
 
-Welcome to python-cmake documentation!
-======================================
+###############################
+Building the python interpreter
+###############################
 
-This is the documentation for the python cmake-based buildsystem.
+This is the documentation for the `CMake <https://cmake.org>`_-based buildsystem.
 
-We list here all the instructions to:
+There are two parts to this document:
 
-  #. extend the cmake system
-  #. build python with different configurations
+    #. instructions for python developer (**Build instructions**)
+    #. documenttaion for **extending the build tool itself**
 
-Build cpython
-~~~~~~~~~~~~~
+In both cases you need to `download <https://cmake.org/download>`_ and install cmake.
 
-TODO
 
-Extend the cmake system
-~~~~~~~~~~~~~~~~~~~~~~~
+Build instructions
+------------------
+
+On Unix, Linux, BSD, macOS, and Cygwin::
+
+    mkdir build
+    cd build
+    cmake ..
+    make
+
+
+On Windows:
+
+.. code-block:: shell-session
+
+    md build
+    cd build
+    cmake -G "NMake Makefiles" ..
+    nmake
+
+
+Extending the buildtool system
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The cmake base buildtool can be adapted and extended using the cmake syntax:
 
 .. toctree::
    :maxdepth: 2

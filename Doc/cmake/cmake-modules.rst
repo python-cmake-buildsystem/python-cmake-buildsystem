@@ -1,22 +1,48 @@
-=============
-CMake modules
-=============
+Modifying CMakeList.txt and using cmake modules
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To facilitate the writing of ``CMakeLists.txt`` used to build
-CPython C/C++/Cython extensions, **scikit-build** provides the following
-CMake modules:
+The central configuration cmake file is the ``CMakeLists.txt``, this is a Makefile equivalent,
+with added funcionalities.
 
-.. toctree::
-   :maxdepth: 1
+The ``CMakeLists.txt`` can import and use support modules (usually ending with the *.cmake* prefix and locate under the
+main tree:
 
-   cmake-modules/CMakeChecks
+.. code-block:: shell-session
+
+    <python source directory>
+    ├───CMakeLists.txt      <- main cmake configuration file
+    ├───cmake               <- ``CMakeLists.txt`` support files
+    ├───Doc
+    │   ├───cmake           <- cmake documentation
+    │   ├───tutorial
+    │   ├───using
+    │   └───whatsnew
+    ├───Grammar
+    ├───Include
+    .....
+    ├───Python
+    │   └───clinic
+    └───Tools
 
 
-They can be included using ``find_package``:
+``CMakeLists.txt``
+
+To facilitate the writing of ``CMakeLists.txt`` cmake modules can be used. In order to make
+use of them, it is necessary to include them using the cmake command ``find_package`` from within ``CMakeLists.txt``:
 
 .. code-block:: cmake
 
     include(cmake/CMakeChecks.cmake)
 
 
-For more details, see the respective documentation of each modules.
+List of support modules
+~~~~~~~~~~~~~~~~~~~~~~~
+
+For more details, see each modue documentation.
+
+
+.. cmake-module:: ../../cmake/CMakeChecks.cmake
+.. cmake-module:: ../../cmake/CheckCMakePropertyExists.cmake
+.. cmake-module:: ../../cmake/CheckCMakeCommandExists.cmake
+
+
