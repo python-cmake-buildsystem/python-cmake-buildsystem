@@ -38,11 +38,15 @@ use of them, it is necessary to include them using the cmake command ``find_pack
 List of support modules
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-For more details, see each modue documentation.
+For more details, see each module documentation.
+
+.. toctree::
+   :maxdepth: 2
+
+   modules/CheckCMakeCommandExists
+   modules/CMakeChecks
+   modules/PythonApplyPatches
 
 
-.. cmake-module:: ../../cmake/CMakeChecks.cmake
-.. cmake-module:: ../../cmake/CheckCMakePropertyExists.cmake
-.. cmake-module:: ../../cmake/CheckCMakeCommandExists.cmake
 
 

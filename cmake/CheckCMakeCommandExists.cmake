@@ -1,15 +1,22 @@
 #.rst:
 #
-# ========================================================================
-# CheckCMakeCommandExists --- test if an internal cmake command is present
-# ========================================================================
+# ===================================================
+# CheckCMakeCommandExists - check for a cmake command
+# ===================================================
 #
 # This test will verify a cmake command is present
 #
 # .. code-block:: cmake
 #
-#    include(cmake-modules/CMakeChecks.cmake)
+#     include(cmake-modules/CMakeChecks.cmake)
+#     check_cmake_command_exists(hello)
 #
+# .. code-block:: shell-session
+#
+#     -- Looking for CMake command hello
+#     -- Looking for CMake command hello - not found
+#
+# On success **HAVE_HELLO** will be set to **ON**
 #
 
 

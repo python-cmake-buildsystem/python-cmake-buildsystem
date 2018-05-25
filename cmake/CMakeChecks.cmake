@@ -1,12 +1,17 @@
 #.rst:
 #
-# =================================
-# CMakeChecks --- init the builtool
-# =================================
+# ==============================
+# CMakeChecks - buildtool checks
+# ==============================
 #
-# This module will cimport some macros and wiil
-# perform some pre-flight checks.
+# This module imports some extra modules and performs the
+# checks to the build tool
 #
+# .. code-block:: cmake
+#
+#     include(cmake/CMakeChecks.cmake)
+#
+
 
 include(cmake/CheckCMakeCommandExists.cmake)
 include(cmake/CheckCMakePropertyExists.cmake)
