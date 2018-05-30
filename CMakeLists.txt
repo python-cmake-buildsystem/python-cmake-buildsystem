@@ -36,6 +36,7 @@ endif()
 # Include helper functions
 include(cmake/CMakeChecks.cmake)
 include(cmake/Extensions.cmake)
+include(cmake/SetPythonVersionFrom.cmake)
 include(CMakeDependentOption)
 include(CMakeParseArguments)
 include(CTest)
@@ -251,19 +252,8 @@ If you already downloaded the source, you could try to re-configure this project
 endif()
 message(STATUS "SRC_DIR: ${SRC_DIR}")
 
-# Extract version from python source (Copied from FindPythonLibs.cmake)
-file(STRINGS "${SRC_DIR}/Include/patchlevel.h" python_version_str
-    REGEX "^#define[ \t]+PY_VERSION[ \t]+\"[^\"]+\"")
-string(REGEX REPLACE "^#define[ \t]+PY_VERSION[ \t]+\"([^\"]+)\".*" "\\1"
-    _version "${python_version_str}")
-string(REGEX REPLACE "([0-9])\\..+" "\\1"
-    PY_VERSION_MAJOR ${_version})
-string(REGEX REPLACE "[0-9]\\.([0-9]+)\\..+" "\\1"
-    PY_VERSION_MINOR ${_version})
-string(REGEX REPLACE "[0-9]\\.[0-9]+\\.([0-9]+)[+]?" "\\1"
-    PY_VERSION_PATCH ${_version})
-set(PY_VERSION "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}")
-message(STATUS "PY_VERSION: ${PY_VERSION}")
+# from SetPythonVersionFrom
+set_python_version_from_src("${SRC_DIR}/Include/patchlevel.h")
 if(NOT DEFINED _download_${PY_VERSION}_md5)
     message(WARNING "warning: selected python version '${PY_VERSION}' is not tested. Tested versions match '2.7.[3-14]' or '3.5.[1-5]' or `3.6.[0-4]`")
 endif()
@@ -274,14 +264,6 @@ set(PYTHON_VERSION "${PY_VERSION}" CACHE STRING "The version of Python to build.
 option(PYTHON_APPLY_PATCHES "Apply patches" ON)
 if(PYTHON_APPLY_PATCHES)
   include(cmake/PythonApplyPatches.cmake)
-endif()
-
-# Convenience boolean variables to easily test python version
-set(IS_PY3 0)
-set(IS_PY2 1)
-if(PY_VERSION_MAJOR VERSION_GREATER 2)
-    set(IS_PY3 1)
-    set(IS_PY2 0)
 endif()
 
 # Options depending of the python version
