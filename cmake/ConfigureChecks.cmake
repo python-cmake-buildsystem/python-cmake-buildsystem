@@ -156,7 +156,7 @@ message(STATUS "${_msg} - ${ABIFLAGS}")
 
 set(_msg "Checking SOABI")
 try_run(PLATFORM_RUN PLATFORM_COMPILE
-        ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}/cmake/platform.c
+        ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR}/cmake/platform.c
         RUN_OUTPUT_VARIABLE PLATFORM_TRIPLET)
 if(NOT PLATFORM_COMPILE)
   message(FATAL_ERROR "We could not determine the platform. Please clean the ${CMAKE_PROJECT_NAME} environment and try again...")
