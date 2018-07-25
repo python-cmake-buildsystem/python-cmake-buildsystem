@@ -1,5 +1,7 @@
 
-image: Visual Studio 2015
+image:
+#- Visual Studio 2015
+- Visual Studio 2017
 
 branches:
  only:
@@ -17,37 +19,43 @@ configuration:
 environment:
   matrix:
   - PY_VERSION: 3.6.4
-    GENERATOR: Visual Studio 14 2015 Win64
+    GENERATOR: Visual Studio 15 2017 Win64
   - PY_VERSION: 3.6.4
-    GENERATOR: Visual Studio 14 2015
+    GENERATOR: Visual Studio 15 2017
 
-  - PY_VERSION: 3.5.5
-    GENERATOR: Visual Studio 14 2015 Win64
-  - PY_VERSION: 3.5.5
-    GENERATOR: Visual Studio 14 2015
+#  - PY_VERSION: 3.6.4
+#    GENERATOR: Visual Studio 14 2015 Win64
+#  - PY_VERSION: 3.6.4
+#    GENERATOR: Visual Studio 14 2015
+#
+#  - PY_VERSION: 3.5.5
+#    GENERATOR: Visual Studio 14 2015 Win64
+#  - PY_VERSION: 3.5.5
+#    GENERATOR: Visual Studio 14 2015
+#
+#  - PY_VERSION: 2.7.14
+#    GENERATOR: Visual Studio 14 2015 Win64
+#  - PY_VERSION: 2.7.14
+#    GENERATOR: Visual Studio 14 2015
+#
+#  - PY_VERSION: 2.7.14
+#    GENERATOR: Visual Studio 12 2013 Win64
+#  - PY_VERSION: 2.7.14
+#    GENERATOR: Visual Studio 12 2013
+#
+#  - PY_VERSION: 2.7.14
+#  - PY_VERSION: 2.7.13
+#  - PY_VERSION: 2.7.12
+#  - PY_VERSION: 2.7.11
+#  - PY_VERSION: 2.7.10
+#  - PY_VERSION: 2.7.9
+#  - PY_VERSION: 2.7.8
+#  - PY_VERSION: 2.7.7
+#  - PY_VERSION: 2.7.6
+#  - PY_VERSION: 2.7.5
+#  - PY_VERSION: 2.7.4
+#  - PY_VERSION: 2.7.3
 
-  - PY_VERSION: 2.7.14
-    GENERATOR: Visual Studio 14 2015 Win64
-  - PY_VERSION: 2.7.14
-    GENERATOR: Visual Studio 14 2015
-
-  - PY_VERSION: 2.7.14
-    GENERATOR: Visual Studio 12 2013 Win64
-  - PY_VERSION: 2.7.14
-    GENERATOR: Visual Studio 12 2013
-
-  - PY_VERSION: 2.7.14
-  - PY_VERSION: 2.7.13
-  - PY_VERSION: 2.7.12
-  - PY_VERSION: 2.7.11
-  - PY_VERSION: 2.7.10
-  - PY_VERSION: 2.7.9
-  - PY_VERSION: 2.7.8
-  - PY_VERSION: 2.7.7
-  - PY_VERSION: 2.7.6
-  - PY_VERSION: 2.7.5
-  - PY_VERSION: 2.7.4
-  - PY_VERSION: 2.7.3
 
 install:
   - ps: |
