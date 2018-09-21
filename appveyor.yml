@@ -26,16 +26,17 @@ environment:
   - PY_VERSION: 3.5.5
     GENERATOR: Visual Studio 14 2015
 
-  - PY_VERSION: 2.7.14
+  - PY_VERSION: 2.7.15
     GENERATOR: Visual Studio 14 2015 Win64
-  - PY_VERSION: 2.7.14
+  - PY_VERSION: 2.7.15
     GENERATOR: Visual Studio 14 2015
 
-  - PY_VERSION: 2.7.14
+  - PY_VERSION: 2.7.15
     GENERATOR: Visual Studio 12 2013 Win64
-  - PY_VERSION: 2.7.14
+  - PY_VERSION: 2.7.15
     GENERATOR: Visual Studio 12 2013
 
+  - PY_VERSION: 2.7.15
   - PY_VERSION: 2.7.14
   - PY_VERSION: 2.7.13
   - PY_VERSION: 2.7.12
