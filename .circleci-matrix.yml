@@ -2,11 +2,11 @@ env:
 
   - IMAGE=linux-x64 PY_VERSION=3.6.4
   - IMAGE=linux-x64 PY_VERSION=3.5.5
-  - IMAGE=linux-x64 PY_VERSION=2.7.14
+  - IMAGE=linux-x64 PY_VERSION=2.7.15
 
   - IMAGE=linux-x86 PY_VERSION=3.6.4
   - IMAGE=linux-x86 PY_VERSION=3.5.5
-  - IMAGE=linux-x86 PY_VERSION=2.7.14
+  - IMAGE=linux-x86 PY_VERSION=2.7.15
 command:
   - |
     if [[ $STEP == "dependencies" ]]; then
