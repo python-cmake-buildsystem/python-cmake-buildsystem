@@ -533,7 +533,7 @@ if(BUILD_LIBPYTHON_SHARED)
                 ${PROJECT_BINARY_DIR}/CMakeFiles/python3stub.def
                 ${pythonstub_def}
         )
-        add_custom_target(generate_libpythonstub_def DEPENDS ${pythonstub_def})
+        add_custom_target(generate_libpython3stub_def DEPENDS ${pythonstub_def})
 
         # Build 'python3stub.lib' before linking 'python3.dll'
         set(python3stub_lib ${PROJECT_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}/${CMAKE_CFG_INTDIR}/python3stub.lib)
@@ -545,7 +545,7 @@ if(BUILD_LIBPYTHON_SHARED)
             OUTPUT ${python3stub_lib}
             COMMAND lib /nologo /def:${pythonstub_def} /out:${python3stub_lib} /MACHINE:${machine}
             COMMENT "Rebuilding python3stub.lib"
-            DEPENDS generate_libpythonstub_def
+            DEPENDS generate_libpython3stub_def
             VERBATIM
         )
         add_custom_target(generate_libpython3stub_lib DEPENDS ${python3stub_lib})
@@ -558,7 +558,7 @@ if(BUILD_LIBPYTHON_SHARED)
             RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR}
             INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/${LIBPYTHON_LIBDIR}
         )
-        add_dependencies(${targetname} generate_libpythonstub_lib)
+        add_dependencies(${targetname} generate_libpython3stub_lib)
 
         target_link_libraries(${targetname} ${python3stub_lib})
     endif()
