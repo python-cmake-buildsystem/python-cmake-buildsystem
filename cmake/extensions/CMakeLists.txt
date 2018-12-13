@@ -133,6 +133,17 @@ add_python_extension(xxsubtype BUILTIN REQUIRES IS_PY3 SOURCES xxsubtype.c)
 # builtin module avoids some bootstrapping problems and reduces overhead.
 add_python_extension(zipimport ALWAYS_BUILTIN REQUIRES IS_PY3 SOURCES zipimport.c)
 
+# Python 3.6
+if(PY_VERSION VERSION_EQUAL "3.6" OR PY_VERSION VERSION_GREATER "3.6")
+    set(_blake2_SOURCES
+        _blake2/blake2module.c
+        _blake2/blake2b_impl.c
+        _blake2/blake2s_impl.c
+    )
+    add_python_extension(_blake2 ${WIN32_BUILTIN} SOURCES ${_blake2_SOURCES})
+    add_python_extension(_sha3 ${WIN32_BUILTIN} SOURCES _sha3/sha3module.c)
+endif()
+
 # UNIX-only extensions
 add_python_extension(fcntl REQUIRES UNIX SOURCES fcntlmodule.c)
 add_python_extension(grp REQUIRES UNIX SOURCES grpmodule.c)
