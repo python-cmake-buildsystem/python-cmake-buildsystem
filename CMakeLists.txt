@@ -2,6 +2,17 @@ cmake_minimum_required(VERSION 2.8.6)
 
 set(PYTHON_VERSION "3.8.6" CACHE STRING "The version of Python to build.")
 
+###############
+# ASI default settings
+list(APPEND CMAKE_MODULE_PATH "$ENV{ASV_CMAKE}")
+include(asv_cmake_defaults)
+asv_cmake_defaults( )
+###############
+
+if(WIN32)
+    set( OPENSSL_ROOT_DIR i:/t/openssl)
+endif(WIN32)
+
 string(REPLACE "." ";" VERSION_LIST ${PYTHON_VERSION})
 list(GET VERSION_LIST 0 PY_VERSION_MAJOR)
 list(GET VERSION_LIST 1 PY_VERSION_MINOR)
@@ -42,7 +53,7 @@ include(CTest)
 
 # Options
 option(DOWNLOAD_SOURCES "Automatically download the Python sources" ON)
-set(_build_libpython_shared_default  0)
+set(_build_libpython_shared_default  1)
 set(_build_libpython_shared_desc "Build libpython as a shared library")
 
 if(DEFINED BUILD_SHARED OR DEFINED BUILD_STATIC)
@@ -67,7 +78,7 @@ option(BUILD_LIBPYTHON_SHARED ${_build_libpython_shared_desc} ${_build_libpython
 option(BUILD_EXTENSIONS_AS_BUILTIN "Default all modules as builtin to libpython" OFF)
 option(USE_LIB64 "Search for dependencies and install to prefix/lib64 instead of prefix/lib" OFF)
 if(WIN32)
-  option(INSTALL_WINDOWS_TRADITIONAL "Install the executable and extensions in the traditional location" OFF)
+  option(INSTALL_WINDOWS_TRADITIONAL "Install the executable and extensions in the traditional location" ON)
   set(_build_wininst_default ON)
   if(CMAKE_CROSSCOMPILING)
     set(_build_wininst_default OFF)
