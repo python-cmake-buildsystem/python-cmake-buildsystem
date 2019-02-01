@@ -1,0 +1,17 @@
+diff --git a/PC/pyconfig.h b/PC/pyconfig.h
+index 64e7aec..40ced7d 100644
+--- a/PC/pyconfig.h
++++ b/PC/pyconfig.h
+@@ -333,9 +333,9 @@ Py_NO_ENABLE_SHARED to find out.  Also support MS_NO_COREDLL for b/w compat */
+ #	endif
+ #endif
+ 
+-#ifdef _DEBUG
+-#	define Py_DEBUG
+-#endif
++//#ifdef _DEBUG
++//#	define Py_DEBUG
++//#endif
+ 
+ 
+ #ifdef MS_WIN32
