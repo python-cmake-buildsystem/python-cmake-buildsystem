@@ -110,6 +110,7 @@ set(OBJECT_COMMON_SOURCES # Equivalent to OBJECT_OBJS in Makefile.pre
     ${SRC_DIR}/Objects/boolobject.c
     ${SRC_DIR}/Objects/bytearrayobject.c
     ${SRC_DIR}/Objects/bytes_methods.c
+    ${SRC_DIR}/Objects/call.c
     ${SRC_DIR}/Objects/capsule.c
     ${SRC_DIR}/Objects/cellobject.c
     ${SRC_DIR}/Objects/classobject.c
@@ -205,6 +206,7 @@ set(PYTHON3_COMMON_SOURCES
     ${SRC_DIR}/Python/pystrhex.c
     ${SRC_DIR}/Python/pystrtod.c
     ${SRC_DIR}/Python/pytime.c
+    ${SRC_DIR}/Python/bootstrap_hash.c
 )
 
 set(PYTHON_COMMON_SOURCES
@@ -213,6 +215,8 @@ set(PYTHON_COMMON_SOURCES
     ${THREAD_SOURCES}
     ${SRC_DIR}/Python/asdl.c
     ${SRC_DIR}/Python/ast.c
+    ${SRC_DIR}/Python/ast_opt.c
+    ${SRC_DIR}/Python/ast_unparse.c
     ${SRC_DIR}/Python/bltinmodule.c
     ${SRC_DIR}/Python/ceval.c
     ${SRC_DIR}/Python/codecs.c
@@ -234,16 +238,18 @@ set(PYTHON_COMMON_SOURCES
     ${SRC_DIR}/Python/modsupport.c
     ${SRC_DIR}/Python/mysnprintf.c
     ${SRC_DIR}/Python/mystrtoul.c
+    ${SRC_DIR}/Python/pathconfig.c
     ${SRC_DIR}/Python/peephole.c
     ${SRC_DIR}/Python/pyarena.c
     ${SRC_DIR}/Python/pyctype.c
     ${SRC_DIR}/Python/pyfpe.c
     ${SRC_DIR}/Python/pymath.c
     ${SRC_DIR}/Python/pystate.c
+    ${SRC_DIR}/Python/context.c
     ${SRC_DIR}/Python/pystrcmp.c
     ${SRC_DIR}/Python/Python-ast.c
+    ${SRC_DIR}/Python/hamt.c
     ${SRC_DIR}/Python/pythonrun.c
-    ${SRC_DIR}/Python/random.c
     ${SRC_DIR}/Python/structmember.c
     ${SRC_DIR}/Python/symtable.c
     ${SRC_DIR}/Python/sysmodule.c
