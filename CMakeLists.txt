@@ -396,7 +396,7 @@ endif()
 # Install tree directory
 set(BIN_INSTALL_DIR bin)                         # Contains the python executable
 if(INSTALL_WINDOWS_TRADITIONAL)
-    set(BIN_INSTALL_DIR .)                       # Contains the python executable
+    set(BIN_INSTALL_DIR Scripts)                       # Contains the python executable
 endif()
 set(LD_VERSION ${LIBPYTHON_VERSION}${ABIFLAGS})
 set(CONFIG_INSTALL_DIR share/${LIBPYTHON})
