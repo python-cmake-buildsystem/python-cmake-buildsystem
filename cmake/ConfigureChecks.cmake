@@ -1326,7 +1326,33 @@ endif()
 
 if(IS_PY3)
 
-check_function_exists(clock_getres HAVE_CLOCK_GETRES)
+if(APPLE)
+  cmake_push_check_state()
+  set(CMAKE_REQUIRED_FLAGS "-Wl,-no_weak_imports")
+  CHECK_C_SOURCE_COMPILES("int main(void) { return 0; }" SUPPORT_NO_WEAK_IMPORT_FLAG)
+  cmake_pop_check_state()
+else()
+  set(SUPPORT_NO_WEAK_IMPORT_FLAG 0)
+endif()
+
+cmake_push_check_state()
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/clock_getres.c)
+file(WRITE ${check_src} "
+#include <stdio.h>
+#include <time.h>
+int main() { return clock_getres(0, NULL); }
+")
+if(SUPPORT_NO_WEAK_IMPORT_FLAG)
+  set(CMAKE_REQUIRED_FLAGS "-Wl,-no_weak_imports")
+endif()
+python_platform_test(
+  HAVE_CLOCK_GETRES
+  "Checking for clock_getres"
+  ${check_src}
+  DIRECT
+  )
+cmake_pop_check_state()
+
 if(NOT HAVE_CLOCK_GETRES)
   cmake_push_check_state()
   set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_lib_rt_clock_getres.c)
@@ -1349,7 +1375,23 @@ if(NOT HAVE_CLOCK_GETRES)
   cmake_pop_check_state()
 endif()
 
-check_function_exists(clock_gettime HAVE_CLOCK_GETTIME)
+cmake_push_check_state()
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/clock_gettime.c)
+file(WRITE ${check_src} "
+#include <stdio.h>
+#include <time.h>
+int main() { return clock_gettime(0, NULL); }
+")
+if(SUPPORT_NO_WEAK_IMPORT_FLAG)
+  set(CMAKE_REQUIRED_FLAGS "-Wl,-no_weak_imports")
+endif()
+python_platform_test(
+  HAVE_CLOCK_GETTIME
+  "Checking for clock_gettime"
+  ${check_src}
+  DIRECT
+  )
+cmake_pop_check_state()
 if(NOT HAVE_CLOCK_GETTIME)
   cmake_push_check_state()
   set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_lib_rt_clock_gettime.c)
