@@ -36,12 +36,22 @@ How to use this buildsystem:
 
 .. code:: bash
 
+  # Unix
   cd ~/scratch
   mkdir -p python-build && mkdir -p python-install
   cd python-build
   cmake -DCMAKE_INSTALL_PREFIX:PATH=${HOME}/scratch/python-install ../python-cmake-buildsystem
   make -j10
   make install
+
+  # Windows
+  cd %HOME%/scratch
+  mkdir python-build
+  mkdir python-install
+  cd python-build
+  cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX:PATH=%HOME%/scratch/python-install ../python-cmake-buildsystem
+  cmake --build . --config Release -- /m
+  cmake --build . --config Release --target INSTALL
 
 .. note::
 
