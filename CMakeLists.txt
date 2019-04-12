@@ -287,6 +287,11 @@ if(PY_VERSION_MAJOR VERSION_GREATER 2)
     set(IS_PY2 0)
 endif()
 
+# Enable CXX language to support building of _distutils_findvs extension
+if(WIN32 AND IS_PY3)
+  enable_language(CXX)
+endif()
+
 # Options depending of the python version
 if(IS_PY2)
   option(Py_USING_UNICODE "Enable unicode support" ON)

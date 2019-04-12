@@ -194,6 +194,13 @@ add_python_extension(_overlapped
 )
 add_python_extension(_winapi REQUIRES WIN32 IS_PY3 BUILTIN SOURCES ${SRC_DIR}/Modules/_winapi.c)
 
+set(HAS_DISTUTILS_FINDVS_MODULE_SRC 0)
+set(module_src ${SRC_DIR}/PC/_findvs.cpp)
+if(EXISTS ${module_src})
+  set(HAS_DISTUTILS_FINDVS_MODULE_SRC 1)
+endif()
+add_python_extension(_distutils_findvs REQUIRES WIN32 IS_PY3 HAS_DISTUTILS_FINDVS_MODULE_SRC SOURCES ${module_src})
+
 # Multiprocessing is different on unix and windows
 if(UNIX)
     set(_multiprocessing2_SOURCES
