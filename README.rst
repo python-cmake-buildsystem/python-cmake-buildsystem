@@ -55,7 +55,7 @@ How to use this buildsystem:
 
 .. note::
 
-  By default, the build system will download the python 3.6.9 source from
+  By default, the build system will download the python 3.7.4 source from
   http://www.python.org/ftp/python/
 
 
