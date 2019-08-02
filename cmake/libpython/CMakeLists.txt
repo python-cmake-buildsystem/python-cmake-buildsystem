@@ -95,6 +95,7 @@ endif()
 set(OBJECT3_SOURCES
     ${SRC_DIR}/Objects/accu.c
     ${SRC_DIR}/Objects/bytesobject.c
+    ${SRC_DIR}/Objects/call.c
     ${SRC_DIR}/Objects/namespaceobject.c
     ${SRC_DIR}/Objects/odictobject.c
 )
@@ -198,8 +199,13 @@ if(WIN32)
 endif()
 
 set(PYTHON3_COMMON_SOURCES
+    ${SRC_DIR}/Python/ast_opt.c
+    ${SRC_DIR}/Python/ast_unparse.c
+    ${SRC_DIR}/Python/context.c
     ${SRC_DIR}/Python/dynamic_annotations.c
     ${SRC_DIR}/Python/fileutils.c
+    ${SRC_DIR}/Python/hamt.c
+    ${SRC_DIR}/Python/pathconfig.c
     ${SRC_DIR}/Python/pyhash.c
     ${SRC_DIR}/Python/pylifecycle.c
     ${SRC_DIR}/Python/pystrhex.c

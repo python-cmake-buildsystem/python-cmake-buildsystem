@@ -61,7 +61,7 @@ add_python_extension(${datetime${PY_VERSION_MAJOR}_NAME} ${WIN32_BUILTIN} REQUIR
 #if(ENABLE_DATETIME AND CMAKE_C_COMPILER_ID MATCHES GNU)
 #    set_property(SOURCE ${SRC_DIR}/Modules/datetimemodule.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
 #endif()
-add_python_extension(_functools ${WIN32_BUILTIN} SOURCES _functoolsmodule.c) # Tools for working with functions and callable objects
+add_python_extension(_functools ${WIN32_BUILTIN} SOURCES _functoolsmodule.c DEFINITIONS Py_BUILD_CORE) # Tools for working with functions and callable objects
 add_python_extension(future_builtins ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES future_builtins.c)
 add_python_extension(_heapq ${WIN32_BUILTIN} SOURCES _heapqmodule.c)
 add_python_extension(_hotshot ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES _hotshot.c)
@@ -80,7 +80,7 @@ if(WIN32 AND EXISTS ${SRC_DIR}/Modules/_io/winconsoleio.c)
         ${SRC_DIR}/Modules/_io/winconsoleio.c
         )
 endif()
-add_python_extension(_io BUILTIN SOURCES ${_io_SOURCES})
+add_python_extension(_io BUILTIN SOURCES ${_io_SOURCES} DEFINITIONS Py_BUILD_CORE)
 
 add_python_extension(itertools ${WIN32_BUILTIN} SOURCES itertoolsmodule.c) # Functions creating iterators for efficient looping
 add_python_extension(_json ${WIN32_BUILTIN} SOURCES _json.c)
@@ -99,8 +99,8 @@ set(thread2_NAME thread)
 set(thread3_NAME _thread)
 set(thread2_SOURCES ${SRC_DIR}/Modules/threadmodule.c)
 set(thread3_SOURCES ${SRC_DIR}/Modules/_threadmodule.c)
-add_python_extension(${thread${PY_VERSION_MAJOR}_NAME} BUILTIN REQUIRES WITH_THREAD SOURCES ${thread${PY_VERSION_MAJOR}_SOURCES})
-add_python_extension(time BUILTIN REQUIRES HAVE_LIBM SOURCES timemodule.c LIBRARIES ${M_LIBRARIES} ${TIMEMODULE_LIB})
+add_python_extension(${thread${PY_VERSION_MAJOR}_NAME} BUILTIN REQUIRES WITH_THREAD SOURCES ${thread${PY_VERSION_MAJOR}_SOURCES} DEFINITIONS Py_BUILD_CORE)
+add_python_extension(time BUILTIN REQUIRES HAVE_LIBM SOURCES timemodule.c DEFINITIONS Py_BUILD_CORE LIBRARIES ${M_LIBRARIES} ${TIMEMODULE_LIB})
 add_python_extension(unicodedata SOURCES unicodedata.c)
 
 # Python3
@@ -131,7 +131,7 @@ add_python_extension(xxlimited REQUIRES IS_PY3 BUILD_TESTING
 add_python_extension(xxsubtype BUILTIN REQUIRES IS_PY3 SOURCES xxsubtype.c)
 # The zipimport module is always imported at startup. Having it as a
 # builtin module avoids some bootstrapping problems and reduces overhead.
-add_python_extension(zipimport ALWAYS_BUILTIN REQUIRES IS_PY3 SOURCES zipimport.c)
+add_python_extension(zipimport ALWAYS_BUILTIN REQUIRES IS_PY3 SOURCES zipimport.c DEFINITIONS Py_BUILD_CORE)
 
 # Python 3.6
 if(PY_VERSION VERSION_EQUAL "3.6" OR PY_VERSION VERSION_GREATER "3.6")
@@ -148,7 +148,7 @@ endif()
 add_python_extension(fcntl REQUIRES UNIX SOURCES fcntlmodule.c)
 add_python_extension(grp REQUIRES UNIX SOURCES grpmodule.c)
 add_python_extension(nis REQUIRES UNIX HAVE_LIBNSL SOURCES nismodule.c LIBRARIES ${HAVE_LIBNSL})
-add_python_extension(posix REQUIRES UNIX BUILTIN SOURCES posixmodule.c)
+add_python_extension(posix REQUIRES UNIX BUILTIN SOURCES posixmodule.c DEFINITIONS Py_BUILD_CORE)
 add_python_extension(pwd REQUIRES UNIX BUILTIN SOURCES pwdmodule.c) # this is needed to find out the user's home dir if $HOME is not set
 add_python_extension(resource REQUIRES UNIX SOURCES resource.c)
 add_python_extension(spwd REQUIRES UNIX HAVE_GETSPNAM HAVE_GETSPENT SOURCES spwdmodule.c)
