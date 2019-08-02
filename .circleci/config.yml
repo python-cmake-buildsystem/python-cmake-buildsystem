@@ -84,15 +84,15 @@ jobs:
 workflows:
     build-and-test:
       jobs:
-        # 3.6.7
+        # 3.6.15
         - build-test-python:
-            name: python-3.6.7-x64
-            python_version: 3.6.7
+            name: python-3.6.15-x64
+            python_version: 3.6.15
             python_arch: x64
 
         - build-test-python:
-            name: python-3.6.7-x86
-            python_version: 3.6.7
+            name: python-3.6.15-x86
+            python_version: 3.6.15
             python_arch: x86
 
         # 2.7.15
@@ -109,10 +109,10 @@ workflows:
 
     build-and-test-win:
       jobs:
-        # 3.6.7
+        # 3.6.15
         - build-test-python-win:
-            name: python-3.6.7-win-x64
-            python_version: 3.6.7
+            name: python-3.6.15-win-x64
+            python_version: 3.6.15
             python_arch: x64
             generator: "Visual Studio 16 2019"
 
