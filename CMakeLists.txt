@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.6)
 
-set(PYTHON_VERSION "3.6.7" CACHE STRING "The version of Python to build.")
+set(PYTHON_VERSION "3.6.9" CACHE STRING "The version of Python to build.")
 
 string(REPLACE "." ";" VERSION_LIST ${PYTHON_VERSION})
 list(GET VERSION_LIST 0 PY_VERSION_MAJOR)
@@ -198,6 +198,7 @@ set(_download_3.5.2_md5 "3fe8434643a78630c61c6464fe2e7e72")
 set(_download_3.5.3_md5 "6192f0e45f02575590760e68c621a488")
 set(_download_3.5.4_md5 "2ed4802b7a2a7e40d2e797272bf388ec")
 set(_download_3.5.5_md5 "7c825b747d25c11e669e99b912398585")
+set(_download_3.5.6_md5 "99a7e803633a627b264a42ce976d8c19")
 # 3.6.x
 set(_download_3.6.0_md5 "3f7062ccf8be76491884d0e47ac8b251")
 set(_download_3.6.1_md5 "2d0fc9f3a5940707590e07f03ecb08b9")
@@ -207,6 +208,8 @@ set(_download_3.6.4_md5 "9de6494314ea199e3633211696735f65")
 set(_download_3.6.5_md5 "ab25d24b1f8cc4990ade979f6dc37883")
 set(_download_3.6.6_md5 "9a080a86e1a8d85e45eee4b1cd0a18a2")
 set(_download_3.6.7_md5 "c83551d83bf015134b4b2249213f3f85")
+set(_download_3.6.8_md5 "48f393a04c2e66c77bfc114e589ec630")
+set(_download_3.6.9_md5 "ff7cdaef4846c89c1ec0d7b709bbd54d")
 # 3.7.x
 set(_download_3.7.0b2_md5 "1d49b3460cc1ac80ade91114eae53c61")
 
