@@ -197,6 +197,7 @@ set(_download_3.5.2_md5 "3fe8434643a78630c61c6464fe2e7e72")
 set(_download_3.5.3_md5 "6192f0e45f02575590760e68c621a488")
 set(_download_3.5.4_md5 "2ed4802b7a2a7e40d2e797272bf388ec")
 set(_download_3.5.5_md5 "7c825b747d25c11e669e99b912398585")
+set(_download_3.5.6_md5 "99a7e803633a627b264a42ce976d8c19")
 # 3.6.x
 set(_download_3.6.0_md5 "3f7062ccf8be76491884d0e47ac8b251")
 set(_download_3.6.1_md5 "2d0fc9f3a5940707590e07f03ecb08b9")
