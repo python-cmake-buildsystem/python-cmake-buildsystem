@@ -22,9 +22,9 @@ environment:
   - PY_VERSION: 3.7.0b2
     GENERATOR: Visual Studio 14 2015
 
-  - PY_VERSION: 3.6.5
+  - PY_VERSION: 3.6.9
     GENERATOR: Visual Studio 14 2015 Win64
-  - PY_VERSION: 3.6.5
+  - PY_VERSION: 3.6.9
     GENERATOR: Visual Studio 14 2015
 
   - PY_VERSION: 3.5.5
