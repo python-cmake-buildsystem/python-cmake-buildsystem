@@ -133,6 +133,17 @@ add_python_extension(xxsubtype BUILTIN REQUIRES IS_PY3 SOURCES xxsubtype.c)
 # builtin module avoids some bootstrapping problems and reduces overhead.
 add_python_extension(zipimport ALWAYS_BUILTIN REQUIRES IS_PY3 SOURCES zipimport.c)
 
+# Python 3.6
+if(PY_VERSION VERSION_EQUAL "3.6" OR PY_VERSION VERSION_GREATER "3.6")
+    set(_blake2_SOURCES
+        _blake2/blake2module.c
+        _blake2/blake2b_impl.c
+        _blake2/blake2s_impl.c
+    )
+    add_python_extension(_blake2 ${WIN32_BUILTIN} SOURCES ${_blake2_SOURCES})
+    add_python_extension(_sha3 ${WIN32_BUILTIN} SOURCES _sha3/sha3module.c)
+endif()
+
 # UNIX-only extensions
 add_python_extension(fcntl REQUIRES UNIX SOURCES fcntlmodule.c)
 add_python_extension(grp REQUIRES UNIX SOURCES grpmodule.c)
@@ -182,6 +193,13 @@ add_python_extension(_overlapped
     LIBRARIES ws2_32
 )
 add_python_extension(_winapi REQUIRES WIN32 IS_PY3 BUILTIN SOURCES ${SRC_DIR}/Modules/_winapi.c)
+
+set(HAS_DISTUTILS_FINDVS_MODULE_SRC 0)
+set(module_src ${SRC_DIR}/PC/_findvs.cpp)
+if(EXISTS ${module_src})
+  set(HAS_DISTUTILS_FINDVS_MODULE_SRC 1)
+endif()
+add_python_extension(_distutils_findvs REQUIRES WIN32 IS_PY3 HAS_DISTUTILS_FINDVS_MODULE_SRC SOURCES ${module_src})
 
 # Multiprocessing is different on unix and windows
 if(UNIX)
@@ -649,7 +667,7 @@ add_python_extension(_sqlite3
             _sqlite/row.c
             _sqlite/statement.c
             _sqlite/util.c
-    DEFINITIONS MODULE_NAME="sqlite3"
+    DEFINITIONS MODULE_NAME="sqlite3" SQLITE_OMIT_LOAD_EXTENSION=1
     INCLUDEDIRS ${SQLITE3_INCLUDE_PATH}
     LIBRARIES ${SQLITE3_LIBRARY}
 )

@@ -1,0 +1,26 @@
+From ca436844d5dddcb0156ada7fadc9fa4c38d8bcbe Mon Sep 17 00:00:00 2001
+From: Jean-Christophe Fillion-Robin <jchris.fillionr@kitware.com>
+Date: Fri, 12 Apr 2019 16:36:42 -0400
+Subject: [PATCH 4/4] Fix Windows build of Python for latest WinSDK.
+
+This is a partial backport of https://github.com/python/cpython/commit/df4852cbe4b757e8b79506d73a09ec8a1b595970
+---
+ Modules/_io/_iomodule.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Modules/_io/_iomodule.c b/Modules/_io/_iomodule.c
+index f4d3cbd49f..f7ad176990 100644
+--- a/Modules/_io/_iomodule.c
++++ b/Modules/_io/_iomodule.c
+@@ -21,7 +21,7 @@
+ #endif /* HAVE_SYS_STAT_H */
+ 
+ #ifdef MS_WINDOWS
+-#include <consoleapi.h>
++#include <windows.h>
+ #endif
+ 
+ /* Various interned strings */
+-- 
+2.11.0
+

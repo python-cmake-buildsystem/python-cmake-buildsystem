@@ -276,6 +276,8 @@ if(NOT "${PYTHON_VERSION}" STREQUAL "${PY_VERSION}")
   set(PYTHON_VERSION "${PY_VERSION}" CACHE STRING "The version of Python to build." FORCE)
 endif()
 
+set(PYTHON_VERSION "${PY_VERSION}" CACHE STRING "The version of Python to build." FORCE)
+
 # Apply patches
 option(PYTHON_APPLY_PATCHES "Apply patches" ON)
 if(PYTHON_APPLY_PATCHES)
@@ -288,6 +290,11 @@ set(IS_PY2 1)
 if(PY_VERSION_MAJOR VERSION_GREATER 2)
     set(IS_PY3 1)
     set(IS_PY2 0)
+endif()
+
+# Enable CXX language to support building of _distutils_findvs extension
+if(WIN32 AND IS_PY3)
+  enable_language(CXX)
 endif()
 
 # Options depending of the python version

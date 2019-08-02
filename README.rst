@@ -36,6 +36,7 @@ How to use this buildsystem:
 
 .. code:: bash
 
+  # Unix
   cd ~/scratch
   mkdir -p python-build && mkdir -p python-install
   cd python-build
@@ -43,9 +44,18 @@ How to use this buildsystem:
   make -j10
   make install
 
+  # Windows
+  cd %HOME%/scratch
+  mkdir python-build
+  mkdir python-install
+  cd python-build
+  cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX:PATH=%HOME%/scratch/python-install ../python-cmake-buildsystem
+  cmake --build . --config Release -- /m
+  cmake --build . --config Release --target INSTALL
+
 .. note::
 
-  By default, the build system will download the python 3.6.4 source from
+  By default, the build system will download the python 3.6.7 source from
   http://www.python.org/ftp/python/
 
 
@@ -58,7 +68,7 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
 
 ::
 
-  PYTHON_VERSION=major.minor.patch (defaults to 3.6.4)
+  PYTHON_VERSION=major.minor.patch (defaults to 3.6.7)
     The version of Python to build.
 
   PYTHON_APPLY_PATCHES=ON|OFF (defaults to ON)
