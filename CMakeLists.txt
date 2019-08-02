@@ -211,7 +211,11 @@ set(_download_3.6.7_md5 "c83551d83bf015134b4b2249213f3f85")
 set(_download_3.6.8_md5 "48f393a04c2e66c77bfc114e589ec630")
 set(_download_3.6.9_md5 "ff7cdaef4846c89c1ec0d7b709bbd54d")
 # 3.7.x
-set(_download_3.7.0b2_md5 "1d49b3460cc1ac80ade91114eae53c61")
+set(_download_3.7.0_md5 "41b6595deb4147a1ed517a7d9a580271")
+set(_download_3.7.1_md5 "99f78ecbfc766ea449c4d9e7eda19e83")
+set(_download_3.7.2_md5 "02a75015f7cd845e27b85192bb0ca4cb")
+set(_download_3.7.3_md5 "2ee10f25e3d1b14215d56c3882486fcf")
+set(_download_3.7.4_md5 "68111671e5b2db4aef7b9ab01bf0f9be")
 
 set(_extracted_dir "Python-${PY_VERSION}")
 
