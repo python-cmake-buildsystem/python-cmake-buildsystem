@@ -159,6 +159,7 @@ add_python_extension(syslog REQUIRES UNIX SOURCES syslogmodule.c)
 add_python_extension(termios REQUIRES UNIX SOURCES termios.c)
 
 # Python3: UNIX-only extensions
+add_python_extension(_uuid BUILTIN REQUIRES IS_PY3 UNIX SOURCES _uuidmodule.c LIBRARIES ${UUID_LIBRARY})
 add_python_extension(errno BUILTIN REQUIRES IS_PY3 UNIX SOURCES errnomodule.c)
 add_python_extension(_posixsubprocess BUILTIN REQUIRES IS_PY3 UNIX SOURCES _posixsubprocess.c)
 
