@@ -263,14 +263,6 @@ else()
     )
 endif()
 
-set(_libffi_system_dir ${CMAKE_SYSTEM_PROCESSOR})
-if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i686")
-  set(_libffi_system_dir "x86")
-elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64" OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "amd64")
-  set(_libffi_system_dir "x86")
-elseif("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "arm")
-  set(_libffi_system_dir "arm")
-endif()
 # Common ctypes sources
 set(ctypes_COMMON_SOURCES
     _ctypes/_ctypes.c
@@ -312,7 +304,6 @@ if(WIN32)
         )
     endif()
 else()
-    set(_libffi_system_extra_src)
     if(APPLE)
         add_python_extension(_ctypes
             SOURCES ${ctypes_COMMON_SOURCES}
@@ -328,37 +319,13 @@ else()
             DEFINITIONS MACOSX
         )
     else()
-        if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
-          set(_libffi_system_extra_src
-                _ctypes/libffi/src/${_libffi_system_dir}/ffi64.c
-                _ctypes/libffi/src/${_libffi_system_dir}/unix64.S
-                )
-        elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i686")
-          set(_libffi_system_extra_src
-                _ctypes/libffi/src/${_libffi_system_dir}/win32.S
-                )
-        endif()
-        # To facilitate an eventual contribution of the configuration
-        # of fficonfig.h to the upstream project, corresponding tests
-        # in ConfigureChecks.cmake are labeled using this convention:
-        # * "libffi specific"
-        # * "libffi and cpython"
-        set(LIBFFI_VERSION "3.1")
-        configure_file(
-          ${PROJECT_SOURCE_DIR}/cmake/fficonfig.h.in
-          ${INCLUDE_BUILD_DIR}/fficonfig.h
-          )
+        # get libffi
+        find_path(FFI_INCLUDE_DIR ffi.h)
+        find_library(FFI_LIBRARY NAMES ffi libffi)
         add_python_extension(_ctypes
             SOURCES ${ctypes_COMMON_SOURCES}
-                    _ctypes/libffi/src/closures.c
-                    _ctypes/libffi/src/prep_cif.c
-                    _ctypes/libffi/src/${_libffi_system_dir}/ffi.c
-                    _ctypes/libffi/src/${_libffi_system_dir}/sysv.S
-                    ${_libffi_system_extra_src}
-            INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi/src/${_libffi_system_dir}
-                        ${SRC_DIR}/Modules/_ctypes/libffi/include
-                        ${INCLUDE_BUILD_DIR}      # For fficonfig.h
-                        ${PROJECT_SOURCE_DIR}/cmake # For ffi.h
+            INCLUDEDIRS ${FFI_INCLUDE_DIR}
+            LIBRARIES ${FFI_LIBRARY}
         )
     endif()
 endif()
