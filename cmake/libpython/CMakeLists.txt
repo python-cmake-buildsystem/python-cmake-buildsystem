@@ -1,5 +1,7 @@
 add_definitions(-DPy_BUILD_CORE)
 add_definitions(-DNDEBUG)
+add_definitions(-D_PYTHONFRAMEWORK="")
+
 
 set(MODULE_SOURCES # Equivalent to MODULE_OBJS in Makefile.pre
     ${PROJECT_BINARY_DIR}/CMakeFiles/config.c
