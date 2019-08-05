@@ -157,8 +157,8 @@ if(PY_VERSION VERSION_EQUAL "3.7" OR PY_VERSION VERSION_GREATER "3.7")
     # _queue module
     add_python_extension(_queue BUILTIN REQUIRES IS_PY3 SOURCES _queuemodule.c)
     # Fuzz tests.
-    add_python_extension('_xxtestfuzz', SOURCES _xxtestfuzz/_xxtestfuzz.c
-                                                _xxtestfuzz/fuzzer.c)
+    add_python_extension(_xxtestfuzz SOURCES _xxtestfuzz/_xxtestfuzz.c
+                                             _xxtestfuzz/fuzzer.c
     )
 endif()
 
