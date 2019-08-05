@@ -31,7 +31,7 @@ endif()
 # lzma
 
 add_python_extension(array ${WIN32_BUILTIN} SOURCES arraymodule.c)
-add_python_extension(audioop ${WIN32_BUILTIN} SOURCES audioop.c)
+add_python_extension(audioop REQUIRES HAVE_LIBM ${WIN32_BUILTIN} SOURCES audioop.c)
 add_python_extension(_bisect ${WIN32_BUILTIN} SOURCES _bisectmodule.c)
 add_python_extension(cmath REQUIRES HAVE_LIBM ${WIN32_BUILTIN} SOURCES _math.c cmathmodule.c LIBRARIES ${M_LIBRARIES})
 add_python_extension(_codecs_cn ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_cn.c)
@@ -86,7 +86,7 @@ add_python_extension(itertools ${WIN32_BUILTIN} SOURCES itertoolsmodule.c) # Fun
 add_python_extension(_json ${WIN32_BUILTIN} SOURCES _json.c)
 add_python_extension(_locale ${WIN32_BUILTIN} SOURCES _localemodule.c) # access to ISO C locale support
 add_python_extension(_lsprof ${WIN32_BUILTIN} SOURCES _lsprof.c rotatingtree.c)
-add_python_extension(math ${WIN32_BUILTIN} SOURCES _math.c mathmodule.c)
+add_python_extension(math REQUIRES HAVE_LIBM ${WIN32_BUILTIN} SOURCES _math.c mathmodule.c)
 add_python_extension(mmap ${WIN32_BUILTIN} SOURCES mmapmodule.c)
 add_python_extension(_multibytecodec ${WIN32_BUILTIN} SOURCES cjkcodecs/multibytecodec.c)
 add_python_extension(operator ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES operator.c)
@@ -136,6 +136,9 @@ add_python_extension(zipimport ALWAYS_BUILTIN REQUIRES IS_PY3 SOURCES zipimport.
 
 # Python 3.6
 if(PY_VERSION VERSION_EQUAL "3.6" OR PY_VERSION VERSION_GREATER "3.6")
+    # asyncio speedups
+    add_python_extension(_asyncio BUILTIN REQUIRES IS_PY3 SOURCES _asynciomodule.c)
+    # blake module
     set(_blake2_SOURCES
         _blake2/blake2module.c
         _blake2/blake2b_impl.c
@@ -143,6 +146,20 @@ if(PY_VERSION VERSION_EQUAL "3.6" OR PY_VERSION VERSION_GREATER "3.6")
     )
     add_python_extension(_blake2 ${WIN32_BUILTIN} SOURCES ${_blake2_SOURCES})
     add_python_extension(_sha3 ${WIN32_BUILTIN} SOURCES _sha3/sha3module.c)
+endif()
+
+# Python 3.7
+if(PY_VERSION VERSION_EQUAL "3.7" OR PY_VERSION VERSION_GREATER "3.7")
+    # Context Variables
+    add_python_extension(_contextvars BUILTIN REQUIRES IS_PY3 SOURCES _contextvarsmodule.c)
+    # _abc speedups
+    add_python_extension(_abc BUILTIN REQUIRES IS_PY3 SOURCES _abc.c)
+    # _queue module
+    add_python_extension(_queue BUILTIN REQUIRES IS_PY3 SOURCES _queuemodule.c)
+    # Fuzz tests.
+    add_python_extension('_xxtestfuzz', SOURCES _xxtestfuzz/_xxtestfuzz.c
+                                                _xxtestfuzz/fuzzer.c)
+    )
 endif()
 
 # UNIX-only extensions
