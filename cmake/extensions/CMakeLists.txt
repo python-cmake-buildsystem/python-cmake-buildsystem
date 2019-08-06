@@ -192,6 +192,11 @@ add_python_extension(termios REQUIRES UNIX SOURCES termios.c)
 add_python_extension(errno BUILTIN REQUIRES IS_PY3 UNIX SOURCES errnomodule.c)
 add_python_extension(_posixsubprocess BUILTIN REQUIRES IS_PY3 UNIX SOURCES _posixsubprocess.c)
 
+# Build the _uuid module if possible
+if(UUID_LIBRARY)
+    add_python_extension(_uuid BUILTIN REQUIRES IS_PY3 UNIX SOURCES _uuidmodule.c LIBRARIES ${UUID_LIBRARY})
+endif()
+
 # MacOSX-only extensions
 set(_scproxy2_SOURCES ${SRC_DIR}/Mac/Modules/_scproxy.c)
 set(_scproxy3_SOURCES ${SRC_DIR}/Modules/_scproxy.c)
