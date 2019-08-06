@@ -106,6 +106,8 @@ endif()
 
 find_path(SQLITE3_INCLUDE_PATH sqlite3.h)
 find_library(SQLITE3_LIBRARY sqlite3)
+find_library(UUID_LIBRARY uuid)
+message( STATUS "UUID_LIBRARY=${UUID_LIBRARY}")
 
 if(WIN32)
   set(M_LIBRARIES )
@@ -307,6 +309,8 @@ check_include_files(sys/syscall.h HAVE_SYS_SYSCALL_H)
 check_include_files(sys/sys_domain.h HAVE_SYS_SYS_DOMAIN_H)
 check_include_files(sys/uio.h HAVE_SYS_UIO_H)
 check_include_files(sys/xattr.h HAVE_SYS_XATTR_H)
+check_include_files(uuid/uuid.h HAVE_UUID_UUID_H)
+check_include_files(uuid.h HAVE_UUID_H)
 
 # On Darwin (OS X) net/if.h requires sys/socket.h to be imported first.
 set(NET_IF_HEADERS stdio.h)
@@ -702,6 +706,8 @@ add_cond(CFG_HEADERS HAVE_SYS_ENDIAN_H sys/endian.h)
 add_cond(CFG_HEADERS HAVE_SYS_RESOURCE_H sys/resource.h)
 add_cond(CFG_HEADERS HAVE_SYS_SENDFILE_H sys/sendfile.h)
 add_cond(CFG_HEADERS HAVE_SYS_TIME_H sys/time.h)
+add_cond(CFG_HEADERS HAVE_UUID_UUID_H uuid/uuid.h)
+add_cond(CFG_HEADERS HAVE_UUID_H uuid.h)
 endif()
 
 if(HAVE_PTY_H)

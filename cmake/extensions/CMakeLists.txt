@@ -61,7 +61,7 @@ add_python_extension(${datetime${PY_VERSION_MAJOR}_NAME} ${WIN32_BUILTIN} REQUIR
 #if(ENABLE_DATETIME AND CMAKE_C_COMPILER_ID MATCHES GNU)
 #    set_property(SOURCE ${SRC_DIR}/Modules/datetimemodule.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
 #endif()
-add_python_extension(_functools ${WIN32_BUILTIN} SOURCES _functoolsmodule.c DEFINITIONS Py_BUILD_CORE) # Tools for working with functions and callable objects
+add_python_extension(_functools ${WIN32_BUILTIN} DEFINITIONS Py_BUILD_CORE SOURCES _functoolsmodule.c) # Tools for working with functions and callable objects
 add_python_extension(future_builtins ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES future_builtins.c)
 add_python_extension(_heapq ${WIN32_BUILTIN} SOURCES _heapqmodule.c)
 add_python_extension(_hotshot ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES _hotshot.c)
@@ -149,10 +149,10 @@ endif()
 
 # Python 3.7
 if(PY_VERSION VERSION_EQUAL "3.7" OR PY_VERSION VERSION_GREATER "3.7")
-    # Context Variables
-    add_python_extension(_contextvars BUILTIN REQUIRES IS_PY3 SOURCES _contextvarsmodule.c)
     # _abc speedups
     add_python_extension(_abc BUILTIN REQUIRES IS_PY3 SOURCES _abc.c)
+    # Context Variables
+    add_python_extension(_contextvars BUILTIN REQUIRES IS_PY3 SOURCES _contextvarsmodule.c)
     # _queue module
     add_python_extension(_queue BUILTIN REQUIRES IS_PY3 SOURCES _queuemodule.c)
     # Fuzz tests.
@@ -173,6 +173,7 @@ add_python_extension(syslog REQUIRES UNIX SOURCES syslogmodule.c)
 add_python_extension(termios REQUIRES UNIX SOURCES termios.c)
 
 # Python3: UNIX-only extensions
+add_python_extension(_uuid BUILTIN REQUIRES IS_PY3 UNIX SOURCES _uuidmodule.c LIBRARIES ${UUID_LIBRARY})
 add_python_extension(errno BUILTIN REQUIRES IS_PY3 UNIX SOURCES errnomodule.c)
 add_python_extension(_posixsubprocess BUILTIN REQUIRES IS_PY3 UNIX SOURCES _posixsubprocess.c)
 
@@ -276,14 +277,6 @@ else()
     )
 endif()
 
-set(_libffi_system_dir ${CMAKE_SYSTEM_PROCESSOR})
-if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i686")
-  set(_libffi_system_dir "x86")
-elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64" OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "amd64")
-  set(_libffi_system_dir "x86")
-elseif("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "arm")
-  set(_libffi_system_dir "arm")
-endif()
 # Common ctypes sources
 set(ctypes_COMMON_SOURCES
     _ctypes/_ctypes.c
@@ -325,7 +318,6 @@ if(WIN32)
         )
     endif()
 else()
-    set(_libffi_system_extra_src)
     if(APPLE)
         add_python_extension(_ctypes
             SOURCES ${ctypes_COMMON_SOURCES}
@@ -341,6 +333,7 @@ else()
             DEFINITIONS MACOSX
         )
     else()
+        # get libffi
         set(_libffi_sources)
         set(_libffi_include_dirs)
         if(PY_VERSION VERSION_LESS "3.7")
