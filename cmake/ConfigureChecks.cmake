@@ -110,7 +110,7 @@ find_library(SQLITE3_LIBRARY sqlite3)
 if(WIN32)
   set(M_LIBRARIES )
   set(HAVE_LIBM 1)
-  # From PC/pyconfig.h: 
+  # From PC/pyconfig.h:
   #  This is a manually maintained version used for the Watcom,
   #  Borland and Microsoft Visual C++ compilers.  It is a
   #  standard part of the Python distribution.
@@ -564,7 +564,7 @@ elseif(CMAKE_SYSTEM MATCHES "VxWorks\\-7$")
 
   # VxWorks-7
 
-  # On VxWorks-7, defining _XOPEN_SOURCE or _POSIX_C_SOURCE 
+  # On VxWorks-7, defining _XOPEN_SOURCE or _POSIX_C_SOURCE
   # leads to a failure in select.h because sys/types.h fails
   # to define FD_SETSIZE.
   # Reported by Martin Oberhuber as V7COR-4651.
@@ -650,10 +650,10 @@ endif()
 
 if(HAVE_LONG_LONG)
   if(SIZEOF_OFF_T GREATER SIZEOF_LONG
-      AND (SIZEOF_LONG_LONG GREATER SIZEOF_OFF_T OR SIZEOF_LONG_LONG EQUAL SIZEOF_OFF_T))      
+      AND (SIZEOF_LONG_LONG GREATER SIZEOF_OFF_T OR SIZEOF_LONG_LONG EQUAL SIZEOF_OFF_T))
       set(HAVE_LARGEFILE_SUPPORT 1)
   endif()
-  
+
 endif()
 
 
@@ -1287,7 +1287,7 @@ foreach(decl isinf isnan isfinite)
 endforeach()
 
 cmake_pop_check_state()
-  
+
 #######################################################################
 #
 # time
@@ -1421,7 +1421,7 @@ endif()
 
 #######################################################################
 #
-# unicode 
+# unicode
 #
 #######################################################################
 
@@ -1768,6 +1768,15 @@ if(HAVE_DLFCN_H)
   add_cond(CMAKE_REQUIRED_LIBRARIES HAVE_LIBDL "${HAVE_LIBDL}")
   check_symbol_exists(dlopen          "${CFG_HEADERS}" HAVE_DLOPEN)
 
+  check_symbol_exists(RTLD_DEEPBIND dlfcn.h HAVE_DECL_RTLD_DEEPBIND)
+  check_symbol_exists(RTLD_GLOBAL   dlfcn.h HAVE_DECL_RTLD_GLOBAL)
+  check_symbol_exists(RTLD_LAZY     dlfcn.h HAVE_DECL_RTLD_LAZY)
+  check_symbol_exists(RTLD_LOCAL    dlfcn.h HAVE_DECL_RTLD_LOCAL)
+  check_symbol_exists(RTLD_MEMBER   dlfcn.h HAVE_DECL_RTLD_MEMBER)
+  check_symbol_exists(RTLD_NODELETE dlfcn.h HAVE_DECL_RTLD_NODELETE)
+  check_symbol_exists(RTLD_NOLOAD   dlfcn.h HAVE_DECL_RTLD_NOLOAD)
+  check_symbol_exists(RTLD_NOW      dlfcn.h HAVE_DECL_RTLD_NOW)
+
   set(CFG_HEADERS ${CFG_HEADERS_SAVE})
   cmake_pop_check_state()
 endif()
@@ -1980,7 +1989,7 @@ endif()
 
 if(IS_PY2)
 check_c_source_compiles("
-        void f(char*,...)__attribute((format(PyArg_ParseTuple, 1, 2))) {}; 
+        void f(char*,...)__attribute((format(PyArg_ParseTuple, 1, 2))) {};
         int main() {f(NULL);} "
         HAVE_ATTRIBUTE_FORMAT_PARSETUPLE)
 endif()
@@ -2039,7 +2048,7 @@ cmake_pop_check_state()
 endif()
 
 check_c_source_runs("#include <unistd.h>\n int main() {
-        int val1 = nice(1); 
+        int val1 = nice(1);
         if (val1 != -1 && val1 == nice(2)) exit(0);
         exit(1);}" HAVE_BROKEN_NICE)
 
@@ -2049,7 +2058,7 @@ check_c_source_runs(" #include <poll.h>
     int poll_test = poll (&poll_struct, 1, 0);
     if (poll_test < 0) { exit(0); }
     else if (poll_test == 0 && poll_struct.revents != POLLNVAL) { exit(0); }
-    else { exit(1); } }" 
+    else { exit(1); } }"
     HAVE_BROKEN_POLL)
 
 
@@ -2447,7 +2456,7 @@ int main(int argc, char* argv[]){FSIORefNum fRef = 0; return 0;}")
     )
 endif()
 
-# todo 
+# todo
 set(PTHREAD_SYSTEM_SCHED_SUPPORTED 1)
 set(HAVE_DEVICE_MACROS ${HAVE_MAKEDEV})
 
