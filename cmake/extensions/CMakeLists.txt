@@ -102,7 +102,6 @@ set(thread3_SOURCES ${SRC_DIR}/Modules/_threadmodule.c)
 add_python_extension(${thread${PY_VERSION_MAJOR}_NAME} BUILTIN REQUIRES WITH_THREAD SOURCES ${thread${PY_VERSION_MAJOR}_SOURCES} DEFINITIONS Py_BUILD_CORE)
 add_python_extension(time BUILTIN REQUIRES HAVE_LIBM SOURCES timemodule.c DEFINITIONS Py_BUILD_CORE LIBRARIES ${M_LIBRARIES} ${TIMEMODULE_LIB})
 add_python_extension(unicodedata SOURCES unicodedata.c)
-add_python_extension(_signal SOURCES signalmodule.c DEFINITIONS Py_BUILD_CORE)
 
 # Python3
 add_python_extension(atexit BUILTIN REQUIRES IS_PY3 SOURCES atexitmodule.c) # Register functions to be run at interpreter-shutdown
