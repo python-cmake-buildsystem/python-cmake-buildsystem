@@ -379,6 +379,12 @@ foreach(ext ${builtin_extensions})
     set(config_entries "${config_entries}    {\"${ext}\", ${init_prefix_${PY_VERSION_MAJOR}}${ext}},\n")
 endforeach()
 
+if(PYTHON_VERSION VERSION_LESS "3.7")
+    set(PyInit_imp "PyInit_imp")
+else()
+    set(PyInit_imp "PyInit__imp")
+endif()
+
 configure_file(
     ${PROJECT_SOURCE_DIR}/cmake/config_${PY_VERSION_MAJOR}.c.in
     ${PROJECT_BINARY_DIR}/CMakeFiles/config.c
