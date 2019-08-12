@@ -2495,3 +2495,10 @@ endif()
 if(CMAKE_SYSTEM MATCHES Windows)
   set(PY_PLATFORM win32)
 endif()
+
+#Check for tirpc header
+find_path(TIRPC_INCLUDE_PATH rpc.h
+  PATHS "/usr/include/tirpc/rpc")
+if(TIRPC_INCLUDE_PATH)
+  set(TIRPC_INCLUDE_PATH "/usr/include/tirpc")
+endif()
