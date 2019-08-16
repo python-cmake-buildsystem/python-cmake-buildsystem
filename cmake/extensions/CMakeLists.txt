@@ -374,11 +374,19 @@ else()
                         ${INCLUDE_BUILD_DIR}      # For fficonfig.h
                         ${PROJECT_SOURCE_DIR}/cmake # For ffi.h
                 )
+            add_python_extension(_ctypes
+                SOURCES ${ctypes_COMMON_SOURCES} ${_libffi_sources}
+                ${_libffi_include_dirs}
+            )
+        else()
+            find_path(FFI_INCLUDE_DIR ffi.h)
+            find_library(FFI_LIBRARY NAMES ffi libffi)
+            add_python_extension(_ctypes
+               SOURCES ${ctypes_COMMON_SOURCES}
+               INCLUDEDIRS ${FFI_INCLUDE_DIR}
+               LIBRARIES ${FFI_LIBRARY}
+            )
         endif()
-        add_python_extension(_ctypes
-            SOURCES ${ctypes_COMMON_SOURCES} ${_libffi_sources}
-            ${_libffi_include_dirs}
-        )
     endif()
 endif()
 
