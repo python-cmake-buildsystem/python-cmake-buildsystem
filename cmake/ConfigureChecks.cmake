@@ -1354,6 +1354,7 @@ python_platform_test(
 cmake_pop_check_state()
 
 if(NOT HAVE_CLOCK_GETRES)
+  unset(HAVE_CLOCK_GETRES_COMPILED CACHE)
   cmake_push_check_state()
   set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_lib_rt_clock_getres.c)
   file(WRITE ${check_src} "/* Override any GCC internal prototype to avoid an error.
@@ -1393,6 +1394,7 @@ python_platform_test(
   )
 cmake_pop_check_state()
 if(NOT HAVE_CLOCK_GETTIME)
+  unset(HAVE_CLOCK_GETTIME_COMPILED CACHE)
   cmake_push_check_state()
   set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_lib_rt_clock_gettime.c)
   file(WRITE ${check_src} "/* Override any GCC internal prototype to avoid an error.
