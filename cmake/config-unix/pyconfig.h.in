@@ -183,6 +183,34 @@
    */
 #cmakedefine HAVE_DECL_ISNAN 1
 
+/* Define to 1 if you have the declaration of `RTLD_DEEPBIND', and to 0 if you don't.
+   */
+#cmakedefine HAVE_DECL_RTLD_DEEPBIND 1
+
+/* Define to 1 if you have the declaration of `RTLD_GLOBAL', and to 0 if you don't.
+   */
+#cmakedefine HAVE_DECL_RTLD_GLOBAL 1
+
+/* Define to 1 if you have the declaration of `RTLD_LAZY', and to 0 if you don't.
+   */
+#cmakedefine HAVE_DECL_RTLD_LAZY 1
+
+/* Define to 1 if you have the declaration of `RTLD_LOCAL', and to 0 if you don't.
+   */
+#cmakedefine HAVE_DECL_RTLD_LOCAL 1
+
+/* Define to 1 if you have the declaration of `RTLD_NODELETE', and to 0 if you don't.
+   */
+#cmakedefine HAVE_DECL_RTLD_NODELETE 1
+
+/* Define to 1 if you have the declaration of `RTLD_NOLOAD', and to 0 if you don't.
+   */
+#cmakedefine HAVE_DECL_RTLD_NOLOAD 1
+
+/* Define to 1 if you have the declaration of `RTLD_NOW', and to 0 if you don't.
+   */
+#cmakedefine HAVE_DECL_RTLD_NOW 1
+
 /* Define to 1 if you have the declaration of `tzname', and to 0 if you don't.
    */
 #cmakedefine HAVE_DECL_TZNAME 1
