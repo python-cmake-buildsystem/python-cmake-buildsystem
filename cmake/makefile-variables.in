@@ -42,13 +42,13 @@ INSTALL_SHARED= ${INSTALL} -m 555
 MAKESETUP=      $(srcdir)/Modules/makesetup
 
 # Compiler options
-OPT=            @CMAKE_C_FLAGS@ -DNDEBUG
+OPT=            @MAKEFILE_C_FLAGS@ -DNDEBUG
 BASECFLAGS=	 -Wno-unused-result -Wsign-compare -Wunreachable-code
-CFLAGS=         @CMAKE_C_FLAGS@
+CFLAGS=         @MAKEFILE_C_FLAGS@
 # Both CPPFLAGS and LDFLAGS need to contain the shell's value for setup.py to
 # be able to build extension modules using the directories specified in the
 # environment variables
-CPPFLAGS=       @CMAKE_CXX_FLAGS@
+CPPFLAGS=       @MAKEFILE_CXX_FLAGS@
 LDFLAGS=
 LDLAST=
 SGI_ABI=
@@ -58,7 +58,7 @@ ARFLAGS=        rc
 # Extra C flags added for building the interpreter object files.
 CFLAGSFORSHARED=
 # C flags used for building the interpreter object files
-PY_CFLAGS=      @CMAKE_C_FLAGS@ -DPy_BUILD_CORE
+PY_CFLAGS=      @MAKEFILE_C_FLAGS@ -DPy_BUILD_CORE
 
 
 # Machine-dependent subdirectories
