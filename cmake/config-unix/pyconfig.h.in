@@ -138,6 +138,9 @@
 /* Define to 1 if you have the `clock_gettime' function. [Python 3] */
 #cmakedefine HAVE_CLOCK_GETTIME 1
 
+/* Define to 1 if you have the `clock_settime' function. [Python 3] */
+#cmakedefine HAVE_CLOCK_SETTIME 1
+
 /* Define if the C compiler supports computed gotos. */
 #cmakedefine HAVE_COMPUTED_GOTOS 1
 

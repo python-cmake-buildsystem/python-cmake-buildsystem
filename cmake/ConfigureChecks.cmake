@@ -1419,6 +1419,49 @@ if(NOT HAVE_CLOCK_GETTIME)
   endif()
 endif()
 
+cmake_push_check_state()
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/clock_settime.c)
+file(WRITE ${check_src} "
+#include <stdio.h>
+#include <time.h>
+int main() { return clock_settime(0, NULL); }
+")
+if(SUPPORT_NO_WEAK_IMPORT_FLAG)
+  set(CMAKE_REQUIRED_FLAGS "-Wl,-no_weak_imports")
+endif()
+python_platform_test(
+  HAVE_CLOCK_SETTIME
+  "Checking for clock_settime"
+  ${check_src}
+  DIRECT
+  )
+cmake_pop_check_state()
+if(NOT HAVE_CLOCK_SETTIME)
+  unset(HAVE_CLOCK_SETTIME_COMPILED CACHE)
+  cmake_push_check_state()
+  set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_lib_rt_clock_settime.c)
+  file(WRITE ${check_src} "/* Override any GCC internal prototype to avoid an error.
+    Use char because int might match the return type of a GCC
+    builtin and then its argument prototype would still apply.  */
+    #ifdef __cplusplus
+    extern \"C\"
+    #endif
+    char clock_settime ();
+    int main () { return clock_settime (); }
+  ")
+  list(APPEND CMAKE_REQUIRED_LIBRARIES rt)
+  python_platform_test(
+    HAVE_CLOCK_SETTIME
+    "Checking for clock_settime in -lrt"
+    ${check_src}
+    DIRECT
+    )
+  cmake_pop_check_state()
+  if(HAVE_CLOCK_SETTIME)
+    set(TIMEMODULE_LIB rt)
+  endif()
+endif()
+
 endif()
 
 #######################################################################
