@@ -153,6 +153,9 @@
 /* Define to 1 if you have the `copysign' function. */
 #cmakedefine HAVE_COPYSIGN 1
 
+/* Define to 1 if you have the `<crypt.h>' function. */
+#cmakedefine HAVE_CRYPT_H 1
+
 /* Define to 1 if you have the `ctermid' function. */
 #cmakedefine HAVE_CTERMID 1
 

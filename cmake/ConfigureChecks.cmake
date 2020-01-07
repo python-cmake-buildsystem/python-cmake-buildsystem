@@ -199,6 +199,7 @@ check_include_files(arpa/inet.h HAVE_ARPA_INET_H)
 check_include_files(bluetooth/bluetooth.h HAVE_BLUETOOTH_BLUETOOTH_H)
 check_include_files(bluetooth.h HAVE_BLUETOOTH_H)
 check_include_files(conio.h HAVE_CONIO_H)
+check_include_files(crypt.h HAVE_CRYPT_H)
 check_include_files(curses.h HAVE_CURSES_H)
 check_include_files(direct.h HAVE_DIRECT_H)
 check_include_files(dlfcn.h HAVE_DLFCN_H) # libffi and cpython
