@@ -16,6 +16,33 @@ configuration: Release
 environment:
   matrix:
 
+  - PY_VERSION: 3.8.2
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    ARCH: win64
+    GENERATOR: "Visual Studio 15 2017 Win64"
+  - PY_VERSION: 3.8.2
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    ARCH: win32
+    GENERATOR: "Visual Studio 15 2017"
+
+  - PY_VERSION: 3.8.1
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    ARCH: win64
+    GENERATOR: "Visual Studio 15 2017 Win64"
+  - PY_VERSION: 3.8.1
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    ARCH: win32
+    GENERATOR: "Visual Studio 15 2017"
+
+  - PY_VERSION: 3.8.0
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    ARCH: win64
+    GENERATOR: "Visual Studio 15 2017 Win64"
+  - PY_VERSION: 3.8.0
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    ARCH: win32
+    GENERATOR: "Visual Studio 15 2017"
+
   - PY_VERSION: 3.7.7
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     ARCH: win64
