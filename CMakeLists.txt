@@ -524,18 +524,20 @@ add_custom_target(clinic
 endif()
 
 # Add target to generate 'Include/graminit.h' and 'Python/graminit.c'
+# Makefile.pre regen-grammar
 add_custom_target(generate_graminit
-    COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:pgen>
+    COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> -m Parser.pgen
         ${SRC_DIR}/Grammar/Grammar
-        ${PROJECT_BINARY_DIR}/CMakeFiles/graminit.h
-        ${PROJECT_BINARY_DIR}/CMakeFiles/graminit.c
+        ${SRC_DIR}/Grammar/Grammar/Tokens
+        ${PROJECT_BINARY_DIR}/CMakeFiles/graminit.h.new
+        ${PROJECT_BINARY_DIR}/CMakeFiles/graminit.c.new
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${PROJECT_BINARY_DIR}/CMakeFiles/graminit.h
         ${SRC_DIR}/Include/graminit.h
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${PROJECT_BINARY_DIR}/CMakeFiles/graminit.c
         ${SRC_DIR}/Python/graminit.c
-    DEPENDS pgen
+    DEPENDS python
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
     COMMENT "Generating '${SRC_DIR}/Include/graminit.h' and '${SRC_DIR}/Python/graminit.c'."
     VERBATIM
