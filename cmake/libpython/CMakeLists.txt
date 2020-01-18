@@ -69,15 +69,11 @@ endif()
 
 set(PARSER_COMMON_SOURCES # Equivalent to POBJS in Makefile.pre
     ${SRC_DIR}/Parser/acceler.c
-    ${SRC_DIR}/Parser/bitset.c
-    ${SRC_DIR}/Parser/firstsets.c
     ${SRC_DIR}/Parser/grammar1.c
-    ${SRC_DIR}/Parser/grammar.c
     ${SRC_DIR}/Parser/listnode.c
-    ${SRC_DIR}/Parser/metagrammar.c
     ${SRC_DIR}/Parser/node.c
     ${SRC_DIR}/Parser/parser.c
-    ${SRC_DIR}/Parser/pgen.c
+    ${SRC_DIR}/Parser/token.c
 )
 
 set(OBJECT2_SOURCES
@@ -455,27 +451,13 @@ add_custom_target(freeze_modules DEPENDS ${LIBPYTHON_FROZEN_SOURCES})
 
 endif()
 
-# Build pgen executable
+# Build pgen objects
 set(PGEN2_SOURCES
     ${SRC_DIR}/Parser/parsetok.c
 )
 set(PGEN3_SOURCES
     ${SRC_DIR}/Python/dynamic_annotations.c
-    ${SRC_DIR}/Parser/parsetok_pgen.c
 )
-add_executable(pgen
-    ${PARSER_COMMON_SOURCES}
-    ${PGEN${PY_VERSION_MAJOR}_SOURCES}
-    ${SRC_DIR}/Objects/obmalloc.c
-    ${SRC_DIR}/Python/mysnprintf.c
-    ${SRC_DIR}/Python/pyctype.c
-    ${SRC_DIR}/Parser/tokenizer_pgen.c
-    ${SRC_DIR}/Parser/printgrammar.c
-    ${SRC_DIR}/Parser/pgenmain.c
-)
-if(builtin_compile_definitions_without_py_limited_api)
-  target_compile_definitions(pgen PUBLIC ${builtin_compile_definitions_without_py_limited_api})
-endif()
 
 # Collect libpython sources
 set(LIBPYTHON_SOURCES
