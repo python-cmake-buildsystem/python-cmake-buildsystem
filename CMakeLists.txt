@@ -443,6 +443,7 @@ endif()
 
 # Set include directories
 include_directories(${INCLUDE_BUILD_DIR})
+include_directories(${INCLUDE_BUILD_DIR}/internal)
 include_directories(${PYCONFIG_BUILD_DIR})
 include_directories(${SRC_DIR}/Python)
 
