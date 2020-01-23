@@ -107,6 +107,9 @@ endif()
 find_path(SQLITE3_INCLUDE_PATH sqlite3.h)
 find_library(SQLITE3_LIBRARY sqlite3)
 
+find_path(TIRPC_RPC_INCLUDE_PATH rpc.h PATHS "/usr/include/tirpc/rpc")
+find_library(TIRPC_LIBRARY tirpc)
+
 if(WIN32)
   set(M_LIBRARIES )
   set(HAVE_LIBM 1)
@@ -2495,3 +2498,4 @@ endif()
 if(CMAKE_SYSTEM MATCHES Windows)
   set(PY_PLATFORM win32)
 endif()
+

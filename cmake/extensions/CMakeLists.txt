@@ -147,7 +147,23 @@ endif()
 # UNIX-only extensions
 add_python_extension(fcntl REQUIRES UNIX SOURCES fcntlmodule.c)
 add_python_extension(grp REQUIRES UNIX SOURCES grpmodule.c)
-add_python_extension(nis REQUIRES UNIX HAVE_LIBNSL SOURCES nismodule.c LIBRARIES ${HAVE_LIBNSL})
+
+set(nis_REQUIRES UNIX HAVE_LIBNSL)
+set(nis_LIBRARIES ${HAVE_LIBNSL})
+set(nis_INCLUDEDIRS )
+if(TIRPC_LIBRARY AND TIRPC_RPC_INCLUDE_PATH)
+    # if rpc.h is provided by libtirpc (instead of being provided by glibc). See python/cpython#5137
+    list(APPEND nis_REQUIRES )
+    list(APPEND nis_LIBRARIES ${TIRPC_LIBRARY})
+    list(APPEND nis_INCLUDEDIRS ${TIRPC_RPC_INCLUDE_PATH}/../)
+endif()
+add_python_extension(nis
+    REQUIRES ${nis_REQUIRES}
+    SOURCES nismodule.c
+    LIBRARIES ${nis_LIBRARIES}
+    INCLUDEDIRS ${nis_INCLUDEDIRS}
+)
+
 add_python_extension(posix REQUIRES UNIX BUILTIN SOURCES posixmodule.c)
 add_python_extension(pwd REQUIRES UNIX BUILTIN SOURCES pwdmodule.c) # this is needed to find out the user's home dir if $HOME is not set
 add_python_extension(resource REQUIRES UNIX SOURCES resource.c)
