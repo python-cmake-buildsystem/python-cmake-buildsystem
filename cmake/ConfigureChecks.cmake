@@ -215,7 +215,12 @@ check_include_files(grp.h HAVE_GRP_H)
 check_include_files(ieeefp.h HAVE_IEEEFP_H)
 check_include_files(inttypes.h HAVE_INTTYPES_H) # libffi and cpython
 check_include_files(io.h HAVE_IO_H)
-check_include_files(langinfo.h HAVE_LANGINFO_H)
+if (${CMAKE_SYSTEM_NAME} MATCHES "^Android")
+  set(HAVE_LANGINFO_H 0) # Android cann't link functions from langinfo.h
+else()
+  check_include_files(langinfo.h HAVE_LANGINFO_H)
+endif()
+
 check_include_files(libintl.h HAVE_LIBINTL_H)
 check_include_files(libutil.h HAVE_LIBUTIL_H)
 check_include_files(linux/tipc.h HAVE_LINUX_TIPC_H)
@@ -362,6 +367,11 @@ set(LIBUTIL_LIBRARIES )
 set(LIBUTIL_EXPECTED 1)
 
 if(CMAKE_SYSTEM MATCHES "VxWorks\\-7$")
+  set(LIBUTIL_EXPECTED 0)
+  set(HAVE_LIBUTIL 0)
+endif()
+
+if(CMAKE_SYSTEM MATCHES "^Android")
   set(LIBUTIL_EXPECTED 0)
   set(HAVE_LIBUTIL 0)
 endif()
