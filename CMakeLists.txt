@@ -738,7 +738,7 @@ if(UNIX)
 
     # Makefile
     set(MAKEFILE_LDSHARED_FLAGS "-shared")
-    if(APPLE)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
         set(MAKEFILE_LDSHARED_FLAGS "-dynamiclib -headerpad_max_install_names -undefined dynamic_lookup")
     endif()
     configure_file(cmake/makefile-variables.in
