@@ -100,7 +100,7 @@ option(USE_SYSTEM_LIBRARIES "Use system libraries" ON)
 # Set platform dependent defaults
 set(_use_builtin_zlib_default OFF)
 set(_use_system_zlib_default ON)
-if(WIN32)
+if(WIN32 AND "${PY_VERSION}" VERSION_LESS "3.7.0")
   set(_use_builtin_zlib_default ON)
   set(_use_system_zlib_default OFF)
 endif()
