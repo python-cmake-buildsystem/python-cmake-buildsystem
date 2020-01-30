@@ -1,3 +1,4 @@
+version: 1.0.{build}
 
 image: Visual Studio 2015
 
@@ -6,55 +7,375 @@ branches:
   - master
   - /^ci.*$/
 
-platform:
-  - x86
+platform: Any CPU
 
-configuration:
-  - Release
+configuration: Release
 
 # Default GENERATOR is set to "Visual Studio 9 2008"
 # See https://github.com/python-cmake-buildsystem/python-cmake-buildsystem/blob/dashboard/appveyor_dashboard.cmake
 environment:
   matrix:
 
+  - PY_VERSION: 3.7.7
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    ARCH: win64
+    GENERATOR: "Visual Studio 15 2017 Win64"
+  - PY_VERSION: 3.7.7
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    ARCH: win32
+    GENERATOR: "Visual Studio 15 2017"
+
+  - PY_VERSION: 3.7.6
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    ARCH: win64
+    GENERATOR: "Visual Studio 15 2017 Win64"
+  - PY_VERSION: 3.7.6
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    ARCH: win32
+    GENERATOR: "Visual Studio 15 2017"
+
+  - PY_VERSION: 3.7.5
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    ARCH: win64
+    GENERATOR: "Visual Studio 15 2017 Win64"
+  - PY_VERSION: 3.7.5
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    ARCH: win32
+    GENERATOR: "Visual Studio 15 2017"
+
   - PY_VERSION: 3.7.4
-    GENERATOR: Visual Studio 14 2015 Win64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    ARCH: win64
+    GENERATOR: "Visual Studio 15 2017 Win64"
   - PY_VERSION: 3.7.4
-    GENERATOR: Visual Studio 14 2015
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    ARCH: win32
+    GENERATOR: "Visual Studio 15 2017"
+
+  - PY_VERSION: 3.7.3
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    ARCH: win64
+    GENERATOR: "Visual Studio 15 2017 Win64"
+  - PY_VERSION: 3.7.3
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    ARCH: win32
+    GENERATOR: "Visual Studio 15 2017"
+
+  - PY_VERSION: 3.7.2
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    ARCH: win64
+    GENERATOR: "Visual Studio 15 2017 Win64"
+  - PY_VERSION: 3.7.2
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    ARCH: win32
+    GENERATOR: "Visual Studio 15 2017"
+
+  - PY_VERSION: 3.7.1
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    ARCH: win64
+    GENERATOR: "Visual Studio 15 2017 Win64"
+  - PY_VERSION: 3.7.1
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    ARCH: win32
+    GENERATOR: "Visual Studio 15 2017"
+
+  - PY_VERSION: 3.7.0
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    ARCH: win64
+    GENERATOR: "Visual Studio 15 2017 Win64"
+  - PY_VERSION: 3.7.0
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    ARCH: win32
+    GENERATOR: "Visual Studio 15 2017"
+
+  - PY_VERSION: 3.6.10
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win64
+    GENERATOR: "Visual Studio 14 2015 Win64"
+  - PY_VERSION: 3.6.10
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win32
+    GENERATOR: "Visual Studio 14 2015"
 
   - PY_VERSION: 3.6.9
-    GENERATOR: Visual Studio 14 2015 Win64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win64
+    GENERATOR: "Visual Studio 14 2015 Win64"
   - PY_VERSION: 3.6.9
-    GENERATOR: Visual Studio 14 2015
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win32
+    GENERATOR: "Visual Studio 14 2015"
+
+  - PY_VERSION: 3.6.8
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win64
+    GENERATOR: "Visual Studio 14 2015 Win64"
+  - PY_VERSION: 3.6.8
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win32
+    GENERATOR: "Visual Studio 14 2015"
+
+  - PY_VERSION: 3.6.6
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win64
+    GENERATOR: "Visual Studio 14 2015 Win64"
+  - PY_VERSION: 3.6.6
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win32
+    GENERATOR: "Visual Studio 14 2015"
+
+  - PY_VERSION: 3.6.5
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win64
+    GENERATOR: "Visual Studio 14 2015 Win64"
+  - PY_VERSION: 3.6.5
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win32
+    GENERATOR: "Visual Studio 14 2015"
+
+  - PY_VERSION: 3.6.4
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win64
+    GENERATOR: "Visual Studio 14 2015 Win64"
+  - PY_VERSION: 3.6.4
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win32
+    GENERATOR: "Visual Studio 14 2015"
+
+  - PY_VERSION: 3.6.3
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win64
+    GENERATOR: "Visual Studio 14 2015 Win64"
+  - PY_VERSION: 3.6.3
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win32
+    GENERATOR: "Visual Studio 14 2015"
+
+  - PY_VERSION: 3.6.2
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win64
+    GENERATOR: "Visual Studio 14 2015 Win64"
+  - PY_VERSION: 3.6.2
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win32
+    GENERATOR: "Visual Studio 14 2015"
+
+  - PY_VERSION: 3.6.1
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win64
+    GENERATOR: "Visual Studio 14 2015 Win64"
+  - PY_VERSION: 3.6.1
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win32
+    GENERATOR: "Visual Studio 14 2015"
+
+  - PY_VERSION: 3.6.0
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win64
+    GENERATOR: "Visual Studio 14 2015 Win64"
+  - PY_VERSION: 3.6.0
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win32
+    GENERATOR: "Visual Studio 14 2015"
+
+  - PY_VERSION: 3.5.9
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win64
+    GENERATOR: "Visual Studio 14 2015 Win64"
+  - PY_VERSION: 3.5.9
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win32
+    GENERATOR: "Visual Studio 14 2015"
+
+  - PY_VERSION: 3.5.8
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win64
+    GENERATOR: "Visual Studio 14 2015 Win64"
+  - PY_VERSION: 3.5.8
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win32
+    GENERATOR: "Visual Studio 14 2015"
+
+  - PY_VERSION: 3.5.7
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win64
+    GENERATOR: "Visual Studio 14 2015 Win64"
+  - PY_VERSION: 3.5.7
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win32
+    GENERATOR: "Visual Studio 14 2015"
+
+  - PY_VERSION: 3.5.6
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win64
+    GENERATOR: "Visual Studio 14 2015 Win64"
+  - PY_VERSION: 3.5.6
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win32
+    GENERATOR: "Visual Studio 14 2015"
 
   - PY_VERSION: 3.5.5
-    GENERATOR: Visual Studio 14 2015 Win64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win64
+    GENERATOR: "Visual Studio 14 2015 Win64"
   - PY_VERSION: 3.5.5
-    GENERATOR: Visual Studio 14 2015
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win32
+    GENERATOR: "Visual Studio 14 2015"
+
+  - PY_VERSION: 3.5.4
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win64
+    GENERATOR: "Visual Studio 14 2015 Win64"
+  - PY_VERSION: 3.5.4
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win32
+    GENERATOR: "Visual Studio 14 2015"
+   
+# Patches not working on windows
+# - PY_VERSION: 2.7.17
+#   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+#   ARCH: win64
+#   GENERATOR: "Visual Studio 14 2015 Win64"
+# - PY_VERSION: 2.7.17
+#   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+#   ARCH: win32
+#   GENERATOR: "Visual Studio 14 2015"
+#  
+# - PY_VERSION: 2.7.16
+#   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+#   ARCH: win64
+#   GENERATOR: "Visual Studio 14 2015 Win64"
+# - PY_VERSION: 2.7.16
+#   APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+#   ARCH: win32
+#   GENERATOR: "Visual Studio 14 2015"
+   
+  - PY_VERSION: 2.7.15
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win64
+    GENERATOR: "Visual Studio 14 2015 Win64"
+  - PY_VERSION: 2.7.15
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win32
+    GENERATOR: "Visual Studio 14 2015"
     
   - PY_VERSION: 2.7.14
-    GENERATOR: Visual Studio 14 2015 Win64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win64
+    GENERATOR: "Visual Studio 14 2015 Win64"
   - PY_VERSION: 2.7.14
-    GENERATOR: Visual Studio 14 2015
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
+    ARCH: win32
+    GENERATOR: "Visual Studio 14 2015"
 
   - PY_VERSION: 2.7.14
-    GENERATOR: Visual Studio 12 2013 Win64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    ARCH: win64
+    GENERATOR: "Visual Studio 12 2013 Win64"
   - PY_VERSION: 2.7.14
-    GENERATOR: Visual Studio 12 2013
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    ARCH: win32
+    GENERATOR: "Visual Studio 12 2013"
 
-  - PY_VERSION: 2.7.15
-  - PY_VERSION: 2.7.14
   - PY_VERSION: 2.7.13
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    ARCH: win64
+    GENERATOR: "Visual Studio 12 2013 Win64"
+  - PY_VERSION: 2.7.13
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    ARCH: win32
+    GENERATOR: "Visual Studio 12 2013"
+
   - PY_VERSION: 2.7.12
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    ARCH: win64
+    GENERATOR: "Visual Studio 12 2013 Win64"
+  - PY_VERSION: 2.7.12
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    ARCH: win32
+    GENERATOR: "Visual Studio 12 2013"
+
   - PY_VERSION: 2.7.11
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    ARCH: win64
+    GENERATOR: "Visual Studio 12 2013 Win64"
+  - PY_VERSION: 2.7.11
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    ARCH: win32
+    GENERATOR: "Visual Studio 12 2013"
+
   - PY_VERSION: 2.7.10
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    ARCH: win64
+    GENERATOR: "Visual Studio 12 2013 Win64"
+  - PY_VERSION: 2.7.10
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    ARCH: win32
+    GENERATOR: "Visual Studio 12 2013"
+
   - PY_VERSION: 2.7.9
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    ARCH: win64
+    GENERATOR: "Visual Studio 12 2013 Win64"
+  - PY_VERSION: 2.7.9
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    ARCH: win32
+    GENERATOR: "Visual Studio 12 2013"
+
   - PY_VERSION: 2.7.8
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    ARCH: win64
+    GENERATOR: "Visual Studio 12 2013 Win64"
+  - PY_VERSION: 2.7.8
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    ARCH: win32
+    GENERATOR: "Visual Studio 12 2013"
+
   - PY_VERSION: 2.7.7
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    ARCH: win64
+    GENERATOR: "Visual Studio 12 2013 Win64"
+  - PY_VERSION: 2.7.7
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    ARCH: win32
+    GENERATOR: "Visual Studio 12 2013"
+
   - PY_VERSION: 2.7.6
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    ARCH: win64
+    GENERATOR: "Visual Studio 12 2013 Win64"
+  - PY_VERSION: 2.7.6
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    ARCH: win32
+    GENERATOR: "Visual Studio 12 2013"
+
   - PY_VERSION: 2.7.5
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    ARCH: win64
+    GENERATOR: "Visual Studio 12 2013 Win64"
+  - PY_VERSION: 2.7.5
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    ARCH: win32
+    GENERATOR: "Visual Studio 12 2013"
+
   - PY_VERSION: 2.7.4
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    ARCH: win64
+    GENERATOR: "Visual Studio 12 2013 Win64"
+  - PY_VERSION: 2.7.4
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    ARCH: win32
+    GENERATOR: "Visual Studio 12 2013"
+
   - PY_VERSION: 2.7.3
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    ARCH: win64
+    GENERATOR: "Visual Studio 12 2013 Win64"
+  - PY_VERSION: 2.7.3
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2013
+    ARCH: win32
+    GENERATOR: "Visual Studio 12 2013"
 
 install:
   - ps: |
