@@ -192,6 +192,11 @@ set(_download_2.7.12_md5 "88d61f82e3616a4be952828b3694109d")
 set(_download_2.7.13_md5 "17add4bf0ad0ec2f08e0cae6d205c700")
 set(_download_2.7.14_md5 "cee2e4b33ad3750da77b2e85f2f8b724")
 set(_download_2.7.15_md5 "045fb3440219a1f6923fefdabde63342")
+if (UNIX OR APPLE)
+    # 2.7.16 and 2.7.17 - patch problems on VS
+    set(_download_2.7.16_md5 "f1a2ace631068444831d01485466ece0")
+    set(_download_2.7.17_md5 "27a7919fa8d1364bae766949aaa91a5b")
+endif()
 # 3.5.x
 set(_download_3.5.1_md5 "be78e48cdfc1a7ad90efff146dce6cfe")
 set(_download_3.5.2_md5 "3fe8434643a78630c61c6464fe2e7e72")
@@ -199,6 +204,9 @@ set(_download_3.5.3_md5 "6192f0e45f02575590760e68c621a488")
 set(_download_3.5.4_md5 "2ed4802b7a2a7e40d2e797272bf388ec")
 set(_download_3.5.5_md5 "7c825b747d25c11e669e99b912398585")
 set(_download_3.5.6_md5 "99a7e803633a627b264a42ce976d8c19")
+set(_download_3.5.7_md5 "92f4c16c55429bf986f5ab45fe3a6659")
+set(_download_3.5.8_md5 "c52ac1fc37e5daebb08069ea0e27d293")
+set(_download_3.5.9_md5 "5a58675043bde569d235f41dadeada42")
 # 3.6.x
 set(_download_3.6.0_md5 "3f7062ccf8be76491884d0e47ac8b251")
 set(_download_3.6.1_md5 "2d0fc9f3a5940707590e07f03ecb08b9")
@@ -210,8 +218,15 @@ set(_download_3.6.6_md5 "9a080a86e1a8d85e45eee4b1cd0a18a2")
 set(_download_3.6.7_md5 "c83551d83bf015134b4b2249213f3f85")
 set(_download_3.6.8_md5 "48f393a04c2e66c77bfc114e589ec630")
 set(_download_3.6.9_md5 "ff7cdaef4846c89c1ec0d7b709bbd54d")
+set(_download_3.6.10_md5 "df5f494ef9fbb03a0264d1e9d406aada")
 # 3.7.x
-set(_download_3.7.0_md5 "41b6595deb4147a1ed517a7d9a580271")
+if (WIN32)
+    # 3.7.0 needs patch for
+    # In file included from /home/appsmith/asv/ports/build-64/Python-3.7.0/Modules/_ssl.c:38:
+    # Python-3.7.0/Modules/socketmodule.h:206:24: error: field ‘vm’ has incomplete type
+    #   206 |     struct sockaddr_vm vm;
+    set(_download_3.7.0_md5 "41b6595deb4147a1ed517a7d9a580271")
+endif()
 set(_download_3.7.1_md5 "99f78ecbfc766ea449c4d9e7eda19e83")
 set(_download_3.7.2_md5 "02a75015f7cd845e27b85192bb0ca4cb")
 set(_download_3.7.3_md5 "2ee10f25e3d1b14215d56c3882486fcf")
