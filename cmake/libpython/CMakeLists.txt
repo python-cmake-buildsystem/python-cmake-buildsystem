@@ -105,7 +105,7 @@ if(MSVC)
         ${SRC_DIR}/PC/invalid_parameter_handler.c
     )
 endif()
-if(PY_VERSION VERSION_EQUAL "3.7" OR PY_VERSION VERSION_GREATER "3.7")
+if(PY_VERSION VERSION_GREATER_EQUAL "3.7")
     list(APPEND OBJECT3_SOURCES
         ${SRC_DIR}/Objects/call.c
     )
@@ -407,10 +407,10 @@ if(UNIX)
 endif()
 if(WIN32 AND IS_PY3)
     list(APPEND LIBPYTHON_TARGET_LIBRARIES ws2_32) # Required by signalmodule
-    if(PYTHON_VERSION VERSION_EQUAL "3.5" OR PYTHON_VERSION VERSION_GREATER "3.5")
+    if(PY_VERSION VERSION_GREATER_EQUAL "3.5")
         list(APPEND LIBPYTHON_TARGET_LIBRARIES version) # Required by sysmodule
     endif()
-    if(PYTHON_VERSION VERSION_EQUAL "3.6" OR PYTHON_VERSION VERSION_GREATER "3.6")
+    if(PY_VERSION VERSION_GREATER_EQUAL "3.6")
         list(APPEND LIBPYTHON_TARGET_LIBRARIES shlwapi) # Required by PC/getpathp
     endif()
 endif()
