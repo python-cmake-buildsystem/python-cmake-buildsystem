@@ -651,6 +651,7 @@ if(BUILD_TESTING)
     endif()
     set(TESTPYTHON ${CMAKE_CROSSCOMPILING_EMULATOR} ${TESTPYTHON})
     include(cmake/UnitTests.cmake)
+    get_unittests(unittests)
     foreach(unittest ${unittests})
       set(EXTRATESTOPTS -v)
       # XXX Running 'test_doctest' in verbose mode always return 1
