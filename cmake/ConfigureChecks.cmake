@@ -1096,60 +1096,38 @@ endif()
 # Check for various properties of floating point
 #
 #######################################################################
-
-# Check whether C doubles are little-endian IEEE 754 binary64
-set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_little_endian_double.c)
-file(WRITE ${check_src} "#include <string.h>
-int main() {
-    double x = 9006104071832581.0;
-    if (memcmp(&x, \"\\x05\\x04\\x03\\x02\\x01\\xff\\x3f\\x43\", 8) == 0)
-        return 0;
-    else
-        return 1;
-}
-")
-python_platform_test_run(
-  DOUBLE_IS_LITTLE_ENDIAN_IEEE754
-  "Checking whether C doubles are little-endian IEEE 754 binary64"
-  ${check_src}
-  DIRECT
-  )
-
-# Check whether C doubles are big-endian IEEE 754 binary64
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_big_endian_double.c)
-file(WRITE ${check_src} "#include <string.h>
-int main() {
-    double x = 9006104071832581.0;
-    if (memcmp(&x, \"\\x43\\x3f\\xff\\x01\\x02\\x03\\x04\\x05\", 8) == 0)
-        return 0;
-    else
-        return 1;
-}
+file(WRITE ${check_src} "
+double d = 90904234967036810337470478905505011476211692735615632014797120844053488865816695273723469097858056257517020191247487429516932130503560650002327564517570778480236724525140520121371739201496540132640109977779420565776568942592.0;
 ")
-python_platform_test_run(
-  DOUBLE_IS_BIG_ENDIAN_IEEE754
-  "Checking whether C doubles are big-endian IEEE 754 binary64"
-  ${check_src}
-  DIRECT
-  )
 
-# Check whether C doubles are ARM mixed-endian IEEE 754 binary64
-set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_mixed_endian_double.c)
-file(WRITE ${check_src} "#include <string.h>
-int main() {
-    double x = 9006104071832581.0;
-    if (memcmp(&x, \"\\x01\\xff\\x3f\\x43\\x05\\x04\\x03\\x02\", 8) == 0)
-        return 0;
-    else
-        return 1;
-}
-")
-python_platform_test_run(
-  DOUBLE_IS_ARM_MIXED_ENDIAN_IEEE754
-  "Checking doubles are ARM mixed-endian IEEE 754 binary64"
-  ${check_src}
-  DIRECT
-  )
+# TODO: factorize this try_compile statement
+try_compile(DOUBLE_BIG_ENDIAN_TEST_COMPILED
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${check_src}
+        COMPILE_DEFINITIONS ${CMAKE_REQUIRED_DEFINITIONS}
+        COMPILE_DEFINITIONS ${CMAKE_REQUIRED_DEFINITIONS}
+        CMAKE_FLAGS -DCOMPILE_DEFINITIONS:STRING=${MACRO_CHECK_FUNCTION_DEFINITIONS}
+        "${CHECK_C_SOURCE_COMPILES_ADD_LIBRARIES}"
+        "${CHECK_C_SOURCE_COMPILES_ADD_INCLUDES}"
+        COPY_FILE ${CMAKE_CURRENT_BINARY_DIR}/double_big_endian.bin)
+
+if(DOUBLE_BIG_ENDIAN_TEST_COMPILED)
+    file(READ ${CMAKE_CURRENT_BINARY_DIR}/double_big_endian.bin DOUBLE_BIG_ENDIAN_DATA)
+    string(FIND ${DOUBLE_BIG_ENDIAN_DATA} "noonsees" NOONSEES)
+    if(NOONSEES)
+        set(DOUBLE_IS_BIG_ENDIAN_IEEE754 1)
+        set(DOUBLE_IS_LITTLE_ENDIAN_IEEE754 0)
+    else()
+        string(FIND ${DOUBLE_BIG_ENDIAN_DATA} "seesnoon" SEESNOON)
+        if(SEESNOON)
+            set(DOUBLE_IS_BIG_ENDIAN_IEEE754 0)
+            set(DOUBLE_IS_LITTLE_ENDIAN_IEEE754 1)
+        else()
+            message(WARNING "Could not determine if double precision floats endianness")
+        endif()
+    endif()
+endif()
 
 # The short float repr introduced in Python 3.1 requires the
 # correctly-rounded string <-> double conversion functions from
