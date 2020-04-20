@@ -204,11 +204,16 @@ endif()
 message(STATUS "${_msg} - ${ABIFLAGS}")
 
 set(_msg "Checking SOABI")
-try_run(PLATFORM_RUN PLATFORM_COMPILE
-        ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR}/cmake/platform.c
-        RUN_OUTPUT_VARIABLE PLATFORM_TRIPLET)
-if(NOT PLATFORM_COMPILE)
-  message(FATAL_ERROR "We could not determine the platform. Please clean the ${CMAKE_PROJECT_NAME} environment and try again...")
+set(PLATFORM_TRIPLET )
+if (ANDROID)
+    set(PLATFORM_TRIPLET "${CMAKE_ANDROID_ARCH_ABI}-linux-android")
+else()
+    try_run(PLATFORM_RUN PLATFORM_COMPILE
+            ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR}/cmake/platform.c
+            RUN_OUTPUT_VARIABLE PLATFORM_TRIPLET)
+    if(NOT PLATFORM_COMPILE)
+        message(FATAL_ERROR "We could not determine the platform. Please clean the ${CMAKE_PROJECT_NAME} environment and try again...")
+    endif()
 endif()
 set(SOABI "cpython-${PY_VERSION_MAJOR}${PY_VERSION_MINOR}${ABIFLAGS}-${PLATFORM_TRIPLET}")
 
@@ -1274,8 +1279,9 @@ check_c_source_compiles("
 int main() {int a = MAP_ANONYMOUS;}"
 HAVE_MMAP_ANON)
 
-# libffi specific: Check for /dev/zero support for anonymous memory maps
-check_c_source_runs("
+# libffi specific: Check for /dev/zero support as a fallback for anonymous memory maps
+if(NOT HAVE_MMAP_ANON)
+    check_c_source_runs("
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/mman.h>
@@ -1293,6 +1299,7 @@ int main(void) {
   }
   exit(0);
 }" HAVE_MMAP_DEV_ZERO)
+endif()
 
 if(IS_PY3)
 
