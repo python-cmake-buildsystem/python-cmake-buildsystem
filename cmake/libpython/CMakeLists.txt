@@ -395,41 +395,45 @@ set(LIBPYTHON_FROZEN_SOURCES )
 if(IS_PY3)
 
 # Build _freeze_importlib executable
-add_executable(_freeze_importlib
-  ${SRC_DIR}/Programs/_freeze_importlib.c
-  ${LIBPYTHON_OMIT_FROZEN_SOURCES}
-  )
-target_link_libraries(_freeze_importlib ${LIBPYTHON_TARGET_LIBRARIES})
-if(builtin_compile_definitions_without_py_limited_api)
-  target_compile_definitions(_freeze_importlib PUBLIC ${builtin_compile_definitions_without_py_limited_api})
-endif()
+if(NOT CMAKE_CROSSCOMPILING)
+    add_executable(_freeze_importlib
+      ${SRC_DIR}/Programs/_freeze_importlib.c
+      ${LIBPYTHON_OMIT_FROZEN_SOURCES}
+      )
+    target_link_libraries(_freeze_importlib ${LIBPYTHON_TARGET_LIBRARIES})
+    if(builtin_compile_definitions_without_py_limited_api)
+      target_compile_definitions(_freeze_importlib PUBLIC ${builtin_compile_definitions_without_py_limited_api})
+    endif()
 
-# Freeze modules
-set(LIBPYTHON_FROZEN_SOURCES
-  ${SRC_DIR}/Python/importlib_external.h
-  ${SRC_DIR}/Python/importlib.h
-)
-add_custom_command(
-  OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
-  COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
-      ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
+    # Freeze modules
+    set(LIBPYTHON_FROZEN_SOURCES
       ${SRC_DIR}/Python/importlib_external.h
-  COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
-      ${SRC_DIR}/Lib/importlib/_bootstrap.py
       ${SRC_DIR}/Python/importlib.h
-  DEPENDS
-    _freeze_importlib
-    ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
-    ${SRC_DIR}/Lib/importlib/_bootstrap.py
-)
+    )
+    add_custom_command(
+      OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
+      COMMAND
+        ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+          ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
+          ${SRC_DIR}/Python/importlib_external.h
+      COMMAND
+        ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+          ${SRC_DIR}/Lib/importlib/_bootstrap.py
+          ${SRC_DIR}/Python/importlib.h
+      DEPENDS
+        _freeze_importlib
+        ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
+        ${SRC_DIR}/Lib/importlib/_bootstrap.py
+    )
 
-# This is a convenience target allowing to regenerate
-# the frozen sources.
-add_custom_target(freeze_modules DEPENDS ${LIBPYTHON_FROZEN_SOURCES})
-
-endif()
+    # This is a convenience target allowing to regenerate
+    # the frozen sources.
+    add_custom_target(freeze_modules DEPENDS ${LIBPYTHON_FROZEN_SOURCES})
+else(NOT CMAKE_CROSSCOMPILING)
+    # KLUDGE: suppose importlib.h and importlib_external.h are already present.
+    add_custom_target(freeze_modules)
+endif(NOT CMAKE_CROSSCOMPILING)
+endif(IS_PY3)
 
 # Build pgen executable
 set(PGEN2_SOURCES
