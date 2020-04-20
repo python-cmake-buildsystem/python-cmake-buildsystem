@@ -306,11 +306,26 @@ message(STATUS "${_msg} - ${ABIFLAGS}")
 
 set(_msg "Checking SOABI")
 if(NOT DEFINED PLATFORM_TRIPLET)
-  try_run(PLATFORM_RUN PLATFORM_COMPILE
-          ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR}/cmake/platform.c
-          RUN_OUTPUT_VARIABLE PLATFORM_TRIPLET)
-  if(NOT PLATFORM_COMPILE)
-    message(FATAL_ERROR "We could not determine the platform. Please clean the ${CMAKE_PROJECT_NAME} environment and try again...")
+  if(ANDROID)
+    # Use the same target triplets as CPython (see Android/android-env.sh)
+    if(CMAKE_ANDROID_ARCH_ABI STREQUAL "arm64-v8a")
+      set(PLATFORM_TRIPLET "aarch64-linux-android")
+    elseif(CMAKE_ANDROID_ARCH_ABI STREQUAL "x86_64")
+      set(PLATFORM_TRIPLET "x86_64-linux-android")
+    elseif(CMAKE_ANDROID_ARCH_ABI STREQUAL "armeabi-v7a")
+      set(PLATFORM_TRIPLET "arm-linux-androideabi")
+    elseif(CMAKE_ANDROID_ARCH_ABI STREQUAL "x86")
+      set(PLATFORM_TRIPLET "i686-linux-android")
+    else()
+      message(FATAL_ERROR "Unsupported Android ABI: ${CMAKE_ANDROID_ARCH_ABI}")
+    endif()
+  else()
+    try_run(PLATFORM_RUN PLATFORM_COMPILE
+            ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR}/cmake/platform.c
+            RUN_OUTPUT_VARIABLE PLATFORM_TRIPLET)
+    if(NOT PLATFORM_COMPILE)
+      message(FATAL_ERROR "We could not determine the platform. Please clean the ${CMAKE_PROJECT_NAME} environment and try again...")
+    endif()
   endif()
 endif()
 set(SOABI "cpython-${PY_VERSION_MAJOR}${PY_VERSION_MINOR}${ABIFLAGS}")
@@ -1544,8 +1559,9 @@ check_c_source_compiles("
 int main() {int a = MAP_ANONYMOUS;}"
 HAVE_MMAP_ANON)
 
-# libffi specific: Check for /dev/zero support for anonymous memory maps
-check_c_source_runs("
+# libffi specific: Check for /dev/zero support as a fallback for anonymous memory maps
+if(NOT HAVE_MMAP_ANON)
+    check_c_source_runs("
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/mman.h>
@@ -1563,6 +1579,7 @@ int main(void) {
   }
   exit(0);
 }" HAVE_MMAP_DEV_ZERO)
+endif()
 
 # Check whether we can use gcc inline assembler to get and set mc68881 fpcr
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_gcc_asm_for_mc68881.c)
