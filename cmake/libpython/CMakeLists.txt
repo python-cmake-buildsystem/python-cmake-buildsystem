@@ -301,7 +301,7 @@ list(APPEND MODULE_SOURCES
     ${SRC_DIR}/Modules/symtablemodule.c
     ${SRC_DIR}/Modules/_weakref.c
     ${SRC_DIR}/Modules/xxsubtype.c
-    ${SRC_DIR}/Modules/zipimport.c
+    # ${SRC_DIR}/Modules/zipimport.c
 )
 
 set(LIBPYTHON_OMIT_FROZEN_SOURCES
