@@ -430,24 +430,34 @@ if(builtin_compile_definitions_without_py_limited_api)
 endif()
 
 # Freeze modules
+# regen-importlib
 set(LIBPYTHON_FROZEN_SOURCES
   ${SRC_DIR}/Python/importlib_external.h
+  ${SRC_DIR}/Python/importlib_zipimport.h
   ${SRC_DIR}/Python/importlib.h
 )
 add_custom_command(
   OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
   COMMAND
     ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      importlib._bootstrap_external
       ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
       ${SRC_DIR}/Python/importlib_external.h
   COMMAND
     ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      importlib._bootstrap
       ${SRC_DIR}/Lib/importlib/_bootstrap.py
       ${SRC_DIR}/Python/importlib.h
+  COMMAND
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      zipimport
+      ${SRC_DIR}/Lib/zipimport.py
+      ${SRC_DIR}/Python/importlib_zimpimport.h
   DEPENDS
     _freeze_importlib
     ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
     ${SRC_DIR}/Lib/importlib/_bootstrap.py
+    ${SRC_DIR}/Lib/zipimport.py
 )
 
 # This is a convenience target allowing to regenerate
