@@ -126,6 +126,7 @@ set(OBJECT_COMMON_SOURCES # Equivalent to OBJECT_OBJS in Makefile.pre
     ${SRC_DIR}/Objects/floatobject.c
     ${SRC_DIR}/Objects/frameobject.c
     ${SRC_DIR}/Objects/funcobject.c
+    ${SRC_DIR}/Objects/interpreteridobject.c
     ${SRC_DIR}/Objects/genobject.c
     ${SRC_DIR}/Objects/iterobject.c
     ${SRC_DIR}/Objects/listobject.c
@@ -133,8 +134,10 @@ set(OBJECT_COMMON_SOURCES # Equivalent to OBJECT_OBJS in Makefile.pre
     ${SRC_DIR}/Objects/memoryobject.c
     ${SRC_DIR}/Objects/methodobject.c
     ${SRC_DIR}/Objects/moduleobject.c
+    ${SRC_DIR}/Objects/moduleobject.c
     ${SRC_DIR}/Objects/object.c
     ${SRC_DIR}/Objects/obmalloc.c
+    ${SRC_DIR}/Objects/picklebufobject.c
     ${SRC_DIR}/Objects/rangeobject.c
     ${SRC_DIR}/Objects/setobject.c
     ${SRC_DIR}/Objects/sliceobject.c
@@ -225,11 +228,13 @@ set(PYTHON_COMMON_SOURCES
     ${SRC_DIR}/Python/graminit.c
     ${SRC_DIR}/Python/import.c
     ${SRC_DIR}/Python/importdl.c
+    ${SRC_DIR}/Python/initconfig.c
     ${SRC_DIR}/Python/marshal.c
     ${SRC_DIR}/Python/modsupport.c
     ${SRC_DIR}/Python/mysnprintf.c
     ${SRC_DIR}/Python/mystrtoul.c
     ${SRC_DIR}/Python/peephole.c
+    ${SRC_DIR}/Python/preconfig.c
     ${SRC_DIR}/Python/pyarena.c
     ${SRC_DIR}/Python/pyctype.c
     ${SRC_DIR}/Python/pyfpe.c
