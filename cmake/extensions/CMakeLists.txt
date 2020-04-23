@@ -306,14 +306,7 @@ else()
     )
 endif()
 
-set(_libffi_system_dir ${CMAKE_SYSTEM_PROCESSOR})
-if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i686")
-  set(_libffi_system_dir "x86")
-elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64" OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "amd64")
-  set(_libffi_system_dir "x86")
-elseif("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "arm")
-  set(_libffi_system_dir "arm")
-endif()
+
 # Common ctypes sources
 set(ctypes_COMMON_SOURCES
     _ctypes/_ctypes.c
@@ -322,38 +315,29 @@ set(ctypes_COMMON_SOURCES
     _ctypes/stgdict.c
     _ctypes/cfield.c
 )
-# ctypes is different on Windows
-if(WIN32)
-    if(MINGW)
-      add_python_extension(_ctypes
-          SOURCES ${ctypes_COMMON_SOURCES}
-                  _ctypes/libffi_mingw/closures.c
-                  _ctypes/libffi_mingw/debug.c
-                  _ctypes/libffi_mingw/prep_cif.c
-                  _ctypes/libffi_mingw/raw_api.c
-                  _ctypes/libffi_mingw/${_libffi_system_dir}/ffi.c
-                  _ctypes/libffi_mingw/${_libffi_system_dir}/win32.S
-          INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi/src/${_libffi_system_dir}
-                      ${SRC_DIR}/Modules/_ctypes/libffi/include
-          DEFINITIONS X86_WIN32 Py_BUILD_CORE Py_BUILD_CORE_BUILTIN
-        )
-    else() # Visual Studio
-      if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
-          enable_language(ASM_MASM)
-          set(_ctype_arch_impl win64.asm)
-      else()
-          set(_ctype_arch_impl win32.c)
-      endif()
-      add_python_extension(_ctypes
-          SOURCES ${ctypes_COMMON_SOURCES}
-                  _ctypes/malloc_closure.c
-          DEFINITIONS Py_BUILD_CORE Py_BUILD_CORE_BUILTIN
-          REQUIRES BUILD_LIBPYTHON_SHARED
-          INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi_msvc
-        )
+# Build ctypes using the system ffi if it's installed
+if(FFI_LIBRARIES AND FFI_INCLUDE_DIRS)
+    # Python 3.8 and above use "externals"
+    add_python_extension(_ctypes
+        REQUIRES FFI_INCLUDE_DIRS FFI_LIBRARIES
+        SOURCES ${ctypes_COMMON_SOURCES}
+        DEFINITIONS Py_BUILD_CORE_MODULE FFI_BUILDING
+        INCLUDEDIRS ${FFI_INCLUDE_DIRS}
+        LIBRARIES ${FFI_LIBRARIES}
+    )
+else(FFI_LIBRARIES AND FFI_INCLUDE_DIRS)
+
+    # try to build ffi
+    set(_libffi_system_dir ${CMAKE_SYSTEM_PROCESSOR})
+    if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i686")
+      set(_libffi_system_dir "x86")
+    elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64" OR "${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "amd64")
+      set(_libffi_system_dir "x86")
+    elseif("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "arm")
+      set(_libffi_system_dir "arm")
     endif()
-else()
     set(_libffi_system_extra_src)
+
     if(APPLE)
         add_python_extension(_ctypes
             SOURCES ${ctypes_COMMON_SOURCES}
@@ -368,7 +352,9 @@ else()
                         ${SRC_DIR}/Modules/_ctypes/darwin
             DEFINITIONS MACOSX
         )
-    else()
+    else(APPLE)
+
+        # NOT APPLE
         if(PY_VERSION VERSION_LESS "3.7")
             set(_libffi_sources)
             set(_libffi_include_dirs)
@@ -411,19 +397,10 @@ else()
                 SOURCES ${ctypes_COMMON_SOURCES} ${_libffi_sources}
                 ${_libffi_include_dirs}
             )
-
-        else()
-            # get libffi
-            add_python_extension(_ctypes
-                REQUIRES FFI_INCLUDE_DIRS FFI_LIBRARIES
-                SOURCES ${ctypes_COMMON_SOURCES}
-                INCLUDEDIRS ${FFI_INCLUDE_DIRS}
-                LIBRARIES ${FFI_LIBRARIES}
-                DEFINITIONS Py_BUILD_CORE_MODULE
-            )
-        endif()
-    endif()
-endif()
+        endif(PY_VERSION VERSION_LESS "3.7")
+        # 3.8 does not have the sources to build...
+    endif(APPLE)
+endif(FFI_LIBRARIES AND FFI_INCLUDE_DIRS)
 
 # Python3: _decimal
 if(IS_PY3)
