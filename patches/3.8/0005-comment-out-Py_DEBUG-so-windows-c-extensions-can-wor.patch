@@ -1,0 +1,30 @@
+From 73ed402754da37da956e2767de25662940e360df Mon Sep 17 00:00:00 2001
+From: Dan Dees <dand@appsmiths.com>
+Date: Fri, 1 Feb 2019 22:50:46 -0600
+Subject: [PATCH] comment out Py_DEBUG, so windows c extensions can work with
+ release
+
+---
+ PC/pyconfig.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/PC/pyconfig.h b/PC/pyconfig.h
+index d2a3f5d..5c141d8 100644
+--- a/PC/pyconfig.h
++++ b/PC/pyconfig.h
+@@ -327,9 +327,9 @@ Py_NO_ENABLE_SHARED to find out.  Also support MS_NO_COREDLL for b/w compat */
+ #       endif
+ #endif
+ 
+-#ifdef _DEBUG
+-#       define Py_DEBUG
+-#endif
++//#ifdef _DEBUG
++//#       define Py_DEBUG
++//#endif
+ 
+ 
+ #ifdef MS_WIN32
+-- 
+2.11.1
+
