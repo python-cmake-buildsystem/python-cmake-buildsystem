@@ -334,9 +334,6 @@ if(WIN32)
       add_python_extension(_ctypes
           SOURCES ${ctypes_COMMON_SOURCES}
                   _ctypes/malloc_closure.c
-                  _ctypes/libffi_msvc/prep_cif.c
-                  _ctypes/libffi_msvc/ffi.c
-                  _ctypes/libffi_msvc/${_ctype_arch_impl}
           REQUIRES BUILD_LIBPYTHON_SHARED
           INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi_msvc
         )
