@@ -1,4 +1,5 @@
 add_definitions(-DPy_BUILD_CORE)
+add_definitions(-DPy_BUILD_CORE_BUILTIN)
 add_definitions(-DNDEBUG)
 add_definitions(-D_PYTHONFRAMEWORK="")
 
