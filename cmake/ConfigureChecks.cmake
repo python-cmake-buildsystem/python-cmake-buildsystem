@@ -44,7 +44,11 @@ if(USE_SYSTEM_Curses)
 endif()
 
 if(USE_SYSTEM_EXPAT)
+    # https://github.com/Kitware/CMake/blob/master/Modules/FindEXPAT.cmake
     find_package(EXPAT)
+    message(STATUS "EXPAT_FOUND=${EXPAT_FOUND}")
+    message(STATUS "EXPAT_INCLUDE_DIRS=${EXPAT_INCLUDE_DIRS}")
+    message(STATUS "EXPAT_LIBRARIES=${EXPAT_LIBRARIES}")
 endif()
 
 if(IS_PY3 AND USE_SYSTEM_LIBMPDEC)
@@ -53,7 +57,16 @@ if(IS_PY3 AND USE_SYSTEM_LIBMPDEC)
 endif()
 
 if(USE_SYSTEM_OpenSSL)
+    # https://github.com/Kitware/CMake/blob/master/Modules/FindOpenSSL.cmake
     find_package(OpenSSL 0.9.7)
+    message(STATUS "OPENSSL_FOUND=${OPENSSL_FOUND}")
+    message(STATUS "OPENSSL_INCLUDE_DIR=${OPENSSL_INCLUDE_DIR}")
+    message(STATUS "OPENSSL_CRYPTO_LIBRARY=${OPENSSL_CRYPTO_LIBRARY}")
+    message(STATUS "OPENSSL_CRYPTO_LIBRARIES=${OPENSSL_CRYPTO_LIBRARIES}")
+    message(STATUS "OPENSSL_SSL_LIBRARY=${OPENSSL_SSL_LIBRARY}")
+    message(STATUS "OPENSSL_SSL_LIBRARIES=${OPENSSL_SSL_LIBRARIES}")
+    message(STATUS "OPENSSL_LIBRARIES=${OPENSSL_LIBRARIES}")
+    message(STATUS "OPENSSL_VERSION=${OPENSSL_VERSION}")
 endif()
 
 if(USE_SYSTEM_TCL)
@@ -66,7 +79,11 @@ if(UNIX)
 endif()
 
 if(USE_SYSTEM_ZLIB)
+    # https://github.com/Kitware/CMake/blob/master/Modules/FindZLIB.cmake
     find_package(ZLIB)
+    message(STATUS "ZLIB_FOUND=${ZLIB_FOUND}")
+    message(STATUS "ZLIB_INCLUDE_DIRS=${ZLIB_INCLUDE_DIRS}")
+    message(STATUS "ZLIB_LIBRARIES=${ZLIB_LIBRARIES}")
 endif()
 
 if(USE_SYSTEM_DB)
@@ -104,8 +121,13 @@ if(USE_SYSTEM_READLINE)
     endif()
 endif()
 
-find_path(SQLITE3_INCLUDE_PATH sqlite3.h)
-find_library(SQLITE3_LIBRARY sqlite3)
+# https://github.com/Kitware/CMake/blob/master/Modules/FindSQLite3.cmake
+find_package(SQLite3)
+message(STATUS "SQLite3_FOUND=${SQLite3_FOUND}")
+message(STATUS "SQLite3_VERSION=${SQLite3_VERSION}")
+message(STATUS "SQLite3_INCLUDE_DIRS=${SQLite3_INCLUDE_DIRS}")
+message(STATUS "SQLite3_LIBRARIES=${SQLite3_LIBRARIES}")
+
 if(PY_VERSION VERSION_GREATER_EQUAL "3.7")
     find_library(UUID_LIBRARY uuid)
     message( STATUS "UUID_LIBRARY=${UUID_LIBRARY}")
@@ -2436,13 +2458,13 @@ endif()
 
 ##########################################################
 
-if(ZLIB_LIBRARY)
+if(ZLIB_LIBRARIES)
   cmake_push_check_state()
   set(CFG_HEADERS_SAVE ${CFG_HEADERS})
 
   set(CFG_HEADERS ${CFG_HEADERS} zlib.h)
-  add_cond(CMAKE_REQUIRED_INCLUDES ZLIB_INCLUDE_DIR ${ZLIB_INCLUDE_DIR})
-  add_cond(CMAKE_REQUIRED_LIBRARIES ZLIB_LIBRARY ${ZLIB_LIBRARY})
+  add_cond(CMAKE_REQUIRED_INCLUDES ZLIB_INCLUDE_DIRS ${ZLIB_INCLUDE_DIRS})
+  add_cond(CMAKE_REQUIRED_LIBRARIES ZLIB_LIBRARIES ${ZLIB_LIBRARIES})
   check_symbol_exists(inflateCopy      "${CFG_HEADERS}" HAVE_ZLIB_COPY)
 
   set(CFG_HEADERS ${CFG_HEADERS_SAVE})
