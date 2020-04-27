@@ -617,11 +617,12 @@ set(binascii_REQUIRES "")
 set(binascii_DEFINITIONS "")
 set(binascii_LIBRARIES "")
 set(binascii_INCLUDEDIRS "")
-if(ZLIB_LIBRARY)
-  list(APPEND binascii_REQUIRES ZLIB_INCLUDE_DIR)
+if(ZLIB_LIBRARIES)
+  message(STATUS "binascii using ${ZLIB_LIBRARIES}")
+  list(APPEND binascii_REQUIRES ZLIB_LIBRARIES ZLIB_INCLUDE_DIRS)
   list(APPEND binascii_DEFINITIONS USE_ZLIB_CRC32)
-  list(APPEND binascii_LIBRARIES ${ZLIB_LIBRARY})
-  list(APPEND binascii_INCLUDEDIRS ${ZLIB_INCLUDE_DIR})
+  list(APPEND binascii_LIBRARIES ${ZLIB_LIBRARIES})
+  list(APPEND binascii_INCLUDEDIRS ${ZLIB_INCLUDE_DIRS})
 endif()
 add_python_extension(binascii
     REQUIRES ${binascii_REQUIRES}
@@ -712,7 +713,7 @@ add_python_extension(readline
     INCLUDEDIRS ${READLINE_INCLUDE_PATH}
 )
 add_python_extension(_sqlite3
-    REQUIRES SQLITE3_INCLUDE_PATH SQLITE3_LIBRARY
+    REQUIRES SQLite3_INCLUDE_DIRS SQLite3_LIBRARIES
     SOURCES _sqlite/cache.c
             _sqlite/connection.c
             _sqlite/cursor.c
@@ -723,8 +724,8 @@ add_python_extension(_sqlite3
             _sqlite/statement.c
             _sqlite/util.c
     DEFINITIONS MODULE_NAME="sqlite3" SQLITE_OMIT_LOAD_EXTENSION=1
-    INCLUDEDIRS ${SQLITE3_INCLUDE_PATH}
-    LIBRARIES ${SQLITE3_LIBRARY}
+    INCLUDEDIRS ${SQLite3_INCLUDE_DIRS}
+    LIBRARIES ${SQLite3_LIBRARIES}
 )
 if(ENABLE_SQLITE3 AND CMAKE_C_COMPILER_ID MATCHES GNU)
     set_property(SOURCE ${SRC_DIR}/Modules/_sqlite/module.c PROPERTY COMPILE_FLAGS -Wno-deprecated-declarations)
@@ -756,10 +757,10 @@ add_python_extension(_tkinter
 )
 if(NOT USE_BUILTIN_ZLIB)
     add_python_extension(zlib
-        REQUIRES ZLIB_LIBRARY ZLIB_INCLUDE_DIR
+        REQUIRES ZLIB_LIBRARIES ZLIB_INCLUDE_DIRS
         SOURCES zlibmodule.c
-        LIBRARIES ${ZLIB_LIBRARY}
-        INCLUDEDIRS ${ZLIB_INCLUDE_DIR}
+        LIBRARIES ${ZLIB_LIBRARIES}
+        INCLUDEDIRS ${ZLIB_INCLUDE_DIRS}
     )
 else()
     add_python_extension(zlib BUILTIN
