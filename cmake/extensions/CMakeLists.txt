@@ -404,13 +404,11 @@ else()
 
         else()
             # get libffi
-            find_path(FFI_INCLUDE_DIR ffi.h)
-            find_library(FFI_LIBRARY NAMES ffi libffi)
             add_python_extension(_ctypes
-                REQUIRES FFI_INCLUDE_DIR FFI_LIBRARY
+                REQUIRES FFI_INCLUDE_DIRS FFI_LIBRARIES
                 SOURCES ${ctypes_COMMON_SOURCES}
-                INCLUDEDIRS ${FFI_INCLUDE_DIR}
-                LIBRARIES ${FFI_LIBRARY}
+                INCLUDEDIRS ${FFI_INCLUDE_DIRS}
+                LIBRARIES ${FFI_LIBRARIES}
             )
         endif()
     endif()
