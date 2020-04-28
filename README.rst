@@ -180,6 +180,11 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
     Associated python extensions are: ELEMENTTREE, PYEXPAT
     Following CMake variables can manually be set: EXPAT_LIBRARIES, EXPAT_INCLUDE_DIRS
 
+  USE_SYSTEM_FFI=ON|OFF       (defaults to ON)
+    If set to OFF, no attempt to detect libffi libraries will be done.
+    Associated python extensions are: CTYPES
+    Following CMake variables can manually be set: FFI_LIBRARY, FFI_INCLUDE_DIR
+
   USE_SYSTEM_OpenSSL=ON|OFF     (defaults to ON)
     If set to OFF, no attempt to detect OpenSSL libraries will be done.
     Associated python extensions are: HASHLIB, SSL, MD5, SHA, SHA256, SHA512

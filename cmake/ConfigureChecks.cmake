@@ -51,6 +51,17 @@ if(USE_SYSTEM_EXPAT)
     message(STATUS "EXPAT_LIBRARIES=${EXPAT_LIBRARIES}")
 endif()
 
+# get libffi
+# an "external" on windows...
+# build your own with cmake..
+# https://github.com/dand-oss/libffi
+if(USE_SYSTEM_FFI)
+    find_path(FFI_INCLUDE_DIRS ffi.h)
+    find_library(FFI_LIBRARIES NAMES ffi libffi)
+    message(STATUS "FFI_INCLUDE_DIRS=${FFI_INCLUDE_DIRS}")
+    message(STATUS "FFI_LIBRARIES=${FFI_LIBRARIES}")
+endif()
+
 if(IS_PY3 AND USE_SYSTEM_LIBMPDEC)
     find_library(LIBMPDEC_LIBRARY NAMES libmpdec)
     set(LIBMPDEC_LIBRARIES ${LIBMPDEC_LIBRARY})
