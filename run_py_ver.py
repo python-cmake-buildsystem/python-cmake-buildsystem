@@ -39,8 +39,8 @@ def _set_py_env(PR, worklist):
 
 def set_unix_py_env(PR):
 
-    # assume python 3.7
-    pyvdir = 'python3.7'
+    # assume python 3.8
+    pyvdir = 'python3.8'
     worklist = (
         ('PATH', PR / 'bin'),  # exe
         ('LD_LIBRARY_PATH', PR / 'lib'),  # .so
@@ -51,6 +51,8 @@ def set_unix_py_env(PR):
 
 def set_win_py_env(PR):
 
+    # Python 3.8 set LoadLibrary for DLLS to IGNORE PATH
+    # only dlls alongside pyd...
     worklist = (
         ('PATH', PR / 'Scripts', PR),  # .exe
         ('PYTHONPATH', PR / 'lib', PR / 'DLLs')  # pyd
