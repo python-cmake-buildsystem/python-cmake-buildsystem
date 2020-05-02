@@ -28,6 +28,58 @@ message(STATUS "The system name is ${CMAKE_SYSTEM_NAME}")
 message(STATUS "The system processor is ${CMAKE_SYSTEM_PROCESSOR}")
 message(STATUS "The system version is ${CMAKE_SYSTEM_VERSION}")
 
+function(find_dbg_lib)
+
+    set(prefix "fd")
+    set(options)
+    set(oneValueArgs "VAR_LIB" "DBG_POSTFIX" )
+    set(multiValueArgs "NAMES")
+
+    cmake_parse_arguments(
+        "${prefix}"
+        "${options}"
+        "${oneValueArgs}"
+        "${multiValueArgs}"
+        ${ARGN}
+        )
+
+    # compose the debug names
+    foreach(nm ${fd_NAMES})
+        list(APPEND DBG_NAMES "${nm}${fd_DBG_POSTFIX}")
+    endforeach()
+
+    find_library(DBG_LIBS NAMES ${DBG_NAMES})
+
+    set(blabby OFF)
+    if ( blabby )
+        message( STATUS "find_dbg_lib() received ${ARGV}" )
+        message( STATUS "finding variable \"${fd_VAR_LIB}\"" )
+        message( STATUS "${fd_VAR_LIB}=\"${${fd_VAR_LIB}}\"" )
+        message( STATUS "  debug postfix \"${fd_DBG_POSTFIX}\"" )
+        message( STATUS "  search names ${fd_NAMES}" )
+        asv_print_value(
+            CMAKE_FIND_LIBRARY_PREFIXES
+            CMAKE_FIND_LIBRARY_SUFFIXES
+            )
+        message( STATUS "  debug search names ${DBG_NAMES}" )
+        message( STATUS "  find_library returned ${DBG_LIBS}" )
+    endif ( blabby )
+
+    if ( DBG_LIBS )
+
+        set( val_VAR_LIB ${${fd_VAR_LIB}})
+        if ( val_VAR_LIB )
+            # optimized and debug - prepare optimized
+            set(${fd_VAR_LIB} "optimized" ${val_VAR_LIB} "debug" ${DBG_LIBS} PARENT_SCOPE)
+        else ( )
+            # just debug, no optimized
+            set(${fd_VAR_LIB} ${DBG_LIBS} PARENT_SCOPE)
+        endif ( )
+
+     endif ( DBG_LIBS )
+
+endfunction()
+
 # Find any dependencies
 if(USE_SYSTEM_BZip2)
     find_package(BZip2)
@@ -46,6 +98,7 @@ endif()
 if(USE_SYSTEM_EXPAT)
     # https://github.com/Kitware/CMake/blob/master/Modules/FindEXPAT.cmake
     find_package(EXPAT)
+    find_dbg_lib(VAR_LIB EXPAT_LIBRARIES DBG_POSTFIX "_d" NAMES expat libexpat)
     message(STATUS "EXPAT_FOUND=${EXPAT_FOUND}")
     message(STATUS "EXPAT_INCLUDE_DIRS=${EXPAT_INCLUDE_DIRS}")
     message(STATUS "EXPAT_LIBRARIES=${EXPAT_LIBRARIES}")
@@ -58,6 +111,7 @@ endif()
 if(USE_SYSTEM_FFI)
     find_path(FFI_INCLUDE_DIRS ffi.h)
     find_library(FFI_LIBRARIES NAMES ffi libffi)
+    # skip for FFI find_dbg_lib(VAR_LIB FFI_LIBRARIES DBG_POSTFIX "_d" NAMES ffi libffi)
     message(STATUS "FFI_INCLUDE_DIRS=${FFI_INCLUDE_DIRS}")
     message(STATUS "FFI_LIBRARIES=${FFI_LIBRARIES}")
 endif()
@@ -122,6 +176,7 @@ endif()
 if(USE_SYSTEM_ZLIB)
     # https://github.com/Kitware/CMake/blob/master/Modules/FindZLIB.cmake
     find_package(ZLIB)
+    # does not work with binascii find_dbg_lib(VAR_LIB ZLIB_LIBRARIES DBG_POSTFIX "_d" NAMES zlib libzlib)
     message(STATUS "ZLIB_FOUND=${ZLIB_FOUND}")
     message(STATUS "ZLIB_INCLUDE_DIRS=${ZLIB_INCLUDE_DIRS}")
     message(STATUS "ZLIB_LIBRARIES=${ZLIB_LIBRARIES}")
@@ -167,6 +222,7 @@ endif()
 
 # https://github.com/Kitware/CMake/blob/master/Modules/FindSQLite3.cmake
 find_package(SQLite3)
+# fails link find_dbg_lib(VAR_LIB SQLite3_LIBRARIES DBG_POSTFIX "_d" NAMES sqlite3 libsqlite3)
 message(STATUS "SQLite3_FOUND=${SQLite3_FOUND}")
 message(STATUS "SQLite3_VERSION=${SQLite3_VERSION}")
 message(STATUS "SQLite3_INCLUDE_DIRS=${SQLite3_INCLUDE_DIRS}")
