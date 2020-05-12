@@ -221,9 +221,11 @@ set(ABIFLAGS )
 if(Py_DEBUG)
   set(ABIFLAGS "${ABIFLAGS}d")
 endif()
-if(WITH_PYMALLOC)
-  set(ABIFLAGS "${ABIFLAGS}m")
-endif()
+# No longer using "m" abi flag on libpython3.8.so using WITH_PYMALLOC
+# https://github.com/python/cpython/pull/12931
+#if(WITH_PYMALLOC)
+#  set(ABIFLAGS "${ABIFLAGS}m")
+#endif()
 message(STATUS "${_msg} - ${ABIFLAGS}")
 
 set(_msg "Checking SOABI")
