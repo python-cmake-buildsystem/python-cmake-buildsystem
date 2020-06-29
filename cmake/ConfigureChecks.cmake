@@ -221,7 +221,7 @@ if(USE_SYSTEM_READLINE)
 endif()
 
 # https://github.com/Kitware/CMake/blob/master/Modules/FindSQLite3.cmake
-find_package(SQLite3)
+find_package(SQLite3 CONFIG)
 # fails link find_dbg_lib(VAR_LIB SQLite3_LIBRARIES DBG_POSTFIX "_d" NAMES sqlite3 libsqlite3)
 message(STATUS "SQLite3_FOUND=${SQLite3_FOUND}")
 message(STATUS "SQLite3_VERSION=${SQLite3_VERSION}")
