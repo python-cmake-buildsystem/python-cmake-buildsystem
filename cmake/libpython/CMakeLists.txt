@@ -24,6 +24,7 @@ if(UNIX)
             PYTHONPATH="${PYTHONPATH}"
       )
 elseif(WIN32)
+    add_definitions(-DPY3_DLLNAME="python3${CMAKE_DEBUG_POSTFIX}")
     list(APPEND MODULE_SOURCES
         ${SRC_DIR}/PC/getpathp.c
     )
