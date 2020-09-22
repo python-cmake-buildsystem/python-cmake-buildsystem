@@ -136,7 +136,7 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
       CODECS_ISO2022 CODECS_JP CODECS_KR CODECS_TW COLLECTIONS CPICKLE CRYPT
       CSTRINGIO CSV CTYPES CTYPES_TEST CURSES CURSES_PANEL DATETIME DBM
       ELEMENTTREE FCNTL FUNCTOOLS FUTURE_BUILTINS GDBM GRP HASHLIB HEAPQ
-      HOTSHOT IO ITERTOOLS JSON LINUXAUDIODEV LOCALE LSPROF MATH MMAP
+      HOTSHOT IO ITERTOOLS JSON LINUXAUDIODEV LOCALE LSPROF LZMA MATH MMAP
       MULTIBYTECODEC MULTIPROCESSING NIS NT OPERATOR OSSAUDIODEV PARSER POSIX
       PWD PYEXPAT RANDOM READLINE RESOURCE SELECT SOCKET SPWD SQLITE3 SSL
       STROP STRUCT SYSLOG TERMIOS TESTCAPI TIME TKINTER UNICODEDATA ZLIB
@@ -208,6 +208,11 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
     If set to OFF, no attempt to detect GDBM libraries will be done.
     Associated python extensions are: DBM, GDBM
     Following CMake variables can manually be set: GDBM_INCLUDE_PATH, GDBM_LIBRARY, GDBM_COMPAT_LIBRARY
+
+  USE_SYSTEM_LZMA=ON|OFF     (defaults to ON)
+    If set to OFF, no attempt to detect LZMA libraries will be done.
+    Associated python extensions are: LZMA
+    Following CMake variables can manually be set: LZMA_INCLUDE_PATH, LZMA_LIBRARY
 
   USE_SYSTEM_READLINE=ON|OFF    (defaults to ON)
     If set to OFF, no attempt to detect Readline libraries will be done.
