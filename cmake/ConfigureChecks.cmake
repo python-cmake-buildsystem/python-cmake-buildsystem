@@ -94,6 +94,9 @@ if(USE_SYSTEM_GDBM)
     endif()
 endif()
 
+find_path(LZMA_INCLUDE_PATH lzma.h)
+find_library(LZMA_LIBRARY lzma)
+
 if(USE_SYSTEM_READLINE)
     if(USE_LIBEDIT)
         find_path(READLINE_INCLUDE_PATH editline/readline.h)
