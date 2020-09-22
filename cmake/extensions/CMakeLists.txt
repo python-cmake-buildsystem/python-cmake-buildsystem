@@ -27,9 +27,6 @@ if(WIN32)
     set(WIN32_BUILTIN BUILTIN)
 endif()
 
-# XXX Following modules are missing:
-# lzma
-
 add_python_extension(array ${WIN32_BUILTIN} SOURCES arraymodule.c)
 add_python_extension(audioop ${WIN32_BUILTIN} SOURCES audioop.c)
 add_python_extension(_bisect ${WIN32_BUILTIN} SOURCES _bisectmodule.c)
