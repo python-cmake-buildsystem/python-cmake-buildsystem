@@ -119,10 +119,13 @@ add_python_extension(_testmultiphase REQUIRES IS_PY3 SOURCES _testmultiphase.c)
 # debug tool to trace memory blocks allocated by Python
 add_python_extension(_tracemalloc BUILTIN REQUIRES IS_PY3 SOURCES hashtable.c _tracemalloc.c)
 add_python_extension(_weakref BUILTIN REQUIRES IS_PY3 SOURCES _weakref.c)
-math(EXPR _limited_api_version "${PY_VERSION_MAJOR} * 100 + ${PY_VERSION_MINOR}")
+if(NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+    math(EXPR _limited_api_version "${PY_VERSION_MAJOR} * 100 + ${PY_VERSION_MINOR}")
+    set(_limited_definition "Py_LIMITED_API=0x${_limited_api_version}0000")
+endif()
 add_python_extension(xxlimited REQUIRES IS_PY3 BUILD_TESTING
     SOURCES xxlimited.c
-    DEFINITIONS Py_LIMITED_API=0x${_limited_api_version}0000
+    DEFINITIONS ${_limited_definition}
     NO_INSTALL
 )
 add_python_extension(xxsubtype BUILTIN REQUIRES IS_PY3 SOURCES xxsubtype.c)
