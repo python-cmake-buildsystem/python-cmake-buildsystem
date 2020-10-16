@@ -115,11 +115,10 @@ def install_our_pkgs(a, PR=None):
         'datetime',
         'snakemake',
         'twine',
+        'region_profiler',
     )
     portlist = (
         'pypreprocessor',
-        'region_profiler',
-        'hypercorn'
     )
 
     install_pkgs(a, pkglist, PR)
