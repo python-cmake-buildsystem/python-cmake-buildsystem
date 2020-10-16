@@ -106,6 +106,9 @@ def install_our_pkgs(a, PR=None):
     # list of packages
     pkglist = (
         'docopt',
+        'msgpack',
+        'mashumaro',
+        'mashuhelpa',
         'rpyc',
         'pyyaml',
         'sqlalchemy',
