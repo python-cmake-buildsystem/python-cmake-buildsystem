@@ -500,7 +500,7 @@ elseif(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
 elseif(${CMAKE_SIZEOF_VOID_P} EQUAL 4)
     if(HAVE_GCC_ASM_FOR_X87 AND
         (CMAKE_C_COMPILER_ID MATCHES "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
-        AND NOT CMAKE_SYSTEM MATCHES SunOS
+        AND NOT CMAKE_SYSTEM MATCHES SunOS AND NOT CMAKE_SYSTEM MATCHES Android
     )
         # solaris: problems with register allocation.
         # icc >= 11.0 works as well.
