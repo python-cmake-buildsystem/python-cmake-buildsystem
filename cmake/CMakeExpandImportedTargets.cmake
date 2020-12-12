@@ -52,9 +52,11 @@ function(CMAKE_EXPAND_IMPORTED_TARGETS _RESULT )
       endif()
    endif()
 
-   # XXX ignore warning 'get_target_property() called with non-existent target'
-   if(POLICY CMP0045)
-     cmake_policy(SET CMP0045 OLD)
+   if(CMAKE_VERSION VERSION_LESS 3.0.1)
+      # XXX ignore warning 'get_target_property() called with non-existent target'
+      if(POLICY CMP0045)
+         cmake_policy(SET CMP0045 OLD)
+      endif()
    endif()
 
    # handle imported library targets
