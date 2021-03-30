@@ -264,7 +264,7 @@ Guide <https://developer.android.com/ndk/guides/cmake>`_).
 .. code:: bash
 
   # Unix
-  cmake -DCMAKE_INSTALL_PREFIX:PATH=${HOME}/scratch/python-install -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake -DANDROID_ABI=armeabi-v7a -DCMAKE_CROSSCOMPILING_EMULATOR=adb-emu.sh -DANDROID_ALLOW_UNDEFINED_SYMBOLS=On -DENABLE_DECIMAL=Off -DENABLE_CTYPES=Off -DANDROID_PLATFORM=21 ../python-cmake-buildsystem
+  cmake -DCMAKE_INSTALL_PREFIX:PATH=${HOME}/scratch/python-install -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake -DANDROID_ABI=armeabi-v7a -DCMAKE_CROSSCOMPILING_EMULATOR=adb-emu.sh -DANDROID_ALLOW_UNDEFINED_SYMBOLS=On -DENABLE_DECIMAL=Off -DENABLE_CTYPES=Off -DBUILD_EXTENSIONS_AS_BUILTIN=On -DANDROID_PLATFORM=21 ../python-cmake-buildsystem
 
 adb-emu.sh sends executable configuration files and launches them on connected device or launched
 emulator. Ensure device or emulator have same architecture you builds python:
