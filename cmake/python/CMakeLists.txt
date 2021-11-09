@@ -11,6 +11,7 @@ set_property(
     PROPERTY RUNTIME_OUTPUT_DIRECTORY ${BIN_BUILD_DIR}
     )
 target_compile_definitions(python PRIVATE Py_BUILD_CORE)
+add_definitions(-DPy_BUILD_CORE)
 
 # Link against the shared libpython if it was built, otherwise use the static
 # version.

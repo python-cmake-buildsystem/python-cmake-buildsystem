@@ -94,7 +94,7 @@ add_python_extension(math REQUIRES HAVE_LIBM ${WIN32_BUILTIN} SOURCES _math.c ma
 add_python_extension(mmap ${WIN32_BUILTIN} SOURCES mmapmodule.c DEFINITIONS Py_BUILD_CORE Py_BUILD_CORE_BUILTIN)
 add_python_extension(_multibytecodec ${WIN32_BUILTIN} SOURCES cjkcodecs/multibytecodec.c DEFINITIONS Py_BUILD_CORE Py_BUILD_CORE_BUILTIN)
 add_python_extension(operator ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES operator.c DEFINITIONS Py_BUILD_CORE Py_BUILD_CORE_BUILTIN)
-add_python_extension(parser ${WIN32_BUILTIN} SOURCES parsermodule.c DEFINITIONS Py_BUILD_CORE Py_BUILD_CORE_BUILTIN)
+
 add_python_extension(_random ${WIN32_BUILTIN} SOURCES _randommodule.c DEFINITIONS Py_BUILD_CORE Py_BUILD_CORE_BUILTIN)
 add_python_extension(strop ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES stropmodule.c DEFINITIONS Py_BUILD_CORE Py_BUILD_CORE_BUILTIN)
 add_python_extension(_struct ${WIN32_BUILTIN} SOURCES _struct.c DEFINITIONS Py_BUILD_CORE Py_BUILD_CORE_BUILTIN)
@@ -124,7 +124,7 @@ add_python_extension(_testimportmultiple REQUIRES IS_PY3 SOURCES _testimportmult
 # Test multi-phase extension module init (PEP 489)
 add_python_extension(_testmultiphase REQUIRES IS_PY3 SOURCES _testmultiphase.c DEFINITIONS Py_BUILD_CORE_MODULE)
 # debug tool to trace memory blocks allocated by Python
-add_python_extension(_tracemalloc BUILTIN REQUIRES IS_PY3 SOURCES hashtable.c _tracemalloc.c DEFINITIONS Py_BUILD_CORE Py_BUILD_CORE_BUILTIN)
+add_python_extension(_tracemalloc BUILTIN REQUIRES IS_PY3 SOURCES ../Python/hashtable.c _tracemalloc.c DEFINITIONS Py_BUILD_CORE Py_BUILD_CORE_BUILTIN)
 add_python_extension(_weakref BUILTIN REQUIRES IS_PY3 SOURCES _weakref.c DEFINITIONS Py_BUILD_CORE Py_BUILD_CORE_BUILTIN)
 math(EXPR _limited_api_version "${PY_VERSION_MAJOR} * 100 + ${PY_VERSION_MINOR}")
 
@@ -237,7 +237,7 @@ add_python_extension(${winreg${PY_VERSION_MAJOR}_NAME} REQUIRES WIN32 BUILTIN SO
 add_python_extension(_overlapped
     REQUIRES WIN32 IS_PY3
     SOURCES ${SRC_DIR}/Modules/overlapped.c
-    LIBRARIES ws2_32
+    LIBRARIES ws2_32 pathcch
     DEFINITIONS Py_BUILD_CORE_MODULE
 )
 add_python_extension(_winapi REQUIRES WIN32 IS_PY3 BUILTIN SOURCES ${SRC_DIR}/Modules/_winapi.c DEFINITIONS Py_BUILD_CORE Py_BUILD_CORE_BUILTIN)
@@ -431,7 +431,7 @@ else()
         _decimal/libmpdec/fnt.c
         _decimal/libmpdec/fourstep.c
         _decimal/libmpdec/io.c
-        _decimal/libmpdec/memory.c
+		_decimal/libmpdec/mpalloc.c
         _decimal/libmpdec/mpdecimal.c
         _decimal/libmpdec/numbertheory.c
         _decimal/libmpdec/sixstep.c

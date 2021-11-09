@@ -1,12 +1,12 @@
 cmake_minimum_required(VERSION 2.8.6)
 
-set(PYTHON_VERSION "3.9.0" CACHE STRING "The version of Python to build.")
+set(PYTHON_VERSION "3.10.0" CACHE STRING "The version of Python to build.")
 
 ###############
 # ASI default settings
-list(APPEND CMAKE_MODULE_PATH "$ENV{ASV_CMAKE}")
-include(asv_cmake_defaults)
-asv_cmake_defaults( )
+#list(APPEND CMAKE_MODULE_PATH "$ENV{ASV_CMAKE}")
+#include(asv_cmake_defaults)
+#asv_cmake_defaults( )
 ###############
 
 if(WIN32)
@@ -260,6 +260,9 @@ set(_download_3.8.4_md5 "387e63fe42c40a29e3408ce231315516")
 set(_download_3.8.5_md5 "e2f52bcf531c8cc94732c0b6ff933ff0")
 set(_download_3.8.6_md5 "ea132d6f449766623eee886966c7d41f")
 set(_download_3.9.0_md5 "e19e75ec81dd04de27797bf3f9d918fd")
+set(_download_3.10.0_md5 "729e36388ae9a832b01cf9138921b383")
+
+
 
 set(_extracted_dir "Python-${PY_VERSION}")
 
@@ -526,9 +529,6 @@ add_subdirectory(cmake/libpython CMakeBuild/libpython)
 add_subdirectory(cmake/python CMakeBuild/python)
 add_subdirectory(cmake/include CMakeBuild/include)
 add_subdirectory(cmake/lib CMakeBuild/lib)
-if(BUILD_WININST)
-    add_subdirectory(cmake/PC/bdist_wininst CMakeBuild/bdist_wininst)
-endif()
 
 # Add target to run "Argument Clinic" over all source files
 if(IS_PY3)
