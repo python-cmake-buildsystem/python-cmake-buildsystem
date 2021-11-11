@@ -132,7 +132,7 @@ set( limit_api "")
 if ( NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     set( limit_api "Py_LIMITED_API=0x${_limited_api_version}0000")
 endif ( NOT "${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
-add_python_extension(xxlimited REQUIRES IS_PY3 BUILD_TESTING
+add_python_extension(xxlimited
     SOURCES xxlimited.c
     DEFINITIONS "${limit_api}" Py_BUILD_CORE_MODULE
     NO_INSTALL
@@ -771,17 +771,6 @@ else()
         REQUIRES
         SOURCES
             zlibmodule.c
-            zlib/adler32.c
-            zlib/compress.c
-            zlib/crc32.c
-            zlib/deflate.c
-            zlib/infback.c
-            zlib/inffast.c
-            zlib/inflate.c
-            zlib/inftrees.c
-            zlib/trees.c
-            zlib/uncompr.c
-            zlib/zutil.c
         DEFINITIONS Py_BUILD_CORE_MODULE
         INCLUDEDIRS ${SRC_DIR}/Modules/zlib
     )
