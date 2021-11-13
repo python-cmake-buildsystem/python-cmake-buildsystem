@@ -71,6 +71,10 @@ elseif(WIN32)
 endif()
 
 set(PARSER_COMMON_SOURCES # Equivalent to POBJS in Makefile.pre
+    ${SRC_DIR}/Parser/acceler.c
+    ${SRC_DIR}/Parser/grammar1.c
+    ${SRC_DIR}/Parser/listnode.c
+    ${SRC_DIR}/Parser/node.c
     ${SRC_DIR}/Parser/parser.c
     ${SRC_DIR}/Parser/token.c
 )
@@ -146,7 +150,6 @@ set(OBJECT_COMMON_SOURCES # Equivalent to OBJECT_OBJS in Makefile.pre
     ${SRC_DIR}/Objects/typeobject.c
     ${SRC_DIR}/Objects/unicodectype.c
     ${SRC_DIR}/Objects/unicodeobject.c
-	${SRC_DIR}/Objects/unionobject.c
     ${SRC_DIR}/Objects/weakrefobject.c
 )
 
@@ -205,7 +208,6 @@ set(PYTHON3_COMMON_SOURCES
     ${SRC_DIR}/Python/pystrhex.c
     ${SRC_DIR}/Python/pystrtod.c
     ${SRC_DIR}/Python/pytime.c
-	${SRC_DIR}/Python/suggestions.c
 )
 
 set(PYTHON_COMMON_SOURCES
@@ -227,6 +229,7 @@ set(PYTHON_COMMON_SOURCES
     ${SRC_DIR}/Python/getopt.c
     ${SRC_DIR}/Python/getplatform.c
     ${SRC_DIR}/Python/getversion.c
+    ${SRC_DIR}/Python/graminit.c
     ${SRC_DIR}/Python/import.c
     ${SRC_DIR}/Python/importdl.c
     ${SRC_DIR}/Python/initconfig.c
@@ -234,6 +237,7 @@ set(PYTHON_COMMON_SOURCES
     ${SRC_DIR}/Python/modsupport.c
     ${SRC_DIR}/Python/mysnprintf.c
     ${SRC_DIR}/Python/mystrtoul.c
+    ${SRC_DIR}/Python/peephole.c
     ${SRC_DIR}/Python/preconfig.c
     ${SRC_DIR}/Python/pyarena.c
     ${SRC_DIR}/Python/pyctype.c
@@ -308,10 +312,12 @@ list(APPEND MODULE_SOURCES
 set(LIBPYTHON_OMIT_FROZEN_SOURCES
     ${SRC_DIR}/Modules/getbuildinfo.c
     ${SRC_DIR}/Parser/myreadline.c
-	${SRC_DIR}/Parser/peg_api.c
-	${SRC_DIR}/Parser/pegen.c
-	${SRC_DIR}/Parser/string_parser.c
+    ${SRC_DIR}/Parser/parsetok.c
     ${SRC_DIR}/Parser/tokenizer.c
+    ${SRC_DIR}/Parser/pegen/parse_string.c
+    ${SRC_DIR}/Parser/pegen/parse.c
+    ${SRC_DIR}/Parser/pegen/peg_api.c
+    ${SRC_DIR}/Parser/pegen/pegen.c
     ${MODULE_SOURCES}
     ${OBJECT_COMMON_SOURCES}
     ${PARSER_COMMON_SOURCES}
