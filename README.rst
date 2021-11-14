@@ -183,7 +183,7 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
   USE_SYSTEM_FFI=ON|OFF       (defaults to ON)
     If set to OFF, no attempt to detect libffi libraries will be done.
     Associated python extensions are: CTYPES
-    Following CMake variables can manually be set: FFI_LIBRARY, FFI_INCLUDE_DIR
+    Following CMake variables can manually be set: FFI_LIBRARIES and FFI_INCLUDE_DIRS
 
   USE_SYSTEM_OpenSSL=ON|OFF     (defaults to ON)
     If set to OFF, no attempt to detect OpenSSL libraries will be done.
