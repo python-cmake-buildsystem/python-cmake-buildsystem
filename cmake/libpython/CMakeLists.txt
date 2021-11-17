@@ -29,6 +29,7 @@ if(UNIX)
 elseif(WIN32)
     # needed for python 3.5
     add_definitions(-DPY3_DLLNAME="python3${CMAKE_DEBUG_POSTFIX}")
+    add_definitions(-DPYTHON_DLL_NAME="python${PY_VERSION_MAJOR}${PY_VERSION_MINOR}")
     list(APPEND MODULE_SOURCES
         ${SRC_DIR}/PC/getpathp.c
     )
