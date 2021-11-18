@@ -576,7 +576,7 @@ if(BUILD_LIBPYTHON_SHARED)
             COMMENT "Rebuilding python3stub.lib"
             VERBATIM
         )
-        add_custom_target(generate_libpython3stub_lib DEPENDS ${python3stub_lib})
+        add_custom_target(generate_libpython3stub_lib DEPENDS ${python3stub_lib} generate_libpython3stub_def)
 
         # Build 'python3.dll'
         add_library(${targetname} SHARED ${SRC_DIR}/PC/python3dll.c ${SRC_DIR}/PC/python3.def)
