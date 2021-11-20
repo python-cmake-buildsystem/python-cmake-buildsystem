@@ -1733,5 +1733,7 @@
 #define STRICT_SYSV_CURSES /* Don't use ncurses extensions */
 #endif
 
+#define PLATLIBDIR "lib"
+
 #endif /*Py_PYCONFIG_H*/
 
