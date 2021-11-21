@@ -99,6 +99,7 @@ add_python_extension(_random ${WIN32_BUILTIN} SOURCES _randommodule.c DEFINITION
 add_python_extension(strop ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES stropmodule.c DEFINITIONS Py_BUILD_CORE Py_BUILD_CORE_BUILTIN)
 add_python_extension(_struct ${WIN32_BUILTIN} SOURCES _struct.c DEFINITIONS Py_BUILD_CORE Py_BUILD_CORE_BUILTIN)
 add_python_extension(_testcapi SOURCES _testcapimodule.c)
+add_python_extension(_testinternalcapi SOURCES _testinternalcapi.c DEFINITIONS Py_BUILD_CORE Py_BUILD_CORE_MODULE PY3_DLLNAME="python3${CMAKE_DEBUG_POSTFIX}")
 set(thread2_NAME thread)
 set(thread3_NAME _thread)
 set(thread2_SOURCES ${SRC_DIR}/Modules/threadmodule.c)
