@@ -124,7 +124,7 @@ add_python_extension(_symtable BUILTIN REQUIRES IS_PY3 SOURCES symtablemodule.c 
 # Python PEP-3118 (buffer protocol) test module
 add_python_extension(_testbuffer REQUIRES IS_PY3 SOURCES _testbuffer.c DEFINITIONS Py_BUILD_CORE_MODULE)
 # Test loading multiple modules from one compiled file (http://bugs.python.org/issue16421)
-add_python_extension(_testimportmultiple REQUIRES IS_PY3 SOURCES _testimportmultiple.c DEFINITIONS Py_BUILD_CORE Py_BUILD_CORE_BUILTIN)
+add_python_extension(_testimportmultiple REQUIRES IS_PY3 SOURCES _testimportmultiple.c DEFINITIONS Py_BUILD_CORE_MODULE)
 # Test multi-phase extension module init (PEP 489)
 add_python_extension(_testmultiphase REQUIRES IS_PY3 SOURCES _testmultiphase.c DEFINITIONS Py_BUILD_CORE_MODULE)
 # debug tool to trace memory blocks allocated by Python
@@ -741,7 +741,7 @@ if(WIN32)
 endif()
 add_python_extension(_ssl
     REQUIRES OPENSSL_INCLUDE_DIR OPENSSL_LIBRARIES
-    SOURCES _ssl.c
+    SOURCES _ssl.c ${OPENSSL_INCLUDE_DIR}/applink.c
     DEFINITIONS Py_BUILD_CORE_MODULE
     LIBRARIES ${_ssl_LIBRARIES}
     INCLUDEDIRS ${OPENSSL_INCLUDE_DIR}
