@@ -74,9 +74,16 @@ set(PARSER_COMMON_SOURCES # Equivalent to POBJS in Makefile.pre
     ${SRC_DIR}/Parser/acceler.c
     ${SRC_DIR}/Parser/grammar1.c
     ${SRC_DIR}/Parser/listnode.c
+    ${SRC_DIR}/Parser/myreadline.c
     ${SRC_DIR}/Parser/node.c
     ${SRC_DIR}/Parser/parser.c
+    ${SRC_DIR}/Parser/parsetok.c
     ${SRC_DIR}/Parser/token.c
+    ${SRC_DIR}/Parser/tokenizer.c
+    ${SRC_DIR}/Parser/pegen/pegen.c
+    ${SRC_DIR}/Parser/pegen/parse.c
+    ${SRC_DIR}/Parser/pegen/parse_string.c
+    ${SRC_DIR}/Parser/pegen/peg_api.c
 )
 
 set(OBJECT2_SOURCES
@@ -301,23 +308,16 @@ endif()
 list(APPEND MODULE_SOURCES
     ${SRC_DIR}/Modules/_codecsmodule.c
     ${SRC_DIR}/Modules/errnomodule.c
+    # ${SRC_DIR}/Modules/parsermodule.c
     ${SRC_DIR}/Modules/signalmodule.c
     ${SRC_DIR}/Modules/_sre.c
     ${SRC_DIR}/Modules/symtablemodule.c
     ${SRC_DIR}/Modules/_weakref.c
     ${SRC_DIR}/Modules/xxsubtype.c
-    # ${SRC_DIR}/Modules/zipimport.c
 )
 
 set(LIBPYTHON_OMIT_FROZEN_SOURCES
     ${SRC_DIR}/Modules/getbuildinfo.c
-    ${SRC_DIR}/Parser/myreadline.c
-    ${SRC_DIR}/Parser/parsetok.c
-    ${SRC_DIR}/Parser/tokenizer.c
-    ${SRC_DIR}/Parser/pegen/parse_string.c
-    ${SRC_DIR}/Parser/pegen/parse.c
-    ${SRC_DIR}/Parser/pegen/peg_api.c
-    ${SRC_DIR}/Parser/pegen/pegen.c
     ${MODULE_SOURCES}
     ${OBJECT_COMMON_SOURCES}
     ${PARSER_COMMON_SOURCES}
