@@ -739,9 +739,13 @@ set(_ssl_LIBRARIES ${OPENSSL_LIBRARIES})
 if(WIN32)
     list(APPEND _ssl_LIBRARIES Crypt32 ws2_32)
 endif()
+set(_ssl_SOURCES _ssl.c)
+if(WIN32)
+    list(APPEND _ssl_SOURCES ${OPENSSL_INCLUDE_DIR}/openssl/applink.c)
+endif()
 add_python_extension(_ssl
     REQUIRES OPENSSL_INCLUDE_DIR OPENSSL_LIBRARIES
-    SOURCES _ssl.c ${OPENSSL_INCLUDE_DIR}/openssl/applink.c
+    SOURCES ${_ssl_SOURCES}
     DEFINITIONS Py_BUILD_CORE_MODULE
     LIBRARIES ${_ssl_LIBRARIES}
     INCLUDEDIRS ${OPENSSL_INCLUDE_DIR}
