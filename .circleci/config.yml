@@ -29,7 +29,7 @@ jobs:
          name: build and test
          command: |
            set -e
-           ctest -S /work/scripts/circle_dashboard.cmake -VV
+           ctest --timeout 180 -S /work/scripts/circle_dashboard.cmake -VV
          environment:
            PY_VERSION: << parameters.python_version >>
 
