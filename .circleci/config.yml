@@ -19,7 +19,7 @@ jobs:
           command: |
             sudo apt-get update
             sudo apt-get install -y libffi-dev tcl-dev tk-dev liblzma-dev libbz2-dev
-            sudo apt-get install -y libgdbm-dev libssl-dev libsqlite3-dev libreadline-gplv2-dev
+            sudo apt-get install -y libgdbm-dev libssl-dev libsqlite3-dev libreadline-dev
             sudo apt-get install -y libncursesw5-dev libdb-dev
       - run:
          name: download dashboard scripts
