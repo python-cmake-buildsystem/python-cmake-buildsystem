@@ -963,6 +963,9 @@
 /* Define to 1 if you have the <signal.h> header file. */
 #cmakedefine HAVE_SIGNAL_H 1
 
+/* Define to 1 if you have the `sigfillset' function. */
+#cmakedefine HAVE_SIGFILLSET 1
+
 /* Define to 1 if you have the `sigpending' function. [Python 3] */
 #cmakedefine HAVE_SIGPENDING 1
 

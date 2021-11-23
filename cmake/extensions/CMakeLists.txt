@@ -223,7 +223,7 @@ add_python_extension(_scproxy
 # Linux-only extensions
 add_python_extension(linuxaudiodev REQUIRES LINUX IS_PY2 SOURCES linuxaudiodev.c)
 add_python_extension(ossaudiodev REQUIRES LINUX SOURCES ossaudiodev.c)
-add_python_extension(_posixshmem REQUIRES LINUX SOURCES _multiprocessing/posixshmem.c)
+add_python_extension(_posixshmem REQUIRES LINUX SOURCES _multiprocessing/posixshmem.c LIBRARIES "rt")
 
 
 # Windows-only extensions
