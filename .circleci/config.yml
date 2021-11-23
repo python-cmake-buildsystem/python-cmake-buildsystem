@@ -16,7 +16,11 @@ jobs:
       - checkout
       - run:
           name: Install Dependencies
-          command: sudo apt-get update && sudo apt-get install -y libffi-dev tcl-dev tk-dev
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y libffi-dev tcl-dev tk-dev liblzma-dev libbz2-dev
+            sudo apt-get install -y libgdbm-dev libssl-dev libsqlite3-dev libreadline-gplv2-dev
+            sudo apt-get install -y libncursesw5-dev libdb-dev
       - run:
          name: download dashboard scripts
          command: |
@@ -24,6 +28,7 @@ jobs:
       - run:
          name: build and test
          command: |
+           set -e
            ctest -S /work/scripts/circle_dashboard.cmake -VV
          environment:
            PY_VERSION: << parameters.python_version >>
