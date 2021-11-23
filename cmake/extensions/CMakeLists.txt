@@ -121,6 +121,7 @@ add_python_extension(_pickle BUILTIN REQUIRES IS_PY3 SOURCES _pickle.c DEFINITIO
 add_python_extension(_sre BUILTIN REQUIRES IS_PY3 SOURCES _sre.c DEFINITIONS Py_BUILD_CORE Py_BUILD_CORE_BUILTIN) # Fredrik Lundh's new regular expressions
 add_python_extension(_stat BUILTIN REQUIRES IS_PY3 SOURCES _stat.c DEFINITIONS Py_BUILD_CORE Py_BUILD_CORE_BUILTIN) # stat.h interface
 add_python_extension(_symtable BUILTIN REQUIRES IS_PY3 SOURCES symtablemodule.c DEFINITIONS Py_BUILD_CORE Py_BUILD_CORE_BUILTIN)
+
 # Python PEP-3118 (buffer protocol) test module
 add_python_extension(_testbuffer REQUIRES IS_PY3 SOURCES _testbuffer.c DEFINITIONS Py_BUILD_CORE_MODULE)
 # Test loading multiple modules from one compiled file (http://bugs.python.org/issue16421)
@@ -222,6 +223,8 @@ add_python_extension(_scproxy
 # Linux-only extensions
 add_python_extension(linuxaudiodev REQUIRES LINUX IS_PY2 SOURCES linuxaudiodev.c)
 add_python_extension(ossaudiodev REQUIRES LINUX SOURCES ossaudiodev.c)
+add_python_extension(_posixshmem REQUIRES LINUX SOURCES _multiprocessing/posixshmem.c)
+
 
 # Windows-only extensions
 add_python_extension(_msi
@@ -275,11 +278,9 @@ elseif(WIN32)
         _multiprocessing/socket_connection.c
         _multiprocessing/win32_functions.c
     )
-    set(_multiprocessing3_SOURCES )
     add_python_extension(_multiprocessing
         SOURCES _multiprocessing/multiprocessing.c
                 _multiprocessing/semaphore.c
-                ${_multiprocessing${PY_VERSION_MAJOR}_SOURCES} 
         DEFINITIONS Py_BUILD_CORE_MODULE
         LIBRARIES ws2_32
     )

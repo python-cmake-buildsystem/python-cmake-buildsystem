@@ -1035,6 +1035,8 @@ check_symbol_exists(sched_rr_get_interval  "${CFG_HEADERS}" HAVE_SCHED_RR_GET_IN
 check_symbol_exists(sched_setaffinity      "${CFG_HEADERS}" HAVE_SCHED_SETAFFINITY)
 check_symbol_exists(sched_setparam         "${CFG_HEADERS}" HAVE_SCHED_SETPARAM)
 check_symbol_exists(sched_setscheduler     "${CFG_HEADERS}" HAVE_SCHED_SETSCHEDULER)
+check_symbol_exists(shm_open               "${CFG_HEADERS}" HAVE_SHM_OPEN)
+check_symbol_exists(shm_unlink             "${CFG_HEADERS}" HAVE_SHM_UNLINK)
 check_symbol_exists(sendfile               "${CFG_HEADERS}" HAVE_SENDFILE)
 check_symbol_exists(sethostname            "${CFG_HEADERS}" HAVE_SETHOSTNAME)
 check_symbol_exists(setpriority            "${CFG_HEADERS}" HAVE_SETPRIORITY)
