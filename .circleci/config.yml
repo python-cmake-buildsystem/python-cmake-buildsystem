@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  win: circleci/windows@2.2.0
+
 jobs:
   build-test-python:
     parameters:
@@ -33,13 +36,66 @@ jobs:
          environment:
            PY_VERSION: << parameters.python_version >>
 
+  build-test-python-win:
+    parameters:
+      python_version:
+        description: "Python version specified as X.Y.Z"
+        type: string
+      python_arch:
+        description: "Python arch specified as x64 of x86"
+        type: string
+    executor:
+      name: win/default
+      shell: powershell.exe
+    working_directory: ~/project/src
+    environment:
+      - MSBUILD_DIR: 'C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\MSBuild\Current\Bin'
+      - CMAKE_DIR: 'C:\Program Files\CMake\bin'
+    steps:
+      - checkout
+
+      - run:
+          name: Set up workspace
+          command: |
+            New-Item -ItemType Directory ../build
+            New-Item -ItemType Directory ../install
+      - run:
+          name: Install dependencies
+          command: |
+            choco install --no-progress cmake
+            if (-not $?) { throw "Failed to install CMake" }
+      - run:
+          name: Build Python for Windows
+          command: |
+            $Env:PATH += ";$Env:CMAKE_DIR;$Env:MSBUILD_DIR"
+            pwd
+            cd ../build
+            cmake -G "Visual Studio 16 2019" -A "x64" -DCMAKE_INSTALL_PREFIX=~/project/install ~/project/src
+            if (-not $?) { throw "Failed to configure Python" }
+            cmake --build . --config Release -- /m
+            if (-not $?) { throw "Failed to build Python" }
+            cmake --build . --config Release --target INSTALL
+            if (-not $?) { throw "Failed to install Python" }
+      - run:
+          name: Run Tests
+          command: |
+            cd ~/project/install/Scripts
+            .\python.exe -m test
+
 workflows:
     build-and-test:
       jobs:
-        # 3.6.4
+        # 3.9.8
         - build-test-python:
             name: python-3.9.8-x64
             python_version: 3.9.8
             python_arch: x64
-
+    
+    build-and-test-win:
+      jobs:
+        # 3.9.8
+        - build-test-python-win:
+            name: python-3.9.8-x64
+            python_version: 3.9.8
+            python_arch: x64
 
