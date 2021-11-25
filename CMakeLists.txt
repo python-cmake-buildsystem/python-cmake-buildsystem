@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.6)
 
-set(PYTHON_VERSION "3.9.8" CACHE STRING "The version of Python to build.")
+set(PYTHON_VERSION "3.9.9" CACHE STRING "The version of Python to build.")
 
 ###############
 # ASI default settings
@@ -262,6 +262,7 @@ set(_download_3.8.5_md5 "e2f52bcf531c8cc94732c0b6ff933ff0")
 set(_download_3.8.6_md5 "ea132d6f449766623eee886966c7d41f")
 set(_download_3.9.0_md5 "e19e75ec81dd04de27797bf3f9d918fd")
 set(_download_3.9.8_md5 "83419bd73655813223c2cf2afb11f83c")
+set(_download_3.9.9_md5 "a2da2a456c078db131734ff62de10ed5")
 set(_download_3.10.0_md5 "729e36388ae9a832b01cf9138921b383")
 
 
