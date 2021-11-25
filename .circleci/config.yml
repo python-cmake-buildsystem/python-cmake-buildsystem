@@ -87,15 +87,15 @@ workflows:
       jobs:
         # 3.9.8
         - build-test-python:
-            name: python-3.9.8-linux-x64
-            python_version: 3.9.8
+            name: python-3.9.9-linux-x64
+            python_version: 3.9.9
             python_arch: x64
     
     build-and-test-win:
       jobs:
         # 3.9.8
         - build-test-python-win:
-            name: python-3.9.8-win-x64
-            python_version: 3.9.8
+            name: python-3.9.9-win-x64
+            python_version: 3.9.9
             python_arch: x64
 
