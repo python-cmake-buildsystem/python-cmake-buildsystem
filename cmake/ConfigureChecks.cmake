@@ -552,6 +552,10 @@ python_platform_test(
 cmake_pop_check_state()
 endif()
 
+if (UNIX)
+  set_required_def(_POSIX_THREADS 1)  # Define on Linux as it is required for threading
+  set_required_def(_POSIX_SOURCE 1)   # Define on Linux as it is required
+endif()
 set_required_def(_GNU_SOURCE 1)       # Define on Linux to activate all library features
 set_required_def(_NETBSD_SOURCE 1)    # Define on NetBSD to activate all library features
 set_required_def(__BSD_VISIBLE 1)     # Define on FreeBSD to activate all library features
