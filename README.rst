@@ -246,6 +246,20 @@ these before running make::
   patch -p0 < cmake/patches-win32/02-signalmodule.patch
   patch -p0 < cmake/patches-win32/03-mingw32.patch
 
+Cross-compiling for Android from Linux (unsupported)
+....................................................
+
+To build Python with Android NDK set up emulator, toolchain and ABI (see `Android CMake
+Guide <https://developer.android.com/ndk/guides/cmake>`_).
+
+.. code:: bash
+
+  # Unix
+  cmake -DCMAKE_INSTALL_PREFIX:PATH=${HOME}/scratch/python-install -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake -DANDROID_ABI=armeabi-v7a -DCMAKE_CROSSCOMPILING_EMULATOR=../python-cmake-buildsystem/run_on_android.sh -DANDROID_ALLOW_UNDEFINED_SYMBOLS=On -DENABLE_DECIMAL=Off -DENABLE_CTYPES=Off -DANDROID_PLATFORM=21 ../python-cmake-buildsystem
+
+run_on_android.sh sends executable configuration files and launches them on connected device or launched
+emulator. Ensure device or emulator have same architecture you builds python.
+
 Remarks
 -------
 

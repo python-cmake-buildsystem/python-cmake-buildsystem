@@ -161,11 +161,16 @@ endif()
 message(STATUS "${_msg} - ${ABIFLAGS}")
 
 set(_msg "Checking SOABI")
-try_run(PLATFORM_RUN PLATFORM_COMPILE
-        ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR}/cmake/platform.c
-        RUN_OUTPUT_VARIABLE PLATFORM_TRIPLET)
-if(NOT PLATFORM_COMPILE)
-  message(FATAL_ERROR "We could not determine the platform. Please clean the ${CMAKE_PROJECT_NAME} environment and try again...")
+set(PLATFORM_TRIPLET )
+if (ANDROID)
+    set(PLATFORM_TRIPLET "${CMAKE_ANDROID_ARCH_ABI}-linux-android")
+else()
+    try_run(PLATFORM_RUN PLATFORM_COMPILE
+            ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR}/cmake/platform.c
+            RUN_OUTPUT_VARIABLE PLATFORM_TRIPLET)
+    if(NOT PLATFORM_COMPILE)
+        message(FATAL_ERROR "We could not determine the platform. Please clean the ${CMAKE_PROJECT_NAME} environment and try again...")
+    endif()
 endif()
 set(SOABI "cpython-${PY_VERSION_MAJOR}${PY_VERSION_MINOR}${ABIFLAGS}-${PLATFORM_TRIPLET}")
 
@@ -215,7 +220,12 @@ check_include_files(grp.h HAVE_GRP_H)
 check_include_files(ieeefp.h HAVE_IEEEFP_H)
 check_include_files(inttypes.h HAVE_INTTYPES_H) # libffi and cpython
 check_include_files(io.h HAVE_IO_H)
-check_include_files(langinfo.h HAVE_LANGINFO_H)
+if (${CMAKE_SYSTEM_NAME} MATCHES "^Android")
+  set(HAVE_LANGINFO_H 0) # Android cann't link functions from langinfo.h
+else()
+  check_include_files(langinfo.h HAVE_LANGINFO_H)
+endif()
+
 check_include_files(libintl.h HAVE_LIBINTL_H)
 check_include_files(libutil.h HAVE_LIBUTIL_H)
 check_include_files(linux/tipc.h HAVE_LINUX_TIPC_H)
@@ -362,6 +372,11 @@ set(LIBUTIL_LIBRARIES )
 set(LIBUTIL_EXPECTED 1)
 
 if(CMAKE_SYSTEM MATCHES "VxWorks\\-7$")
+  set(LIBUTIL_EXPECTED 0)
+  set(HAVE_LIBUTIL 0)
+endif()
+
+if(CMAKE_SYSTEM MATCHES "^Android")
   set(LIBUTIL_EXPECTED 0)
   set(HAVE_LIBUTIL 0)
 endif()
@@ -957,60 +972,38 @@ endif()
 # Check for various properties of floating point
 #
 #######################################################################
-
-# Check whether C doubles are little-endian IEEE 754 binary64
-set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_little_endian_double.c)
-file(WRITE ${check_src} "#include <string.h>
-int main() {
-    double x = 9006104071832581.0;
-    if (memcmp(&x, \"\\x05\\x04\\x03\\x02\\x01\\xff\\x3f\\x43\", 8) == 0)
-        return 0;
-    else
-        return 1;
-}
-")
-python_platform_test_run(
-  DOUBLE_IS_LITTLE_ENDIAN_IEEE754
-  "Checking whether C doubles are little-endian IEEE 754 binary64"
-  ${check_src}
-  DIRECT
-  )
-
-# Check whether C doubles are big-endian IEEE 754 binary64
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_big_endian_double.c)
-file(WRITE ${check_src} "#include <string.h>
-int main() {
-    double x = 9006104071832581.0;
-    if (memcmp(&x, \"\\x43\\x3f\\xff\\x01\\x02\\x03\\x04\\x05\", 8) == 0)
-        return 0;
-    else
-        return 1;
-}
+file(WRITE ${check_src} "
+double d = 90904234967036810337470478905505011476211692735615632014797120844053488865816695273723469097858056257517020191247487429516932130503560650002327564517570778480236724525140520121371739201496540132640109977779420565776568942592.0;
 ")
-python_platform_test_run(
-  DOUBLE_IS_BIG_ENDIAN_IEEE754
-  "Checking whether C doubles are big-endian IEEE 754 binary64"
-  ${check_src}
-  DIRECT
-  )
 
-# Check whether C doubles are ARM mixed-endian IEEE 754 binary64
-set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_mixed_endian_double.c)
-file(WRITE ${check_src} "#include <string.h>
-int main() {
-    double x = 9006104071832581.0;
-    if (memcmp(&x, \"\\x01\\xff\\x3f\\x43\\x05\\x04\\x03\\x02\", 8) == 0)
-        return 0;
-    else
-        return 1;
-}
-")
-python_platform_test_run(
-  DOUBLE_IS_ARM_MIXED_ENDIAN_IEEE754
-  "Checking doubles are ARM mixed-endian IEEE 754 binary64"
-  ${check_src}
-  DIRECT
-  )
+# TODO: factorize this try_compile statement
+try_compile(DOUBLE_BIG_ENDIAN_TEST_COMPILED
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${check_src}
+        COMPILE_DEFINITIONS ${CMAKE_REQUIRED_DEFINITIONS}
+        COMPILE_DEFINITIONS ${CMAKE_REQUIRED_DEFINITIONS}
+        CMAKE_FLAGS -DCOMPILE_DEFINITIONS:STRING=${MACRO_CHECK_FUNCTION_DEFINITIONS}
+        "${CHECK_C_SOURCE_COMPILES_ADD_LIBRARIES}"
+        "${CHECK_C_SOURCE_COMPILES_ADD_INCLUDES}"
+        COPY_FILE ${CMAKE_CURRENT_BINARY_DIR}/double_big_endian.bin)
+
+if(DOUBLE_BIG_ENDIAN_TEST_COMPILED)
+    file(READ ${CMAKE_CURRENT_BINARY_DIR}/double_big_endian.bin DOUBLE_BIG_ENDIAN_DATA)
+    string(FIND ${DOUBLE_BIG_ENDIAN_DATA} "noonsees" NOONSEES)
+    if(NOONSEES)
+        set(DOUBLE_IS_BIG_ENDIAN_IEEE754 1)
+        set(DOUBLE_IS_LITTLE_ENDIAN_IEEE754 0)
+    else()
+        string(FIND ${DOUBLE_BIG_ENDIAN_DATA} "seesnoon" SEESNOON)
+        if(SEESNOON)
+            set(DOUBLE_IS_BIG_ENDIAN_IEEE754 0)
+            set(DOUBLE_IS_LITTLE_ENDIAN_IEEE754 1)
+        else()
+            message(WARNING "Could not determine if double precision floats endianness")
+        endif()
+    endif()
+endif()
 
 # The short float repr introduced in Python 3.1 requires the
 # correctly-rounded string <-> double conversion functions from
@@ -1159,8 +1152,9 @@ check_c_source_compiles("
 int main() {int a = MAP_ANONYMOUS;}"
 HAVE_MMAP_ANON)
 
-# libffi specific: Check for /dev/zero support for anonymous memory maps
-check_c_source_runs("
+# libffi specific: Check for /dev/zero support as a fallback for anonymous memory maps
+if(NOT HAVE_MMAP_ANON)
+    check_c_source_runs("
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/mman.h>
@@ -1178,6 +1172,7 @@ int main(void) {
   }
   exit(0);
 }" HAVE_MMAP_DEV_ZERO)
+endif()
 
 if(IS_PY3)
 
