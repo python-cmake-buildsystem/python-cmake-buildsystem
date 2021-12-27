@@ -1,3 +1,29 @@
+#.rst:
+#
+# =======================================================
+# PythonApplyPatches - apply patches to the python source
+# =======================================================
+#
+# This module apply patches to the python source code.
+#
+#
+# The following variables are used:
+# ::
+#
+#   PATCH_COMMAND - sets the patch command to use
+#                   (if running from a git checkout uses git apply)
+#
+#
+# .. note::
+#
+#     patches are applied from the ?? subdirectory
+#
+#
+# .. code-block:: cmake
+#
+#     include(cmake/PythonApplyPatches.cmake)
+
+
 
 set(CMAKE_MODULE_PATH
   ${CMAKE_CURRENT_LIST_DIR}
