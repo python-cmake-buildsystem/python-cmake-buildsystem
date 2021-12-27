@@ -28,36 +28,25 @@ jobs:
 workflows:
     build-and-test:
       jobs:
-        # 3.6.4
+        # 3.6.7
         - build-test-python:
-            name: python-3.6.4-x64
-            python_version: 3.6.4
+            name: python-3.6.7-x64
+            python_version: 3.6.7
             python_arch: x64
 
         - build-test-python:
-            name: python-3.6.4-x86
-            python_version: 3.6.4
+            name: python-3.6.7-x86
+            python_version: 3.6.7
             python_arch: x86
 
-        # 3.5.5
+        # 2.7.15
         - build-test-python:
-            name: python-3.5.5-x64
-            python_version: 3.5.5
+            name: python-2.7.15-x64
+            python_version: 2.7.15
             python_arch: x64
 
         - build-test-python:
-            name: python-3.5.5-x86
-            python_version: 3.5.5
-            python_arch: x86
-
-        # 3.5.5
-        - build-test-python:
-            name: python-2.7.14-x64
-            python_version: 2.7.14
-            python_arch: x64
-
-        - build-test-python:
-            name: python-2.7.14-x86
-            python_version: 2.7.14
+            name: python-2.7.15-x86
+            python_version: 2.7.15
             python_arch: x86
 
