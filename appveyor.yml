@@ -50,54 +50,6 @@ environment:
     GENERATOR: Visual Studio 9 2008
     PLATFORM: Win32
 
-  - PY_VERSION: 2.7.14
-    GENERATOR: Visual Studio 9 2008
-    PLATFORM: Win32
-
-  - PY_VERSION: 2.7.13
-    GENERATOR: Visual Studio 9 2008
-    PLATFORM: Win32
-
-  - PY_VERSION: 2.7.12
-    GENERATOR: Visual Studio 9 2008
-    PLATFORM: Win32
-
-  - PY_VERSION: 2.7.11
-    GENERATOR: Visual Studio 9 2008
-    PLATFORM: Win32
-
-  - PY_VERSION: 2.7.10
-    GENERATOR: Visual Studio 9 2008
-    PLATFORM: Win32
-
-  - PY_VERSION: 2.7.9
-    GENERATOR: Visual Studio 9 2008
-    PLATFORM: Win32
-
-  - PY_VERSION: 2.7.8
-    GENERATOR: Visual Studio 9 2008
-    PLATFORM: Win32
-
-  - PY_VERSION: 2.7.7
-    GENERATOR: Visual Studio 9 2008
-    PLATFORM: Win32
-
-  - PY_VERSION: 2.7.6
-    GENERATOR: Visual Studio 9 2008
-    PLATFORM: Win32
-
-  - PY_VERSION: 2.7.5
-    GENERATOR: Visual Studio 9 2008
-    PLATFORM: Win32
-
-  - PY_VERSION: 2.7.4
-    GENERATOR: Visual Studio 9 2008
-    PLATFORM: Win32
-
-  - PY_VERSION: 2.7.3
-    GENERATOR: Visual Studio 9 2008
-    PLATFORM: Win32
-
 
 install:
   - ps: |
