@@ -15,6 +15,22 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Install Dependencies
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y \
+              libbz2-dev \
+              libdb-dev \
+              libgdbm-compat-dev \
+              libgdbm-dev \
+              liblzma-dev \
+              libncursesw5-dev \
+              libreadline-dev \
+              libsqlite3-dev \
+              libssl-dev \
+              tcl-dev \
+              tk-dev
+      - run:
          name: download dashboard scripts
          command: |
            git clone git://github.com/python-cmake-buildsystem/python-cmake-buildsystem --branch dashboard --depth 1 scripts
