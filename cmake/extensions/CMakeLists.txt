@@ -654,8 +654,13 @@ add_python_extension(_hashlib
 if(ENABLE_HASHLIB AND CMAKE_C_COMPILER_ID MATCHES GNU)
     set_property(SOURCE ${SRC_DIR}/Modules/_hashopenssl.c PROPERTY COMPILE_FLAGS -Wno-deprecated-declarations)
 endif()
+# lzma module was introduced in Python 3.3
+set(is_py33_or_greater 0)
+if(IS_PY3 AND PY_VERSION_MINOR VERSION_GREATER 2)
+  set(is_py33_or_greater 1)
+endif()
 add_python_extension(_lzma
-    REQUIRES LZMA_INCLUDE_PATH LZMA_LIBRARY
+    REQUIRES LZMA_INCLUDE_PATH LZMA_LIBRARY is_py33_or_greater
     SOURCES _lzmamodule.c
     DEFINITIONS MODULE_NAME="lzma" LZMA_API_STATIC=1
     INCLUDEDIRS ${LZMA_INCLUDE_PATH}

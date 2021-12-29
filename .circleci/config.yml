@@ -1,0 +1,118 @@
+version: 2.1
+
+orbs:
+  win: circleci/windows@2.4
+
+jobs:
+  build-test-python:
+    parameters:
+      python_version:
+        description: "Python version specified as X.Y.Z"
+        type: string
+      python_arch:
+        description: "Python arch specified as x64 or x86"
+        type: string
+    working_directory: /work
+    docker:
+      - image: dockcross/linux-<< parameters.python_arch >>
+    steps:
+      - checkout
+      - run:
+          name: Install Dependencies
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y \
+              libbz2-dev \
+              libdb-dev \
+              libgdbm-compat-dev \
+              libgdbm-dev \
+              liblzma-dev \
+              libncursesw5-dev \
+              libreadline-dev \
+              libsqlite3-dev \
+              libssl-dev \
+              tcl-dev \
+              tk-dev
+      - run:
+         name: download dashboard scripts
+         command: |
+           git clone git://github.com/python-cmake-buildsystem/python-cmake-buildsystem --branch dashboard --depth 1 scripts
+      - run:
+         name: build and test
+         command: |
+           ctest --timeout 360 -S /work/scripts/circle_dashboard.cmake -VV
+         environment:
+           PY_VERSION: << parameters.python_version >>
+
+  build-test-python-win:
+    parameters:
+      python_version:
+        description: "Python version specified as X.Y.Z"
+        type: string
+      python_arch:
+        description: "Python arch specified as x64 or Win32"
+        type: string
+      generator:
+        description: "CMake generator"
+        type: string
+    executor:
+      name: win/default
+      shell: powershell.exe
+    working_directory: C:/Users/circleci/project/src
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            choco install --no-progress cmake
+            if (-not $?) { throw "Failed to install CMake" }
+      - run:
+         name: download dashboard scripts
+         command: |
+           git clone git://github.com/python-cmake-buildsystem/python-cmake-buildsystem --branch dashboard --depth 1 ../scripts
+      - run:
+         name: build and test
+         command: |
+           $Env:PATH += ";C:\Program Files\CMake\bin"
+           ctest -C $Env:CONFIGURATION -S C:/Users/circleci/project/scripts/circle_win_dashboard.cmake -VV
+         environment:
+           PY_VERSION: << parameters.python_version >>
+           CONFIGURATION: Release
+           GENERATOR: << parameters.generator >>
+           PLATFORM: << parameters.python_arch >>
+
+workflows:
+    build-and-test:
+      jobs:
+        # 3.6.7
+        - build-test-python:
+            name: python-3.6.7-x64
+            python_version: 3.6.7
+            python_arch: x64
+
+        - build-test-python:
+            name: python-3.6.7-x86
+            python_version: 3.6.7
+            python_arch: x86
+
+        # 2.7.15
+        - build-test-python:
+            name: python-2.7.15-x64
+            python_version: 2.7.15
+            python_arch: x64
+
+        - build-test-python:
+            name: python-2.7.15-x86
+            python_version: 2.7.15
+            python_arch: x86
+
+
+    build-and-test-win:
+      jobs:
+        # 3.6.7
+        - build-test-python-win:
+            name: python-3.6.7-win-x64
+            python_version: 3.6.7
+            python_arch: x64
+            generator: "Visual Studio 16 2019"
+
