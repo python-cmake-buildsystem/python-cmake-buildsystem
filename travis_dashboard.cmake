@@ -1,29 +1,40 @@
 # Client maintainer: jchris.fillionr@kitware.com
-execute_process(COMMAND hostname OUTPUT_VARIABLE hostname OUTPUT_STRIP_TRAILING_WHITESPACE)
-set(CTEST_SITE "${hostname}")
-set(CTEST_DASHBOARD_ROOT $ENV{TRAVIS_BUILD_DIR}/..)
-get_filename_component(compiler_name $ENV{CC} NAME)
-string(SUBSTRING $ENV{TRAVIS_COMMIT} 0 7 commit)
+
+# Sanity checks
+foreach(name IN ITEMS
+  DEFAULT_DOCKCROSS_IMAGE
+  PY_VERSION
+  )
+  if("$ENV{${name}}" STREQUAL "")
+    message(FATAL_ERROR "Environment variable '${name}' is not set")
+  endif()
+endforeach()
 
 # Extract major/minor/patch python versions
-if("$ENV{PY_VERSION}" STREQUAL "")
-  message(FATAL_ERROR "Environment variable 'PY_VERSION' is not set")
-endif()
 set(PY_VERSION $ENV{PY_VERSION})
 string(REGEX MATCH "([0-9])\\.([0-9]+)\\.([0-9]+)" _match ${PY_VERSION})
 if(_match STREQUAL "")
   message(FATAL_ERROR "Environment variable 'PY_VERSION' is improperly set.")
 endif()
 
+execute_process(COMMAND hostname OUTPUT_VARIABLE hostname OUTPUT_STRIP_TRAILING_WHITESPACE)
+set(CTEST_SITE "${hostname}")
+set(CTEST_DASHBOARD_ROOT $ENV{TRAVIS_BUILD_DIR}/..)
+
+set(CTEST_CONFIGURATION_TYPE Release)
+set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
+
+set(CTEST_BUILD_FLAGS "-j4")
+set(CTEST_TEST_ARGS PARALLEL_LEVEL 8)
+
+# Build name
+get_filename_component(compiler_name $ENV{CC} NAME)
+string(SUBSTRING $ENV{TRAVIS_COMMIT} 0 7 commit)
 set(what "#$ENV{TRAVIS_PULL_REQUEST}")
 if($ENV{TRAVIS_PULL_REQUEST} STREQUAL "false")
   set(what "$ENV{TRAVIS_BRANCH}")
 endif()
 set(CTEST_BUILD_NAME "${PY_VERSION}-$ENV{TRAVIS_OS_NAME}-${compiler_name}_${what}_${commit}")
-set(CTEST_CONFIGURATION_TYPE Release)
-set(CTEST_CMAKE_GENERATOR "Unix Makefiles")
-set(CTEST_BUILD_FLAGS "-j4")
-set(CTEST_TEST_ARGS PARALLEL_LEVEL 8)
 
 set(dashboard_model Experimental)
 set(dashboard_track Travis-CI)
