@@ -17,7 +17,6 @@ Makefile
 .*
 !.gitattributes
 !.circleci
-!.circleci-matrix.yml
 !.travis.yml
 
 # Ignore all back-up files...
