@@ -150,9 +150,12 @@ set(nis_LIBRARIES ${HAVE_LIBNSL})
 set(nis_INCLUDEDIRS )
 if(TIRPC_LIBRARY AND TIRPC_RPC_INCLUDE_PATH)
     # if rpc.h is provided by libtirpc (instead of being provided by glibc). See python/cpython#5137
-    list(APPEND nis_REQUIRES )
     list(APPEND nis_LIBRARIES ${TIRPC_LIBRARY})
     list(APPEND nis_INCLUDEDIRS ${TIRPC_RPC_INCLUDE_PATH}/../)
+    if(WITH_STATIC_DEPENDENCIES AND TIRPC_LIBRARY_STATIC_DEPENDENCY_REQUIRED)
+        list(APPEND nis_REQUIRES TIRPC_STATIC_LIBRARIES)
+        list(APPEND nis_LIBRARIES ${TIRPC_STATIC_LIBRARIES})
+    endif()
 endif()
 add_python_extension(nis
     REQUIRES ${nis_REQUIRES}
