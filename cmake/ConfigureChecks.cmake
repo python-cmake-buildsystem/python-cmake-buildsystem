@@ -2432,6 +2432,80 @@ if(ZLIB_LIBRARY)
   cmake_pop_check_state()
 endif()
 
+# Check if tirpc static library and its dependencies can be linked statically
+# and set TIRPC_LIBRARY_STATIC_DEPENDENCY_REQUIRED and TIRPC_STATIC_LIBRARIES.
+#
+# If the tirpc static library is built with the gssapi feature, and no gssapi_krb5
+# static library can be found, the python extensions depending on tirpc should be
+# disabled
+#
+# Indeed, minimal support for static linking in krb5 was only re-introduced starting
+# with krb5-1.19.2 (see [1]) which may not yet be available (see [2]).
+#
+# [1] https://github.com/krb5/krb5/commit/af44e8dee9b5bfffb05eb5a9b89c79c02ab7c2ff
+# [2] https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=439039
+
+set(_tirpc_library_static_dependencies_required 0)
+set(_tirpc_static_libraries)
+
+if(WITH_STATIC_DEPENDENCIES AND TIRPC_LIBRARY)
+
+  # Attempt to find gssapi_krb5 static library
+  set(__CURRENT_CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES})
+  set(CMAKE_FIND_LIBRARY_SUFFIXES "${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  find_library(GSSAPI_KRB5_STATIC_LIBRARY gssapi_krb5)
+  set(CMAKE_FIND_LIBRARY_SUFFIXES ${__CURRENT_CMAKE_FIND_LIBRARY_SUFFIXES})
+
+  # Attempt to find gssapi_krb5 shared library
+  set(__CURRENT_CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_FIND_LIBRARY_SUFFIXES})
+  if(NOT ${CMAKE_IMPORT_LIBRARY_SUFFIX} STREQUAL "")
+    set(CMAKE_FIND_LIBRARY_SUFFIXES "${CMAKE_IMPORT_LIBRARY_SUFFIX}")
+  else()
+    set(CMAKE_FIND_LIBRARY_SUFFIXES "${CMAKE_SHARED_LIBRARY_SUFFIX}")
+  endif()
+  find_library(GSSAPI_KRB5_SHARED_LIBRARY gssapi_krb5)
+  set(CMAKE_FIND_LIBRARY_SUFFIXES ${__CURRENT_CMAKE_FIND_LIBRARY_SUFFIXES})
+
+  if(GSSAPI_KRB5_SHARED_LIBRARY)
+    # Attempt to test if tirpc library is built with the krb5 gssapi feature
+    # by looking for the symbol "authgss_create" linking against the corresponding
+    # shared library.
+
+    # Save variables
+    set(__CURRENT_CMAKE_EXE_LINKER_FLAGS ${CMAKE_EXE_LINKER_FLAGS})
+    cmake_push_check_state()
+
+    list(APPEND CMAKE_REQUIRED_LIBRARIES ${TIRPC_LIBRARY})
+    add_cond(CMAKE_REQUIRED_LIBRARIES  CMAKE_USE_PTHREADS_INIT  "${CMAKE_THREAD_LIBS_INIT}")
+    add_cond(CMAKE_REQUIRED_LIBRARIES  GSSAPI_KRB5_SHARED_LIBRARY  "${GSSAPI_KRB5_SHARED_LIBRARY}")
+
+    # If any, remove "-static" flags
+    string(REPLACE "-static" "" _cmake_exe_linker_flags "${CMAKE_EXE_LINKER_FLAGS}")
+    set(CMAKE_EXE_LINKER_FLAGS ${_cmake_exe_linker_flags} CACHE STRING "" FORCE)
+
+    check_symbol_exists("authgss_create" "tirpc/rpc/auth_gss.h" TIRPC_WITH_AUTHGSS_CREATE)
+
+    # Restore variables
+    cmake_pop_check_state()
+    set(CMAKE_EXE_LINKER_FLAGS ${__CURRENT_CMAKE_EXE_LINKER_FLAGS} CACHE STRING "Flags used by the linker during all build types." FORCE)
+
+    if(TIRPC_WITH_AUTHGSS_CREATE)
+      set(_tirpc_library_static_dependencies_required 1)
+      set(_tirpc_static_libraries ${GSSAPI_KRB5_STATIC_LIBRARY})
+    endif()
+
+  endif()
+
+endif()
+if(NOT DEFINED TIRPC_LIBRARY_STATIC_DEPENDENCY_REQUIRED)
+  set(TIRPC_LIBRARY_STATIC_DEPENDENCY_REQUIRED ${_tirpc_library_static_dependencies_required} CACHE BOOL "")
+  message(STATUS "Setting TIRPC_LIBRARY_STATIC_DEPENDENCY_REQUIRED to ${TIRPC_LIBRARY_STATIC_DEPENDENCY_REQUIRED}")
+endif()
+if(TIRPC_LIBRARY_STATIC_DEPENDENCY_REQUIRED AND NOT DEFINED TIRPC_STATIC_LIBRARIES)
+  set(TIRPC_STATIC_LIBRARIES ${_tirpc_static_libraries} CACHE BOOL "")
+  message(STATUS "Setting TIRPC_STATIC_LIBRARIES to ${TIRPC_STATIC_LIBRARIES}")
+endif()
+
 ############################################
 
 if(IS_PY3)
