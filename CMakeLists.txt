@@ -149,6 +149,9 @@ if(UNIX)
 
             set(BUILD_LIBPYTHON_SHARED OFF CACHE BOOL "Forced to OFF${_reason}" FORCE)
             message(STATUS "Setting BUILD_LIBPYTHON_SHARED to OFF${_reason}")
+
+            append_if_absent(CMAKE_EXE_LINKER_FLAGS "-static")
+            message(STATUS "Appending -static to CMAKE_EXE_LINKER_FLAGS${_reason}")
         endif()
     endif()
 else()
