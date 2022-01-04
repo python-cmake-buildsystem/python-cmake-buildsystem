@@ -482,11 +482,9 @@ function(add_libpython name type install component)
         RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR}
         INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/${LIBPYTHON_LIBDIR}
     )
-    if(HAVE_POSITION_INDEPENDENT_CODE)
-        set_target_properties(${name} PROPERTIES
-            POSITION_INDEPENDENT_CODE ON
-        )
-    endif()
+    set_target_properties(${name} PROPERTIES
+        POSITION_INDEPENDENT_CODE ON
+    )
 
     # Export target
     set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS ${name})
@@ -590,13 +588,10 @@ endif()
 
 if(NOT BUILD_LIBPYTHON_SHARED)
     add_libpython(libpython-static STATIC ${INSTALL_DEVELOPMENT} Development)
-    if(HAVE_TARGET_COMPILE_DEFINITIONS)
-        target_compile_definitions(libpython-static PUBLIC Py_NO_ENABLE_SHARED)
-    else()
-        set_target_properties(libpython-static PROPERTIES
-            COMPILE_DEFINITIONS Py_NO_ENABLE_SHARED
-        )
-    endif()
+    target_compile_definitions(libpython-static
+        PUBLIC
+            Py_NO_ENABLE_SHARED
+    )
     set_target_properties(libpython-static PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_STATIC_ARCHIVEDIR}
     )

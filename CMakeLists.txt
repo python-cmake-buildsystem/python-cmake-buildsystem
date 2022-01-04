@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.6)
+cmake_minimum_required(VERSION 3.13.5)
 
 set(PYTHON_VERSION "3.6.7" CACHE STRING "The version of Python to build.")
 
@@ -25,12 +25,11 @@ endif()
 
 project(Python C ASM)
 
-if(POLICY CMP0042)
-    cmake_policy(SET CMP0042 OLD)
+if(NOT DEFINED CMAKE_MACOSX_RPATH)
+  set(CMAKE_MACOSX_RPATH "")
 endif()
-
-if(CMAKE_CROSSCOMPILING)
-    cmake_minimum_required(VERSION 3.3) # Version introducing CROSSCOMPILING_EMULATOR
+if(NOT DEFINED CMAKE_BUILD_WITH_INSTALL_NAME_DIR)
+  set(CMAKE_BUILD_WITH_INSTALL_NAME_DIR ON)
 endif()
 
 # Include helper functions
@@ -132,13 +131,6 @@ option(WITH_THREAD "Compile in rudimentary thread support" ON)
 if(UNIX)
     option(WITH_STATIC_DEPENDENCIES "Restrict extensions and external dependencies to static libraries" OFF)
     if(WITH_STATIC_DEPENDENCIES)
-        if(NOT POLICY CMP0065)
-            set(_reason " because option supported only with CMake >= 3.4. Current CMAKE_VERSION [${CMAKE_VERSION}]")
-            set(WITH_STATIC_DEPENDENCIES OFF CACHE BOOL "Forced to OFF${_reason}" FORCE)
-            message(WARNING "Forcing WITH_STATIC_DEPENDENCIES to OFF${_reason}")
-        else()
-            cmake_policy(SET CMP0065 NEW)
-
             set(_reason " because of WITH_STATIC_DEPENDENCIES=ON")
 
             set(CMAKE_FIND_LIBRARY_SUFFIXES ${CMAKE_STATIC_LIBRARY_SUFFIX})
@@ -152,7 +144,6 @@ if(UNIX)
 
             append_if_absent(CMAKE_EXE_LINKER_FLAGS "-static")
             message(STATUS "Appending -static to CMAKE_EXE_LINKER_FLAGS${_reason}")
-        endif()
     endif()
 else()
     set(WITH_STATIC_DEPENDENCIES 0)
@@ -436,10 +427,6 @@ if(MSVC)
     set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" CACHE STRING "Flags used by the compiler during release builds" FORCE)
 endif()
 
-if(NOT HAVE_POSITION_INDEPENDENT_CODE AND NOT WIN32)
-    append_if_absent(CMAKE_C_FLAGS "-fPIC")
-endif()
-
 # Useful additional variables that extensions can use.
 if(CMAKE_SYSTEM MATCHES Linux)
     set(LINUX ON)
@@ -634,8 +621,7 @@ if(BUILD_TESTING)
     endforeach()
 endif()
 
-
-if(HAVE_CONFIGURE_PACKAGE_CONFIG_FILE AND HAVE_WRITE_BASIC_PACKAGE_VERSION_FILE)
+include(CMakePackageConfigHelpers)
 
 # Configure 'PythonConfig.cmake' for a build tree
 set(CONFIG_DIR_CONFIG ${CONFIG_BUILD_DIR})
@@ -686,8 +672,6 @@ if(INSTALL_DEVELOPMENT)
         FILES ${python_install_config} ${python_config_version}
         DESTINATION ${CONFIG_INSTALL_DIR} COMPONENT Development
     )
-endif()
-
 endif()
 
 # Install License
