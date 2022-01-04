@@ -2480,7 +2480,10 @@ if(WITH_STATIC_DEPENDENCIES AND TIRPC_LIBRARY)
       set(_tirpc_library_static_dependencies_required 1)
       set(_tirpc_static_libraries ${GSSAPI_KRB5_STATIC_LIBRARY})
     endif()
-
+  else()
+    # If shared library can't be found, we assume the static library is required.
+    set(_tirpc_library_static_dependencies_required 1)
+    set(_tirpc_static_libraries ${GSSAPI_KRB5_STATIC_LIBRARY})
   endif()
 
 endif()
