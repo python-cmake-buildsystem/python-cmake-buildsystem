@@ -33,7 +33,6 @@ if(NOT DEFINED CMAKE_BUILD_WITH_INSTALL_NAME_DIR)
 endif()
 
 # Include helper functions
-include(cmake/CMakeChecks.cmake)
 include(cmake/Extensions.cmake)
 include(CMakeDependentOption)
 include(CMakeParseArguments)
