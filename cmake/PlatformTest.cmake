@@ -1,10 +1,4 @@
-if(CMAKE_VERSION VERSION_GREATER 2.8.7
-  AND NOT POLICY CMP0045 # XXX ignore warning 'get_target_property() called with non-existent target'
-  )
-  include(CMakeExpandImportedTargets)
-else()
-  include(${PROJECT_SOURCE_DIR}/cmake/CMakeExpandImportedTargets.cmake)
-endif()
+include(CMakeExpandImportedTargets)
 
 macro(python_platform_test var description srcfile invert)
   if(NOT DEFINED "${var}_COMPILED")
