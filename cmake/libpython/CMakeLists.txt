@@ -62,6 +62,7 @@ elseif(WIN32)
         PROPERTY COMPILE_DEFINITIONS
             "LANDMARK=${_wide_char_modifier}\"${PYTHONHOME_ESCAPED}\\\\os.py\""
             "PYTHONPATH=${_wide_char_modifier}\"${PYTHONPATH}\""
+            "PY3_DLLNAME=${_wide_char_modifier}\"python3$<$<CONFIG:Debug>:_d>\""
     )
 endif()
 

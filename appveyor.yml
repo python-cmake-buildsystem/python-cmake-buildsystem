@@ -14,11 +14,11 @@ configuration:
 
 environment:
   matrix:
-  - PY_VERSION: 3.6.7
+  - PY_VERSION: 3.6.15
     GENERATOR: Visual Studio 14 2015
     PLATFORM: x64
 
-  - PY_VERSION: 3.6.7
+  - PY_VERSION: 3.6.15
     GENERATOR: Visual Studio 14 2015
     PLATFORM: Win32
     
