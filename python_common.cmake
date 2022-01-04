@@ -88,7 +88,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #=============================================================================
 
-cmake_minimum_required(VERSION 2.8.6 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.13.5)
 
 set(CTEST_PROJECT_NAME CPython)
 set(dashboard_user_home "$ENV{HOME}")
