@@ -163,10 +163,8 @@ function(add_python_extension name)
         # Extensions cannot be built against a static libpython on windows
     else()
 
-        # XXX Uncomment when CMake >= 2.8.8 is required
-        #add_library(${target_name} SHARED ${absolute_sources})
-        #set_target_properties(${target_name} PROPERTIES
-        #    INCLUDE_DIRECTORIES ${ADD_PYTHON_EXTENSION_INCLUDEDIRS})
+        add_library(${target_name} SHARED ${absolute_sources})
+        target_include_directories(${target_name} PUBLIC "${ADD_PYTHON_EXTENSION_INCLUDEDIRS}")
 
         if(WIN32)
             string(REGEX MATCH "Py_LIMITED_API" require_limited_api "${ADD_PYTHON_EXTENSION_DEFINITIONS}")
@@ -177,20 +175,7 @@ function(add_python_extension name)
             endif()
         endif()
 
-        # XXX When CMake >= 2.8.8 is required, remove the section below
-        #     configuring and using 'add_python_extension_CMakeLists.txt.in'.
-        file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${target_name}-src)
-        configure_file(
-            ${PROJECT_SOURCE_DIR}/cmake/add_python_extension_CMakeLists.txt.in
-            ${CMAKE_CURRENT_BINARY_DIR}/${target_name}-src/CMakeLists.txt
-        )
-        add_subdirectory(
-            ${CMAKE_CURRENT_BINARY_DIR}/${target_name}-src
-            ${CMAKE_CURRENT_BINARY_DIR}/${target_name}
-        )
-
-        # XXX Uncomment when CMake >= 2.8.8 is required
-        #target_link_libraries(${target_name} ${ADD_PYTHON_EXTENSION_LIBRARIES})
+        target_link_libraries(${target_name} ${ADD_PYTHON_EXTENSION_LIBRARIES})
 
         if(WIN32)
             #list(APPEND ADD_PYTHON_EXTENSION_DEFINITIONS Py_NO_ENABLE_SHARED)
@@ -228,13 +213,12 @@ function(add_python_extension name)
                 COMPILE_DEFINITIONS "${ADD_PYTHON_EXTENSION_DEFINITIONS}")
         endif()
 
-        # XXX Uncomment when CMake >= 2.8.8 is required
-        #if(NOT ADD_PYTHON_EXTENSION_NO_INSTALL)
-        #    install(TARGETS ${target_name}
-        #            ARCHIVE DESTINATION ${ARCHIVEDIR}
-        #            LIBRARY DESTINATION ${EXTENSION_INSTALL_DIR}
-        #            RUNTIME DESTINATION ${EXTENSION_INSTALL_DIR})
-        #endif()
+        if(NOT ADD_PYTHON_EXTENSION_NO_INSTALL)
+            install(TARGETS ${target_name}
+                    ARCHIVE DESTINATION ${ARCHIVEDIR}
+                    LIBRARY DESTINATION ${EXTENSION_INSTALL_DIR}
+                    RUNTIME DESTINATION ${EXTENSION_INSTALL_DIR})
+        endif()
     endif()
 endfunction()
 
