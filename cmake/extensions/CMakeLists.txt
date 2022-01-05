@@ -107,7 +107,7 @@ add_python_extension(xxsubtype BUILTIN REQUIRES IS_PY3 SOURCES xxsubtype.c)
 add_python_extension(zipimport ALWAYS_BUILTIN REQUIRES IS_PY3 SOURCES zipimport.c)
 
 # Python 3.6
-if(PY_VERSION VERSION_EQUAL "3.6" OR PY_VERSION VERSION_GREATER "3.6")
+if(PY_VERSION VERSION_GREATER_EQUAL "3.6")
     # asyncio speedups
     add_python_extension(_asyncio BUILTIN SOURCES _asynciomodule.c)
     # blake module
