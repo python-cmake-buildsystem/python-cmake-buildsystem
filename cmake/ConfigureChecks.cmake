@@ -96,9 +96,9 @@ endif()
 
 find_path(SQLITE3_INCLUDE_PATH sqlite3.h)
 find_library(SQLITE3_LIBRARY sqlite3)
-
 find_path(TIRPC_RPC_INCLUDE_PATH rpc.h PATHS "/usr/include/tirpc/rpc")
 find_library(TIRPC_LIBRARY tirpc)
+find_library(UUID_LIBRARY uuid)
 
 if(WIN32)
   set(M_LIBRARIES )
@@ -224,6 +224,10 @@ add_cond(LINUX_CAN_HEADERS HAVE_SYS_SOCKET_H sys/socket.h)
 check_include_files("${LINUX_CAN_HEADERS};linux/can.h" HAVE_LINUX_CAN_H)
 check_include_files("${LINUX_CAN_HEADERS};linux/can/bcm.h" HAVE_LINUX_CAN_BCM_H)
 check_include_files("${LINUX_CAN_HEADERS};linux/can/raw.h" HAVE_LINUX_CAN_RAW_H)
+
+set(LINUX_VM_SOCKETS_HEADERS)
+add_cond(LINUX_VM_SOCKETS_HEADERS HAVE_SYS_SOCKET_H sys/socket.h)
+check_include_files("${LINUX_VM_SOCKETS_HEADERS};linux/vm_sockets.h" HAVE_LINUX_VM_SOCKETS_H)
 endif()
 
 check_include_files(memory.h HAVE_MEMORY_H) # libffi and cpython
@@ -292,6 +296,7 @@ check_include_files(stdarg.h HAVE_STDARG_PROTOTYPES)
 if(IS_PY3)
 check_include_files(endian.h HAVE_ENDIAN_H)
 check_include_files(sched.h HAVE_SCHED_H)
+check_include_files(linux/random.h HAVE_LINUX_RANDOM_H)
 check_include_files(sys/devpoll.h HAVE_SYS_DEVPOLL_H)
 check_include_files(sys/endian.h HAVE_SYS_ENDIAN_H)
 check_include_files(sys/ioctl.h HAVE_SYS_IOCTL_H)
@@ -378,7 +383,7 @@ if(APPLE)
   find_library(HAVE_LIBSYSTEMCONFIGURATION SystemConfiguration)
 endif()
 
-if(WITH_THREAD)
+if(WITH_THREAD OR PY_VERSION VERSION_GREATER_EQUAL "3.7")
   set(CMAKE_HAVE_PTHREAD_H ${HAVE_PTHREAD_H}) # Skip checking for header a second time.
   find_package(Threads)
   if(CMAKE_HAVE_LIBC_CREATE)
@@ -641,6 +646,7 @@ if(APPLE)
   set(WITH_DYLD 1)
   set(WITH_NEXT_FRAMEWORK 0) # TODO: See --enable-framework option.
 endif()
+set(PYTHONFRAMEWORK "")
 
 if(HAVE_LONG_LONG)
   if(SIZEOF_OFF_T GREATER SIZEOF_LONG
@@ -870,7 +876,10 @@ check_symbol_exists(openat       "${CFG_HEADERS}" HAVE_OPENAT)
 check_symbol_exists(pipe2        "${CFG_HEADERS}" HAVE_PIPE2)
 check_symbol_exists(posix_fadvise          "${CFG_HEADERS}" HAVE_POSIX_FADVISE)
 check_symbol_exists(posix_fallocate        "${CFG_HEADERS}" HAVE_POSIX_FALLOCATE)
+check_symbol_exists(posix_spawn            "${CFG_HEADERS}" HAVE_POSIX_SPAWN)
 check_symbol_exists(pread                  "${CFG_HEADERS}" HAVE_PREAD)
+check_symbol_exists(preadv                 "${CFG_HEADERS}" HAVE_PREADV)
+check_symbol_exists(preadv2                "${CFG_HEADERS}" HAVE_PREADV2)
 check_symbol_exists(prlimit                "${CFG_HEADERS}" HAVE_PRLIMIT)
 
 cmake_push_check_state()
@@ -879,6 +888,8 @@ check_symbol_exists(pthread_kill           "${CFG_HEADERS}" HAVE_PTHREAD_KILL)
 cmake_pop_check_state()
 
 check_symbol_exists(pwrite                 "${CFG_HEADERS}" HAVE_PWRITE)
+check_symbol_exists(pwritev                "${CFG_HEADERS}" HAVE_PWRITEV)
+check_symbol_exists(pwritev2               "${CFG_HEADERS}" HAVE_PWRITEV2)
 check_symbol_exists(readlinkat             "${CFG_HEADERS}" HAVE_READLINKAT)
 check_symbol_exists(readv                  "${CFG_HEADERS}" HAVE_READV)
 check_symbol_exists(renameat               "${CFG_HEADERS}" HAVE_RENAMEAT)
@@ -920,6 +931,8 @@ check_struct_has_member("struct stat" st_rdev    "${CFG_HEADERS}"    HAVE_STRUCT
 if(IS_PY3)
 check_struct_has_member("struct passwd" pw_gecos  "${CFG_HEADERS}" HAVE_STRUCT_PASSWD_PW_GECOS)
 check_struct_has_member("struct passwd" pw_passwd "${CFG_HEADERS}" HAVE_STRUCT_PASSWD_PW_PASSWD)
+
+check_struct_has_member("struct siginfo_t" si_band "${CFG_HEADERS}" HAVE_SIGINFO_T_SI_BAND)
 endif()
 
 #######################################################################
@@ -1219,6 +1232,67 @@ python_platform_test_run(
   ${check_src}
   INVERT
   )
+
+#######################################################################
+#
+# Check for crypt functions
+#
+#######################################################################
+
+# We search for both crypt and crypt_r as one or the other may be defined
+# This gets us our -lcrypt in CMAKE_REQUIRED_LIBRARIES when required on
+# the target platform.
+
+cmake_push_check_state()
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_lib_crypt_crypt.c)
+file(WRITE ${check_src} "/* Override any GCC internal prototype to avoid an error.
+Use char because int might match the return type of a GCC
+builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern \"C\"
+#endif
+char crypt ();
+int main () { return crypt (); }
+")
+list(APPEND CMAKE_REQUIRED_LIBRARIES crypt)
+python_platform_test(
+  HAVE_CRYPT
+  "Checking for crypt in -lcrypt"
+  ${check_src}
+  DIRECT
+  )
+cmake_pop_check_state()
+
+cmake_push_check_state()
+set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_lib_crypt_crypt_r.c)
+file(WRITE ${check_src} "/* Override any GCC internal prototype to avoid an error.
+Use char because int might match the return type of a GCC
+builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern \"C\"
+#endif
+char crypt_r ();
+int main () { return crypt_r (); }
+")
+list(APPEND CMAKE_REQUIRED_LIBRARIES crypt)
+python_platform_test(
+  HAVE_CRYPT
+  "Checking for crypt_r in -lcrypt"
+  ${check_src}
+  DIRECT
+  )
+cmake_pop_check_state()
+
+add_cond(CMAKE_REQUIRED_LIBRARIES HAVE_CRYPT crypt)
+
+if(HAVE_CRYPT_H)
+  check_c_source_compiles("
+#define _GNU_SOURCE  /* Required for crypt_r()'s prototype in glibc. */
+#include <crypt.h>
+int main(void){
+  struct crypt_data d;
+  char *r = crypt_r(\"\", \"\", &d); }" HAVE_CRYPT_R)
+endif()
 
 #######################################################################
 #
@@ -1531,6 +1605,59 @@ endif()
 
 endif()
 
+if(PY_VERSION VERSION_GREATER_EQUAL "3.7")
+set(PY_COERCE_C_LOCALE ${WITH_C_LOCALE_COERCION})
+endif()
+
+#######################################################################
+#
+# uuid tests
+#
+#######################################################################
+
+if(PY_VERSION VERSION_GREATER_EQUAL "3.7")
+
+cmake_push_check_state()
+set(CFG_HEADERS_SAVE ${CFG_HEADERS})
+
+check_include_files(uuid/uuid.h HAVE_UUID_UUID_H)
+check_include_files(uuid.h HAVE_UUID_H)
+
+add_cond(CFG_HEADERS HAVE_UUID_UUID_H uuid/uuid.h)
+add_cond(CFG_HEADERS HAVE_UUID_H uuid.h)
+
+add_cond(CMAKE_REQUIRED_LIBRARIES UUID_LIBRARY ${UUID_LIBRARY})
+
+check_symbol_exists(uuid_create "${CFG_HEADERS}" HAVE_UUID_CREATE)
+
+if(HAVE_UUID_H)
+  # Little-endian FreeBSD, OpenBSD and NetBSD needs encoding into an octet
+  # stream in big-endian byte-order
+  check_c_source_compiles("#include <uuid.h>
+int main(void){
+  #ifndef uuid_enc_be
+  uuid_t uuid;
+  unsigned char buf[sizeof(uuid)];
+  uuid_enc_be(buf, &uuid);
+  #endif
+}" HAVE_UUID_ENC_BE)
+endif()
+
+if(HAVE_UUID_UUID_H)
+  check_c_source_compiles("#include <uuid/uuid.h>
+int main(void){
+  #ifndef uuid_generate_time_safe
+  uuid_t out;
+  uuid_generate_time_safe(out);
+  #endif
+}" HAVE_UUID_GENERATE_TIME_SAFE)
+endif()
+
+set(CFG_HEADERS ${CFG_HEADERS_SAVE})
+cmake_pop_check_state()
+
+endif()
+
 #######################################################################
 #
 # networking tests
@@ -1667,6 +1794,7 @@ else()
 endif()
 check_symbol_exists(pthread_sigmask "${CFG_HEADERS}" HAVE_PTHREAD_SIGMASK)
 check_symbol_exists(pthread_atfork "${CFG_HEADERS}" HAVE_PTHREAD_ATFORK)
+check_symbol_exists(pthread_getcpuclockid "${CFG_HEADERS}" HAVE_PTHREAD_GETCPUCLOCKID)
 
 add_cond(CFG_HEADERS  HAVE_SEMAPHORE_H  semaphore.h)
 check_symbol_exists(sem_getvalue "${CFG_HEADERS}" HAVE_SEM_GETVALUE)
@@ -1733,9 +1861,33 @@ python_platform_test_run(
 set(CFG_HEADERS ${CFG_HEADERS_SAVE})
 cmake_pop_check_state()
 
-if(CMAKE_SYSTEM MATCHES BlueGene)
+if(CMAKE_SYSTEM MATCHES BlueGene AND PY_VERSION VERSION_LESS "3.7")
   # Todo: Display message
   set(WITH_THREAD OFF CACHE STRING "System doesn't support multithreading" FORCE)
+endif()
+
+
+#######################################################################
+#
+# ssl tests
+#
+#######################################################################
+
+if(OPENSSL_INCLUDE_DIR AND OPENSSL_LIBRARIES)
+  cmake_push_check_state()
+
+  set(CMAKE_REQUIRED_INCLUDES ${OPENSSL_INCLUDE_DIR})
+  set(CMAKE_REQUIRED_LIBRARIES ${OPENSSL_LIBRARIES})
+
+  # Checking for X509_VERIFY_PARAM_set1_host in libssl
+  check_c_source_compiles("#include <openssl/x509_vfy.h>
+int main(void){
+  X509_VERIFY_PARAM *p = X509_VERIFY_PARAM_new();
+  X509_VERIFY_PARAM_set1_host(p, \"localhost\", 0);
+  X509_VERIFY_PARAM_set1_ip_asc(p, \"127.0.0.1\");
+  X509_VERIFY_PARAM_set_hostflags(p, 0); }" HAVE_X509_VERIFY_PARAM_SET1_HOST)
+
+  cmake_pop_check_state()
 endif()
 
 
@@ -1826,6 +1978,7 @@ if(HAVE_DLFCN_H)
   check_symbol_exists(RTLD_GLOBAL   dlfcn.h HAVE_DECL_RTLD_GLOBAL)
   check_symbol_exists(RTLD_LAZY     dlfcn.h HAVE_DECL_RTLD_LAZY)
   check_symbol_exists(RTLD_LOCAL    dlfcn.h HAVE_DECL_RTLD_LOCAL)
+  check_symbol_exists(RTLD_MEMBER   dlfcn.h HAVE_DECL_RTLD_MEMBER)
   check_symbol_exists(RTLD_NODELETE dlfcn.h HAVE_DECL_RTLD_NODELETE)
   check_symbol_exists(RTLD_NOLOAD   dlfcn.h HAVE_DECL_RTLD_NOLOAD)
   check_symbol_exists(RTLD_NOW      dlfcn.h HAVE_DECL_RTLD_NOW)
@@ -2253,6 +2406,22 @@ python_platform_test_run(
   ${check_src}
   INVERT
   )
+
+# Issue #25658: POSIX hasn't defined that pthread_key_t is compatible with int.
+# This checking will be unnecessary after removing deprecated TLS API.
+# The cast to long int works around a bug in the HP C Compiler
+# version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
+# declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
+# This bug is HP SR number 8606223364.
+if(HAVE_PTHREAD_H)
+  set(CMAKE_EXTRA_INCLUDE_FILES "pthread.h")
+  check_type_size(pthread_key_t SIZEOF_PTHREAD_KEY_T)
+  unset(CMAKE_EXTRA_INCLUDE_FILES)
+
+  if("${SIZEOF_PTHREAD_KEY_T}" STREQUAL "${SIZEOF_INT}")
+    check_c_source_compiles("#include <pthread.h>\n int main(void){pthread_key_t k; k * 1;}" PTHREAD_KEY_T_IS_COMPATIBLE_WITH_INT)
+  endif()
+endif()
 
 endif(IS_PY3)
 

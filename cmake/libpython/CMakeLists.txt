@@ -104,6 +104,11 @@ if(MSVC)
         ${SRC_DIR}/PC/invalid_parameter_handler.c
     )
 endif()
+if(PY_VERSION VERSION_GREATER_EQUAL "3.7")
+    list(APPEND OBJECT3_SOURCES
+        ${SRC_DIR}/Objects/call.c
+    )
+endif()
 
 set(OBJECT_COMMON_SOURCES # Equivalent to OBJECT_OBJS in Makefile.pre
     ${OBJECT${PY_VERSION_MAJOR}_SOURCES}
@@ -182,7 +187,7 @@ elseif(WIN32)
 endif()
 
 set(THREAD_SOURCES )
-if(WITH_THREAD)
+if(WITH_THREAD OR PY_VERSION VERSION_GREATER_EQUAL "3.7")
     list(APPEND THREAD_SOURCES
         ${SRC_DIR}/Python/thread.c
     )
@@ -244,13 +249,26 @@ set(PYTHON_COMMON_SOURCES
     ${SRC_DIR}/Python/pystrcmp.c
     ${SRC_DIR}/Python/Python-ast.c
     ${SRC_DIR}/Python/pythonrun.c
-    ${SRC_DIR}/Python/random.c
     ${SRC_DIR}/Python/structmember.c
     ${SRC_DIR}/Python/symtable.c
     ${SRC_DIR}/Python/sysmodule.c
     ${SRC_DIR}/Python/traceback.c
     ${SRC_DIR}/Python/_warnings.c
 )
+if(PY_VERSION VERSION_GREATER_EQUAL "3.7")
+    list(APPEND PYTHON_COMMON_SOURCES
+        ${SRC_DIR}/Python/ast_opt.c
+        ${SRC_DIR}/Python/ast_unparse.c
+        ${SRC_DIR}/Python/bootstrap_hash.c
+        ${SRC_DIR}/Python/context.c
+        ${SRC_DIR}/Python/hamt.c
+        ${SRC_DIR}/Python/pathconfig.c
+    )
+else()
+    list(APPEND PYTHON_COMMON_SOURCES
+        ${SRC_DIR}/Python/random.c
+    )
+endif()
 if(UNIX)
     list(APPEND PYTHON_COMMON_SOURCES
         ${SRC_DIR}/Python/frozenmain.c
@@ -364,6 +382,12 @@ foreach(ext ${builtin_extensions})
     set(config_entries "${config_entries}    {\"${ext}\", ${init_prefix_${PY_VERSION_MAJOR}}${ext}},\n")
 endforeach()
 
+if(PY_VERSION VERSION_GREATER_EQUAL "3.7")
+    set(PyInit_imp "PyInit__imp")
+else()
+    set(PyInit_imp "PyInit_imp")
+endif()
+
 configure_file(
     ${PROJECT_SOURCE_DIR}/cmake/config_${PY_VERSION_MAJOR}.c.in
     ${PROJECT_BINARY_DIR}/CMakeFiles/config.c
@@ -376,7 +400,7 @@ set(LIBPYTHON_TARGET_LIBRARIES
 if(HAVE_LIBDL)
   list(APPEND LIBPYTHON_TARGET_LIBRARIES ${HAVE_LIBDL})
 endif()
-if(WITH_THREAD)
+if(WITH_THREAD OR PY_VERSION VERSION_GREATER_EQUAL "3.7")
     list(APPEND LIBPYTHON_TARGET_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
 endif()
 if(UNIX)

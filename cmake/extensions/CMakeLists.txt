@@ -34,7 +34,7 @@ add_python_extension(${datetime${PY_VERSION_MAJOR}_NAME} ${WIN32_BUILTIN} REQUIR
 #if(ENABLE_DATETIME AND CMAKE_C_COMPILER_ID MATCHES GNU)
 #    set_property(SOURCE ${SRC_DIR}/Modules/datetimemodule.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
 #endif()
-add_python_extension(_functools ${WIN32_BUILTIN} SOURCES _functoolsmodule.c) # Tools for working with functions and callable objects
+add_python_extension(_functools ${WIN32_BUILTIN} SOURCES _functoolsmodule.c DEFINITIONS Py_BUILD_CORE) # Tools for working with functions and callable objects
 add_python_extension(future_builtins ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES future_builtins.c)
 add_python_extension(_heapq ${WIN32_BUILTIN} SOURCES _heapqmodule.c)
 add_python_extension(_hotshot ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES _hotshot.c)
@@ -53,7 +53,7 @@ if(WIN32 AND EXISTS ${SRC_DIR}/Modules/_io/winconsoleio.c)
         ${SRC_DIR}/Modules/_io/winconsoleio.c
         )
 endif()
-add_python_extension(_io BUILTIN SOURCES ${_io_SOURCES})
+add_python_extension(_io BUILTIN SOURCES ${_io_SOURCES} DEFINITIONS Py_BUILD_CORE)
 
 add_python_extension(itertools ${WIN32_BUILTIN} SOURCES itertoolsmodule.c) # Functions creating iterators for efficient looping
 add_python_extension(_json ${WIN32_BUILTIN} SOURCES _json.c)
@@ -72,8 +72,12 @@ set(thread2_NAME thread)
 set(thread3_NAME _thread)
 set(thread2_SOURCES ${SRC_DIR}/Modules/threadmodule.c)
 set(thread3_SOURCES ${SRC_DIR}/Modules/_threadmodule.c)
-add_python_extension(${thread${PY_VERSION_MAJOR}_NAME} BUILTIN REQUIRES WITH_THREAD SOURCES ${thread${PY_VERSION_MAJOR}_SOURCES})
-add_python_extension(time BUILTIN REQUIRES HAVE_LIBM SOURCES timemodule.c LIBRARIES ${M_LIBRARIES} ${TIMEMODULE_LIB})
+set(thread_REQUIRES)
+if(PY_VERSION VERSION_LESS "3.7")
+  list(APPEND thread_REQUIRES WITH_THREAD)
+endif()
+add_python_extension(${thread${PY_VERSION_MAJOR}_NAME} BUILTIN REQUIRES ${thread_REQUIRES} SOURCES ${thread${PY_VERSION_MAJOR}_SOURCES} DEFINITIONS Py_BUILD_CORE)
+add_python_extension(time BUILTIN REQUIRES HAVE_LIBM SOURCES timemodule.c DEFINITIONS Py_BUILD_CORE LIBRARIES ${M_LIBRARIES} ${TIMEMODULE_LIB})
 add_python_extension(unicodedata SOURCES unicodedata.c)
 
 # Python3
@@ -104,7 +108,7 @@ add_python_extension(xxlimited REQUIRES IS_PY3 BUILD_TESTING
 add_python_extension(xxsubtype BUILTIN REQUIRES IS_PY3 SOURCES xxsubtype.c)
 # The zipimport module is always imported at startup. Having it as a
 # builtin module avoids some bootstrapping problems and reduces overhead.
-add_python_extension(zipimport ALWAYS_BUILTIN REQUIRES IS_PY3 SOURCES zipimport.c)
+add_python_extension(zipimport ALWAYS_BUILTIN REQUIRES IS_PY3 SOURCES zipimport.c DEFINITIONS Py_BUILD_CORE)
 
 # Python 3.6
 if(PY_VERSION VERSION_GREATER_EQUAL "3.6")
@@ -118,6 +122,17 @@ if(PY_VERSION VERSION_GREATER_EQUAL "3.6")
     )
     add_python_extension(_blake2 ${WIN32_BUILTIN} SOURCES ${_blake2_SOURCES})
     add_python_extension(_sha3 ${WIN32_BUILTIN} SOURCES _sha3/sha3module.c)
+endif()
+
+# Python 3.7
+if(PY_VERSION VERSION_GREATER_EQUAL "3.7")
+    add_python_extension(_abc BUILTIN SOURCES _abc.c)
+    add_python_extension(_contextvars BUILTIN SOURCES _contextvarsmodule.c)
+    add_python_extension(_queue BUILTIN SOURCES _queuemodule.c)
+    add_python_extension(_uuid BUILTIN REQUIRES UUID_LIBRARY "HAVE_UUID_H OR HAVE_UUID_UUID_H" SOURCES _uuidmodule.c LIBRARIES ${UUID_LIBRARY})
+    add_python_extension(_xxtestfuzz SOURCES _xxtestfuzz/_xxtestfuzz.c
+                                             _xxtestfuzz/fuzzer.c
+    )
 endif()
 
 # UNIX-only extensions
@@ -143,7 +158,7 @@ add_python_extension(nis
     INCLUDEDIRS ${nis_INCLUDEDIRS}
 )
 
-add_python_extension(posix REQUIRES UNIX BUILTIN SOURCES posixmodule.c)
+add_python_extension(posix REQUIRES UNIX BUILTIN SOURCES posixmodule.c DEFINITIONS Py_BUILD_CORE)
 add_python_extension(pwd REQUIRES UNIX BUILTIN SOURCES pwdmodule.c) # this is needed to find out the user's home dir if $HOME is not set
 add_python_extension(resource REQUIRES UNIX SOURCES resource.c)
 add_python_extension(spwd REQUIRES UNIX HAVE_GETSPNAM HAVE_GETSPENT SOURCES spwdmodule.c)
@@ -207,10 +222,14 @@ if(UNIX)
             _multiprocessing/semaphore.c
         )
     endif()
+    set(_multiprocessing_REQUIRES)
+    if(PY_VERSION VERSION_LESS "3.7")
+      list(APPEND _multiprocessing_REQUIRES WITH_THREAD)
+    endif()
     add_python_extension(_multiprocessing
         SOURCES _multiprocessing/multiprocessing.c
                 ${_multiprocessing${PY_VERSION_MAJOR}_SOURCES}
-        REQUIRES WITH_THREAD
+        REQUIRES ${_multiprocessing_REQUIRES}
     )
 elseif(WIN32)
     set(_multiprocessing2_SOURCES
@@ -303,7 +322,6 @@ if(WIN32)
         )
     endif()
 else()
-    set(_libffi_system_extra_src)
     if(APPLE)
         add_python_extension(_ctypes
             SOURCES ${ctypes_COMMON_SOURCES}
@@ -318,7 +336,7 @@ else()
                         ${SRC_DIR}/Modules/_ctypes/darwin
             DEFINITIONS MACOSX
         )
-    else()
+    elseif(PY_VERSION VERSION_LESS "3.7")
         if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
           set(_libffi_system_extra_src
                 _ctypes/libffi/src/${_libffi_system_dir}/ffi64.c
@@ -350,6 +368,16 @@ else()
                         ${SRC_DIR}/Modules/_ctypes/libffi/include
                         ${INCLUDE_BUILD_DIR}      # For fficonfig.h
                         ${PROJECT_SOURCE_DIR}/cmake # For ffi.h
+        )
+
+    else()
+        find_path(FFI_INCLUDE_DIR ffi.h)
+        find_library(FFI_LIBRARY NAMES ffi libffi)
+        add_python_extension(_ctypes
+            REQUIRES FFI_INCLUDE_DIR FFI_LIBRARY
+            SOURCES ${ctypes_COMMON_SOURCES}
+            INCLUDEDIRS ${FFI_INCLUDE_DIR}
+            LIBRARIES ${FFI_LIBRARY}
         )
     endif()
 endif()
@@ -441,7 +469,7 @@ if(HAVE_GLIBC_MEMMOVE_BUG)
 #    undef_macros.append('_FORTIFY_SOURCE')
 endif()
 
-if(NOT WITH_THREAD)
+if(NOT WITH_THREAD AND PY_VERSION VERSION_LESS "3.7")
     # Faster version without thread local contexts:
     list(APPEND libmpdec_config_${libmpdec_config}
         WITHOUT_THREADS
