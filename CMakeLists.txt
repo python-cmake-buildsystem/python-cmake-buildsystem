@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13.5)
 
-set(PYTHON_VERSION "3.7.7" CACHE STRING "The version of Python to build.")
+set(PYTHON_VERSION "3.7.12" CACHE STRING "The version of Python to build.")
 
 string(REPLACE "." ";" VERSION_LIST ${PYTHON_VERSION})
 list(GET VERSION_LIST 0 PY_VERSION_MAJOR)
@@ -221,6 +221,12 @@ set(_download_3.7.4_md5 "68111671e5b2db4aef7b9ab01bf0f9be")
 set(_download_3.7.5_md5 "1cd071f78ff6d9c7524c95303a3057aa")
 set(_download_3.7.6_md5 "3ef90f064506dd85b4b4ab87a7a83d44")
 set(_download_3.7.7_md5 "d348d978a5387512fbc7d7d52dd3a5ef")
+set(_download_3.7.8_md5 "4d5b16e8c15be38eb0f4b8f04eb68cd0")
+set(_download_3.7.9_md5 "bcd9f22cf531efc6f06ca6b9b2919bd4")
+set(_download_3.7.10_md5 "0b19e34a6dabc4bf15fdcdf9e77e9856")
+set(_download_3.7.11_md5 "a7e66953dba909d395755b3f2e491f6e")
+set(_download_3.7.12_md5 "6fe83678c085a7735a943cf1e4d41c14")
+
 
 set(_extracted_dir "Python-${PY_VERSION}")
 
