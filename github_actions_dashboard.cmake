@@ -41,7 +41,20 @@ set(dashboard_binary_name build)
 set(dashboard_model Experimental)
 set(dashboard_track GitHub-Actions)
 
-set(dashboard_cache "BUILD_LIBPYTHON_SHARED:BOOL=ON
+# Reading initial dashboard cache
+set(_dashboard_cache_path "${CTEST_SCRIPT_DIRECTORY}/initial-dashboard-cache.txt")
+set(_msg "Looking for ${_dashboard_cache_path}")
+message(STATUS "${_msg}")
+if(EXISTS "${_dashboard_cache_path}")
+  message(STATUS "${_msg} - found")
+  file(READ "${_dashboard_cache_path}" dashboard_cache)
+else()
+  message(STATUS "${_msg} - not found")
+  set(dashboard_cache "")
+endif()
+
+set(dashboard_cache "${dashboard_cache}
+BUILD_LIBPYTHON_SHARED:BOOL=ON
 PYTHON_VERSION:STRING=${PY_VERSION}
 ")
 
