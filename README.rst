@@ -55,7 +55,7 @@ How to use this buildsystem:
 
 .. note::
 
-  By default, the build system will download the python 3.7.12 source from
+  By default, the build system will download the python 3.8.5 source from
   http://www.python.org/ftp/python/
 
 
@@ -68,7 +68,7 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
 
 ::
 
-  PYTHON_VERSION=major.minor.patch (defaults to 3.7.12)
+  PYTHON_VERSION=major.minor.patch (defaults to 3.8.5)
     The version of Python to build.
 
   PYTHON_APPLY_PATCHES=ON|OFF (defaults to ON)
@@ -163,6 +163,12 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
 
   WITH_C_LOCALE_COERCION       (only for python3.7 and above, default to ON)
     Enable C locale coercion to a UTF-8 based locale.
+
+  WITH_DECIMAL_CONTEXTVAR      (only for python3.8 and above, default to ON)
+    Build _decimal module using a coroutine-local rather than a thread-local context.
+
+  WITH_TRACE_REFS              (only for python3.8 and above, default to OFF)
+    Enable tracing references for debugging purpose
 
   WITH_SSL_DEFAULT_SUITES      (only for python3.7 and above, default to "python")
     Override default cipher suites string:

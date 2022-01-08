@@ -13,6 +13,10 @@
    support for AIX C++ shared extension modules. */
 #cmakedefine AIX_GENUINE_CPLUSPLUS 1
 
+/* Alternative SOABI used in debug build to load C extensions built in release
+   mode [Python 3.8] */
+#cmakedefine ALT_SOABI 1
+
 /* The Android API level. [Python 3.7] */
 #cmakedefine ANDROID_API_LEVEL 1
 
@@ -39,6 +43,10 @@
 
 /* Define if --enable-ipv6 is specified */
 #cmakedefine ENABLE_IPV6 1
+
+/* Define to 1 if your system stores words within floats with the most
+   significant word first [Python 3.8] */
+#cmakedefine FLOAT_WORDS_BIGENDIAN 1
 
 /* Define if flock needs to be linked with bsd library. */
 #cmakedefine FLOCK_NEEDS_LIBBSD 1
@@ -155,6 +163,9 @@
 
 /* Define to 1 if you have the `copysign' function. */
 #cmakedefine HAVE_COPYSIGN 1
+
+/* Define to 1 if you have the `copy_file_range' function. [Python 3.8] */
+#cmakedefine HAVE_COPY_FILE_RANGE 1
 
 /* Define to 1 if you have the <crypt.h> header file. [Python 3.6] */
 #cmakedefine HAVE_CRYPT_H 1
@@ -286,6 +297,9 @@
 /* Define to 1 if you have the `dup3' function. [Python 3] */
 #cmakedefine HAVE_DUP3 1
 
+/* Define if you have the '_dyld_shared_cache_contains_path' function. [Python 3.8] */
+#cmakedefine HAVE_DYLD_SHARED_CACHE_CONTAINS_PATH 1
+
 /* Defined when any dynamic module loading is enabled. */
 #cmakedefine HAVE_DYNAMIC_LOADING 1
 
@@ -309,6 +323,12 @@
 
 /* Define to 1 if you have the `execv' function. */
 #cmakedefine HAVE_EXECV 1
+
+/* Define to 1 if you have the `explicit_bzero' function. [Python 3.8] */
+#cmakedefine HAVE_EXPLICIT_BZERO 1
+
+/* Define to 1 if you have the `explicit_memset' function. [Python 3.8] */
+#cmakedefine HAVE_EXPLICIT_MEMSET 1
 
 /* Define to 1 if you have the `expm1' function. */
 #cmakedefine HAVE_EXPM1 1
@@ -339,6 +359,9 @@
 
 /* Define to 1 if you have the `fdopendir' function. [Python 3] */
 #cmakedefine HAVE_FDOPENDIR 1
+
+/* Define to 1 if you have the `fdwalk' function. [Python 3.8] */
+#cmakedefine HAVE_FDWALK 1
 
 /* Define to 1 if you have the `fexecve' function. [Python 3] */
 #cmakedefine HAVE_FEXECVE 1
@@ -425,6 +448,12 @@
 /* Define to 1 if you have the `getentropy' function. [Python 3] */
 #cmakedefine HAVE_GETENTROPY 1
 
+/* Define to 1 if you have the `getgrgid_r' function. [Python 3.8] */
+#cmakedefine HAVE_GETGRGID_R 1
+
+/* Define to 1 if you have the `getgrnam_r' function. [Python 3.8] */
+#cmakedefine HAVE_GETGRNAM_R 1
+
 /* Define to 1 if you have the `getgrouplist' function. [Python 3] */
 #cmakedefine HAVE_GETGROUPLIST 1
 
@@ -478,6 +507,12 @@
 
 /* Define to 1 if you have the `getpwent' function. */
 #cmakedefine HAVE_GETPWENT 1
+
+/* Define to 1 if you have the `getpwnam_r' function. [Python 3.8] */
+#cmakedefine HAVE_GETPWNAM_R 1
+
+/* Define to 1 if you have the `getpwuid_r' function. [Python 3.8] */
+#cmakedefine HAVE_GETPWUID_R 1
 
 /* Define to 1 if the getrandom() function is available [Python 3] */
 #cmakedefine HAVE_GETRANDOM 1
@@ -624,8 +659,14 @@
 /* Define to 1 if you have the <linux/can/raw.h> header file. [Python 3] */
 #cmakedefine HAVE_LINUX_CAN_RAW_H 1
 
+/* Define to 1 if you have the <linux/memfd.h> header file. [Python 3.8] */
+#cmakedefine HAVE_LINUX_MEMFD_H 1
+
 /* Define to 1 if you have the <linux/netlink.h> header file. */
 #cmakedefine HAVE_LINUX_NETLINK_H 1
+
+/* Define to 1 if you have the <linux/qrtr.h> header file. [Python 3.8] */
+#cmakedefine HAVE_LINUX_QRTR_H 1
 
 /* Define to 1 if you have the <linux/random.h> header file. */
 #cmakedefine HAVE_LINUX_RANDOM_H 1
@@ -657,11 +698,17 @@
 /* Define to 1 if you have the `lutimes' function. [Python 3] */
 #cmakedefine HAVE_LUTIMES 1
 
+/* Define to 1 if you have the `madvise' function. [Python 3.8] */
+#cmakedefine HAVE_MADVISE 1
+
 /* Define this if you have the makedev macro. */
 #cmakedefine HAVE_MAKEDEV 1
 
 /* Define to 1 if you have the `mbrtowc' function. [Python 3] */
 #cmakedefine HAVE_MBRTOWC 1
+
+/* Define if you have the 'memfd_create' function. [Python 3.8] */
+#cmakedefine HAVE_MEMFD_CREATE 1
 
 /* Define to 1 if you have the `memmove' function. */
 #cmakedefine HAVE_MEMMOVE 1
@@ -747,6 +794,9 @@
 /* Define to 1 if you have the `posix_spawn' function. [Python 3.7] */
 #cmakedefine HAVE_POSIX_SPAWN 1
 
+/* Define to 1 if you have the `posix_spawnp' function. [Python 3.8] */
+#cmakedefine HAVE_POSIX_SPAWNP 1
+
 /* Define to 1 if you have the `pread' function. [Python 3] */
 #cmakedefine HAVE_PREAD 1
 
@@ -759,6 +809,9 @@
 /* Define if you have the 'prlimit' functions. [Python 3] */
 #cmakedefine HAVE_PRLIMIT 1
 
+/* Define if you have the '_dyld_shared_cache_contains_path' function. [Python 3.8] */
+#cmakedefine HAVE_DYLD_SHARED_CACHE_CONTAINS_PATH 1
+
 /* Define to 1 if you have the <process.h> header file. */
 #cmakedefine HAVE_PROCESS_H 1
 
@@ -770,6 +823,9 @@
 
 /* Define to 1 if you have the `pthread_atfork' function. */
 #cmakedefine HAVE_PTHREAD_ATFORK 1
+
+/* Define to 1 if you have the `pthread_condattr_setclock' function. [Python 3.8] */
+#cmakedefine HAVE_PTHREAD_CONDATTR_SETCLOCK 1
 
 /* Defined for Solaris 2.6 bug in pthread header. */
 #cmakedefine HAVE_PTHREAD_DESTRUCTOR 1
@@ -851,6 +907,9 @@
 
 /* Define to 1 if you have the `round' function. */
 #cmakedefine HAVE_ROUND 1
+
+/* Define to 1 if you have the `rtpSpawn' function. [Python 3.8] */
+#cmakedefine HAVE_RTPSPAWN 1
 
 /* Define to 1 if you have the `sched_get_priority_max' function. [Python 3] */
 #cmakedefine HAVE_SCHED_GET_PRIORITY_MAX 1
@@ -942,11 +1001,20 @@
 /* Define to 1 if you have the <shadow.h> header file. */
 #cmakedefine HAVE_SHADOW_H 1
 
+/* Define to 1 if you have the `shm_open' function. [Python 3.8] */
+#cmakedefine HAVE_SHM_OPEN 1
+
+/* Define to 1 if you have the `shm_unlink' function. [Python 3.8] */
+#cmakedefine HAVE_SHM_UNLINK 1
+
 /* Define to 1 if you have the `sigaction' function. */
 #cmakedefine HAVE_SIGACTION 1
 
 /* Define to 1 if you have the `sigaltstack' function. [Python 3] */
 #cmakedefine HAVE_SIGALTSTACK 1
+
+/* Define to 1 if you have the `sigfillset' function. [Python 3.8] */
+#cmakedefine HAVE_SIGFILLSET 1
 
 /* Define to 1 if `si_band' is a member of `siginfo_t'. [Python 3.7] */
 #cmakedefine HAVE_SIGINFO_T_SI_BAND 1
@@ -956,6 +1024,9 @@
 
 /* Define to 1 if you have the <signal.h> header file. */
 #cmakedefine HAVE_SIGNAL_H 1
+
+/* Define to 1 if you have the `sigfillset' function. */
+#cmakedefine HAVE_SIGFILLSET 1
 
 /* Define to 1 if you have the `sigpending' function. [Python 3] */
 #cmakedefine HAVE_SIGPENDING 1
@@ -1032,6 +1103,9 @@
 
 /* Define to 1 if you have the <stropts.h> header file. */
 #cmakedefine HAVE_STROPTS_H 1
+
+/* Define to 1 if you have the `strsignal' function. [Python 3.8] */
+#cmakedefine HAVE_STRSIGNAL 1
 
 /* Define to 1 if `pw_gecos' is a member of `struct passwd'. [Python 3.6] */
 #cmakedefine HAVE_STRUCT_PASSWD_PW_GECOS 1
@@ -1116,8 +1190,14 @@
 /* Define to 1 if you have the <sys/lock.h> header file. */
 #cmakedefine HAVE_SYS_LOCK_H 1
 
+/* Define to 1 if you have the <sys/memfd.h> header file. [Python 3.8] */
+#cmakedefine HAVE_SYS_MEMFD_H 1
+
 /* Define to 1 if you have the <sys/mkdev.h> header file. */
 #cmakedefine HAVE_SYS_MKDEV_H 1
+
+/* Define to 1 if you have the <sys/mman.h> header file. [Python 3.8] */
+#cmakedefine HAVE_SYS_MMAN_H 1
 
 /* Define to 1 if you have the <sys/modem.h> header file. */
 #cmakedefine HAVE_SYS_MODEM_H 1
@@ -1423,11 +1503,17 @@
    externally defined: 0 [Python 3] */
 #cmakedefine Py_HASH_ALGORITHM 1
 
+/* Define if you want to enable tracing references for debugging purpose [Python 3.8] */
+#cmakedefine Py_TRACE_REFS 1
+
 /* Define if setpgrp() must be called as setpgrp(0, 0). */
 #cmakedefine SETPGRP_HAVE_ARG 1
 
 /* Define this to be extension of shared libraries (including the dot!).[Python 2.7]  */
 #define SHLIB_EXT "@CMAKE_SHARED_MODULE_SUFFIX@"
+
+/* Define to 1 if you must link with -lrt for shm_open(). [Python 3.8] */
+#cmakedefine SHM_NEEDS_LIBRT 1
 
 /* Define if i>>j for signed int i does not extend the sign bit when i < 0 */
 #cmakedefine SIGNED_RIGHT_SHIFT_ZERO_FILLS 1
@@ -1548,6 +1634,10 @@
 
 /* Define if WINDOW in curses.h offers a field _flags. */
 #cmakedefine WINDOW_HAS_FLAGS 1
+
+/* Define if you want build the _decimal module using a coroutine-local rather
+   than a thread-local context [Python 3.8] */
+#cmakedefine WITH_DECIMAL_CONTEXTVAR 1
 
 /* Define if you want documentation strings in extension modules */
 #cmakedefine WITH_DOC_STRINGS 1
@@ -1735,6 +1825,8 @@
 #if defined(__USLC__) && defined(__SCO_VERSION__)
 #define STRICT_SYSV_CURSES /* Don't use ncurses extensions */
 #endif
+
+#define PLATLIBDIR "lib"
 
 #endif /*Py_PYCONFIG_H*/
 

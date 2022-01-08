@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13.5)
 
-set(PYTHON_VERSION "3.7.12" CACHE STRING "The version of Python to build.")
+set(PYTHON_VERSION "3.8.5" CACHE STRING "The version of Python to build.")
 
 string(REPLACE "." ";" VERSION_LIST ${PYTHON_VERSION})
 list(GET VERSION_LIST 0 PY_VERSION_MAJOR)
@@ -227,7 +227,14 @@ set(_download_3.7.9_md5 "bcd9f22cf531efc6f06ca6b9b2919bd4")
 set(_download_3.7.10_md5 "0b19e34a6dabc4bf15fdcdf9e77e9856")
 set(_download_3.7.11_md5 "a7e66953dba909d395755b3f2e491f6e")
 set(_download_3.7.12_md5 "6fe83678c085a7735a943cf1e4d41c14")
-
+# 3.8.x
+set(_download_3.8.0_md5 "e18a9d1a0a6d858b9787e03fc6fdaa20")
+set(_download_3.8.1_md5 "f215fa2f55a78de739c1787ec56b2bcd")
+set(_download_3.8.2_md5 "f9f3768f757e34b342dbc06b41cbc844")
+set(_download_3.8.3_md5 "a7c10a2ac9d62de75a0ca5204e2e7d07")
+set(_download_3.8.4_md5 "387e63fe42c40a29e3408ce231315516")
+set(_download_3.8.5_md5 "e2f52bcf531c8cc94732c0b6ff933ff0")
+set(_download_3.8.6_md5 "ea132d6f449766623eee886966c7d41f")
 
 set(_extracted_dir "Python-${PY_VERSION}")
 
@@ -375,6 +382,22 @@ endif()
 message(STATUS "Setting PY_SSL_DEFAULT_CIPHER_STRING to '${WITH_SSL_DEFAULT_SUITES}'")
 endif()
 
+if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
+    option(WITH_DECIMAL_CONTEXTVAR "Build _decimal module using a coroutine-local rather than a thread-local context" ON)
+else()
+    if(DEFINED WITH_C_LOCALE_COERCION)
+        message(AUTHOR_WARNING "WITH_DECIMAL_CONTEXTVAR option is *NOT* supported with Python < 3.8. Current version is ${PY_VERSION}")
+    endif()
+endif()
+
+if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
+    option(WITH_TRACE_REFS "Enable tracing references for debugging purpose" OFF)
+else()
+    if(DEFINED WITH_TRACE_REFS)
+        message(AUTHOR_WARNING "WITH_TRACE_REFS option is *NOT* supported with Python < 3.8. Current version is ${PY_VERSION}")
+    endif()
+endif()
+
 # This is the major version number of Python
 set(LIBPYTHON_VERSION ${PY_VERSION_MAJOR}.${PY_VERSION_MINOR})
 if(WIN32)
@@ -466,6 +489,7 @@ endif()
 
 # Set include directories
 include_directories(${INCLUDE_BUILD_DIR})
+include_directories(${INCLUDE_BUILD_DIR}/internal)
 include_directories(${PYCONFIG_BUILD_DIR})
 include_directories(${SRC_DIR}/Python)
 
@@ -542,9 +566,15 @@ add_custom_target(clinic
 endif()
 
 # Add target to generate 'Include/graminit.h' and 'Python/graminit.c'
+if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
+    set(generate_graminit_command $<TARGET_FILE:python> -m Parser.pgen)
+else()
+    set(generate_graminit_command $<TARGET_FILE:pgen>)
+endif()
 add_custom_target(generate_graminit
-    COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:pgen>
+    COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} ${generate_graminit_command}
         ${SRC_DIR}/Grammar/Grammar
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:${SRC_DIR}/Grammar/Tokens>
         ${PROJECT_BINARY_DIR}/CMakeFiles/graminit.h
         ${PROJECT_BINARY_DIR}/CMakeFiles/graminit.c
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -553,7 +583,7 @@ add_custom_target(generate_graminit
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${PROJECT_BINARY_DIR}/CMakeFiles/graminit.c
         ${SRC_DIR}/Python/graminit.c
-    DEPENDS pgen
+    DEPENDS $<IF:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>,python,pgen>
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
     COMMENT "Generating '${SRC_DIR}/Include/graminit.h' and '${SRC_DIR}/Python/graminit.c'."
     VERBATIM
