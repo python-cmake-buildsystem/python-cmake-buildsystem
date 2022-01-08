@@ -55,7 +55,7 @@ How to use this buildsystem:
 
 .. note::
 
-  By default, the build system will download the python 3.6.15 source from
+  By default, the build system will download the python 3.7.12 source from
   http://www.python.org/ftp/python/
 
 
@@ -68,7 +68,7 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
 
 ::
 
-  PYTHON_VERSION=major.minor.patch (defaults to 3.6.15)
+  PYTHON_VERSION=major.minor.patch (defaults to 3.7.12)
     The version of Python to build.
 
   PYTHON_APPLY_PATCHES=ON|OFF (defaults to ON)
@@ -160,6 +160,15 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
   Py_USING_UNICODE             (only for python2, defaults to ON)
     Enable unicode support. By default, ucs2 is used. It can be
     forced to ucs4 setting Py_UNICODE_SIZE to 4.
+
+  WITH_C_LOCALE_COERCION       (only for python3.7 and above, default to ON)
+    Enable C locale coercion to a UTF-8 based locale.
+
+  WITH_SSL_DEFAULT_SUITES      (only for python3.7 and above, default to "python")
+    Override default cipher suites string:
+    * python: use Python's preferred selection (default)
+    * openssl: leave OpenSSL's defaults untouched
+    * STRING: use a custom string, PROTOCOL_SSLv2 ignores the setting
 
   EXTRA_PYTHONPATH=dir1:dir2    (defaults to "")
     Colon (:) separated list of extra directories to add to the compiled-in

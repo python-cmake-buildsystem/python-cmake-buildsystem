@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+    - master
+
+jobs:
+  tests:
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        runs-on: [macos-10.15]
+        python-version: [3.7.12]
+        include:
+          - runs-on: macos-10.15
+            c-compiler: "clang"
+            cxx-compiler: "clang++"
+            initial-dashboard-cache: "CMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.13"
+
+    name: python-${{ matrix.python-version }}-${{ matrix.runs-on }}
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        path: src
+
+    - name: Setup cmake
+      uses: jwlawson/actions-setup-cmake@v1.9
+      with:
+        cmake-version: 3.13.5
+
+    - name: Setup ninja
+      uses: ashutoshvarma/setup-ninja@master
+      with:
+        version: 1.10.0
+
+    - name: Specific XCode version
+      if: matrix.runs-on == 'macos-10.15'
+      run: |
+        sudo xcode-select -s "/Applications/Xcode_11.7.app"
+
+    - name: Download dashboard script
+      uses: actions/checkout@v2
+      with:
+        repository: 'python-cmake-buildsystem/python-cmake-buildsystem'
+        ref: dashboard
+        fetch-depth: 0
+        path: scripts
+
+    - name: Writing initial dashboard cache
+      shell: bash
+      run: |
+        cat > scripts/initial-dashboard-cache.txt << EOF
+        ${{ matrix.initial-dashboard-cache }}
+        EOF
+        cat scripts/initial-dashboard-cache.txt
+
+    - name: Build & Test
+      run: ctest --timeout 360 -S scripts/github_actions_dashboard.cmake -VV
+      env:
+        PY_VERSION: ${{ matrix.python-version }}
+        CC: ${{ matrix.c-compiler }}
+        CXX: ${{ matrix.cxx-compiler }}

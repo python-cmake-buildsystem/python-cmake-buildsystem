@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13.5)
 
-set(PYTHON_VERSION "3.6.15" CACHE STRING "The version of Python to build.")
+set(PYTHON_VERSION "3.7.12" CACHE STRING "The version of Python to build.")
 
 string(REPLACE "." ";" VERSION_LIST ${PYTHON_VERSION})
 list(GET VERSION_LIST 0 PY_VERSION_MAJOR)
@@ -98,7 +98,7 @@ option(USE_SYSTEM_LIBRARIES "Use system libraries" ON)
 # Set platform dependent defaults
 set(_use_builtin_zlib_default OFF)
 set(_use_system_zlib_default ON)
-if(WIN32)
+if(WIN32 AND "${PY_VERSION}" VERSION_LESS "3.7.0")
   set(_use_builtin_zlib_default ON)
   set(_use_system_zlib_default OFF)
 endif()
@@ -126,7 +126,6 @@ option(ENABLE_IPV6 "Enable IP v6" ON)
 option(WITH_DOC_STRINGS "Enable if you want documentation strings in extension modules" ON)
 set(Py_DEBUG OFF) # TODO - Build debugging interpreter
 option(WITH_PYMALLOC "Define if you want to compile in Python-specific mallocs" ON)
-option(WITH_THREAD "Compile in rudimentary thread support" ON)
 if(UNIX)
     option(WITH_STATIC_DEPENDENCIES "Restrict extensions and external dependencies to static libraries" OFF)
     if(WITH_STATIC_DEPENDENCIES)
@@ -167,7 +166,7 @@ get_filename_component(SRC_DIR "${SRC_DIR}" ABSOLUTE)
 
 # Download sources
 get_filename_component(_parent_dir ${CMAKE_CURRENT_BINARY_DIR} PATH)
-string(REGEX REPLACE "rc[1-9]$" "" _py_version_patch_no_rc ${PY_VERSION_PATCH})
+string(REGEX REPLACE "[a-z]+[1-9]$" "" _py_version_patch_no_rc ${PY_VERSION_PATCH})
 set(_py_version_no_rc "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${_py_version_patch_no_rc}")
 set(_download_link "https://www.python.org/ftp/python/${_py_version_no_rc}/Python-${PY_VERSION}.tgz")
 # Variable below represent the set of available python version.
@@ -213,6 +212,21 @@ set(_download_3.6.12_md5 "00c3346f314072fcc810d4a51d06f04e")
 set(_download_3.6.13_md5 "92fcbf417c691d42c47a3d82f9c255fd")
 set(_download_3.6.14_md5 "54a320cffe046bbbe4321896d67bde2b")
 set(_download_3.6.15_md5 "f9e6f91c754a604f4fc6f6c7683723fb")
+# 3.7.x
+set(_download_3.7.0_md5 "41b6595deb4147a1ed517a7d9a580271")
+set(_download_3.7.1_md5 "99f78ecbfc766ea449c4d9e7eda19e83")
+set(_download_3.7.2_md5 "02a75015f7cd845e27b85192bb0ca4cb")
+set(_download_3.7.3_md5 "2ee10f25e3d1b14215d56c3882486fcf")
+set(_download_3.7.4_md5 "68111671e5b2db4aef7b9ab01bf0f9be")
+set(_download_3.7.5_md5 "1cd071f78ff6d9c7524c95303a3057aa")
+set(_download_3.7.6_md5 "3ef90f064506dd85b4b4ab87a7a83d44")
+set(_download_3.7.7_md5 "d348d978a5387512fbc7d7d52dd3a5ef")
+set(_download_3.7.8_md5 "4d5b16e8c15be38eb0f4b8f04eb68cd0")
+set(_download_3.7.9_md5 "bcd9f22cf531efc6f06ca6b9b2919bd4")
+set(_download_3.7.10_md5 "0b19e34a6dabc4bf15fdcdf9e77e9856")
+set(_download_3.7.11_md5 "a7e66953dba909d395755b3f2e491f6e")
+set(_download_3.7.12_md5 "6fe83678c085a7735a943cf1e4d41c14")
+
 
 set(_extracted_dir "Python-${PY_VERSION}")
 
@@ -261,24 +275,28 @@ If you already downloaded the source, you could try to re-configure this project
 endif()
 message(STATUS "SRC_DIR: ${SRC_DIR}")
 
-# Extract version from python source (Copied from FindPythonLibs.cmake)
+# Extract version string from python source (Copied from FindPythonLibs.cmake)
 file(STRINGS "${SRC_DIR}/Include/patchlevel.h" python_version_str
     REGEX "^#define[ \t]+PY_VERSION[ \t]+\"[^\"]+\"")
 string(REGEX REPLACE "^#define[ \t]+PY_VERSION[ \t]+\"([^\"]+)\".*" "\\1"
-    _version "${python_version_str}")
-string(REGEX REPLACE "([0-9])\\..+" "\\1"
-    PY_VERSION_MAJOR ${_version})
-string(REGEX REPLACE "[0-9]\\.([0-9]+)\\..+" "\\1"
-    PY_VERSION_MINOR ${_version})
-string(REGEX REPLACE "[0-9]\\.[0-9]+\\.([0-9]+)[+]?" "\\1"
-    PY_VERSION_PATCH ${_version})
-set(PY_VERSION "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}")
-message(STATUS "PY_VERSION: ${PY_VERSION}")
-if(NOT DEFINED _download_${PY_VERSION}_md5)
-    message(WARNING "warning: selected python version '${PY_VERSION}' is not tested. Tested versions match '2.7.[3-15]' or '3.5.[1-5]' or `3.6.[0-4]`")
-endif()
+      PY_VERSION_LONG "${python_version_str}")
 
-set(PYTHON_VERSION "${PY_VERSION}" CACHE STRING "The version of Python to build." FORCE)
+# Extract version info and set variables PY_VERSION, PY_VERSION_(MAJOR|MINOR|PATCH), PY_RELEASE_(LEVEL|SERIAL)
+include(cmake/PythonExtractVersionInfo.cmake)
+python_extract_version_info(
+  VERSION_STRING "${PY_VERSION_LONG}"
+  )
+message(STATUS "PY_VERSION     : ${PY_VERSION}")
+message(STATUS "PY_VERSION_LONG: ${PY_VERSION_LONG}")
+
+# Check version
+if(NOT DEFINED _download_${PY_VERSION_LONG}_md5)
+    message(WARNING "warning: selected python version '${PY_VERSION_LONG}' is not tested. Tested versions match '2.7.[3-14]' or '3.5.[1-5]' or `3.6.[0-4]`")
+endif()
+if(NOT "${PYTHON_VERSION}" STREQUAL "${PY_VERSION}")
+  message(STATUS "Overwriting PYTHON_VERSION with value read from 'patchlevel.h': ${PYTHON_VERSION} -> ${PY_VERSION}")
+  set(PYTHON_VERSION "${PY_VERSION}" CACHE STRING "The version of Python to build." FORCE)
+endif()
 
 # Apply patches
 option(PYTHON_APPLY_PATCHES "Apply patches" ON)
@@ -308,6 +326,14 @@ else()
   endif()
 endif()
 
+if(PY_VERSION VERSION_GREATER_EQUAL "3.7")
+    option(WITH_C_LOCALE_COERCION "Enable C locale coercion to a UTF-8 based locale" ON)
+else()
+    if(DEFINED WITH_C_LOCALE_COERCION)
+        message(AUTHOR_WARNING "WITH_C_LOCALE_COERCION option is *NOT* supported with Python < 3.7. Current version is ${PY_VERSION}")
+    endif()
+endif()
+
 if(PY_VERSION_MAJOR VERSION_GREATER 2.7.10)
 # See "Improving performance in Python 2.7" - http://lwn.net/Articles/646888/
 option(WITH_COMPUTED_GOTOS "Improve performance enabling the computed goto based dispatch" OFF)
@@ -317,6 +343,27 @@ endif()
 if(IS_PY3)
 set(WITH_HASH_ALGORITHM "default" CACHE STRING "Define hash algorithm for str, bytes and memoryview.")
 set_property(CACHE WITH_HASH_ALGORITHM PROPERTY STRINGS "default" "siphash24" "fnv")
+endif()
+
+if(PY_VERSION VERSION_LESS "3.7")
+    option(WITH_THREAD "Compile in rudimentary thread support" ON)
+else()
+    if(DEFINED WITH_THREAD)
+        message(AUTHOR_WARNING "WITH_THREAD option is *NOT* supported with Python < 3.7. Current version is ${PY_VERSION}")
+    endif()
+endif()
+
+if(PY_VERSION VERSION_GREATER_EQUAL "3.7")
+set(WITH_SSL_DEFAULT_SUITES "python" CACHE STRING "Override default cipher suites string: python, openssl or a custom string")
+if("${WITH_SSL_DEFAULT_SUITES}" STREQUAL "python")
+    set(PY_SSL_DEFAULT_CIPHERS 1)
+elseif("${WITH_SSL_DEFAULT_SUITES}" STREQUAL "openssl")
+    set(PY_SSL_DEFAULT_CIPHERS 2)
+else()
+    set(PY_SSL_DEFAULT_CIPHERS 0)
+    set(PY_SSL_DEFAULT_CIPHER_STRING "${WITH_SSL_DEFAULT_SUITES}")
+endif()
+message(STATUS "Setting PY_SSL_DEFAULT_CIPHER_STRING to '${WITH_SSL_DEFAULT_SUITES}'")
 endif()
 
 # This is the major version number of Python
@@ -415,7 +462,7 @@ include_directories(${SRC_DIR}/Python)
 
 # Set cflags used by all components
 if(CMAKE_C_COMPILER_ID MATCHES GNU)
-    if(PY_VERSION VERSION_EQUAL "3.6" OR PY_VERSION VERSION_GREATER "3.6")
+    if(PY_VERSION VERSION_GREATER_EQUAL "3.6")
         append_if_absent(CMAKE_C_FLAGS "-std=c99")
     endif()
     append_if_absent(CMAKE_C_FLAGS "-Wall")
@@ -631,6 +678,19 @@ if(BUILD_TESTING)
       endif()
       add_test(NAME ${unittest} COMMAND ${PYTHON_WRAPPER_COMMAND} ${TESTPYTHON} ${TESTPROG} ${TESTOPTS} ${EXTRATESTOPTS} ${unittest})
     endforeach()
+
+    function(add_cmakescript_test testname script)
+      add_test(cmake_${testname}_test ${CMAKE_COMMAND}
+        -DTEST_${testname}:BOOL=ON
+        -P ${CMAKE_SOURCE_DIR}/${script})
+      set_tests_properties(cmake_${testname}_test PROPERTIES
+        LABELS CMake
+        PASS_REGULAR_EXPRESSION "SUCCESS")
+    endfunction()
+    add_cmakescript_test(
+        python_extract_version_info
+        cmake/PythonExtractVersionInfo.cmake
+        )
 endif()
 
 include(CMakePackageConfigHelpers)

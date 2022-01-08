@@ -13,6 +13,9 @@
    support for AIX C++ shared extension modules. */
 #cmakedefine AIX_GENUINE_CPLUSPLUS 1
 
+/* The Android API level. [Python 3.7] */
+#cmakedefine ANDROID_API_LEVEL 1
+
 /* Define this if you have AtheOS threads. [Python 2.7] */
 #cmakedefine ATHEOS_THREADS 1
 
@@ -138,6 +141,9 @@
 /* Define to 1 if you have the `clock_gettime' function. [Python 3] */
 #cmakedefine HAVE_CLOCK_GETTIME 1
 
+/* Define to 1 if you have the `clock_settime' function. [Python 3.6] */
+#cmakedefine HAVE_CLOCK_SETTIME 1
+
 /* Define if the C compiler supports computed gotos. */
 #cmakedefine HAVE_COMPUTED_GOTOS 1
 
@@ -150,14 +156,32 @@
 /* Define to 1 if you have the `copysign' function. */
 #cmakedefine HAVE_COPYSIGN 1
 
+/* Define to 1 if you have the <crypt.h> header file. [Python 3.6] */
+#cmakedefine HAVE_CRYPT_H 1
+
+/* Define if you have the crypt_r() function. [Python 3.7] */
+#cmakedefine HAVE_CRYPT_R 1
+
 /* Define to 1 if you have the `ctermid' function. */
 #cmakedefine HAVE_CTERMID 1
 
 /* Define if you have the 'ctermid_r' function. */
 #cmakedefine HAVE_CTERMID_R 1
 
+/* Define if you have the 'filter' function. [Python 3.6] */
+#cmakedefine HAVE_CURSES_FILTER 1
+
 /* Define to 1 if you have the <curses.h> header file. */
 #cmakedefine HAVE_CURSES_H 1
+
+/* Define if you have the 'has_key' function. [Python 3.6] */
+#cmakedefine HAVE_CURSES_HAS_KEY 1
+
+/* Define if you have the 'immedok' function. [Python 3.6] */
+#cmakedefine HAVE_CURSES_IMMEDOK 1
+
+/* Define if you have the 'is_pad' function or macro. [Python 3.6] */
+#cmakedefine HAVE_CURSES_IS_PAD 1
 
 /* Define if you have the 'is_term_resized' function. */
 #cmakedefine HAVE_CURSES_IS_TERM_RESIZED 1
@@ -167,6 +191,18 @@
 
 /* Define if you have the 'resize_term' function. */
 #cmakedefine HAVE_CURSES_RESIZE_TERM 1
+
+/* Define if you have the 'syncok' function. [Python 3.6] */
+#cmakedefine HAVE_CURSES_SYNCOK 1
+
+/* Define if you have the 'typeahead' function. [Python 3.6] */
+#cmakedefine HAVE_CURSES_TYPEAHEAD 1
+
+/* Define if you have the 'use_env' function. [Python 3.6] */
+#cmakedefine HAVE_CURSES_USE_ENV 1
+
+/* Define if you have the 'wchgat' function. [Python 3.6] */
+#cmakedefine HAVE_CURSES_WCHGAT 1
 
 /* Define to 1 if you have the declaration of `isfinite', and to 0 if you
    don't. */
@@ -179,6 +215,38 @@
 /* Define to 1 if you have the declaration of `isnan', and to 0 if you don't.
    */
 #cmakedefine HAVE_DECL_ISNAN 1
+
+/* Define to 1 if you have the declaration of `RTLD_DEEPBIND', and to 0 if you
+   don't. [Python 3.6] */
+#cmakedefine HAVE_DECL_RTLD_DEEPBIND 1
+
+/* Define to 1 if you have the declaration of `RTLD_GLOBAL', and to 0 if you
+   don't. [Python 3.6] */
+#cmakedefine HAVE_DECL_RTLD_GLOBAL 1
+
+/* Define to 1 if you have the declaration of `RTLD_LAZY', and to 0 if you
+   don't. [Python 3.6] */
+#cmakedefine HAVE_DECL_RTLD_LAZY 1
+
+/* Define to 1 if you have the declaration of `RTLD_LOCAL', and to 0 if you
+   don't. [Python 3.6] */
+#cmakedefine HAVE_DECL_RTLD_LOCAL 1
+
+/* Define to 1 if you have the declaration of `RTLD_MEMBER', and to 0 if you
+   don't. [Python 3.7] */
+#cmakedefine HAVE_DECL_RTLD_MEMBER 1
+
+/* Define to 1 if you have the declaration of `RTLD_NODELETE', and to 0 if you
+   don't. [Python 3.6] */
+#cmakedefine HAVE_DECL_RTLD_NODELETE 1
+
+/* Define to 1 if you have the declaration of `RTLD_NOLOAD', and to 0 if you
+   don't. [Python 3.6] */
+#cmakedefine HAVE_DECL_RTLD_NOLOAD 1
+
+/* Define to 1 if you have the declaration of `RTLD_NOW', and to 0 if you
+   don't. [Python 3.6] */
+#cmakedefine HAVE_DECL_RTLD_NOW 1
 
 /* Define to 1 if you have the declaration of `tzname', and to 0 if you don't.
    */
@@ -559,8 +627,14 @@
 /* Define to 1 if you have the <linux/netlink.h> header file. */
 #cmakedefine HAVE_LINUX_NETLINK_H 1
 
+/* Define to 1 if you have the <linux/random.h> header file. */
+#cmakedefine HAVE_LINUX_RANDOM_H 1
+
 /* Define to 1 if you have the <linux/tipc.h> header file. */
 #cmakedefine HAVE_LINUX_TIPC_H 1
+
+/* Define to 1 if you have the <linux/vm_sockets.h> header file. [Python 3.7] */
+#cmakedefine HAVE_LINUX_VM_SOCKETS_H 1
 
 /* Define to 1 if you have the `lockf' function. [Python 3] */
 #cmakedefine HAVE_LOCKF 1
@@ -670,8 +744,17 @@
 /* Define to 1 if you have the `posix_fallocate' function. [Python 3] */
 #cmakedefine HAVE_POSIX_FALLOCATE 1
 
+/* Define to 1 if you have the `posix_spawn' function. [Python 3.7] */
+#cmakedefine HAVE_POSIX_SPAWN 1
+
 /* Define to 1 if you have the `pread' function. [Python 3] */
 #cmakedefine HAVE_PREAD 1
+
+/* Define to 1 if you have the `preadv' function. [Python 3.7] */
+#cmakedefine HAVE_PREADV 1
+
+/* Define to 1 if you have the `preadv2' function. [Python 3.7] */
+#cmakedefine HAVE_PREADV2 1
 
 /* Define if you have the 'prlimit' functions. [Python 3] */
 #cmakedefine HAVE_PRLIMIT 1
@@ -690,6 +773,9 @@
 
 /* Defined for Solaris 2.6 bug in pthread header. */
 #cmakedefine HAVE_PTHREAD_DESTRUCTOR 1
+
+/* Define to 1 if you have the `pthread_getcpuclockid' function. [Python 3.7] */
+#cmakedefine HAVE_PTHREAD_GETCPUCLOCKID 1
 
 /* Define to 1 if you have the <pthread.h> header file. */
 #cmakedefine HAVE_PTHREAD_H 1
@@ -711,6 +797,12 @@
 
 /* Define to 1 if you have the `pwrite' function. [Python 3] */
 #cmakedefine HAVE_PWRITE 1
+
+/* Define to 1 if you have the `pwritev' function. [Python 3.7] */
+#cmakedefine HAVE_PWRITEV 1
+
+/* Define to 1 if you have the `pwritev2' function. [Python 3.7] */
+#cmakedefine HAVE_PWRITEV2 1
 
 /* Define if the libcrypto has RAND_egd [Python 3] */
 #cmakedefine HAVE_RAND_EGD 1
@@ -856,6 +948,9 @@
 /* Define to 1 if you have the `sigaltstack' function. [Python 3] */
 #cmakedefine HAVE_SIGALTSTACK 1
 
+/* Define to 1 if `si_band' is a member of `siginfo_t'. [Python 3.7] */
+#cmakedefine HAVE_SIGINFO_T_SI_BAND 1
+
 /* Define to 1 if you have the `siginterrupt' function. */
 #cmakedefine HAVE_SIGINTERRUPT 1
 
@@ -879,6 +974,9 @@
 
 /* Define to 1 if you have the `snprintf' function. */
 #cmakedefine HAVE_SNPRINTF 1
+
+/* struct sockaddr_alg (linux/if_alg.h) [Python 3.6] */
+#cmakedefine HAVE_SOCKADDR_ALG 1
 
 /* Define if sockaddr has sa_len member */
 #cmakedefine HAVE_SOCKADDR_SA_LEN 1
@@ -934,6 +1032,12 @@
 
 /* Define to 1 if you have the <stropts.h> header file. */
 #cmakedefine HAVE_STROPTS_H 1
+
+/* Define to 1 if `pw_gecos' is a member of `struct passwd'. [Python 3.6] */
+#cmakedefine HAVE_STRUCT_PASSWD_PW_GECOS 1
+
+/* Define to 1 if `pw_passwd' is a member of `struct passwd'. [Python 3.6] */
+#cmakedefine HAVE_STRUCT_PASSWD_PW_PASSWD 1
 
 /* Define to 1 if `st_birthtime' is a member of `struct stat'. */
 #cmakedefine HAVE_STRUCT_STAT_ST_BIRTHTIME 1
@@ -1055,7 +1159,7 @@
 /* Define to 1 if you have the <sys/sys_domain.h> header file. [Python 3] */
 #cmakedefine HAVE_SYS_SYS_DOMAIN_H 1
 
-/* Define to 1 if you have the <sys/sysmacros.h> header file. */
+/* Define to 1 if you have the <sys/sysmacros.h> header file. [Python 3.6] */
 #cmakedefine HAVE_SYS_SYSMACROS_H 1
 
 /* Define to 1 if you have the <sys/termio.h> header file. */
@@ -1173,6 +1277,21 @@
 /* Define to 1 if you have the <utime.h> header file. */
 #cmakedefine HAVE_UTIME_H 1
 
+/* Define if uuid_create() exists. [Python 3.7] */
+#cmakedefine HAVE_UUID_CREATE 1
+
+/* Define if uuid_enc_be() exists. [Python 3.7] */
+#cmakedefine HAVE_UUID_ENC_BE 1
+
+/* Define if uuid_generate_time_safe() exists. [Python 3.7] */
+#cmakedefine HAVE_UUID_GENERATE_TIME_SAFE 1
+
+/* Define to 1 if you have the <uuid.h> header file. [Python 3.7] */
+#cmakedefine HAVE_UUID_H 1
+
+/* Define to 1 if you have the <uuid/uuid.h> header file. [Python 3.7] */
+#cmakedefine HAVE_UUID_UUID_H 1
+
 /* Define to 1 if you have the `wait3' function. */
 #cmakedefine HAVE_WAIT3 1
 
@@ -1206,6 +1325,9 @@
 
 /* Define to 1 if you have the `writev' function. [Python 3] */
 #cmakedefine HAVE_WRITEV 1
+
+/* Define if libssl has X509_VERIFY_PARAM_set1_host and related function [Python 3.7] */
+#cmakedefine HAVE_X509_VERIFY_PARAM_SET1_HOST 1
 
 /* Define if the zlib library has inflateCopy */
 #cmakedefine HAVE_ZLIB_COPY 1
@@ -1254,6 +1376,9 @@
 /* Define if POSIX semaphores aren't enabled on your system */
 #cmakedefine POSIX_SEMAPHORES_NOT_ENABLED 1
 
+/* Define if pthread_key_t is compatible with int. [Python 3.7] */
+#cmakedefine PTHREAD_KEY_T_IS_COMPATIBLE_WITH_INT 1
+
 /* Defined if PTHREAD_SCOPE_SYSTEM supported. */
 #cmakedefine PTHREAD_SYSTEM_SCHED_SUPPORTED 1
 
@@ -1263,8 +1388,18 @@
 /* Define to printf format modifier for long long type */
 #cmakedefine PY_FORMAT_LONG_LONG "@PY_FORMAT_LONG_LONG@"
 
+/* Define if you want to coerce the C locale to a UTF-8 based locale */
+#cmakedefine PY_COERCE_C_LOCALE 1
+
 /* Define to printf format modifier for Py_ssize_t */
 #cmakedefine PY_FORMAT_SIZE_T "@PY_FORMAT_SIZE_T@"
+
+/* Default cipher suites list for ssl module. 1: Python's preferred selection,
+   2: leave OpenSSL defaults untouched, 0: custom string [Python 3.7] */
+#cmakedefine PY_SSL_DEFAULT_CIPHERS @PY_SSL_DEFAULT_CIPHERS@
+
+/* Cipher suite string for PY_SSL_DEFAULT_CIPHERS=0 [Python 3.7] */
+#cmakedefine PY_SSL_DEFAULT_CIPHER_STRING "@PY_SSL_DEFAULT_CIPHER_STRING@"
 
 /* Define as the integral type used for Unicode representation. [Python 2.7] */
 #cmakedefine PY_UNICODE_TYPE @PY_UNICODE_TYPE@
@@ -1323,6 +1458,9 @@
 
 /* The size of `pid_t', as computed by sizeof. */
 #cmakedefine SIZEOF_PID_T @SIZEOF_PID_T@
+
+/* The size of `pthread_key_t', as computed by sizeof. [Python 3.7] */
+#cmakedefine SIZEOF_PTHREAD_KEY_T @SIZEOF_PTHREAD_KEY_T@
 
 /* The size of `pthread_t', as computed by sizeof. */
 #cmakedefine SIZEOF_PTHREAD_T @SIZEOF_PTHREAD_T@
@@ -1414,6 +1552,9 @@
 /* Define if you want documentation strings in extension modules */
 #cmakedefine WITH_DOC_STRINGS 1
 
+/* Define if you want to compile in DTrace support [Python 3.6] */
+#cmakedefine WITH_DTRACE 1
+
 /* Define if you want to use the new-style (Openstep, Rhapsody, MacOS) dynamic
    linker (dyld) instead of the old-style (NextStep) dynamic linker (rld).
    Dyld is necessary to support frameworks. */
@@ -1500,6 +1641,12 @@
 
 /* Define if you have POSIX threads, and your system does not define that. */
 #cmakedefine _POSIX_THREADS
+
+/* framework name [Python <= 3.6] */
+#define PYTHONFRAMEWORK "@PYTHONFRAMEWORK@"
+
+/* framework name [Python >= 3.7] */
+#define _PYTHONFRAMEWORK "@PYTHONFRAMEWORK@"
 
 /* Define to force use of thread-safe errno, h_errno, and other functions */
 #cmakedefine _REENTRANT 1
