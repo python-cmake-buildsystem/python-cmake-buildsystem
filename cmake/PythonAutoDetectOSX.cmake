@@ -13,6 +13,8 @@ if(APPLE)
               res
       ERROR_QUIET
       OUTPUT_STRIP_TRAILING_WHITESPACE)
+    # Transform into a two-component string (e.g "10.15.6" -> "10.15")
+    string(REGEX REPLACE "^([0-9]+\\.[0-9]+).*$" "\\1" SDK_VERSION "${SDK_VERSION}")
     if(res)
       # Probably running on an older version of XCode, instead try to list all available
       # SDKs and extract the version of the first one.
