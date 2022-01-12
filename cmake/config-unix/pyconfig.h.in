@@ -41,7 +41,7 @@
 #cmakedefine ENABLE_IPV6 1
 
 /* Define if flock needs to be linked with bsd library. */
-#cmakedefine FLOCK_NEEDS_LIBBSD
+#cmakedefine FLOCK_NEEDS_LIBBSD 1
 
 /* Define if getpgrp() must be called as getpgrp(0). */
 #cmakedefine GETPGRP_HAVE_ARG 1
@@ -100,7 +100,7 @@
 #cmakedefine HAVE_BROKEN_NICE 1
 
 /* Define if the system reports an invalid PIPE_BUF value. */
-#cmakedefine HAVE_BROKEN_PIPE_BUF
+#cmakedefine HAVE_BROKEN_PIPE_BUF 1
 
 /* Define if poll() sets errno on invalid file descriptors. */
 #cmakedefine HAVE_BROKEN_POLL 1
@@ -508,7 +508,7 @@
 
 /* Define if glibc has incorrect _FORTIFY_SOURCE wrappers for memmove and
    bcopy. [Python 3] */
-/* #undef HAVE_GLIBC_MEMMOVE_BUG */
+#cmakedefine HAVE_GLIBC_MEMMOVE_BUG 1
 
 /* Define to 1 if you have the <grp.h> header file. */
 #cmakedefine HAVE_GRP_H 1
@@ -523,7 +523,7 @@
 #cmakedefine HAVE_HYPOT 1
 
 /* Define to 1 if you have the <ieeefp.h> header file. */
-#cmakedefine HAVE_IEEEFP_H
+#cmakedefine HAVE_IEEEFP_H 1
 
 /* Define to 1 if you have the `if_nameindex' function. [Python 3] */
 #cmakedefine HAVE_IF_NAMEINDEX 1
@@ -1561,7 +1561,7 @@
 #cmakedefine WITH_DYLD 1
 
 /* Define to 1 if libintl is needed for locale functions. */
-#cmakedefine WITH_LIBINTL
+#cmakedefine WITH_LIBINTL 1
 
 /* Define if you want to produce an OpenStep/Rhapsody framework (shared
    library plus accessory files). */
@@ -1592,7 +1592,7 @@
 #endif
 
 /* Define if arithmetic is subject to x87-style double rounding issue */
-#cmakedefine X87_DOUBLE_ROUNDING
+#cmakedefine X87_DOUBLE_ROUNDING 1
 
 /* Define on OpenBSD to activate all library features */
 #cmakedefine _BSD_SOURCE 1
