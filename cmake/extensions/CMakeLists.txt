@@ -598,7 +598,7 @@ add_python_extension(binascii
     INCLUDEDIRS ${binascii_INCLUDEDIRS}
 )
 add_python_extension(_bsddb
-    REQUIRES DB_INCLUDE_PATH DB_LIBRARIES
+    REQUIRES IS_PY2 DB_INCLUDE_PATH DB_LIBRARY
     SOURCES _bsddb.c
     LIBRARIES ${DB_LIBRARIES}
     INCLUDEDIRS ${DB_INCLUDE_PATH}

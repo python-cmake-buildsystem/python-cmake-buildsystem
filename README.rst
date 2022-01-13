@@ -211,7 +211,7 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
   USE_SYSTEM_DB=ON|OFF          (defaults to ON)
     If set to OFF, no attempt to detect DB libraries will be done.
     Associated python extensions are: BSDDB
-    Following CMake variables can manually be set: DB_INCLUDE_PATH, DB_LIBRARIES
+    Following CMake variables can manually be set: DB_INCLUDE_PATH, DB_LIBRARY
 
   USE_SYSTEM_GDBM=ON|OFF        (defaults to ON)
     If set to OFF, no attempt to detect GDBM libraries will be done.
