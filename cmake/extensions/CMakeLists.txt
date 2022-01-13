@@ -683,7 +683,7 @@ add_python_extension(readline
     INCLUDEDIRS ${READLINE_INCLUDE_PATH}
 )
 add_python_extension(_sqlite3
-    REQUIRES SQLITE3_INCLUDE_PATH SQLITE3_LIBRARY
+    REQUIRES SQLite3_INCLUDE_DIRS SQLite3_LIBRARIES
     SOURCES _sqlite/cache.c
             _sqlite/connection.c
             _sqlite/cursor.c
@@ -694,8 +694,8 @@ add_python_extension(_sqlite3
             _sqlite/statement.c
             _sqlite/util.c
     DEFINITIONS MODULE_NAME="sqlite3" SQLITE_OMIT_LOAD_EXTENSION=1
-    INCLUDEDIRS ${SQLITE3_INCLUDE_PATH}
-    LIBRARIES ${SQLITE3_LIBRARY}
+    INCLUDEDIRS ${SQLite3_INCLUDE_DIRS}
+    LIBRARIES ${SQLite3_LIBRARIES}
 )
 if(ENABLE_SQLITE3 AND CMAKE_C_COMPILER_ID MATCHES GNU)
     set_property(SOURCE ${SRC_DIR}/Modules/_sqlite/module.c PROPERTY COMPILE_FLAGS -Wno-deprecated-declarations)

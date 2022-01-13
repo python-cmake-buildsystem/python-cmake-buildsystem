@@ -228,10 +228,10 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
     Associated python extensions are: READLINE
     Following CMake variables can manually be set: READLINE_INCLUDE_PATH, READLINE_LIBRARY
 
-  USE_SYSTEM_SQLITE3=ON|OFF     (defaults to ON)
-    If set to OFF, no attempt to detect SQLITE3 libraries will be done.
+  USE_SYSTEM_SQLite3=ON|OFF     (defaults to ON)
+    If set to OFF, no attempt to detect SQLite3 libraries will be done.
     Associated python extensions are: SQLITE3
-    Following CMake variables can manually be set: SQLITE3_INCLUDE_PATH, SQLITE3_LIBRARY
+    Following CMake variables can manually be set: SQLite3_INCLUDE_DIR, SQLite3_LIBRARY
 
   CMAKE_OSX_SDK                (MacOSX, default is autodetected, e.g 'macosx10.06')
     By default, the variable is automatically set running `xcrun` and/or `xcodebuild`. Note that its
