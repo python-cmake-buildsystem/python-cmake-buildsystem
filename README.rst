@@ -216,7 +216,7 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
   USE_SYSTEM_GDBM=ON|OFF        (defaults to ON)
     If set to OFF, no attempt to detect GDBM libraries will be done.
     Associated python extensions are: DBM, GDBM
-    Following CMake variables can manually be set: GDBM_INCLUDE_PATH, GDBM_LIBRARY, GDBM_COMPAT_LIBRARY
+    Following CMake variables can manually be set: GDBM_INCLUDE_PATH, GDBM_LIBRARY, GDBM_COMPAT_LIBRARY, NDBM_TAG, <NDBM_TAG>_INCLUDE_PATH
 
   USE_SYSTEM_LZMA=ON|OFF     (defaults to ON)
     If set to OFF, no attempt to detect LZMA libraries will be done.

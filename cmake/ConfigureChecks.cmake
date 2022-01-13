@@ -17,11 +17,13 @@ message(STATUS "The system version is ${CMAKE_SYSTEM_VERSION}")
 
 # Find any dependencies
 if(USE_SYSTEM_BZip2)
-    find_package(BZip2)
+    find_package(BZip2) # https://cmake.org/cmake/help/latest/module/FindBZip2.html
 endif()
+message(STATUS "BZIP2_INCLUDE_DIR=${BZIP2_INCLUDE_DIR}")
+message(STATUS "BZIP2_LIBRARIES=${BZIP2_LIBRARIES}")
 
 if(USE_SYSTEM_Curses)
-    find_package(Curses)
+    find_package(Curses) # https://cmake.org/cmake/help/latest/module/FindCurses.html
     find_library(PANEL_LIBRARY NAMES panel)
     set(PANEL_LIBRARIES ${PANEL_LIBRARY})
     if(WITH_STATIC_DEPENDENCIES)
@@ -29,18 +31,29 @@ if(USE_SYSTEM_Curses)
         find_library(GPM_LIBRARY NAMES gpm)
     endif()
 endif()
+message(STATUS "CURSES_LIBRARIES=${CURSES_LIBRARIES}")
+message(STATUS "PANEL_LIBRARIES=${PANEL_LIBRARIES}")
+if(WITH_STATIC_DEPENDENCIES)
+    message(STATUS "TINFO_LIBRARY=${TINFO_LIBRARY}")
+    message(STATUS "GPM_LIBRARY=${GPM_LIBRARY}")
+endif()
 
 if(USE_SYSTEM_EXPAT)
-    find_package(EXPAT)
+    find_package(EXPAT) # https://cmake.org/cmake/help/latest/module/FindEXPAT.html
 endif()
+message(STATUS "EXPAT_LIBRARIES=${EXPAT_LIBRARIES}")
+message(STATUS "EXPAT_INCLUDE_DIRS=${EXPAT_INCLUDE_DIRS}")
 
 if(IS_PY3 AND USE_SYSTEM_LIBMPDEC)
     find_library(LIBMPDEC_LIBRARY NAMES libmpdec)
     set(LIBMPDEC_LIBRARIES ${LIBMPDEC_LIBRARY})
+    message(STATUS "LIBMPDEC_LIBRARIES=${LIBMPDEC_LIBRARIES}")
 endif()
 
 if(USE_SYSTEM_OpenSSL)
-    find_package(OpenSSL 0.9.7)
+    find_package(OpenSSL 0.9.7) # https://cmake.org/cmake/help/latest/module/FindOpenSSL.html
+    message(STATUS "OPENSSL_LIBRARIES=${OPENSSL_LIBRARIES}")
+    message(STATUS "OPENSSL_INCLUDE_DIR=${OPENSSL_INCLUDE_DIR}")
 endif()
 
 if(USE_SYSTEM_TCL)
@@ -53,12 +66,16 @@ if(UNIX)
 endif()
 
 if(USE_SYSTEM_ZLIB)
-    find_package(ZLIB)
+    find_package(ZLIB) # https://cmake.org/cmake/help/latest/module/FindZLIB.html
+    message(STATUS "ZLIB_INCLUDE_DIRS=${ZLIB_INCLUDE_DIRS}")
+    message(STATUS "ZLIB_LIBRARIES=${ZLIB_LIBRARIES}")
 endif()
 
 if(USE_SYSTEM_DB)
     find_path(DB_INCLUDE_PATH db.h)
     find_library(DB_LIBRARY NAMES db-4.8)
+    message(STATUS "DB_INCLUDE_PATH=${DB_INCLUDE_PATH}")
+    message(STATUS "DB_LIBRARY=${DB_LIBRARY}")
 endif()
 
 if(USE_SYSTEM_GDBM)
@@ -66,6 +83,7 @@ if(USE_SYSTEM_GDBM)
     find_library(GDBM_LIBRARY gdbm)
     find_library(GDBM_COMPAT_LIBRARY gdbm_compat)
     find_path(NDBM_INCLUDE_PATH ndbm.h)
+
     if(NDBM_INCLUDE_PATH)
         set(NDBM_TAG NDBM)
     else()
@@ -80,9 +98,16 @@ if(USE_SYSTEM_GDBM)
         endif()
     endif()
 endif()
+message(STATUS "GDBM_INCLUDE_PATH=${GDBM_INCLUDE_PATH}")
+message(STATUS "GDBM_LIBRARY=${GDBM_LIBRARY}")
+message(STATUS "GDBM_COMPAT_LIBRARY=${GDBM_COMPAT_LIBRARY}")
+message(STATUS "NDBM_TAG=${NDBM_TAG}")
+message(STATUS "<NDBM_TAG>_INCLUDE_PATH=${${NDBM_TAG}_INCLUDE_PATH}")
 
 find_path(LZMA_INCLUDE_PATH lzma.h)
 find_library(LZMA_LIBRARY lzma)
+message(STATUS "LZMA_INCLUDE_PATH=${LZMA_INCLUDE_PATH}")
+message(STATUS "LZMA_LIBRARY=${LZMA_LIBRARY}")
 
 if(USE_SYSTEM_READLINE)
     if(USE_LIBEDIT)
@@ -93,11 +118,17 @@ if(USE_SYSTEM_READLINE)
         find_library(READLINE_LIBRARY readline)
     endif()
 endif()
+message(STATUS "READLINE_INCLUDE_PATH=${READLINE_INCLUDE_PATH}")
+message(STATUS "READLINE_LIBRARY=${READLINE_LIBRARY}")
 
 find_path(SQLITE3_INCLUDE_PATH sqlite3.h)
 find_library(SQLITE3_LIBRARY sqlite3)
+message( STATUS "SQLITE3_INCLUDE_PATH=${SQLITE3_INCLUDE_PATH}")
+message( STATUS "SQLITE3_LIBRARY=${SQLITE3_LIBRARY}")
+
 find_path(TIRPC_RPC_INCLUDE_PATH rpc.h PATHS "/usr/include/tirpc/rpc")
 find_library(TIRPC_LIBRARY tirpc)
+
 find_library(UUID_LIBRARY uuid)
 
 if(WIN32)
