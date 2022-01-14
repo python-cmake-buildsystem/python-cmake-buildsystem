@@ -74,6 +74,14 @@ set(PARSER_COMMON_SOURCES # Equivalent to POBJS in Makefile.pre
     ${SRC_DIR}/Parser/node.c
     ${SRC_DIR}/Parser/parser.c
 )
+if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
+    list(APPEND PARSER_COMMON_SOURCES
+        ${SRC_DIR}/Parser/pegen/pegen.c
+        ${SRC_DIR}/Parser/pegen/parse.c
+        ${SRC_DIR}/Parser/pegen/parse_string.c
+        ${SRC_DIR}/Parser/pegen/peg_api.c
+    )
+endif()
 if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
     list(APPEND PARSER_COMMON_SOURCES
         ${SRC_DIR}/Parser/myreadline.c
@@ -164,6 +172,11 @@ if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
     list(APPEND OBJECT_COMMON_SOURCES
         ${SRC_DIR}/Objects/interpreteridobject.c
         ${SRC_DIR}/Objects/picklebufobject.c
+    )
+endif()
+if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
+    list(APPEND OBJECT_COMMON_SOURCES
+        ${SRC_DIR}/Objects/genericaliasobject.c
     )
 endif()
 
@@ -446,6 +459,9 @@ if(WIN32 AND IS_PY3)
     endif()
     if(PY_VERSION VERSION_GREATER_EQUAL "3.6")
         list(APPEND LIBPYTHON_TARGET_LIBRARIES shlwapi) # Required by PC/getpathp
+    endif()
+    if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
+        list(APPEND LIBPYTHON_TARGET_LIBRARIES pathcch)
     endif()
 endif()
 

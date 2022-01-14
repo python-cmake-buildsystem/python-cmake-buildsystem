@@ -14,6 +14,16 @@ configuration:
 
 environment:
   matrix:
+  - PY_VERSION: 3.9.9
+    GENERATOR: "Visual Studio 16 2019"
+    PLATFORM: x64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+
+  - PY_VERSION: 3.9.9
+    GENERATOR: "Visual Studio 16 2019"
+    PLATFORM: Win32
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+
   - PY_VERSION: 3.8.5
     GENERATOR: "Visual Studio 16 2019"
     PLATFORM: x64

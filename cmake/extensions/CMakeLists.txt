@@ -97,7 +97,9 @@ add_python_extension(_testimportmultiple REQUIRES IS_PY3 SOURCES _testimportmult
 # Test multi-phase extension module init (PEP 489)
 add_python_extension(_testmultiphase REQUIRES IS_PY3 SOURCES _testmultiphase.c)
 # debug tool to trace memory blocks allocated by Python
-add_python_extension(_tracemalloc BUILTIN REQUIRES IS_PY3 SOURCES hashtable.c _tracemalloc.c)
+add_python_extension(_tracemalloc BUILTIN REQUIRES IS_PY3
+    SOURCES ${SRC_DIR}/$<IF:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>,Python,Modules>/hashtable.c _tracemalloc.c
+)
 add_python_extension(_weakref BUILTIN REQUIRES IS_PY3 SOURCES _weakref.c)
 math(EXPR _limited_api_version "${PY_VERSION_MAJOR} * 100 + ${PY_VERSION_MINOR}")
 add_python_extension(xxlimited REQUIRES IS_PY3 BUILD_TESTING
@@ -141,6 +143,11 @@ endif()
 # Python 3.8
 if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
     add_python_extension(_testinternalcapi SOURCES _testinternalcapi.c DEFINITIONS "PY3_DLLNAME=\"python3$<$<CONFIG:Debug>:_d>\"")
+endif()
+
+# Python 3.9
+if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
+    add_python_extension(_peg_parser ALWAYS_BUILTIN SOURCES _peg_parser.c)
 endif()
 
 # UNIX-only extensions
@@ -213,7 +220,7 @@ add_python_extension(${winreg${PY_VERSION_MAJOR}_NAME} REQUIRES WIN32 BUILTIN SO
 add_python_extension(_overlapped
     REQUIRES WIN32 IS_PY3
     SOURCES ${SRC_DIR}/Modules/overlapped.c
-    LIBRARIES ws2_32
+    LIBRARIES ws2_32 $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>:pathcch>
 )
 add_python_extension(_winapi REQUIRES WIN32 IS_PY3 BUILTIN SOURCES ${SRC_DIR}/Modules/_winapi.c)
 
@@ -433,12 +440,20 @@ else()
         _decimal/libmpdec/fnt.c
         _decimal/libmpdec/fourstep.c
         _decimal/libmpdec/io.c
-        _decimal/libmpdec/memory.c
         _decimal/libmpdec/mpdecimal.c
         _decimal/libmpdec/numbertheory.c
         _decimal/libmpdec/sixstep.c
         _decimal/libmpdec/transpose.c
     )
+    if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
+        list(APPEND _decimal_EXTRA_SOURCES
+            _decimal/libmpdec/mpalloc.c
+        )
+    else()
+        list(APPEND _decimal_EXTRA_SOURCES
+            _decimal/libmpdec/memory.c
+        )
+    endif()
     if(WIN32)
         if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
             enable_language(ASM_MASM)

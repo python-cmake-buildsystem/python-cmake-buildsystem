@@ -9,6 +9,10 @@
 /* Define if building universal (internal helper macro) */
 #cmakedefine AC_APPLE_UNIVERSAL_BUILD 1
 
+/* BUILD_GNU_TYPE + AIX_BUILDDATE are used to construct the PEP425 tag of the
+   build system. [Python 3.9] */
+#cmakedefine AIX_BUILDDATE 1
+
 /* Define for AIX if your compiler is a genuine IBM xlC/xlC_r and you want
    support for AIX C++ shared extension modules. */
 #cmakedefine AIX_GENUINE_CPLUSPLUS 1
@@ -641,6 +645,9 @@
 /* Define to 1 if you have the <libutil.h> header file. */
 #cmakedefine HAVE_LIBUTIL_H 1
 
+/* Define to 1 if you have the `uuid' library (-luuid). [Python 3.9] */
+#cmakedefine HAVE_LIBUUID 1
+
 /* Define if you have the 'link' function. */
 #cmakedefine HAVE_LINK 1
 
@@ -653,11 +660,17 @@
 /* Define to 1 if you have the <linux/can.h> header file. [Python 3] */
 #cmakedefine HAVE_LINUX_CAN_H 1
 
+/* Define to 1 if you have the <linux/can/j1939.h> header file. [Python 3.9] */
+#cmakedefine HAVE_LINUX_CAN_J1939_H 1
+
 /* Define if compiling using Linux 3.6 or later. [Python 3] */
 #cmakedefine HAVE_LINUX_CAN_RAW_FD_FRAMES 1
 
 /* Define to 1 if you have the <linux/can/raw.h> header file. [Python 3] */
 #cmakedefine HAVE_LINUX_CAN_RAW_H 1
+
+/* Define if compiling using Linux 4.1 or later. [Python 3.9] */
+#cmakedefine HAVE_LINUX_CAN_RAW_JOIN_FILTERS 1
 
 /* Define to 1 if you have the <linux/memfd.h> header file. [Python 3.8] */
 #cmakedefine HAVE_LINUX_MEMFD_H 1
@@ -676,6 +689,9 @@
 
 /* Define to 1 if you have the <linux/vm_sockets.h> header file. [Python 3.7] */
 #cmakedefine HAVE_LINUX_VM_SOCKETS_H 1
+
+/* Define to 1 if you have the <linux/wait.h> header file. [Python 3.9] */
+#cmakedefine HAVE_LINUX_WAIT_H 1
 
 /* Define to 1 if you have the `lockf' function. [Python 3] */
 #cmakedefine HAVE_LOCKF 1
@@ -757,6 +773,10 @@
 
 /* Define to 1 if you have the `nice' function. */
 #cmakedefine HAVE_NICE 1
+
+/* Define if the internal form of wchar_t in non-Unicode locales is not
+   Unicode. [Python 3.9] */
+#cmakedefine HAVE_NON_UNICODE_WCHAR_T_REPRESENTATION 1
 
 /* Define to 1 if you have the `openat' function. [Python 3] */
 #cmakedefine HAVE_OPENAT 1
@@ -931,6 +951,9 @@
 
 /* Define to 1 if you have the `select' function. */
 #cmakedefine HAVE_SELECT 1
+
+/* Define to 1 if you have the `sem_clockwait' function. [Python 3.9] */
+#cmakedefine HAVE_SEM_CLOCKWAIT 1
 
 /* Define to 1 if you have the `sem_getvalue' function. */
 #cmakedefine HAVE_SEM_GETVALUE 1

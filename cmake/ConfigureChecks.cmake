@@ -296,6 +296,7 @@ set(LINUX_CAN_HEADERS)
 add_cond(LINUX_CAN_HEADERS HAVE_SYS_SOCKET_H sys/socket.h)
 check_include_files("${LINUX_CAN_HEADERS};linux/can.h" HAVE_LINUX_CAN_H)
 check_include_files("${LINUX_CAN_HEADERS};linux/can/bcm.h" HAVE_LINUX_CAN_BCM_H)
+check_include_files("${LINUX_CAN_HEADERS};linux/can/j1939.h" HAVE_LINUX_CAN_J1939_H)
 check_include_files("${LINUX_CAN_HEADERS};linux/can/raw.h" HAVE_LINUX_CAN_RAW_H)
 
 set(LINUX_VM_SOCKETS_HEADERS)
@@ -715,6 +716,8 @@ set(HAVE_C99_BOOL ${SIZEOF__BOOL})
 # TODO
 set(HAVE_LONG_DOUBLE_VARIANT 0)
 
+# TODO Improve AIX support setting AIX_GENUINE_CPLUSPLUS and AIX_BUILDDATE
+#      See https://github.com/python-cmake-buildsystem/python-cmake-buildsystem/issues/296
 set(AIX_GENUINE_CPLUSPLUS 0)
 
 set(WITH_DYLD 0)
@@ -774,6 +777,7 @@ if(IS_PY3)
 add_cond(CFG_HEADERS HAVE_DIRENT_H dirent.h)
 add_cond(CFG_HEADERS HAVE_ENDIAN_H endian.h)
 add_cond(CFG_HEADERS HAVE_LINUX_MEMFD_H linux/memfd.h)
+add_cond(CFG_HEADERS HAVE_LINUX_WAIT_H linux/wait.h)
 add_cond(CFG_HEADERS HAVE_MACH_O_DYLD_H mach-o/dyld.h)
 add_cond(CFG_HEADERS HAVE_NET_IF_H net/if.h)
 add_cond(CFG_HEADERS HAVE_SCHED_H sched.h)
@@ -1939,6 +1943,7 @@ check_symbol_exists(pthread_condattr_setclock "${CFG_HEADERS}" HAVE_PTHREAD_COND
 check_symbol_exists(pthread_getcpuclockid "${CFG_HEADERS}" HAVE_PTHREAD_GETCPUCLOCKID)
 
 add_cond(CFG_HEADERS  HAVE_SEMAPHORE_H  semaphore.h)
+check_symbol_exists(sem_clockwait "${CFG_HEADERS}" HAVE_SEM_CLOCKWAIT)
 check_symbol_exists(sem_getvalue "${CFG_HEADERS}" HAVE_SEM_GETVALUE)
 check_symbol_exists(sem_open "${CFG_HEADERS}" HAVE_SEM_OPEN)
 check_symbol_exists(sem_timedwait "${CFG_HEADERS}" HAVE_SEM_TIMEDWAIT)
@@ -2881,6 +2886,9 @@ endif()
 if(IS_PY3)
 # Check for CAN_RAW_FD_FRAMES
 check_c_source_compiles("#include <linux/can/raw.h>\n int main () { int can_raw_fd_frames = CAN_RAW_FD_FRAMES; }" HAVE_LINUX_CAN_RAW_FD_FRAMES)
+
+# Check for CAN_RAW_JOIN_FILTERS
+check_c_source_compiles("#include <linux/can/raw.h>\n int main () { int can_raw_join_filters = CAN_RAW_JOIN_FILTERS; }" HAVE_LINUX_CAN_RAW_JOIN_FILTERS)
 endif()
 
 set(HAVE_OSX105_SDK 0)
