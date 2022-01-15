@@ -1424,13 +1424,13 @@
 #cmakedefine Py_HASH_ALGORITHM 1
 
 /* Define if setpgrp() must be called as setpgrp(0, 0). */
-#cmakedefine SETPGRP_HAVE_ARG
+#cmakedefine SETPGRP_HAVE_ARG 1
 
 /* Define this to be extension of shared libraries (including the dot!).[Python 2.7]  */
 #define SHLIB_EXT "@CMAKE_SHARED_MODULE_SUFFIX@"
 
 /* Define if i>>j for signed int i does not extend the sign bit when i < 0 */
-#cmakedefine SIGNED_RIGHT_SHIFT_ZERO_FILLS
+#cmakedefine SIGNED_RIGHT_SHIFT_ZERO_FILLS 1
 
 /* The size of `double', as computed by sizeof. */
 #cmakedefine SIZEOF_DOUBLE @SIZEOF_DOUBLE@
