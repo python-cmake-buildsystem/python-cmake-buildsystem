@@ -55,7 +55,7 @@ How to use this buildsystem:
 
 .. note::
 
-  By default, the build system will download the python 3.7.12 source from
+  By default, the build system will download the python 3.8.5 source from
   http://www.python.org/ftp/python/
 
 
@@ -68,7 +68,7 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
 
 ::
 
-  PYTHON_VERSION=major.minor.patch (defaults to 3.7.12)
+  PYTHON_VERSION=major.minor.patch (defaults to 3.8.5)
     The version of Python to build.
 
   PYTHON_APPLY_PATCHES=ON|OFF (defaults to ON)
@@ -164,6 +164,12 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
   WITH_C_LOCALE_COERCION       (only for python3.7 and above, default to ON)
     Enable C locale coercion to a UTF-8 based locale.
 
+  WITH_DECIMAL_CONTEXTVAR      (only for python3.8 and above, default to ON)
+    Build _decimal module using a coroutine-local rather than a thread-local context.
+
+  WITH_TRACE_REFS              (only for python3.8 and above, default to OFF)
+    Enable tracing references for debugging purpose
+
   WITH_SSL_DEFAULT_SUITES      (only for python3.7 and above, default to "python")
     Override default cipher suites string:
     * python: use Python's preferred selection (default)
@@ -189,6 +195,11 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
     Associated python extensions are: ELEMENTTREE, PYEXPAT
     Following CMake variables can manually be set: EXPAT_LIBRARIES, EXPAT_INCLUDE_DIRS
 
+  USE_SYSTEM_FFI=ON|OFF       (defaults to ON)
+    If set to OFF, no attempt to detect libffi libraries will be done.
+    Associated python extensions are: CTYPES
+    Following CMake variables can manually be set: FFI_LIBRARY and FFI_INCLUDE_DIR
+
   USE_SYSTEM_OpenSSL=ON|OFF     (defaults to ON)
     If set to OFF, no attempt to detect OpenSSL libraries will be done.
     Associated python extensions are: HASHLIB, SSL, MD5, SHA, SHA256, SHA512
@@ -211,12 +222,12 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
   USE_SYSTEM_DB=ON|OFF          (defaults to ON)
     If set to OFF, no attempt to detect DB libraries will be done.
     Associated python extensions are: BSDDB
-    Following CMake variables can manually be set: DB_INCLUDE_PATH, DB_LIBRARIES
+    Following CMake variables can manually be set: DB_INCLUDE_PATH, DB_LIBRARY
 
   USE_SYSTEM_GDBM=ON|OFF        (defaults to ON)
     If set to OFF, no attempt to detect GDBM libraries will be done.
     Associated python extensions are: DBM, GDBM
-    Following CMake variables can manually be set: GDBM_INCLUDE_PATH, GDBM_LIBRARY, GDBM_COMPAT_LIBRARY
+    Following CMake variables can manually be set: GDBM_INCLUDE_PATH, GDBM_LIBRARY, GDBM_COMPAT_LIBRARY, NDBM_TAG, <NDBM_TAG>_INCLUDE_PATH
 
   USE_SYSTEM_LZMA=ON|OFF     (defaults to ON)
     If set to OFF, no attempt to detect LZMA libraries will be done.
@@ -228,10 +239,10 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
     Associated python extensions are: READLINE
     Following CMake variables can manually be set: READLINE_INCLUDE_PATH, READLINE_LIBRARY
 
-  USE_SYSTEM_SQLITE3=ON|OFF     (defaults to ON)
-    If set to OFF, no attempt to detect SQLITE3 libraries will be done.
+  USE_SYSTEM_SQLite3=ON|OFF     (defaults to ON)
+    If set to OFF, no attempt to detect SQLite3 libraries will be done.
     Associated python extensions are: SQLITE3
-    Following CMake variables can manually be set: SQLITE3_INCLUDE_PATH, SQLITE3_LIBRARY
+    Following CMake variables can manually be set: SQLite3_INCLUDE_DIR, SQLite3_LIBRARY
 
   CMAKE_OSX_SDK                (MacOSX, default is autodetected, e.g 'macosx10.06')
     By default, the variable is automatically set running `xcrun` and/or `xcodebuild`. Note that its

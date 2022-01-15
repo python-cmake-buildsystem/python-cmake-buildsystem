@@ -23,7 +23,6 @@ extern PyObject* PyInit__sre(void);
 extern PyObject* PyInit__symtable(void);
 extern PyObject* PyInit__weakref(void);
 extern PyObject* PyInit_xxsubtype(void);
-extern PyObject* PyInit_zipimport(void);
 
 struct _inittab _PyImport_Inittab[] = {
 
@@ -60,7 +59,6 @@ struct _inittab _PyImport_Inittab[] = {
     {"_symtable", PyInit__symtable},
     {"_weakref", PyInit__weakref},
     {"xxsubtype", PyInit_xxsubtype},
-    {"zipimport", PyInit_zipimport},
 
     /* Sentinel */
     {0, 0}

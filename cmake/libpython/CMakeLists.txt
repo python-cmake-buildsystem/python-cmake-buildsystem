@@ -1,4 +1,5 @@
 add_definitions(-DPy_BUILD_CORE)
+add_definitions(-DPy_BUILD_CORE_BUILTIN)
 add_definitions(-DNDEBUG)
 
 set(MODULE_SOURCES # Equivalent to MODULE_OBJS in Makefile.pre
@@ -62,22 +63,41 @@ elseif(WIN32)
         PROPERTY COMPILE_DEFINITIONS
             "LANDMARK=${_wide_char_modifier}\"${PYTHONHOME_ESCAPED}\\\\os.py\""
             "PYTHONPATH=${_wide_char_modifier}\"${PYTHONPATH}\""
-            "PY3_DLLNAME=${_wide_char_modifier}\"python3$<$<CONFIG:Debug>:_d>\""
+            "PY3_DLLNAME=\"python3$<$<CONFIG:Debug>:_d>\""
     )
 endif()
 
 set(PARSER_COMMON_SOURCES # Equivalent to POBJS in Makefile.pre
     ${SRC_DIR}/Parser/acceler.c
-    ${SRC_DIR}/Parser/bitset.c
-    ${SRC_DIR}/Parser/firstsets.c
     ${SRC_DIR}/Parser/grammar1.c
-    ${SRC_DIR}/Parser/grammar.c
     ${SRC_DIR}/Parser/listnode.c
-    ${SRC_DIR}/Parser/metagrammar.c
     ${SRC_DIR}/Parser/node.c
     ${SRC_DIR}/Parser/parser.c
-    ${SRC_DIR}/Parser/pgen.c
 )
+if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
+    list(APPEND PARSER_COMMON_SOURCES
+        ${SRC_DIR}/Parser/pegen/pegen.c
+        ${SRC_DIR}/Parser/pegen/parse.c
+        ${SRC_DIR}/Parser/pegen/parse_string.c
+        ${SRC_DIR}/Parser/pegen/peg_api.c
+    )
+endif()
+if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
+    list(APPEND PARSER_COMMON_SOURCES
+        ${SRC_DIR}/Parser/myreadline.c
+        ${SRC_DIR}/Parser/parsetok.c
+        ${SRC_DIR}/Parser/token.c
+        ${SRC_DIR}/Parser/tokenizer.c
+    )
+else()
+    list(APPEND PARSER_COMMON_SOURCES
+        ${SRC_DIR}/Parser/bitset.c
+        ${SRC_DIR}/Parser/firstsets.c
+        ${SRC_DIR}/Parser/grammar.c
+        ${SRC_DIR}/Parser/metagrammar.c
+        ${SRC_DIR}/Parser/pgen.c
+    )
+endif()
 
 set(OBJECT2_SOURCES
     ${SRC_DIR}/Objects/bufferobject.c
@@ -148,6 +168,17 @@ set(OBJECT_COMMON_SOURCES # Equivalent to OBJECT_OBJS in Makefile.pre
     ${SRC_DIR}/Objects/unicodeobject.c
     ${SRC_DIR}/Objects/weakrefobject.c
 )
+if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
+    list(APPEND OBJECT_COMMON_SOURCES
+        ${SRC_DIR}/Objects/interpreteridobject.c
+        ${SRC_DIR}/Objects/picklebufobject.c
+    )
+endif()
+if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
+    list(APPEND OBJECT_COMMON_SOURCES
+        ${SRC_DIR}/Objects/genericaliasobject.c
+    )
+endif()
 
 if(CMAKE_C_COMPILER_ID MATCHES GNU)
     foreach(filename class complex float int method string type unicode weakref)
@@ -269,6 +300,13 @@ else()
         ${SRC_DIR}/Python/random.c
     )
 endif()
+if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
+    list(APPEND PYTHON_COMMON_SOURCES
+        ${SRC_DIR}/Python/initconfig.c
+        ${SRC_DIR}/Python/preconfig.c
+    )
+endif()
+
 if(UNIX)
     list(APPEND PYTHON_COMMON_SOURCES
         ${SRC_DIR}/Python/frozenmain.c
@@ -302,19 +340,27 @@ list(APPEND MODULE_SOURCES
     ${SRC_DIR}/Modules/symtablemodule.c
     ${SRC_DIR}/Modules/_weakref.c
     ${SRC_DIR}/Modules/xxsubtype.c
-    ${SRC_DIR}/Modules/zipimport.c
 )
+if(PY_VERSION VERSION_LESS "3.8")
+    list(APPEND MODULE_SOURCES
+        ${SRC_DIR}/Modules/zipimport.c
+    )
+endif()
 
 set(LIBPYTHON_OMIT_FROZEN_SOURCES
     ${SRC_DIR}/Modules/getbuildinfo.c
-    ${SRC_DIR}/Parser/myreadline.c
-    ${SRC_DIR}/Parser/parsetok.c
-    ${SRC_DIR}/Parser/tokenizer.c
     ${MODULE_SOURCES}
     ${OBJECT_COMMON_SOURCES}
     ${PARSER_COMMON_SOURCES}
     ${PYTHON_COMMON_SOURCES}
 )
+if(PY_VERSION VERSION_LESS "3.8")
+    list(APPEND LIBPYTHON_OMIT_FROZEN_SOURCES
+        ${SRC_DIR}/Parser/myreadline.c
+        ${SRC_DIR}/Parser/parsetok.c
+        ${SRC_DIR}/Parser/tokenizer.c
+    )
+endif()
 
 # List of builtin extensions
 get_property(builtin_extensions GLOBAL PROPERTY builtin_extensions)
@@ -414,6 +460,9 @@ if(WIN32 AND IS_PY3)
     if(PY_VERSION VERSION_GREATER_EQUAL "3.6")
         list(APPEND LIBPYTHON_TARGET_LIBRARIES shlwapi) # Required by PC/getpathp
     endif()
+    if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
+        list(APPEND LIBPYTHON_TARGET_LIBRARIES pathcch)
+    endif()
 endif()
 
 set(LIBPYTHON_FROZEN_SOURCES )
@@ -434,14 +483,21 @@ set(LIBPYTHON_FROZEN_SOURCES
   ${SRC_DIR}/Python/importlib_external.h
   ${SRC_DIR}/Python/importlib.h
 )
+if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
+  list(APPEND LIBPYTHON_FROZEN_SOURCES
+    ${SRC_DIR}/Python/importlib_zipimport.h
+  )
+endif()
 add_custom_command(
   OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
   COMMAND
     ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:importlib._bootstrap_external>
       ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
       ${SRC_DIR}/Python/importlib_external.h
   COMMAND
     ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:importlib._bootstrap>
       ${SRC_DIR}/Lib/importlib/_bootstrap.py
       ${SRC_DIR}/Python/importlib.h
   DEPENDS
@@ -449,6 +505,19 @@ add_custom_command(
     ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
     ${SRC_DIR}/Lib/importlib/_bootstrap.py
 )
+if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
+  add_custom_command(
+    OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
+    COMMAND
+      ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+        zipimport
+        ${SRC_DIR}/Lib/zipimport.py
+        ${SRC_DIR}/Python/importlib_zipimport.h
+    DEPENDS
+      ${SRC_DIR}/Lib/zipimport.py
+    APPEND
+  )
+endif()
 
 # This is a convenience target allowing to regenerate
 # the frozen sources.
@@ -456,6 +525,7 @@ add_custom_target(freeze_modules DEPENDS ${LIBPYTHON_FROZEN_SOURCES})
 
 endif()
 
+if(PY_VERSION VERSION_LESS "3.8")
 # Build pgen executable
 set(PGEN2_SOURCES
     ${SRC_DIR}/Parser/parsetok.c
@@ -476,6 +546,7 @@ add_executable(pgen
 )
 if(builtin_compile_definitions_without_py_limited_api)
   target_compile_definitions(pgen PUBLIC ${builtin_compile_definitions_without_py_limited_api})
+endif()
 endif()
 
 # Collect libpython sources

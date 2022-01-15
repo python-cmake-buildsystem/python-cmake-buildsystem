@@ -97,7 +97,9 @@ add_python_extension(_testimportmultiple REQUIRES IS_PY3 SOURCES _testimportmult
 # Test multi-phase extension module init (PEP 489)
 add_python_extension(_testmultiphase REQUIRES IS_PY3 SOURCES _testmultiphase.c)
 # debug tool to trace memory blocks allocated by Python
-add_python_extension(_tracemalloc BUILTIN REQUIRES IS_PY3 SOURCES hashtable.c _tracemalloc.c)
+add_python_extension(_tracemalloc BUILTIN REQUIRES IS_PY3
+    SOURCES ${SRC_DIR}/$<IF:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>,Python,Modules>/hashtable.c _tracemalloc.c
+)
 add_python_extension(_weakref BUILTIN REQUIRES IS_PY3 SOURCES _weakref.c)
 math(EXPR _limited_api_version "${PY_VERSION_MAJOR} * 100 + ${PY_VERSION_MINOR}")
 add_python_extension(xxlimited REQUIRES IS_PY3 BUILD_TESTING
@@ -106,9 +108,11 @@ add_python_extension(xxlimited REQUIRES IS_PY3 BUILD_TESTING
     NO_INSTALL
 )
 add_python_extension(xxsubtype BUILTIN REQUIRES IS_PY3 SOURCES xxsubtype.c)
+if(PY_VERSION VERSION_LESS "3.8")
 # The zipimport module is always imported at startup. Having it as a
 # builtin module avoids some bootstrapping problems and reduces overhead.
 add_python_extension(zipimport ALWAYS_BUILTIN REQUIRES IS_PY3 SOURCES zipimport.c DEFINITIONS Py_BUILD_CORE)
+endif()
 
 # Python 3.6
 if(PY_VERSION VERSION_GREATER_EQUAL "3.6")
@@ -122,6 +126,7 @@ if(PY_VERSION VERSION_GREATER_EQUAL "3.6")
     )
     add_python_extension(_blake2 ${WIN32_BUILTIN} SOURCES ${_blake2_SOURCES})
     add_python_extension(_sha3 ${WIN32_BUILTIN} SOURCES _sha3/sha3module.c)
+    add_python_extension(_testconsole ${WIN32_BUILTIN} SOURCES ../PC/_testconsole.c)
 endif()
 
 # Python 3.7
@@ -133,6 +138,16 @@ if(PY_VERSION VERSION_GREATER_EQUAL "3.7")
     add_python_extension(_xxtestfuzz SOURCES _xxtestfuzz/_xxtestfuzz.c
                                              _xxtestfuzz/fuzzer.c
     )
+endif()
+
+# Python 3.8
+if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
+    add_python_extension(_testinternalcapi SOURCES _testinternalcapi.c DEFINITIONS "PY3_DLLNAME=\"python3$<$<CONFIG:Debug>:_d>\"")
+endif()
+
+# Python 3.9
+if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
+    add_python_extension(_peg_parser ALWAYS_BUILTIN SOURCES _peg_parser.c)
 endif()
 
 # UNIX-only extensions
@@ -182,6 +197,11 @@ add_python_extension(_scproxy
 add_python_extension(linuxaudiodev REQUIRES LINUX IS_PY2 SOURCES linuxaudiodev.c)
 add_python_extension(ossaudiodev REQUIRES LINUX SOURCES ossaudiodev.c)
 
+# Python 3.8: Linux-only extensions
+if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
+    add_python_extension(_posixshmem REQUIRES LINUX SOURCES _multiprocessing/posixshmem.c LIBRARIES "rt")
+endif()
+
 # Windows-only extensions
 add_python_extension(_msi
     REQUIRES WIN32
@@ -200,7 +220,7 @@ add_python_extension(${winreg${PY_VERSION_MAJOR}_NAME} REQUIRES WIN32 BUILTIN SO
 add_python_extension(_overlapped
     REQUIRES WIN32 IS_PY3
     SOURCES ${SRC_DIR}/Modules/overlapped.c
-    LIBRARIES ws2_32
+    LIBRARIES ws2_32 $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>:pathcch>
 )
 add_python_extension(_winapi REQUIRES WIN32 IS_PY3 BUILTIN SOURCES ${SRC_DIR}/Modules/_winapi.c)
 
@@ -262,7 +282,7 @@ if(WIN32)
         DEFINITIONS EAI_ADDRFAMILY
                     HAVE_SOCKADDR_STORAGE
                     HAVE_ADDRINFO
-        LIBRARIES ws2_32 ${M_LIBRARIES}
+        LIBRARIES ws2_32 ${M_LIBRARIES} $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:iphlpapi>
     )
 else()
     list(APPEND _socket_SOURCES timemodule.c)
@@ -289,6 +309,26 @@ set(ctypes_COMMON_SOURCES
     _ctypes/stgdict.c
     _ctypes/cfield.c
 )
+
+if(
+    (WIN32 AND PY_VERSION VERSION_GREATER_EQUAL "3.8")
+    OR
+    (LINUX AND PY_VERSION VERSION_GREATER_EQUAL "3.7")
+  )
+    # If installed, build ctypes using the system ffi
+    # * on Windows for python >= 3.8
+    # * on Linux for python >= 3.7
+    if(NOT USE_SYSTEM_FFI)
+        message(AUTHOR_WARNING "Disabling USE_SYSTEM_FFI option is *NOT* supported with Python >= 3.8 on windows and with Python >= 3.7 on Linux. Current version is ${PY_VERSION}")
+    endif()
+    add_python_extension(_ctypes
+        REQUIRES FFI_INCLUDE_DIR FFI_LIBRARY
+        SOURCES ${ctypes_COMMON_SOURCES}
+        DEFINITIONS Py_BUILD_CORE_MODULE FFI_BUILDING
+        INCLUDEDIRS ${FFI_INCLUDE_DIR}
+        LIBRARIES ${FFI_LIBRARY}
+    )
+else()
 # ctypes is different on Windows
 if(WIN32)
     if(MINGW)
@@ -336,7 +376,7 @@ else()
                         ${SRC_DIR}/Modules/_ctypes/darwin
             DEFINITIONS MACOSX
         )
-    elseif(PY_VERSION VERSION_LESS "3.7")
+    else()
         if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
           set(_libffi_system_extra_src
                 _ctypes/libffi/src/${_libffi_system_dir}/ffi64.c
@@ -369,17 +409,8 @@ else()
                         ${INCLUDE_BUILD_DIR}      # For fficonfig.h
                         ${PROJECT_SOURCE_DIR}/cmake # For ffi.h
         )
-
-    else()
-        find_path(FFI_INCLUDE_DIR ffi.h)
-        find_library(FFI_LIBRARY NAMES ffi libffi)
-        add_python_extension(_ctypes
-            REQUIRES FFI_INCLUDE_DIR FFI_LIBRARY
-            SOURCES ${ctypes_COMMON_SOURCES}
-            INCLUDEDIRS ${FFI_INCLUDE_DIR}
-            LIBRARIES ${FFI_LIBRARY}
-        )
     endif()
+endif()
 endif()
 
 # Python3: _decimal
@@ -409,12 +440,20 @@ else()
         _decimal/libmpdec/fnt.c
         _decimal/libmpdec/fourstep.c
         _decimal/libmpdec/io.c
-        _decimal/libmpdec/memory.c
         _decimal/libmpdec/mpdecimal.c
         _decimal/libmpdec/numbertheory.c
         _decimal/libmpdec/sixstep.c
         _decimal/libmpdec/transpose.c
     )
+    if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
+        list(APPEND _decimal_EXTRA_SOURCES
+            _decimal/libmpdec/mpalloc.c
+        )
+    else()
+        list(APPEND _decimal_EXTRA_SOURCES
+            _decimal/libmpdec/memory.c
+        )
+    endif()
     if(WIN32)
         if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
             enable_language(ASM_MASM)
@@ -598,7 +637,7 @@ add_python_extension(binascii
     INCLUDEDIRS ${binascii_INCLUDEDIRS}
 )
 add_python_extension(_bsddb
-    REQUIRES DB_INCLUDE_PATH DB_LIBRARIES
+    REQUIRES IS_PY2 DB_INCLUDE_PATH DB_LIBRARY
     SOURCES _bsddb.c
     LIBRARIES ${DB_LIBRARIES}
     INCLUDEDIRS ${DB_INCLUDE_PATH}
@@ -683,7 +722,7 @@ add_python_extension(readline
     INCLUDEDIRS ${READLINE_INCLUDE_PATH}
 )
 add_python_extension(_sqlite3
-    REQUIRES SQLITE3_INCLUDE_PATH SQLITE3_LIBRARY
+    REQUIRES SQLite3_INCLUDE_DIRS SQLite3_LIBRARIES
     SOURCES _sqlite/cache.c
             _sqlite/connection.c
             _sqlite/cursor.c
@@ -694,8 +733,8 @@ add_python_extension(_sqlite3
             _sqlite/statement.c
             _sqlite/util.c
     DEFINITIONS MODULE_NAME="sqlite3" SQLITE_OMIT_LOAD_EXTENSION=1
-    INCLUDEDIRS ${SQLITE3_INCLUDE_PATH}
-    LIBRARIES ${SQLITE3_LIBRARY}
+    INCLUDEDIRS ${SQLite3_INCLUDE_DIRS}
+    LIBRARIES ${SQLite3_LIBRARIES}
 )
 if(ENABLE_SQLITE3 AND CMAKE_C_COMPILER_ID MATCHES GNU)
     set_property(SOURCE ${SRC_DIR}/Modules/_sqlite/module.c PROPERTY COMPILE_FLAGS -Wno-deprecated-declarations)
@@ -704,9 +743,13 @@ set(_ssl_LIBRARIES ${OPENSSL_LIBRARIES})
 if(WIN32)
     list(APPEND _ssl_LIBRARIES Crypt32 ws2_32)
 endif()
+set(_ssl_SOURCES _ssl.c)
+if(WIN32)
+    list(APPEND _ssl_SOURCES ${OPENSSL_INCLUDE_DIR}/openssl/applink.c)
+endif()
 add_python_extension(_ssl
     REQUIRES OPENSSL_INCLUDE_DIR OPENSSL_LIBRARIES
-    SOURCES _ssl.c
+    SOURCES ${_ssl_SOURCES}
     LIBRARIES ${_ssl_LIBRARIES}
     INCLUDEDIRS ${OPENSSL_INCLUDE_DIR}
 )

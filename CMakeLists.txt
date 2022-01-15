@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.13.5)
 
-set(PYTHON_VERSION "3.7.12" CACHE STRING "The version of Python to build.")
+set(PYTHON_VERSION "3.9.9" CACHE STRING "The version of Python to build.")
 
 string(REPLACE "." ";" VERSION_LIST ${PYTHON_VERSION})
 list(GET VERSION_LIST 0 PY_VERSION_MAJOR)
@@ -106,12 +106,13 @@ endif()
 cmake_dependent_option(USE_SYSTEM_BZip2 "Use system BZip2" ON "USE_SYSTEM_LIBRARIES" OFF)
 cmake_dependent_option(USE_SYSTEM_Curses "Use system Curses" ON "USE_SYSTEM_LIBRARIES" OFF)
 cmake_dependent_option(USE_SYSTEM_EXPAT "Use system EXPAT" ON "USE_SYSTEM_LIBRARIES" OFF)
+cmake_dependent_option(USE_SYSTEM_FFI "Use system FFI" ON "USE_SYSTEM_LIBRARIES" OFF)
 cmake_dependent_option(USE_SYSTEM_OpenSSL "Use system OpenSSL" ON "USE_SYSTEM_LIBRARIES" OFF)
 cmake_dependent_option(USE_SYSTEM_TCL "Use system TCL" ON "USE_SYSTEM_LIBRARIES" OFF)
 cmake_dependent_option(USE_SYSTEM_ZLIB "Use system ZLIB" ${_use_system_zlib_default} "USE_SYSTEM_LIBRARIES" OFF)
-cmake_dependent_option(USE_SYSTEM_DB "Use system DB" ON "USE_SYSTEM_LIBRARIES" OFF)
 cmake_dependent_option(USE_SYSTEM_GDBM "Use system GDBM" ON "USE_SYSTEM_LIBRARIES" OFF)
 cmake_dependent_option(USE_SYSTEM_READLINE "Use system READLINE" ON "USE_SYSTEM_LIBRARIES" OFF)
+cmake_dependent_option(USE_SYSTEM_SQLITE3 "Use system SQLITE3" ON "USE_SYSTEM_LIBRARIES" OFF)
 if(IS_PY3)
   cmake_dependent_option(USE_SYSTEM_LIBMPDEC "Use system LIBMPDEC" ON "USE_SYSTEM_LIBRARIES" OFF)
 endif()
@@ -226,7 +227,18 @@ set(_download_3.7.9_md5 "bcd9f22cf531efc6f06ca6b9b2919bd4")
 set(_download_3.7.10_md5 "0b19e34a6dabc4bf15fdcdf9e77e9856")
 set(_download_3.7.11_md5 "a7e66953dba909d395755b3f2e491f6e")
 set(_download_3.7.12_md5 "6fe83678c085a7735a943cf1e4d41c14")
-
+# 3.8.x
+set(_download_3.8.0_md5 "e18a9d1a0a6d858b9787e03fc6fdaa20")
+set(_download_3.8.1_md5 "f215fa2f55a78de739c1787ec56b2bcd")
+set(_download_3.8.2_md5 "f9f3768f757e34b342dbc06b41cbc844")
+set(_download_3.8.3_md5 "a7c10a2ac9d62de75a0ca5204e2e7d07")
+set(_download_3.8.4_md5 "387e63fe42c40a29e3408ce231315516")
+set(_download_3.8.5_md5 "e2f52bcf531c8cc94732c0b6ff933ff0")
+set(_download_3.8.6_md5 "ea132d6f449766623eee886966c7d41f")
+# 3.9.x
+set(_download_3.9.0_md5 "e19e75ec81dd04de27797bf3f9d918fd")
+set(_download_3.9.8_md5 "83419bd73655813223c2cf2afb11f83c")
+set(_download_3.9.9_md5 "a2da2a456c078db131734ff62de10ed5")
 
 set(_extracted_dir "Python-${PY_VERSION}")
 
@@ -319,6 +331,14 @@ endif()
 
 # Options depending of the python version
 if(IS_PY2)
+  cmake_dependent_option(USE_SYSTEM_DB "Use system DB" ON "USE_SYSTEM_LIBRARIES" OFF)
+else()
+  if(DEFINED USE_SYSTEM_DB)
+    message(AUTHOR_WARNING "USE_SYSTEM_DB option is *NOT* supported with Python 3. Current version is ${PY_VERSION}")
+  endif()
+endif()
+
+if(IS_PY2)
   option(Py_USING_UNICODE "Enable unicode support" ON)
 else()
   if(DEFINED Py_USING_UNICODE)
@@ -364,6 +384,22 @@ else()
     set(PY_SSL_DEFAULT_CIPHER_STRING "${WITH_SSL_DEFAULT_SUITES}")
 endif()
 message(STATUS "Setting PY_SSL_DEFAULT_CIPHER_STRING to '${WITH_SSL_DEFAULT_SUITES}'")
+endif()
+
+if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
+    option(WITH_DECIMAL_CONTEXTVAR "Build _decimal module using a coroutine-local rather than a thread-local context" ON)
+else()
+    if(DEFINED WITH_C_LOCALE_COERCION)
+        message(AUTHOR_WARNING "WITH_DECIMAL_CONTEXTVAR option is *NOT* supported with Python < 3.8. Current version is ${PY_VERSION}")
+    endif()
+endif()
+
+if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
+    option(WITH_TRACE_REFS "Enable tracing references for debugging purpose" OFF)
+else()
+    if(DEFINED WITH_TRACE_REFS)
+        message(AUTHOR_WARNING "WITH_TRACE_REFS option is *NOT* supported with Python < 3.8. Current version is ${PY_VERSION}")
+    endif()
 endif()
 
 # This is the major version number of Python
@@ -457,6 +493,7 @@ endif()
 
 # Set include directories
 include_directories(${INCLUDE_BUILD_DIR})
+include_directories(${INCLUDE_BUILD_DIR}/internal)
 include_directories(${PYCONFIG_BUILD_DIR})
 include_directories(${SRC_DIR}/Python)
 
@@ -533,9 +570,15 @@ add_custom_target(clinic
 endif()
 
 # Add target to generate 'Include/graminit.h' and 'Python/graminit.c'
+if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
+    set(generate_graminit_command $<TARGET_FILE:python> -m Parser.pgen)
+else()
+    set(generate_graminit_command $<TARGET_FILE:pgen>)
+endif()
 add_custom_target(generate_graminit
-    COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:pgen>
+    COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} ${generate_graminit_command}
         ${SRC_DIR}/Grammar/Grammar
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:${SRC_DIR}/Grammar/Tokens>
         ${PROJECT_BINARY_DIR}/CMakeFiles/graminit.h
         ${PROJECT_BINARY_DIR}/CMakeFiles/graminit.c
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -544,11 +587,46 @@ add_custom_target(generate_graminit
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
         ${PROJECT_BINARY_DIR}/CMakeFiles/graminit.c
         ${SRC_DIR}/Python/graminit.c
-    DEPENDS pgen
+    DEPENDS $<IF:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>,python,pgen>
     WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
     COMMENT "Generating '${SRC_DIR}/Include/graminit.h' and '${SRC_DIR}/Python/graminit.c'."
     VERBATIM
 )
+
+if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
+# Add target to generate `Tools/peg_generator/pegen/grammar_parser.py`
+add_custom_target(generate_pegen_metaparser
+    COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${SRC_DIR}/Tools/peg_generator
+        ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> -m pegen
+            -q python
+            ${SRC_DIR}/Tools/peg_generator/pegen/metagrammar.gram
+            -o ${PROJECT_BINARY_DIR}/CMakeFiles/grammar_parser.py
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${PROJECT_BINARY_DIR}/CMakeFiles/grammar_parser.py
+        ${SRC_DIR}/Tools/peg_generator/pegen/grammar_parser.py
+    DEPENDS python
+    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+    COMMENT "Generating '${SRC_DIR}/Tools/peg_generator/pegen/grammar_parser.py'"
+    VERBATIM
+)
+
+# Add target to generate `Parser/pegen/parse.c`
+add_custom_target(generate_pegen_parse
+    COMMAND ${CMAKE_COMMAND} -E env PYTHONPATH=${SRC_DIR}/Tools/peg_generator
+        ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> -m pegen
+            -q c
+            ${SRC_DIR}/Grammar/python.gram
+            ${SRC_DIR}/Grammar/Tokens
+            -o ${PROJECT_BINARY_DIR}/CMakeFiles/parse.c
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${PROJECT_BINARY_DIR}/CMakeFiles/parse.c
+        ${SRC_DIR}/Parser/pegen/parse.c
+    DEPENDS python
+    WORKING_DIRECTORY ${PROJECT_BINARY_DIR}
+    COMMENT "Generating '${SRC_DIR}/Parser/pegen/parse.c'"
+    VERBATIM
+)
+endif()
 
 # Add target to generate 'opcode.h' header file
 add_custom_target(generate_opcode_h

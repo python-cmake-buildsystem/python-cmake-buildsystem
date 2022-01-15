@@ -24,6 +24,7 @@ jobs:
             sudo apt-get install -y \
               libbz2-dev \
               libdb-dev \
+              libffi-dev \
               libgdbm-compat-dev \
               libgdbm-dev \
               liblzma-dev \
@@ -40,6 +41,7 @@ jobs:
       - run:
          name: build and test
          command: |
+           set -e
            ctest --timeout 360 -S /work/scripts/circle_dashboard.cmake -VV
          environment:
            PY_VERSION: << parameters.python_version >>
@@ -84,6 +86,28 @@ jobs:
 workflows:
     build-and-test:
       jobs:
+        # 3.9.9
+        - build-test-python:
+            name: python-3.9.9-x64
+            python_version: 3.9.9
+            python_arch: x64
+
+        - build-test-python:
+            name: python-3.9.9-x86
+            python_version: 3.9.9
+            python_arch: x86
+
+        # 3.8.5
+        - build-test-python:
+            name: python-3.8.5-x64
+            python_version: 3.8.5
+            python_arch: x64
+
+        - build-test-python:
+            name: python-3.8.5-x86
+            python_version: 3.8.5
+            python_arch: x86
+
         # 3.7.12
         - build-test-python:
             name: python-3.7.12-x64
@@ -120,6 +144,20 @@ workflows:
 
     build-and-test-win:
       jobs:
+        # 3.9.9
+        - build-test-python-win:
+            name: python-3.9.9-win-x64
+            python_version: 3.9.9
+            python_arch: x64
+            generator: "Visual Studio 16 2019"
+
+        # 3.8.5
+        - build-test-python-win:
+            name: python-3.8.5-win-x64
+            python_version: 3.8.5
+            python_arch: x64
+            generator: "Visual Studio 16 2019"
+
         # 3.7.12
         - build-test-python-win:
             name: python-3.7.12-win-x64
