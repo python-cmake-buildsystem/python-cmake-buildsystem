@@ -1041,37 +1041,13 @@ endif()
 #######################################################################
 if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
 
-function(_write_shm_test func test_filepath_var)
-  set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/${func}.c)
-  file(WRITE ${check_src} "
-    #ifdef __cplusplus
-    extern \"C\"
-    #endif
-    #ifdef HAVE_SYS_MMAN_H
-    #  include <sys/mman.h>
-    #endif
-    int main() { return ${func}(0, NULL); }
-  ")
-  set(${test_filepath_var} ${check_src} PARENT_SCOPE)
-endfunction()
 foreach(func IN ITEMS shm_open shm_unlink)
-  _write_shm_test(${func} check_src)
   string(TOUPPER ${func} _func_upper)
-  python_platform_test(
-    HAVE_${_func_upper}
-    "Checking for ${func}"
-    ${check_src}
-    DIRECT
-    )
+  check_symbol_exists(${func} "${CFG_HEADERS}" HAVE_${_func_upper})
   if(NOT HAVE_${_func_upper})
     cmake_push_check_state()
     list(APPEND CMAKE_REQUIRED_LIBRARIES rt)
-    python_platform_test(
-      HAVE_${_func_upper}_IN_RT
-      "Checking for ${func} in -lrt"
-      ${check_src}
-      DIRECT
-      )
+    check_symbol_exists(${func} "${CFG_HEADERS}" HAVE_${_func_upper}_IN_RT)
     cmake_pop_check_state()
     set(SHM_NEEDS_LIBRT ${HAVE_${_func_upper}_IN_RT})
     set(HAVE_${_func_upper} ${HAVE_${_func_upper}_IN_RT})

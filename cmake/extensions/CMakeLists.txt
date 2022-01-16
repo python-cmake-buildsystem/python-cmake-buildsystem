@@ -197,9 +197,13 @@ add_python_extension(_scproxy
 add_python_extension(linuxaudiodev REQUIRES LINUX IS_PY2 SOURCES linuxaudiodev.c)
 add_python_extension(ossaudiodev REQUIRES LINUX SOURCES ossaudiodev.c)
 
-# Python 3.8: Linux-only extensions
+# Python 3.8: UNIX-only extensions
 if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
-    add_python_extension(_posixshmem REQUIRES LINUX SOURCES _multiprocessing/posixshmem.c LIBRARIES "rt")
+    set(_posixshmem_LIBRARIES)
+    if(HAVE_SHM_OPEN_IN_RT)
+        list(APPEND _posixshmem_LIBRARIES rt)
+    endif()
+    add_python_extension(_posixshmem REQUIRES UNIX SOURCES _multiprocessing/posixshmem.c LIBRARIES ${_posixshmem_LIBRARIES})
 endif()
 
 # Windows-only extensions
