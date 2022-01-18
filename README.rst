@@ -11,12 +11,16 @@ This `CMake <http://cmake.org>`_ buildsystem has the following advantages:
 * No compiled program for the target architecture is used in the build
   itself.  This makes **cross-compiling** easier, less error prone, and
   reduces manual steps.
+
 * Same build information for all platforms - there's no need to maintain the
   autotools configuration separately from four different MSVC project files.
+
 * Support for other build systems and IDE's like `Ninja
   <https://martine.github.io/ninja/>`_, `Sublime Text
   <https://www.sublimetext.com/>`_, and many others.
+
 * Easily build C-extensions against other C/C++ libraries built with CMake.
+
 * It's much faster to compile: 7 seconds instead of 58 seconds in my
   unscientific test.
 
