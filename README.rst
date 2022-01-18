@@ -53,7 +53,7 @@ How to use this buildsystem:
   mkdir python-build
   mkdir python-install
   cd python-build
-  cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX:PATH=%HOME%/scratch/python-install ../python-cmake-buildsystem
+  cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_INSTALL_PREFIX:PATH=%HOME%/scratch/python-install ../python-cmake-buildsystem
   cmake --build . --config Release -- /m
   cmake --build . --config Release --target INSTALL
 
