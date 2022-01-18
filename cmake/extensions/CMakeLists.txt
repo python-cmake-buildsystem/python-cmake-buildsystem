@@ -126,7 +126,7 @@ if(PY_VERSION VERSION_GREATER_EQUAL "3.6")
     )
     add_python_extension(_blake2 ${WIN32_BUILTIN} SOURCES ${_blake2_SOURCES})
     add_python_extension(_sha3 ${WIN32_BUILTIN} SOURCES _sha3/sha3module.c)
-    add_python_extension(_testconsole ${WIN32_BUILTIN} SOURCES ../PC/_testconsole.c)
+    add_python_extension(_testconsole ${WIN32_BUILTIN} REQUIRES WIN32 SOURCES ../PC/_testconsole.c)
 endif()
 
 # Python 3.7
