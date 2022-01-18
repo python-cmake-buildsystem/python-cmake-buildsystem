@@ -1,0 +1,105 @@
+From 93ddb7ee732f0e6f692d0f0d66d6b2a9d7466c60 Mon Sep 17 00:00:00 2001
+From: Jean-Christophe Fillion-Robin <jchris.fillionr@kitware.com>
+Date: Tue, 18 Jan 2022 03:09:46 -0500
+Subject: [PATCH 3/4] MinGW support: Add patches-win32/03-mingw32.patch
+
+This commit integrates changes originally added to the project
+as python-cmake-buildsystem/python-cmake-buildsystem@18de7ac65 (Fix the nt module)
+and python-cmake-buildsystem/python-cmake-buildsystem@a2606f959 (config-mingw: Add
+(i686|x86_64)-w64-mingw32 toolchain support from MXE)
+
+Co-authored-by: David Sansome <me@davidsansome.com>
+---
+ Modules/posixmodule.c | 28 +++++++++++++++++++++-------
+ 1 file changed, 21 insertions(+), 7 deletions(-)
+
+diff --git a/Modules/posixmodule.c b/Modules/posixmodule.c
+index b3e5973d36..80a63cdfa4 100644
+--- a/Modules/posixmodule.c
++++ b/Modules/posixmodule.c
+@@ -139,7 +139,20 @@ corresponding Unix manual entries for more information on calls.");
+ #else
+ #if defined(PYOS_OS2) && defined(PYCC_GCC) || defined(__VMS)
+ /* Everything needed is defined in PC/os2emx/pyconfig.h or vms/pyconfig.h */
+-#else                   /* all other compilers */
++#else
++#if defined(__MINGW32__)
++#define HAVE_EXECV      1
++#if defined(__USLC__) && defined(__SCO_VERSION__)       /* SCO UDK Compiler */
++#define HAVE_FORK1      1
++#endif
++#define HAVE_GETCWD     1
++#define HAVE_OPENDIR    1
++#define HAVE_PIPE       1
++#ifndef __rtems__
++#define HAVE_POPEN      1
++#endif
++#define HAVE_SYSTEM     1
++#else /* all other compilers */
+ /* Unix functions that the configure script doesn't check for */
+ #define HAVE_EXECV      1
+ #define HAVE_FORK       1
+@@ -161,13 +174,14 @@ corresponding Unix manual entries for more information on calls.");
+ #define HAVE_SYSTEM     1
+ #define HAVE_WAIT       1
+ #define HAVE_TTYNAME    1
++#endif  /* __MINGW32__ */
+ #endif  /* PYOS_OS2 && PYCC_GCC && __VMS */
+ #endif  /* _MSC_VER */
+ #endif  /* __BORLANDC__ */
+ #endif  /* ! __WATCOMC__ || __QNX__ */
+ #endif /* ! __IBMC__ */
+ 
+-#ifndef _MSC_VER
++#if !defined(_MSC_VER) && !defined(__MINGW32__)
+ 
+ #if defined(__sgi)&&_COMPILER_VERSION>=700
+ /* declare ctermid_r if compiling with MIPSPro 7.x in ANSI C mode
+@@ -219,7 +233,7 @@ extern int lstat(const char *, struct stat *);
+ #endif /* HAVE_LSTAT */
+ #endif /* !HAVE_UNISTD_H */
+ 
+-#endif /* !_MSC_VER */
++#endif /* !_MSC_VER && !__MINGW32__ */
+ 
+ #ifdef HAVE_UTIME_H
+ #include <utime.h>
+@@ -264,7 +278,7 @@ extern int lstat(const char *, struct stat *);
+ #endif
+ #endif
+ 
+-#ifdef _MSC_VER
++#if defined(_MSC_VER) || defined(__MINGW32__)
+ #ifdef HAVE_DIRECT_H
+ #include <direct.h>
+ #endif
+@@ -281,7 +295,7 @@ extern int lstat(const char *, struct stat *);
+ #include <shellapi.h>   /* for ShellExecute() */
+ #define popen   _popen
+ #define pclose  _pclose
+-#endif /* _MSC_VER */
++#endif /* _MSC_VER || __MINGW32__ */
+ 
+ #if defined(PYCC_VACPP) && defined(PYOS_OS2)
+ #include <io.h>
+@@ -1596,7 +1610,7 @@ _pystat_fromstructstat(STRUCT_STAT *st)
+     return v;
+ }
+ 
+-#ifdef MS_WINDOWS
++#if defined(MS_WINDOWS) && !defined(__MINGW32__)
+ 
+ /* IsUNCRoot -- test whether the supplied path is of the form \\SERVER\SHARE\,
+    where / can be used in place of \ and the trailing slash is optional.
+@@ -9486,7 +9500,7 @@ all_ins(PyObject *d)
+ }
+ 
+ 
+-#if (defined(_MSC_VER) || defined(__WATCOMC__) || defined(__BORLANDC__)) && !defined(__QNX__)
++#if (defined(_MSC_VER) || defined(__WATCOMC__) || defined(__BORLANDC__) || defined(__MINGW32__)) && !defined(__QNX__)
+ #define INITFUNC initnt
+ #define MODNAME "nt"
+ 
+-- 
+2.22.0
+

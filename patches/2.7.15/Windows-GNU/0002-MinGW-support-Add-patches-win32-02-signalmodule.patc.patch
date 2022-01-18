@@ -1,0 +1,36 @@
+From 70d04addee35079bf8507299789aec72d3605545 Mon Sep 17 00:00:00 2001
+From: Jean-Christophe Fillion-Robin <jchris.fillionr@kitware.com>
+Date: Tue, 18 Jan 2022 03:23:36 -0500
+Subject: [PATCH 2/4] MinGW support: Add patches-win32/02-signalmodule.patch
+
+This commit integrates changes originally added to the project
+as python-cmake-buildsystem/python-cmake-buildsystem@18d49757e (Mingw32 support, and add
+cmake options for disabling)
+
+Note that in more recent version of Python, this patch is obsoleted
+by the following commits:
+
+- See python/cpython@7faf70512 (introduced in 3.4)
+      Issue #17591: Use lowercase filenames when including Windows header files.
+
+Co-authored-by: David Sansome <me@davidsansome.com>
+---
+ Modules/signalmodule.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Modules/signalmodule.c b/Modules/signalmodule.c
+index ef70d10bb1..4582cae835 100644
+--- a/Modules/signalmodule.c
++++ b/Modules/signalmodule.c
+@@ -7,7 +7,7 @@
+ #include "intrcheck.h"
+ 
+ #ifdef MS_WINDOWS
+-#include <Windows.h>
++#include <windows.h>
+ #ifdef HAVE_PROCESS_H
+ #include <process.h>
+ #endif
+-- 
+2.22.0
+

@@ -237,6 +237,13 @@ set(_download_3.8.5_md5 "e2f52bcf531c8cc94732c0b6ff933ff0")
 set(_download_3.8.6_md5 "ea132d6f449766623eee886966c7d41f")
 # 3.9.x
 set(_download_3.9.0_md5 "e19e75ec81dd04de27797bf3f9d918fd")
+set(_download_3.9.1_md5 "429ae95d24227f8fa1560684fad6fca7")
+set(_download_3.9.2_md5 "8cf053206beeca72c7ee531817dc24c7")
+# 3.9.3: This release has been recalled. See https://www.python.org/downloads/release/python-393/
+set(_download_3.9.4_md5 "cc8507b3799ed4d8baa7534cd8d5b35f")
+set(_download_3.9.5_md5 "364158b3113cf8ac8db7868ce40ebc7b")
+set(_download_3.9.6_md5 "798b9d3e866e1906f6e32203c4c560fa")
+set(_download_3.9.7_md5 "5f463f30b1fdcb545f156583630318b3")
 set(_download_3.9.8_md5 "83419bd73655813223c2cf2afb11f83c")
 set(_download_3.9.9_md5 "a2da2a456c078db131734ff62de10ed5")
 

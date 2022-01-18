@@ -1,6 +1,23 @@
---- /home/david/Python-2.7.1/Modules/posixmodule.c	2010-11-26 17:35:50.000000000 +0000
-+++ Modules/posixmodule.c	2011-01-29 16:13:03.000000000 +0000
-@@ -133,7 +133,20 @@
+From da80f9bf8de1c6f1d7c97ca6b5fcf55b793a542c Mon Sep 17 00:00:00 2001
+From: Jean-Christophe Fillion-Robin <jchris.fillionr@kitware.com>
+Date: Tue, 18 Jan 2022 03:09:46 -0500
+Subject: [PATCH 3/4] MinGW support: Add patches-win32/03-mingw32.patch
+
+This commit integrates changes originally added to the project
+as python-cmake-buildsystem/python-cmake-buildsystem@18de7ac65 (Fix the nt module)
+and python-cmake-buildsystem/python-cmake-buildsystem@a2606f959 (config-mingw: Add
+(i686|x86_64)-w64-mingw32 toolchain support from MXE)
+
+Co-authored-by: David Sansome <me@davidsansome.com>
+---
+ Modules/posixmodule.c | 28 +++++++++++++++++++++-------
+ 1 file changed, 21 insertions(+), 7 deletions(-)
+
+diff --git a/Modules/posixmodule.c b/Modules/posixmodule.c
+index 6a180a066d..51bcd1cb01 100644
+--- a/Modules/posixmodule.c
++++ b/Modules/posixmodule.c
+@@ -134,7 +134,20 @@ corresponding Unix manual entries for more information on calls.");
  #else
  #if defined(PYOS_OS2) && defined(PYCC_GCC) || defined(__VMS)
  /* Everything needed is defined in PC/os2emx/pyconfig.h or vms/pyconfig.h */
@@ -22,7 +39,7 @@
  /* Unix functions that the configure script doesn't check for */
  #define HAVE_EXECV      1
  #define HAVE_FORK       1
-@@ -155,13 +168,14 @@
+@@ -156,13 +169,14 @@ corresponding Unix manual entries for more information on calls.");
  #define HAVE_SYSTEM     1
  #define HAVE_WAIT       1
  #define HAVE_TTYNAME    1
@@ -38,7 +55,7 @@
  
  #if defined(__sgi)&&_COMPILER_VERSION>=700
  /* declare ctermid_r if compiling with MIPSPro 7.x in ANSI C mode
-@@ -213,7 +227,7 @@
+@@ -214,7 +228,7 @@ extern int lstat(const char *, struct stat *);
  #endif /* HAVE_LSTAT */
  #endif /* !HAVE_UNISTD_H */
  
@@ -47,7 +64,7 @@
  
  #ifdef HAVE_UTIME_H
  #include <utime.h>
-@@ -258,7 +272,7 @@
+@@ -259,7 +273,7 @@ extern int lstat(const char *, struct stat *);
  #endif
  #endif
  
@@ -56,7 +73,7 @@
  #ifdef HAVE_DIRECT_H
  #include <direct.h>
  #endif
-@@ -274,7 +288,7 @@
+@@ -276,7 +290,7 @@ extern int lstat(const char *, struct stat *);
  #include <shellapi.h>   /* for ShellExecute() */
  #define popen   _popen
  #define pclose  _pclose
@@ -65,25 +82,16 @@
  
  #if defined(PYCC_VACPP) && defined(PYOS_OS2)
  #include <io.h>
-@@ -8452,7 +8466,7 @@
+@@ -1590,7 +1604,7 @@ _pystat_fromstructstat(STRUCT_STAT *st)
+     return v;
  }
- #endif
  
 -#ifdef MS_WINDOWS
 +#if defined(MS_WINDOWS) && !defined(__MINGW32__)
  
- PyDoc_STRVAR(win32_urandom__doc__,
- "urandom(n) -> str\n\n\
-@@ -8948,7 +8962,7 @@
- #ifdef HAVE_GETLOADAVG
-     {"getloadavg",      posix_getloadavg, METH_NOARGS, posix_getloadavg__doc__},
- #endif
-- #ifdef MS_WINDOWS
-+ #if defined(MS_WINDOWS) && !defined(__MINGW32__)
-     {"urandom", win32_urandom, METH_VARARGS, win32_urandom__doc__},
-  #endif
-  #ifdef __VMS
-@@ -9252,7 +9266,7 @@
+ /* IsUNCRoot -- test whether the supplied path is of the form \\SERVER\SHARE\,
+    where / can be used in place of \ and the trailing slash is optional.
+@@ -9452,7 +9466,7 @@ all_ins(PyObject *d)
  }
  
  
@@ -91,3 +99,7 @@
 +#if (defined(_MSC_VER) || defined(__WATCOMC__) || defined(__BORLANDC__) || defined(__MINGW32__)) && !defined(__QNX__)
  #define INITFUNC initnt
  #define MODNAME "nt"
+ 
+-- 
+2.22.0
+

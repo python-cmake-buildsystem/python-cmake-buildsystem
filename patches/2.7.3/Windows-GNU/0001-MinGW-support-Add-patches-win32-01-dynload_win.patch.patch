@@ -1,0 +1,72 @@
+From eadbb79aa55223041fb82afd846eadc6a76d3496 Mon Sep 17 00:00:00 2001
+From: Jean-Christophe Fillion-Robin <jchris.fillionr@kitware.com>
+Date: Tue, 18 Jan 2022 02:55:51 -0500
+Subject: [PATCH 1/4] MinGW support: Add patches-win32/01-dynload_win.patch
+
+This commit integrates changes originally added to the python-cmake-buildsystem
+project as 18d49757e (Mingw32 support, and add cmake options for disabling)
+
+Note that in  more recent version of Python, this patch is obsoleted
+by the following commits:
+
+  See python/cpython@589f89e2a (introduced in 3.3)
+      Removed a Windows 9x trick used before LoadLibraryExW.
+      Windows 9x has long been unsupported and the result of GetFullPathName was not even
+      being used in the first place.
+
+  See python/cpython@05f2d84ca (introduced in 3.9)
+      bpo-28269: Replace strcasecmp with system function _stricmp. (GH-13095)
+
+Co-authored-by: David Sansome <me@davidsansome.com>
+---
+ Python/dynload_win.c | 20 ++------------------
+ 1 file changed, 2 insertions(+), 18 deletions(-)
+
+diff --git a/Python/dynload_win.c b/Python/dynload_win.c
+index 4e5555e917..7a1f763bf1 100644
+--- a/Python/dynload_win.c
++++ b/Python/dynload_win.c
+@@ -25,24 +25,6 @@ const struct filedescr _PyImport_DynLoadFiletab[] = {
+ };
+ 
+ 
+-/* Case insensitive string compare, to avoid any dependencies on particular
+-   C RTL implementations */
+-
+-static int strcasecmp (char *string1, char *string2)
+-{
+-    int first, second;
+-
+-    do {
+-        first  = tolower(*string1);
+-        second = tolower(*string2);
+-        string1++;
+-        string2++;
+-    } while (first && first == second);
+-
+-    return (first - second);
+-}
+-
+-
+ /* Function to return the name of the "python" DLL that the supplied module
+    directly imports.  Looks through the list of imported modules and
+    returns the first entry that starts with "python" (case sensitive) and
+@@ -186,6 +168,7 @@ dl_funcptr _PyImport_GetDynLoadFunc(const char *fqname, const char *shortname,
+         /* Don't display a message box when Python can't load a DLL */
+         old_mode = SetErrorMode(SEM_FAILCRITICALERRORS);
+ 
++#ifdef Py_ENABLE_SHARED
+         if (GetFullPathName(pathname,
+                             sizeof(pathbuf),
+                             pathbuf,
+@@ -196,6 +179,7 @@ dl_funcptr _PyImport_GetDynLoadFunc(const char *fqname, const char *shortname,
+                                  LOAD_WITH_ALTERED_SEARCH_PATH);
+             _Py_DeactivateActCtx(cookie);
+         }
++#endif // Py_ENABLE_SHARED
+ 
+         /* restore old error mode settings */
+         SetErrorMode(old_mode);
+-- 
+2.22.0
+

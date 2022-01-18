@@ -11,12 +11,16 @@ This `CMake <http://cmake.org>`_ buildsystem has the following advantages:
 * No compiled program for the target architecture is used in the build
   itself.  This makes **cross-compiling** easier, less error prone, and
   reduces manual steps.
+
 * Same build information for all platforms - there's no need to maintain the
   autotools configuration separately from four different MSVC project files.
+
 * Support for other build systems and IDE's like `Ninja
   <https://martine.github.io/ninja/>`_, `Sublime Text
   <https://www.sublimetext.com/>`_, and many others.
+
 * Easily build C-extensions against other C/C++ libraries built with CMake.
+
 * It's much faster to compile: 7 seconds instead of 58 seconds in my
   unscientific test.
 
@@ -49,13 +53,13 @@ How to use this buildsystem:
   mkdir python-build
   mkdir python-install
   cd python-build
-  cmake -G "Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX:PATH=%HOME%/scratch/python-install ../python-cmake-buildsystem
+  cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_INSTALL_PREFIX:PATH=%HOME%/scratch/python-install ../python-cmake-buildsystem
   cmake --build . --config Release -- /m
   cmake --build . --config Release --target INSTALL
 
 .. note::
 
-  By default, the build system will download the python 3.8.5 source from
+  By default, the build system will download the python 3.9.9 source from
   http://www.python.org/ftp/python/
 
 
@@ -68,7 +72,7 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
 
 ::
 
-  PYTHON_VERSION=major.minor.patch (defaults to 3.8.5)
+  PYTHON_VERSION=major.minor.patch (defaults to 3.9.9)
     The version of Python to build.
 
   PYTHON_APPLY_PATCHES=ON|OFF (defaults to ON)
@@ -251,28 +255,6 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
     Then, this variable is used to initialize `CMAKE_OSX_SYSROOT`, `CMAKE_OSX_DEPLOYMENT_TARGET`
     and `MACOSX_DEPLOYMENT_TARGET` variables.
 
-
-Cross-compiling
----------------
-
-Cross-compiling for Windows from Linux
-......................................
-
-There are some patches in the cmake/patches-win32 directory that make it
-possible to compile Python using the mingw32 compiler.  You have to apply
-these before running make::
-
-  patch -p0 < cmake/patches-win32/01-dynload_win.patch
-  patch -p0 < cmake/patches-win32/02-signalmodule.patch
-  patch -p0 < cmake/patches-win32/03-mingw32.patch
-
-Remarks
--------
-
-Note: Currently, multiple versions of Python 2.7 and 3.5 are supported. This
-repository is maintained separately from Python itself it needs to be manually
-updated whenever there is a new release of Python.
-
 Licenses
 --------
 
@@ -294,3 +276,12 @@ contribute my code to the PSF
 mentions that if code is going to end up in Python or the standard library,
 the PSF will require you to license code under "Academic Free License" or
 "Apache License 2.0".
+
+Which python versions are supported?
+....................................
+
+This project supports building multiple versions of CPython 2.7 and CPython 3.
+See current list of supported version in top-level `CMakeLists.txt <https://github.com/python-cmake-buildsystem/python-cmake-buildsystem/blob/master/CMakeLists.txt>`_.
+
+Since this repository is maintained separately from `python/CPython <https://github.com/python/cpython>`_ itself,
+it needs to be manually updated whenever there is a new release of Python.
