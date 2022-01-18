@@ -251,14 +251,6 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
     Then, this variable is used to initialize `CMAKE_OSX_SYSROOT`, `CMAKE_OSX_DEPLOYMENT_TARGET`
     and `MACOSX_DEPLOYMENT_TARGET` variables.
 
-
-Remarks
--------
-
-Note: Currently, multiple versions of Python 2.7 and 3.5 are supported. This
-repository is maintained separately from Python itself it needs to be manually
-updated whenever there is a new release of Python.
-
 Licenses
 --------
 
@@ -280,3 +272,12 @@ contribute my code to the PSF
 mentions that if code is going to end up in Python or the standard library,
 the PSF will require you to license code under "Academic Free License" or
 "Apache License 2.0".
+
+Which python versions are supported?
+....................................
+
+This project supports building multiple versions of CPython 2.7 and CPython 3.
+See current list of supported version in top-level `CMakeLists.txt <https://github.com/python-cmake-buildsystem/python-cmake-buildsystem/blob/master/CMakeLists.txt>`_.
+
+Since this repository is maintained separately from `python/CPython <https://github.com/python/cpython>`_ itself,
+it needs to be manually updated whenever there is a new release of Python.
