@@ -1,6 +1,64 @@
+From 8d3d6d16b64f057e85a96c58d5efe50ce1f75803 Mon Sep 17 00:00:00 2001
+From: Jean-Christophe Fillion-Robin <jchris.fillionr@kitware.com>
+Date: Tue, 18 Jan 2022 02:48:42 -0500
+Subject: [PATCH 4/4] MinGW support: Add patches-win32/05-libffi-latest.patch
+
+This commit integrates changes originally added to the python-cmake-buildsystem
+project as 9fdd1408b (Build the ctypes extension differently on Windows,
+add a patch to bring in the latest version of libffi) and 025343fba (Add a
+missing patch to ctypes for windows)
+
+Co-authored-by: David Sansome <me@davidsansome.com>
+---
+ Modules/_ctypes/callproc.c                  |    3 +-
+ Modules/_ctypes/libffi_mingw/closures.c     |  633 +++
+ Modules/_ctypes/libffi_mingw/debug.c        |   59 +
+ Modules/_ctypes/libffi_mingw/dlmalloc.c     | 5099 +++++++++++++++++++
+ Modules/_ctypes/libffi_mingw/ffi_common.h   |  122 +
+ Modules/_ctypes/libffi_mingw/ffitarget.h    |  120 +
+ Modules/_ctypes/libffi_mingw/java_raw_api.c |  356 ++
+ Modules/_ctypes/libffi_mingw/prep_cif.c     |  174 +
+ Modules/_ctypes/libffi_mingw/raw_api.c      |  254 +
+ Modules/_ctypes/libffi_mingw/types.c        |   77 +
+ Modules/_ctypes/libffi_mingw/x86/ffi.c      |  682 +++
+ Modules/_ctypes/libffi_mingw/x86/win32.S    |  877 ++++
+ 12 files changed, 8454 insertions(+), 2 deletions(-)
+ create mode 100644 Modules/_ctypes/libffi_mingw/closures.c
+ create mode 100644 Modules/_ctypes/libffi_mingw/debug.c
+ create mode 100644 Modules/_ctypes/libffi_mingw/dlmalloc.c
+ create mode 100644 Modules/_ctypes/libffi_mingw/ffi_common.h
+ create mode 100644 Modules/_ctypes/libffi_mingw/ffitarget.h
+ create mode 100644 Modules/_ctypes/libffi_mingw/java_raw_api.c
+ create mode 100644 Modules/_ctypes/libffi_mingw/prep_cif.c
+ create mode 100644 Modules/_ctypes/libffi_mingw/raw_api.c
+ create mode 100644 Modules/_ctypes/libffi_mingw/types.c
+ create mode 100644 Modules/_ctypes/libffi_mingw/x86/ffi.c
+ create mode 100644 Modules/_ctypes/libffi_mingw/x86/win32.S
+
+diff --git a/Modules/_ctypes/callproc.c b/Modules/_ctypes/callproc.c
+index 78c6dc06bf..3e73830f8a 100644
+--- a/Modules/_ctypes/callproc.c
++++ b/Modules/_ctypes/callproc.c
+@@ -771,7 +771,7 @@ static int _call_function_pointer(int flags,
+     ffi_cif cif;
+     int cc;
+ #ifdef MS_WIN32
+-    int delta;
++    int delta = 0;
+ #ifndef DONT_USE_SEH
+     DWORD dwExceptionCode = 0;
+     EXCEPTION_RECORD record;
+@@ -822,7 +822,6 @@ static int _call_function_pointer(int flags,
+ #ifndef DONT_USE_SEH
+     __try {
+ #endif
+-        delta =
+ #endif
+                 ffi_call(&cif, (void *)pProc, resmem, avalues);
+ #ifdef MS_WIN32
 diff --git a/Modules/_ctypes/libffi_mingw/closures.c b/Modules/_ctypes/libffi_mingw/closures.c
 new file mode 100644
-index 0000000..bc087d9
+index 0000000000..bc087d9fb5
 --- /dev/null
 +++ b/Modules/_ctypes/libffi_mingw/closures.c
 @@ -0,0 +1,633 @@
@@ -639,7 +697,7 @@ index 0000000..bc087d9
 +#endif /* FFI_CLOSURES */
 diff --git a/Modules/_ctypes/libffi_mingw/debug.c b/Modules/_ctypes/libffi_mingw/debug.c
 new file mode 100644
-index 0000000..51dcfcf
+index 0000000000..51dcfcf229
 --- /dev/null
 +++ b/Modules/_ctypes/libffi_mingw/debug.c
 @@ -0,0 +1,59 @@
@@ -704,7 +762,7 @@ index 0000000..51dcfcf
 +}
 diff --git a/Modules/_ctypes/libffi_mingw/dlmalloc.c b/Modules/_ctypes/libffi_mingw/dlmalloc.c
 new file mode 100644
-index 0000000..783c5c2
+index 0000000000..783c5c2a6f
 --- /dev/null
 +++ b/Modules/_ctypes/libffi_mingw/dlmalloc.c
 @@ -0,0 +1,5099 @@
@@ -5809,7 +5867,7 @@ index 0000000..783c5c2
 +*/
 diff --git a/Modules/_ctypes/libffi_mingw/ffi_common.h b/Modules/_ctypes/libffi_mingw/ffi_common.h
 new file mode 100644
-index 0000000..42cace9
+index 0000000000..42cace9150
 --- /dev/null
 +++ b/Modules/_ctypes/libffi_mingw/ffi_common.h
 @@ -0,0 +1,122 @@
@@ -5937,7 +5995,7 @@ index 0000000..42cace9
 +
 diff --git a/Modules/_ctypes/libffi_mingw/ffitarget.h b/Modules/_ctypes/libffi_mingw/ffitarget.h
 new file mode 100644
-index 0000000..b1d3df8
+index 0000000000..b1d3df88f1
 --- /dev/null
 +++ b/Modules/_ctypes/libffi_mingw/ffitarget.h
 @@ -0,0 +1,120 @@
@@ -6063,7 +6121,7 @@ index 0000000..b1d3df8
 +
 diff --git a/Modules/_ctypes/libffi_mingw/java_raw_api.c b/Modules/_ctypes/libffi_mingw/java_raw_api.c
 new file mode 100644
-index 0000000..9c5383e
+index 0000000000..9c5383e6d5
 --- /dev/null
 +++ b/Modules/_ctypes/libffi_mingw/java_raw_api.c
 @@ -0,0 +1,356 @@
@@ -6425,7 +6483,7 @@ index 0000000..9c5383e
 +#endif /* !FFI_NO_RAW_API */
 diff --git a/Modules/_ctypes/libffi_mingw/prep_cif.c b/Modules/_ctypes/libffi_mingw/prep_cif.c
 new file mode 100644
-index 0000000..eb78f9a
+index 0000000000..eb78f9a2ed
 --- /dev/null
 +++ b/Modules/_ctypes/libffi_mingw/prep_cif.c
 @@ -0,0 +1,174 @@
@@ -6605,7 +6663,7 @@ index 0000000..eb78f9a
 +#endif
 diff --git a/Modules/_ctypes/libffi_mingw/raw_api.c b/Modules/_ctypes/libffi_mingw/raw_api.c
 new file mode 100644
-index 0000000..ce21372
+index 0000000000..ce21372e29
 --- /dev/null
 +++ b/Modules/_ctypes/libffi_mingw/raw_api.c
 @@ -0,0 +1,254 @@
@@ -6865,7 +6923,7 @@ index 0000000..ce21372
 +#endif /* !FFI_NO_RAW_API */
 diff --git a/Modules/_ctypes/libffi_mingw/types.c b/Modules/_ctypes/libffi_mingw/types.c
 new file mode 100644
-index 0000000..0a11eb0
+index 0000000000..0a11eb0fb4
 --- /dev/null
 +++ b/Modules/_ctypes/libffi_mingw/types.c
 @@ -0,0 +1,77 @@
@@ -6948,7 +7006,7 @@ index 0000000..0a11eb0
 +#endif
 diff --git a/Modules/_ctypes/libffi_mingw/x86/ffi.c b/Modules/_ctypes/libffi_mingw/x86/ffi.c
 new file mode 100644
-index 0000000..594235a
+index 0000000000..594235a6df
 --- /dev/null
 +++ b/Modules/_ctypes/libffi_mingw/x86/ffi.c
 @@ -0,0 +1,682 @@
@@ -7636,7 +7694,7 @@ index 0000000..594235a
 +
 diff --git a/Modules/_ctypes/libffi_mingw/x86/win32.S b/Modules/_ctypes/libffi_mingw/x86/win32.S
 new file mode 100644
-index 0000000..7489dab
+index 0000000000..7489dab19c
 --- /dev/null
 +++ b/Modules/_ctypes/libffi_mingw/x86/win32.S
 @@ -0,0 +1,877 @@
@@ -8517,22 +8575,6 @@ index 0000000..7489dab
 +	/* End of DW_CFA_xxx CFI instructions.  */
 +	.align 4
 +.LEFDE5:
---- a/Modules/_ctypes/callproc.c.old	2011-04-25 22:31:55.239558348 +0000
-+++ b/Modules/_ctypes/callproc.c	2011-04-25 22:32:13.390364916 +0000
-@@ -771,7 +771,7 @@
-     ffi_cif cif;
-     int cc;
- #ifdef MS_WIN32
--    int delta;
-+    int delta = 0;
- #ifndef DONT_USE_SEH
-     DWORD dwExceptionCode = 0;
-     EXCEPTION_RECORD record;
-@@ -822,7 +822,6 @@
- #ifndef DONT_USE_SEH
-     __try {
- #endif
--        delta =
- #endif
-                 ffi_call(&cif, (void *)pProc, resmem, avalues);
- #ifdef MS_WIN32
+-- 
+2.22.0
+

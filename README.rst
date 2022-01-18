@@ -252,20 +252,6 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
     and `MACOSX_DEPLOYMENT_TARGET` variables.
 
 
-Cross-compiling
----------------
-
-Cross-compiling for Windows from Linux
-......................................
-
-There are some patches in the cmake/patches-win32 directory that make it
-possible to compile Python using the mingw32 compiler.  You have to apply
-these before running make::
-
-  patch -p0 < cmake/patches-win32/01-dynload_win.patch
-  patch -p0 < cmake/patches-win32/02-signalmodule.patch
-  patch -p0 < cmake/patches-win32/03-mingw32.patch
-
 Remarks
 -------
 
