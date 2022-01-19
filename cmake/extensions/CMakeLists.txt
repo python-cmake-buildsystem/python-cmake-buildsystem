@@ -88,14 +88,14 @@ add_python_extension(unicodedata SOURCES unicodedata.c)
 
 # Python3
 add_python_extension(atexit BUILTIN REQUIRES IS_PY3 SOURCES atexitmodule.c) # Register functions to be run at interpreter-shutdown
-add_python_extension(_codecs BUILTIN REQUIRES IS_PY3 SOURCES _codecsmodule.c) # access to the builtin codecs and codec registry
+add_python_extension(_codecs BUILTIN SOURCES _codecsmodule.c) # access to the builtin codecs and codec registry
 add_python_extension(faulthandler BUILTIN REQUIRES IS_PY3 SOURCES faulthandler.c)
 add_python_extension(_opcode BUILTIN REQUIRES IS_PY3 SOURCES _opcode.c)
 add_python_extension(_operator ${WIN32_BUILTIN} REQUIRES IS_PY3 SOURCES _operator.c)
 add_python_extension(_pickle BUILTIN REQUIRES IS_PY3 SOURCES _pickle.c)
-add_python_extension(_sre BUILTIN REQUIRES IS_PY3 SOURCES _sre.c) # Fredrik Lundh's new regular expressions
+add_python_extension(_sre BUILTIN SOURCES _sre.c) # Fredrik Lundh's new regular expressions
 add_python_extension(_stat BUILTIN REQUIRES IS_PY3 SOURCES _stat.c) # stat.h interface
-add_python_extension(_symtable BUILTIN REQUIRES IS_PY3 SOURCES symtablemodule.c)
+add_python_extension(_symtable BUILTIN SOURCES symtablemodule.c)
 # Python PEP-3118 (buffer protocol) test module
 add_python_extension(_testbuffer REQUIRES IS_PY3 SOURCES _testbuffer.c)
 # Test loading multiple modules from one compiled file (http://bugs.python.org/issue16421)
@@ -106,18 +106,18 @@ add_python_extension(_testmultiphase REQUIRES IS_PY3 SOURCES _testmultiphase.c)
 add_python_extension(_tracemalloc BUILTIN REQUIRES IS_PY3
     SOURCES ${SRC_DIR}/$<IF:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>,Python,Modules>/hashtable.c _tracemalloc.c
 )
-add_python_extension(_weakref BUILTIN REQUIRES IS_PY3 SOURCES _weakref.c)
+add_python_extension(_weakref BUILTIN SOURCES _weakref.c)
 math(EXPR _limited_api_version "${PY_VERSION_MAJOR} * 100 + ${PY_VERSION_MINOR}")
 add_python_extension(xxlimited REQUIRES IS_PY3 BUILD_TESTING
     SOURCES xxlimited.c
     DEFINITIONS Py_LIMITED_API=0x${_limited_api_version}0000
     NO_INSTALL
 )
-add_python_extension(xxsubtype BUILTIN REQUIRES IS_PY3 SOURCES xxsubtype.c)
+add_python_extension(xxsubtype BUILTIN SOURCES xxsubtype.c)
 if(PY_VERSION VERSION_LESS "3.8")
 # The zipimport module is always imported at startup. Having it as a
 # builtin module avoids some bootstrapping problems and reduces overhead.
-add_python_extension(zipimport ALWAYS_BUILTIN REQUIRES IS_PY3 SOURCES zipimport.c DEFINITIONS Py_BUILD_CORE)
+add_python_extension(zipimport ALWAYS_BUILTIN SOURCES zipimport.c DEFINITIONS Py_BUILD_CORE)
 endif()
 
 # Python 3.6
@@ -187,7 +187,7 @@ add_python_extension(syslog REQUIRES UNIX SOURCES syslogmodule.c)
 add_python_extension(termios REQUIRES UNIX SOURCES termios.c)
 
 # Python3: UNIX-only extensions
-add_python_extension(errno BUILTIN REQUIRES IS_PY3 UNIX SOURCES errnomodule.c)
+add_python_extension(errno BUILTIN UNIX SOURCES errnomodule.c)
 add_python_extension(_posixsubprocess BUILTIN REQUIRES IS_PY3 UNIX SOURCES _posixsubprocess.c)
 
 # MacOSX-only extensions
@@ -295,7 +295,9 @@ if(WIN32)
         LIBRARIES ws2_32 ${M_LIBRARIES} $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:iphlpapi>
     )
 else()
+    if(PY_VERSION VERSION_GREATER_EQUAL "2.7.4" AND PY_VERSION VERSION_LESS "3")
     list(APPEND _socket_SOURCES timemodule.c)
+    endif()
     add_python_extension(_socket
         REQUIRES HAVE_LIBM BUILTIN
         SOURCES ${_socket_SOURCES}

@@ -333,19 +333,8 @@ if(UNIX OR MINGW)
 endif()
 
 list(APPEND MODULE_SOURCES
-    ${SRC_DIR}/Modules/_codecsmodule.c
-    ${SRC_DIR}/Modules/errnomodule.c
     ${SRC_DIR}/Modules/signalmodule.c
-    ${SRC_DIR}/Modules/_sre.c
-    ${SRC_DIR}/Modules/symtablemodule.c
-    ${SRC_DIR}/Modules/_weakref.c
-    ${SRC_DIR}/Modules/xxsubtype.c
 )
-if(PY_VERSION VERSION_LESS "3.8")
-    list(APPEND MODULE_SOURCES
-        ${SRC_DIR}/Modules/zipimport.c
-    )
-endif()
 
 set(LIBPYTHON_OMIT_FROZEN_SOURCES
     ${SRC_DIR}/Modules/getbuildinfo.c
