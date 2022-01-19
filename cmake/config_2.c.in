@@ -54,3 +54,4 @@ struct _inittab _PyImport_Inittab[] = {
 #ifdef __cplusplus
 }
 #endif
+
