@@ -3,6 +3,11 @@ if(WIN32)
     set(WIN32_BUILTIN BUILTIN)
 endif()
 
+set(PY3_ALWAYS_BUILTIN )
+if(IS_PY3)
+    set(PY3_ALWAYS_BUILTIN ALWAYS_BUILTIN)
+endif()
+
 add_python_extension(array ${WIN32_BUILTIN} SOURCES arraymodule.c)
 add_python_extension(audioop ${WIN32_BUILTIN} REQUIRES HAVE_LIBM SOURCES audioop.c LIBRARIES ${M_LIBRARIES})
 add_python_extension(_bisect ${WIN32_BUILTIN} SOURCES _bisectmodule.c)
@@ -55,7 +60,7 @@ if(WIN32 AND EXISTS ${SRC_DIR}/Modules/_io/winconsoleio.c)
         ${SRC_DIR}/Modules/_io/winconsoleio.c
         )
 endif()
-add_python_extension(_io BUILTIN SOURCES ${_io_SOURCES} DEFINITIONS Py_BUILD_CORE)
+add_python_extension(_io ${PY3_ALWAYS_BUILTIN} SOURCES ${_io_SOURCES} DEFINITIONS Py_BUILD_CORE)
 
 add_python_extension(itertools ${WIN32_BUILTIN} SOURCES itertoolsmodule.c) # Functions creating iterators for efficient looping
 add_python_extension(_json ${WIN32_BUILTIN} SOURCES _json.c)
@@ -78,7 +83,7 @@ set(thread_REQUIRES)
 if(PY_VERSION VERSION_LESS "3.7")
   list(APPEND thread_REQUIRES WITH_THREAD)
 endif()
-add_python_extension(${thread${PY_VERSION_MAJOR}_NAME} BUILTIN REQUIRES ${thread_REQUIRES} SOURCES ${thread${PY_VERSION_MAJOR}_SOURCES} DEFINITIONS Py_BUILD_CORE)
+add_python_extension(${thread${PY_VERSION_MAJOR}_NAME} ALWAYS_BUILTIN REQUIRES ${thread_REQUIRES} SOURCES ${thread${PY_VERSION_MAJOR}_SOURCES} DEFINITIONS Py_BUILD_CORE)
 set(time_SOURCES timemodule.c)
 if(PY_VERSION VERSION_EQUAL "3.2")
   list(APPEND datetime${PY_VERSION_MAJOR}_SOURCES _time.c)
@@ -89,7 +94,7 @@ add_python_extension(unicodedata SOURCES unicodedata.c)
 # Python3
 add_python_extension(atexit BUILTIN REQUIRES IS_PY3 SOURCES atexitmodule.c) # Register functions to be run at interpreter-shutdown
 add_python_extension(_codecs BUILTIN SOURCES _codecsmodule.c) # access to the builtin codecs and codec registry
-add_python_extension(faulthandler BUILTIN REQUIRES IS_PY3 SOURCES faulthandler.c)
+add_python_extension(faulthandler ALWAYS_BUILTIN REQUIRES IS_PY3 SOURCES faulthandler.c)
 add_python_extension(_opcode BUILTIN REQUIRES IS_PY3 SOURCES _opcode.c)
 add_python_extension(_operator ${WIN32_BUILTIN} REQUIRES IS_PY3 SOURCES _operator.c)
 add_python_extension(_pickle BUILTIN REQUIRES IS_PY3 SOURCES _pickle.c)
@@ -103,10 +108,10 @@ add_python_extension(_testimportmultiple REQUIRES IS_PY3 SOURCES _testimportmult
 # Test multi-phase extension module init (PEP 489)
 add_python_extension(_testmultiphase REQUIRES IS_PY3 SOURCES _testmultiphase.c)
 # debug tool to trace memory blocks allocated by Python
-add_python_extension(_tracemalloc BUILTIN REQUIRES IS_PY3
+add_python_extension(_tracemalloc ALWAYS_BUILTIN REQUIRES IS_PY3
     SOURCES ${SRC_DIR}/$<IF:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>,Python,Modules>/hashtable.c _tracemalloc.c
 )
-add_python_extension(_weakref BUILTIN SOURCES _weakref.c)
+add_python_extension(_weakref ALWAYS_BUILTIN SOURCES _weakref.c)
 math(EXPR _limited_api_version "${PY_VERSION_MAJOR} * 100 + ${PY_VERSION_MINOR}")
 add_python_extension(xxlimited REQUIRES IS_PY3 BUILD_TESTING
     SOURCES xxlimited.c
@@ -179,7 +184,7 @@ add_python_extension(nis
     INCLUDEDIRS ${nis_INCLUDEDIRS}
 )
 
-add_python_extension(posix REQUIRES UNIX BUILTIN SOURCES posixmodule.c DEFINITIONS Py_BUILD_CORE)
+add_python_extension(posix REQUIRES UNIX ALWAYS_BUILTIN SOURCES posixmodule.c DEFINITIONS Py_BUILD_CORE)
 add_python_extension(pwd REQUIRES UNIX BUILTIN SOURCES pwdmodule.c) # this is needed to find out the user's home dir if $HOME is not set
 add_python_extension(resource REQUIRES UNIX SOURCES resource.c)
 add_python_extension(spwd REQUIRES UNIX HAVE_GETSPNAM HAVE_GETSPENT SOURCES spwdmodule.c)
@@ -219,7 +224,7 @@ add_python_extension(_msi
     LIBRARIES cabinet.lib msi.lib rpcrt4.lib
 )
 add_python_extension(msvcrt REQUIRES MSVC BUILTIN SOURCES ${SRC_DIR}/PC/msvcrtmodule.c)
-add_python_extension(nt REQUIRES WIN32 BUILTIN SOURCES posixmodule.c)
+add_python_extension(nt REQUIRES WIN32 ALWAYS_BUILTIN SOURCES posixmodule.c)
 add_python_extension(_subprocess REQUIRES WIN32 IS_PY2 BUILTIN SOURCES ${SRC_DIR}/PC/_subprocess.c)
 
 set(winreg2_NAME _winreg)
