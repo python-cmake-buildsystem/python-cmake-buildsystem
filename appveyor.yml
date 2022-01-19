@@ -14,27 +14,27 @@ configuration:
 
 environment:
   matrix:
-  - PY_VERSION: 2.7.15
+  - PY_VERSION: 2.7.18
     GENERATOR: Visual Studio 14 2015
     PLATFORM: x64
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
 
-  - PY_VERSION: 2.7.15
+  - PY_VERSION: 2.7.18
     GENERATOR: Visual Studio 14 2015
     PLATFORM: Win32
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
 
-  - PY_VERSION: 2.7.15
+  - PY_VERSION: 2.7.18
     GENERATOR: Visual Studio 12 2013
     PLATFORM: x64
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
 
-  - PY_VERSION: 2.7.15
+  - PY_VERSION: 2.7.18
     GENERATOR: Visual Studio 12 2013
     PLATFORM: Win32
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
 
-  - PY_VERSION: 2.7.15
+  - PY_VERSION: 2.7.18
     GENERATOR: Visual Studio 9 2008
     PLATFORM: Win32
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
