@@ -341,11 +341,11 @@ if(
         message(AUTHOR_WARNING "Disabling USE_SYSTEM_FFI option is *NOT* supported with Python >= 3.8 on windows and with Python >= 3.7 on Linux. Current version is ${PY_VERSION}")
     endif()
     add_python_extension(_ctypes
-        REQUIRES FFI_INCLUDE_DIR FFI_LIBRARY
+        REQUIRES LibFFI_INCLUDE_DIR LibFFI_LIBRARY
         SOURCES ${ctypes_COMMON_SOURCES}
         DEFINITIONS Py_BUILD_CORE_MODULE FFI_BUILDING
-        INCLUDEDIRS ${FFI_INCLUDE_DIR}
-        LIBRARIES ${FFI_LIBRARY}
+        INCLUDEDIRS ${LibFFI_INCLUDE_DIR}
+        LIBRARIES ${LibFFI_LIBRARY}
     )
 else()
 # ctypes is different on Windows
