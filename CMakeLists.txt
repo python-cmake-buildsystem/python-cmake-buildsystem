@@ -103,6 +103,13 @@ if(WIN32 AND "${PY_VERSION}" VERSION_LESS "3.7.0")
   set(_use_system_zlib_default OFF)
 endif()
 
+# Enable MSVC++ utility routines only on Windows
+if(WIN32)
+  set(ENABLE_MSVCRT ON)
+else()
+  set(ENABLE_MSVCRT OFF)
+endif()
+
 cmake_dependent_option(USE_SYSTEM_BZip2 "Use system BZip2" ON "USE_SYSTEM_LIBRARIES" OFF)
 cmake_dependent_option(USE_SYSTEM_Curses "Use system Curses" ON "USE_SYSTEM_LIBRARIES" OFF)
 cmake_dependent_option(USE_SYSTEM_EXPAT "Use system EXPAT" ON "USE_SYSTEM_LIBRARIES" OFF)
