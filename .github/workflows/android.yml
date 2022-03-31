@@ -83,6 +83,6 @@ jobs:
           mkdir ../build
           mkdir ../install-prefix
           cd ../build
-          /Users/runner/Library/Android/sdk/cmake/3.10.2.4988404/bin/cmake -DCMAKE_INSTALL_PREFIX:PATH=../../install-prefix -DCMAKE_TOOLCHAIN_FILE=/Users/runner/Library/Android/sdk/ndk-bundle/build/cmake/android.toolchain.cmake -DANDROID_ABI=${{ matrix.ndk-arch }} -DCMAKE_CROSSCOMPILING_EMULATOR=/Users/runner/work/python-cmake-buildsystem/python-cmake-buildsystem/.github/workflows/adb-emu.sh -DANDROID_ALLOW_UNDEFINED_SYMBOLS=On -DENABLE_DECIMAL=Off -DENABLE_CTYPES=Off -DENABLE_CODECS_JP=OFF -DENABLE_CODECS_KR=OFF -DENABLE_CODECS_TW=OFF -DENABLE_MULTIBYTECODEC=OFF -DENABLE_CODECS_CN=OFF -DENABLE_CODECS_HK=OFF -DENABLE_CODECS_ISO2022=OFF -DBUILD_EXTENSIONS_AS_BUILTIN=On -DANDROID_PLATFORM=android-21 ../python-cmake-buildsystem/
-          /Users/runner/Library/Android/sdk/cmake/3.10.2.4988404/bin/cmake --build . -- VERBOSE=1
-          /Users/runner/Library/Android/sdk/cmake/3.10.2.4988404/bin/cmake --build . --target install
+          cmake -DCMAKE_INSTALL_PREFIX:PATH=../../install-prefix -DCMAKE_TOOLCHAIN_FILE=/Users/runner/Library/Android/sdk/ndk-bundle/build/cmake/android.toolchain.cmake -DANDROID_ABI=${{ matrix.ndk-arch }} -DCMAKE_CROSSCOMPILING_EMULATOR=/Users/runner/work/python-cmake-buildsystem/python-cmake-buildsystem/.github/workflows/adb-emu.sh -DANDROID_ALLOW_UNDEFINED_SYMBOLS=On -DENABLE_DECIMAL=Off -DENABLE_CTYPES=Off -DENABLE_CODECS_JP=OFF -DENABLE_CODECS_KR=OFF -DENABLE_CODECS_TW=OFF -DENABLE_MULTIBYTECODEC=OFF -DENABLE_CODECS_CN=OFF -DENABLE_CODECS_HK=OFF -DENABLE_CODECS_ISO2022=OFF -DBUILD_EXTENSIONS_AS_BUILTIN=On -DANDROID_PLATFORM=android-21 ../python-cmake-buildsystem/
+          cmake --build . -- VERBOSE=1
+          cmake --build . --target install
