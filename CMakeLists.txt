@@ -227,6 +227,7 @@ set(_download_3.7.9_md5 "bcd9f22cf531efc6f06ca6b9b2919bd4")
 set(_download_3.7.10_md5 "0b19e34a6dabc4bf15fdcdf9e77e9856")
 set(_download_3.7.11_md5 "a7e66953dba909d395755b3f2e491f6e")
 set(_download_3.7.12_md5 "6fe83678c085a7735a943cf1e4d41c14")
+set(_download_3.7.13_md5 "e0d3321026d4a5f3a3890b5d821ad762")
 # 3.8.x
 set(_download_3.8.0_md5 "e18a9d1a0a6d858b9787e03fc6fdaa20")
 set(_download_3.8.1_md5 "f215fa2f55a78de739c1787ec56b2bcd")
@@ -254,6 +255,9 @@ set(_download_3.9.7_md5 "5f463f30b1fdcb545f156583630318b3")
 set(_download_3.9.8_md5 "83419bd73655813223c2cf2afb11f83c")
 set(_download_3.9.9_md5 "a2da2a456c078db131734ff62de10ed5")
 set(_download_3.9.10_md5 "1440acb71471e2394befdb30b1a958d1")
+set(_download_3.9.11_md5 "daca49063ced330eb933a0fb437dee50")
+# 3.9.12 is a special release that fixes a regression that caused Python to no longer build on RHEL 6
+set(_download_3.9.12_md5 "abc7f7f83ea8614800b73c45cf3262d3")
 
 set(_extracted_dir "Python-${PY_VERSION}")
 
