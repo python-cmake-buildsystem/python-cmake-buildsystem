@@ -1,12 +1,12 @@
 --- a/PC/_msi.c
 +++ b/PC/_msi.c
-@@ -4,6 +4,9 @@
-  */
+@@ -174,8 +174,8 @@
+     FileTimeToLocalFileTime(&bhfi.ftLastWriteTime, &filetime);
+     FileTimeToDosDateTime(&filetime, pdate, ptime);
  
- #include <Python.h>
-+#ifdef _WIN32
-+#include <io.h>
-+#endif
- #include <fci.h>
- #include <fcntl.h>
- #include <windows.h>
+-    *pattribs = (int)(bhfi.dwFileAttributes &
+-        (_A_RDONLY | _A_SYSTEM | _A_HIDDEN | _A_ARCH));
++    *pattribs = (int)(bhfi.dwFileAttributes & 39;
++        /*(_A_RDONLY | _A_SYSTEM | _A_HIDDEN | _A_ARCH));*/
+ 
+     CloseHandle(handle);
