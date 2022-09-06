@@ -1,0 +1,12 @@
+--- a/PC/_msi.c
++++ b/PC/_msi.c
+@@ -4,6 +4,9 @@
+  */
+ 
+ #include <Python.h>
++#ifdef _WIN32
++#include <io.h>
++#endif
+ #include <fci.h>
+ #include <fcntl.h>
+ #include <windows.h>
