@@ -13,14 +13,14 @@
  
 --- a/Modules/posixmodule.c
 +++ b/Modules/posixmodule.c
-@@ -414,9 +414,7 @@
- #  ifdef HAVE_DIRECT_H
- #    include <direct.h>
- #  endif
--#  ifdef HAVE_IO_H
--#    include <io.h>
--#  endif
-+#  include <io.h>
- #  ifdef HAVE_PROCESS_H
- #    include <process.h>
- #  endif
+@@ -308,8 +308,8 @@
+ #    define HAVE_PIPE       1
+ #    define HAVE_SYSTEM     1
+ #    define HAVE_CWAIT      1
+-/*#    define HAVE_FSYNC      1*/
+-/*#    define fsync _commit*/
++#    define HAVE_FSYNC      1
++#    define fsync _commit
+ #  else
+      /* Unix functions that the configure script doesn't check for */
+ #    ifndef __VXWORKS__
