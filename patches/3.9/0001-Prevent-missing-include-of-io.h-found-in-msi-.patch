@@ -24,3 +24,14 @@
  #  else
       /* Unix functions that the configure script doesn't check for */
  #    ifndef __VXWORKS__
+--- a/Modules/_winapi.c
++++ a/Modules/_winapi.c
+@@ -304,7 +304,7 @@
+     {NULL}
+ };
+ 
+-PyTypeObject OverlappedType = {
++static PyTypeObject OverlappedType = {
+     PyVarObject_HEAD_INIT(NULL, 0)
+     /* tp_name           */ "_winapi.Overlapped",
+     /* tp_basicsize      */ sizeof(OverlappedObject),
