@@ -6,7 +6,7 @@
  
 -    *pattribs = (int)(bhfi.dwFileAttributes &
 -        (_A_RDONLY | _A_SYSTEM | _A_HIDDEN | _A_ARCH));
-+    *pattribs = (int)(bhfi.dwFileAttributes & 39;
++    *pattribs = (int)(bhfi.dwFileAttributes & 39);
 +        /*(_A_RDONLY | _A_SYSTEM | _A_HIDDEN | _A_ARCH));*/
  
      CloseHandle(handle);
