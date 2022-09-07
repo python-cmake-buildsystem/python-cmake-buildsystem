@@ -11,3 +11,16 @@
  
      CloseHandle(handle);
  
+--- a/Modules/posixmodule.c
++++ b/Modules/posixmodule.c
+@@ -414,9 +414,7 @@
+ #  ifdef HAVE_DIRECT_H
+ #    include <direct.h>
+ #  endif
+-#  ifdef HAVE_IO_H
+-#    include <io.h>
+-#  endif
++#  include <io.h>
+ #  ifdef HAVE_PROCESS_H
+ #    include <process.h>
+ #  endif
