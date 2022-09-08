@@ -81,3 +81,12 @@
  #elif defined(__IBMC__) || defined(LEGACY_COMPILER)
    #define ALWAYS_INLINE
    #undef inline
+@@ -517,7 +517,7 @@
+ }
+ 
+ /* Same as mpd_qresize, but do not set the result no NaN on failure. */
+-static ALWAYS_INLINE int
++ALWAYS_INLINE int
+ mpd_qresize_cxx(mpd_t *result, mpd_ssize_t nwords)
+ {
+     assert(!mpd_isconst_data(result)); /* illegal operation for a const */
