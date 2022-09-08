@@ -2775,7 +2775,7 @@ if(ZLIB_LIBRARIES)
   #add_cond(CMAKE_REQUIRED_INCLUDES ZLIB_INCLUDE_DIRS ${ZLIB_INCLUDE_DIRS})
   #add_cond(CMAKE_REQUIRED_LIBRARIES ZLIB_LIBRARIES ${ZLIB_LIBRARIES})
   #check_symbol_exists(inflateCopy      "${CFG_HEADERS}" HAVE_ZLIB_COPY)
-set(HAVE_ZLIB_COPY ON CACHE BOOL "ZENOCIHOUPYTHON" FORCE)
+  set(HAVE_ZLIB_COPY ON CACHE BOOL "Assume Zlib have inflateCopy since checking inflateCopy would result in error during CMake configure" FORCE)
 
   #set(CFG_HEADERS ${CFG_HEADERS_SAVE})
   #cmake_pop_check_state()
