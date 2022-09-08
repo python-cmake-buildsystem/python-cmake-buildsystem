@@ -1,18 +1,17 @@
---- a/PC/_msi.c
-+++ b/PC/_msi.c
-@@ -174,8 +174,8 @@
+--- a/PC/_msi.c	2022-09-08 15:57:12.205510328 +0800
++++ b/PC/_msi.c	2022-09-08 15:57:42.597842635 +0800
+@@ -174,8 +174,7 @@
      FileTimeToLocalFileTime(&bhfi.ftLastWriteTime, &filetime);
      FileTimeToDosDateTime(&filetime, pdate, ptime);
- 
+
 -    *pattribs = (int)(bhfi.dwFileAttributes &
 -        (_A_RDONLY | _A_SYSTEM | _A_HIDDEN | _A_ARCH));
-+    *pattribs = (int)(bhfi.dwFileAttributes & 39);
-+        /*(_A_RDONLY | _A_SYSTEM | _A_HIDDEN | _A_ARCH));*/
- 
++    *pattribs = (int)(bhfi.dwFileAttributes & 39); /* _A_RDONLY | _A_SYSTEM | _A_HIDDEN | _A_ARCH = 39 */
+
      CloseHandle(handle);
  
---- a/Modules/posixmodule.c
-+++ b/Modules/posixmodule.c
+--- a/Modules/posixmodule.c	2022-09-08 15:56:51.851881539 +0800
++++ b/Modules/posixmodule.c	2022-09-08 15:57:05.029367072 +0800
 @@ -308,8 +308,8 @@
  #    define HAVE_PIPE       1
  #    define HAVE_SYSTEM     1
@@ -24,14 +23,61 @@
  #  else
       /* Unix functions that the configure script doesn't check for */
  #    ifndef __VXWORKS__
---- a/Modules/_winapi.c
-+++ a/Modules/_winapi.c
+--- a/Modules/_winapi.c	2022-09-08 15:54:25.084773865 +0800
++++ b/Modules/_winapi.c	2022-09-08 15:54:50.474541290 +0800
+@@ -145,7 +145,7 @@
+ 
+ /*[clinic input]
+ module _winapi
+-class _winapi.Overlapped "OverlappedObject *" "&OverlappedType"
++class _winapi.Overlapped "OverlappedObject *" "&WinApiOverlappedType"
+ [clinic start generated code]*/
+ /*[clinic end generated code: output=da39a3ee5e6b4b0d input=c13d3f5fd1dabb84]*/
+ 
 @@ -304,7 +304,7 @@
      {NULL}
  };
  
 -PyTypeObject OverlappedType = {
-+static PyTypeObject OverlappedType = {
++PyTypeObject WinApiOverlappedType = {
      PyVarObject_HEAD_INIT(NULL, 0)
      /* tp_name           */ "_winapi.Overlapped",
      /* tp_basicsize      */ sizeof(OverlappedObject),
+@@ -350,7 +350,7 @@
+ {
+     OverlappedObject *self;
+ 
+-    self = PyObject_New(OverlappedObject, &OverlappedType);
++    self = PyObject_New(OverlappedObject, &WinApiOverlappedType);
+     if (!self)
+         return NULL;
+     self->handle = handle;
+@@ -1941,7 +1941,7 @@
+     PyObject *d;
+     PyObject *m;
+ 
+-    if (PyType_Ready(&OverlappedType) < 0)
++    if (PyType_Ready(&WinApiOverlappedType) < 0)
+         return NULL;
+ 
+     m = PyModule_Create(&winapi_module);
+@@ -1949,7 +1949,7 @@
+         return NULL;
+     d = PyModule_GetDict(m);
+ 
+-    PyDict_SetItemString(d, "Overlapped", (PyObject *) &OverlappedType);
++    PyDict_SetItemString(d, "Overlapped", (PyObject *) &WinApiOverlappedType);
+ 
+     /* constants */
+     WINAPI_CONSTANT(F_DWORD, CREATE_NEW_CONSOLE);
+--- a/Modules/_decimal/libmpdec/mpdecimal.c	2022-09-08 15:59:03.704908109 +0800
++++ b/Modules/_decimal/libmpdec/mpdecimal.c	2022-09-08 15:59:15.807383050 +0800
+@@ -63,7 +63,7 @@
+ 
+ 
+ #if defined(_MSC_VER)
+-  #define ALWAYS_INLINE __forceinline
++  #define ALWAYS_INLINE extern __forceinline
+ #elif defined(__IBMC__) || defined(LEGACY_COMPILER)
+   #define ALWAYS_INLINE
+   #undef inline
