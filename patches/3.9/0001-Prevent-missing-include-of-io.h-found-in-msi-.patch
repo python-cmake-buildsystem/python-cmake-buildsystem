@@ -97,7 +97,7 @@
  /******************************************************************************/
  
 +#if !defined(CONFIG_64) && !defined(CONFIG_32) && !defined(UNIVERSAL)
-+#define UNIVERSAL 1
++#define CONFIG_64 1
 +#endif
 +
  #if defined(UNIVERSAL)
