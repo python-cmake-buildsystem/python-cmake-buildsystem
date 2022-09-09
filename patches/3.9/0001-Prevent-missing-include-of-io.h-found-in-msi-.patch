@@ -90,3 +90,16 @@
  mpd_qresize_cxx(mpd_t *result, mpd_ssize_t nwords)
  {
      assert(!mpd_isconst_data(result)); /* illegal operation for a const */
+--- a/Modules/_decimal/libmpdec/mpdecimal.h	2022-09-09 15:51:38.202653415 +0800
++++ b/Modules/_decimal/libmpdec/mpdecimal.h	2022-09-09 15:52:07.611967326 +0800
+@@ -105,6 +105,10 @@
+ /*                              Configuration                                 */
+ /******************************************************************************/
+ 
++#if !defined(CONFIG_64) && !defined(CONFIG_32) && !defined(UNIVERSAL)
++#define UNIVERSAL 1
++#endif
++
+ #if defined(UNIVERSAL)
+   #if defined(CONFIG_64) || defined(CONFIG_32)
+     #error "cannot use CONFIG_64 or CONFIG_32 with UNIVERSAL."
