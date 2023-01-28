@@ -811,7 +811,7 @@ if(UNIX)
 
     # Makefile
     set(MAKEFILE_LDSHARED_FLAGS "-shared")
-    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    if(APPLE OR ANDROID)
         set(MAKEFILE_LDSHARED_FLAGS "-dynamiclib -headerpad_max_install_names -undefined dynamic_lookup")
     endif()
     # C flags that Python is built with, including the flags of the build type
