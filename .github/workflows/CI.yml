@@ -22,13 +22,13 @@ jobs:
 
     name: python-${{ matrix.python-version }}-${{ matrix.runs-on }}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v2
       with:
         fetch-depth: 0
         path: src
 
     - name: Setup cmake
-      uses: jwlawson/actions-setup-cmake@v1.13.1
+      uses: jwlawson/actions-setup-cmake@v1.9
       with:
         cmake-version: 3.13.5
 
@@ -43,7 +43,7 @@ jobs:
         sudo xcode-select -s "/Applications/Xcode_11.7.app"
 
     - name: Download dashboard script
-      uses: actions/checkout@v3
+      uses: actions/checkout@v2
       with:
         repository: 'python-cmake-buildsystem/python-cmake-buildsystem'
         ref: dashboard
