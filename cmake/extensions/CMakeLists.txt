@@ -337,8 +337,8 @@ if(
     # If installed, build ctypes using the system ffi
     # * on Windows for python >= 3.8
     # * on Linux for python >= 3.7
-    if(NOT USE_SYSTEM_FFI)
-        message(AUTHOR_WARNING "Disabling USE_SYSTEM_FFI option is *NOT* supported with Python >= 3.8 on windows and with Python >= 3.7 on Linux. Current version is ${PY_VERSION}")
+    if(NOT USE_SYSTEM_LibFFI)
+        message(AUTHOR_WARNING "Disabling USE_SYSTEM_LibFFI option is *NOT* supported with Python >= 3.8 on windows and with Python >= 3.7 on Linux. Current version is ${PY_VERSION}")
     endif()
     add_python_extension(_ctypes
         REQUIRES LibFFI_INCLUDE_DIR LibFFI_LIBRARY
