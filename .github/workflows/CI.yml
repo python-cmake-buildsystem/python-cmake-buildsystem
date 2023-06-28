@@ -12,10 +12,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [macos-10.15]
+        runs-on: [macos-latest]
         python-version: [3.7.12, 3.8.12, 3.9.10]
         include:
-          - runs-on: macos-10.15
+          - runs-on: macos-latest
             c-compiler: "clang"
             cxx-compiler: "clang++"
             initial-dashboard-cache: "CMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.13"
@@ -36,11 +36,6 @@ jobs:
       uses: ashutoshvarma/setup-ninja@master
       with:
         version: 1.10.0
-
-    - name: Specific XCode version
-      if: matrix.runs-on == 'macos-10.15'
-      run: |
-        sudo xcode-select -s "/Applications/Xcode_11.7.app"
 
     - name: Download dashboard script
       uses: actions/checkout@v3
