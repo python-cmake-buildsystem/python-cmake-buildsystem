@@ -13,7 +13,7 @@ jobs:
       fail-fast: false
       matrix:
         runs-on: [macos-latest]
-        python-version: [3.7.12, 3.8.12, 3.9.10]
+        python-version: [3.7.17, 3.8.17, 3.9.17]
         include:
           - runs-on: macos-latest
             c-compiler: "clang"
