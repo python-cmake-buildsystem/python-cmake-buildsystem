@@ -16,7 +16,7 @@ This `CMake <http://cmake.org>`_ buildsystem has the following advantages:
   autotools configuration separately from four different MSVC project files.
 
 * Support for other build systems and IDE's like `Ninja
-  <https://martine.github.io/ninja/>`_, `Sublime Text
+  <https://ninja-build.org>`_, `Sublime Text
   <https://www.sublimetext.com/>`_, and many others.
 
 * Easily build C-extensions against other C/C++ libraries built with CMake.
