@@ -457,6 +457,7 @@ if(LIBUTIL_EXPECTED)
 endif()
 
 if(APPLE)
+  find_library(HAVE_LIBCOREFOUNDATION CoreFoundation)
   find_library(HAVE_LIBSYSTEMCONFIGURATION SystemConfiguration)
 endif()
 
