@@ -163,7 +163,6 @@ if(NOT (SRC_DIR AND EXISTS ${SRC_DIR}/${_landmark}))
         endif()
     endforeach()
 endif()
-get_filename_component(SRC_DIR "${SRC_DIR}" ABSOLUTE)
 
 # Download sources
 get_filename_component(_parent_dir ${CMAKE_CURRENT_BINARY_DIR} PATH)
@@ -303,6 +302,7 @@ if(NOT EXISTS ${SRC_DIR}/${_landmark} AND DOWNLOAD_SOURCES)
     set(SRC_DIR ${CMAKE_CURRENT_BINARY_DIR}/../${_extracted_dir})
 endif()
 
+get_filename_component(SRC_DIR "${SRC_DIR}" ABSOLUTE)
 if(NOT EXISTS ${SRC_DIR}/${_landmark})
     message(FATAL_ERROR "Failed to locate python source.
 The searched locations were:
