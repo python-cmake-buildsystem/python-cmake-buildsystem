@@ -1,0 +1,36 @@
+From 12cd7e4b43f85822d8ab0531cb3097e5f32bd5ff Mon Sep 17 00:00:00 2001
+From: Jean-Christophe Fillion-Robin <jchris.fillionr@kitware.com>
+Date: Mon, 6 Nov 2017 11:27:32 -0500
+Subject: [PATCH 3/3] mpdecimal: Export inlined functions to support extension
+ built-in on windows
+
+This commit ensures that symbols are available when building _freeze_importlib
+with all extensions built-in on windows.
+
+It addresses the following link error associated
+with CMakeBuild\libpython\_freeze_importlib.vcxproj:
+
+  3>_decimal.obj : error LNK2019: unresolved external symbol _mpd_del referenced in function _PyDec_AsTuple
+  3>io.obj : error LNK2001: unresolved external symbol _mpd_del
+  3>basearith.obj : error LNK2019: unresolved external symbol _mpd_uint_zero referenced in function __mpd_baseshiftl
+  3>io.obj : error LNK2019: unresolved external symbol _mpd_qresize referenced in function _mpd_qset_string
+---
+ Modules/_decimal/libmpdec/mpdecimal.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Modules/_decimal/libmpdec/mpdecimal.c b/Modules/_decimal/libmpdec/mpdecimal.c
+index 328ab92..5812bcd 100644
+--- a/Modules/_decimal/libmpdec/mpdecimal.c
++++ b/Modules/_decimal/libmpdec/mpdecimal.c
+@@ -54,7 +54,7 @@
+ 
+ 
+ #if defined(_MSC_VER)
+-  #define ALWAYS_INLINE __forceinline
++  #define ALWAYS_INLINE extern __forceinline
+ #elif defined(LEGACY_COMPILER)
+   #define ALWAYS_INLINE
+   #undef inline
+-- 
+2.5.0
+
