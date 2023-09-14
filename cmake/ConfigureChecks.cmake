@@ -52,7 +52,7 @@ if(USE_SYSTEM_LibFFI)
 endif()
 
 if(IS_PY3 AND USE_SYSTEM_LIBMPDEC)
-    find_library(LIBMPDEC_LIBRARY NAMES libmpdec)
+    find_library(LIBMPDEC_LIBRARY NAMES mpdec libmpdec)
     set(LIBMPDEC_LIBRARIES ${LIBMPDEC_LIBRARY})
     message(STATUS "LIBMPDEC_LIBRARIES=${LIBMPDEC_LIBRARIES}")
 endif()

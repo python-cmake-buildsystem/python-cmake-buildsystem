@@ -445,6 +445,7 @@ set(libmpdec_config_universal    UNIVERSAL)
 
 if(USE_SYSTEM_LIBMPDEC)
     set(_decimal_REQUIRES REQUIRES LIBMPDEC_LIBRARIES)
+    set(_decimal_LIBRARIES LIBRARIES ${LIBMPDEC_LIBRARIES})
     set(_decimal_EXTRA_SOURCES )
     set(_decimal_INCLUDEDIRS )
 else()
