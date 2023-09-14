@@ -455,7 +455,7 @@ if(WIN32 AND IS_PY3)
 endif()
 
 set(LIBPYTHON_FROZEN_SOURCES )
-if(IS_PY3)
+if(IS_PY3 AND NOT CMAKE_CROSSCOMPILING)
 
 # Build _freeze_importlib executable
 add_executable(_freeze_importlib
@@ -511,6 +511,11 @@ endif()
 # This is a convenience target allowing to regenerate
 # the frozen sources.
 add_custom_target(freeze_modules DEPENDS ${LIBPYTHON_FROZEN_SOURCES})
+
+elseif(IS_PY3 AND CMAKE_CROSSCOMPILING)
+
+# KLUDGE: suppose importlib.h and importlib_external.h are already present.
+add_custom_target(freeze_modules)
 
 endif()
 
