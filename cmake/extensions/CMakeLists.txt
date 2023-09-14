@@ -164,8 +164,10 @@ if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
 endif()
 
 # UNIX-only extensions
-add_python_extension(fcntl REQUIRES UNIX SOURCES fcntlmodule.c)
-add_python_extension(grp REQUIRES UNIX SOURCES grpmodule.c)
+if(NOT CMAKE_SYSTEM MATCHES Android)
+    add_python_extension(fcntl REQUIRES UNIX SOURCES fcntlmodule.c)
+    add_python_extension(grp REQUIRES UNIX SOURCES grpmodule.c)
+endif()
 
 set(nis_REQUIRES UNIX HAVE_LIBNSL)
 set(nis_LIBRARIES ${HAVE_LIBNSL})
@@ -501,7 +503,7 @@ elseif(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
 elseif(${CMAKE_SIZEOF_VOID_P} EQUAL 4)
     if(HAVE_GCC_ASM_FOR_X87 AND
         (CMAKE_C_COMPILER_ID MATCHES "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
-        AND NOT CMAKE_SYSTEM MATCHES SunOS
+        AND NOT CMAKE_SYSTEM MATCHES SunOS AND NOT CMAKE_SYSTEM MATCHES Android
     )
         # solaris: problems with register allocation.
         # icc >= 11.0 works as well.

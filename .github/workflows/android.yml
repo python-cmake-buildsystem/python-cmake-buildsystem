@@ -1,0 +1,88 @@
+name: "Android bulds"
+
+on: [push, pull_request]
+
+jobs:
+  build-android:
+    name: ${{ matrix.ndk-arch }} on ${{ matrix.arch }} Android
+    runs-on: macos-11
+    strategy:
+      matrix:
+        ndk-arch: [x86_64]
+        arch: [x86_64]
+        api-level: [21]
+        target: [default]
+        include:
+          - ndk-arch: arm64-v8a
+            arch: x86_64
+            api-level: 30
+            target: google_apis
+          - ndk-arch: x86
+            arch: x86
+            api-level: 21
+            target: default
+          - ndk-arch: armeabi-v7a
+            arch: x86_64
+            api-level: 30
+            target: google_apis
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+
+    - uses: actions/cache@v2
+      id: avd-cache
+      with:
+        path: |
+          ~/.android/avd/*
+          ~/.android/adb*
+          ~/.android/debug.keystore
+        key: avd-${{ matrix.api-level }}-${{ matrix.target }}-${{ matrix.arch }}
+
+    - name: run emulator to generate snapshot for caching
+      if: steps.avd-cache.outputs.cache-hit != 'true'
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: ${{ matrix.api-level }}
+        target: ${{ matrix.target }}
+        arch: ${{ matrix.arch }}
+        profile: Galaxy Nexus
+        cores: 2
+        sdcard-path-or-size: 100M
+        emulator-build: 7425822 # https://github.com/ReactiveCircus/android-emulator-runner/issues/160
+        avd-name: test
+        force-avd-creation: false
+        emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+        disable-animations: false
+        working-directory: ./
+        ndk: 21.0.6113669
+        cmake: 3.10.2.4988404
+        script: echo "Generated AVD snapshot for caching."
+
+    - name: run action
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: ${{ matrix.api-level }}
+        target: ${{ matrix.target }}
+        arch: ${{ matrix.arch }}
+        profile: Galaxy Nexus
+        cores: 2
+        ram-size: 2048M
+        sdcard-path-or-size: 100M
+        emulator-build: 7425822 # https://github.com/ReactiveCircus/android-emulator-runner/issues/160
+        avd-name: test
+        force-avd-creation: false
+        emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+        disable-animations: true
+        working-directory: ./
+        ndk: 21.0.6113669
+        cmake: 3.10.2.4988404
+        script: |
+          # ls -lR /Users/runner/Library/Android/sdk
+          adb devices
+          mkdir ../build
+          mkdir ../install-prefix
+          cd ../build
+          cmake -DCMAKE_INSTALL_PREFIX:PATH=../../install-prefix -DCMAKE_TOOLCHAIN_FILE=/Users/runner/Library/Android/sdk/ndk-bundle/build/cmake/android.toolchain.cmake -DANDROID_ABI=${{ matrix.ndk-arch }} -DCMAKE_CROSSCOMPILING_EMULATOR=/Users/runner/work/python-cmake-buildsystem/python-cmake-buildsystem/.github/workflows/adb-emu.sh -DANDROID_ALLOW_UNDEFINED_SYMBOLS=On -DENABLE_DECIMAL=Off -DENABLE_CTYPES=Off -DENABLE_CODECS_JP=OFF -DENABLE_CODECS_KR=OFF -DENABLE_CODECS_TW=OFF -DENABLE_MULTIBYTECODEC=OFF -DENABLE_CODECS_CN=OFF -DENABLE_CODECS_HK=OFF -DENABLE_CODECS_ISO2022=OFF -DBUILD_EXTENSIONS_AS_BUILTIN=On -DANDROID_PLATFORM=android-21 ../python-cmake-buildsystem/
+          cmake --build . -- VERBOSE=1
+          cmake --build . --target install
