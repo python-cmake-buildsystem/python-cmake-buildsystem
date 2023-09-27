@@ -382,7 +382,7 @@ if(WIN32)
     endif()
 else()
     if(APPLE)
-        if(NOT USE_SYSTEM_LibFFI)
+        if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" AND CMAKE_OSX_ARCHITECTURES STREQUAL "x86_64")
             add_python_extension(_ctypes
                 SOURCES ${ctypes_COMMON_SOURCES}
                         _ctypes/malloc_closure.c
@@ -397,6 +397,7 @@ else()
                 DEFINITIONS MACOSX
             )
         else()
+            # non-x86_64 architectures, e.g. arm64 or arm64+x86_64 universal build
             add_python_extension(_ctypes
                 REQUIRES LibFFI_INCLUDE_DIR LibFFI_LIBRARY
                 SOURCES ${ctypes_COMMON_SOURCES}
