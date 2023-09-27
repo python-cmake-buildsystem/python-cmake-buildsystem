@@ -382,7 +382,7 @@ if(WIN32)
     endif()
 else()
     if(APPLE)
-        if(not USE_SYSTEM_LibFFI)
+        if(NOT USE_SYSTEM_LibFFI)
             add_python_extension(_ctypes
                 SOURCES ${ctypes_COMMON_SOURCES}
                         _ctypes/malloc_closure.c
