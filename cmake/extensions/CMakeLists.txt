@@ -382,19 +382,29 @@ if(WIN32)
     endif()
 else()
     if(APPLE)
-        add_python_extension(_ctypes
-            SOURCES ${ctypes_COMMON_SOURCES}
-                    _ctypes/malloc_closure.c
-                    _ctypes/darwin/dlfcn_simple.c
-                    _ctypes/libffi_osx/ffi.c
-                    _ctypes/libffi_osx/x86/darwin64.S
-                    _ctypes/libffi_osx/x86/x86-darwin.S
-                    _ctypes/libffi_osx/x86/x86-ffi_darwin.c
-                    _ctypes/libffi_osx/x86/x86-ffi64.c
-            INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi_osx/include
-                        ${SRC_DIR}/Modules/_ctypes/darwin
-            DEFINITIONS MACOSX
-        )
+        if(not USE_SYSTEM_LibFFI)
+            add_python_extension(_ctypes
+                SOURCES ${ctypes_COMMON_SOURCES}
+                        _ctypes/malloc_closure.c
+                        _ctypes/darwin/dlfcn_simple.c
+                        _ctypes/libffi_osx/ffi.c
+                        _ctypes/libffi_osx/x86/darwin64.S
+                        _ctypes/libffi_osx/x86/x86-darwin.S
+                        _ctypes/libffi_osx/x86/x86-ffi_darwin.c
+                        _ctypes/libffi_osx/x86/x86-ffi64.c
+                INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi_osx/include
+                            ${SRC_DIR}/Modules/_ctypes/darwin
+                DEFINITIONS MACOSX
+            )
+        else()
+            add_python_extension(_ctypes
+                REQUIRES LibFFI_INCLUDE_DIR LibFFI_LIBRARY
+                SOURCES ${ctypes_COMMON_SOURCES}
+                DEFINITIONS Py_BUILD_CORE_MODULE FFI_BUILDING
+                INCLUDEDIRS ${LibFFI_INCLUDE_DIR}
+                LIBRARIES ${LibFFI_LIBRARY}
+            )
+        endif()
     else()
         if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
           set(_libffi_system_extra_src
