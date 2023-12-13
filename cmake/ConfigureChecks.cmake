@@ -23,6 +23,9 @@ message(STATUS "BZIP2_INCLUDE_DIR=${BZIP2_INCLUDE_DIR}")
 message(STATUS "BZIP2_LIBRARIES=${BZIP2_LIBRARIES}")
 
 if(USE_SYSTEM_Curses)
+    if(PY_VERSION VERSION_GREATER_EQUAL "3.10")
+        set(CURSES_NEED_WIDE TRUE)
+    endif()
     find_package(Curses) # https://cmake.org/cmake/help/latest/module/FindCurses.html
     find_library(PANEL_LIBRARY NAMES panel)
     set(PANEL_LIBRARIES ${PANEL_LIBRARY})
