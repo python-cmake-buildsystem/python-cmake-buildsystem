@@ -327,6 +327,11 @@ if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
         ${SRC_DIR}/Python/preconfig.c
     )
 endif()
+if(PY_VERSION VERSION_GREATER_EQUAL "3.10")
+    list(APPEND PYTHON_COMMON_SOURCES
+        ${SRC_DIR}/Python/suggestions.c
+    )
+endif()
 
 if(UNIX)
     list(APPEND PYTHON_COMMON_SOURCES
