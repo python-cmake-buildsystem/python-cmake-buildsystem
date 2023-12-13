@@ -191,6 +191,11 @@ if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
         ${SRC_DIR}/Objects/genericaliasobject.c
     )
 endif()
+if(PY_VERSION VERSION_GREATER_EQUAL "3.10")
+    list(APPEND OBJECT_COMMON_SOURCES
+        ${SRC_DIR}/Objects/unionobject.c
+    )
+endif()
 
 if(CMAKE_C_COMPILER_ID MATCHES GNU)
     foreach(filename class complex float int method string type unicode weakref)
