@@ -67,36 +67,48 @@ elseif(WIN32)
     )
 endif()
 
-set(PARSER_COMMON_SOURCES # Equivalent to POBJS in Makefile.pre
-    ${SRC_DIR}/Parser/acceler.c
-    ${SRC_DIR}/Parser/grammar1.c
-    ${SRC_DIR}/Parser/listnode.c
-    ${SRC_DIR}/Parser/node.c
-    ${SRC_DIR}/Parser/parser.c
-)
-if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
-    list(APPEND PARSER_COMMON_SOURCES
-        ${SRC_DIR}/Parser/pegen/pegen.c
-        ${SRC_DIR}/Parser/pegen/parse.c
-        ${SRC_DIR}/Parser/pegen/parse_string.c
-        ${SRC_DIR}/Parser/pegen/peg_api.c
-    )
-endif()
-if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
-    list(APPEND PARSER_COMMON_SOURCES
+if(PY_VERSION VERSION_GREATER_EQUAL "3.10")
+    set(PARSER_COMMON_SOURCES # Equivalent to POBJS in Makefile.pre
         ${SRC_DIR}/Parser/myreadline.c
-        ${SRC_DIR}/Parser/parsetok.c
+        ${SRC_DIR}/Parser/parser.c
+        ${SRC_DIR}/Parser/peg_api.c
+        ${SRC_DIR}/Parser/pegen.c
+        ${SRC_DIR}/Parser/string_parser.c
         ${SRC_DIR}/Parser/token.c
         ${SRC_DIR}/Parser/tokenizer.c
     )
 else()
-    list(APPEND PARSER_COMMON_SOURCES
-        ${SRC_DIR}/Parser/bitset.c
-        ${SRC_DIR}/Parser/firstsets.c
-        ${SRC_DIR}/Parser/grammar.c
-        ${SRC_DIR}/Parser/metagrammar.c
-        ${SRC_DIR}/Parser/pgen.c
+    set(PARSER_COMMON_SOURCES # Equivalent to POBJS in Makefile.pre
+        ${SRC_DIR}/Parser/acceler.c
+        ${SRC_DIR}/Parser/grammar1.c
+        ${SRC_DIR}/Parser/listnode.c
+        ${SRC_DIR}/Parser/node.c
+        ${SRC_DIR}/Parser/parser.c
     )
+    if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
+        list(APPEND PARSER_COMMON_SOURCES
+            ${SRC_DIR}/Parser/pegen/pegen.c
+            ${SRC_DIR}/Parser/pegen/parse.c
+            ${SRC_DIR}/Parser/pegen/parse_string.c
+            ${SRC_DIR}/Parser/pegen/peg_api.c
+        )
+    endif()
+    if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
+        list(APPEND PARSER_COMMON_SOURCES
+            ${SRC_DIR}/Parser/myreadline.c
+            ${SRC_DIR}/Parser/parsetok.c
+            ${SRC_DIR}/Parser/token.c
+            ${SRC_DIR}/Parser/tokenizer.c
+        )
+    else()
+        list(APPEND PARSER_COMMON_SOURCES
+            ${SRC_DIR}/Parser/bitset.c
+            ${SRC_DIR}/Parser/firstsets.c
+            ${SRC_DIR}/Parser/grammar.c
+            ${SRC_DIR}/Parser/metagrammar.c
+            ${SRC_DIR}/Parser/pgen.c
+        )
+    endif()
 endif()
 
 set(OBJECT2_SOURCES
