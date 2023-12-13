@@ -1579,6 +1579,7 @@
 
 /* The size of `size_t', as computed by sizeof. */
 #cmakedefine SIZEOF_SIZE_T @SIZEOF_SIZE_T@
+#cmakedefine ALIGNOF_SIZE_T @SIZEOF_SIZE_T@
 
 /* The size of `time_t', as computed by sizeof. */
 #cmakedefine SIZEOF_TIME_T @SIZEOF_TIME_T@
