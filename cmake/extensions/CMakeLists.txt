@@ -161,7 +161,7 @@ if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
 endif()
 
 # Python 3.9
-if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
+if(PY_VERSION VERSION_EQUAL "3.9")
     add_python_extension(_peg_parser ALWAYS_BUILTIN SOURCES _peg_parser.c)
 endif()
 
