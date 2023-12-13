@@ -68,12 +68,16 @@ elseif(WIN32)
 endif()
 
 set(PARSER_COMMON_SOURCES # Equivalent to POBJS in Makefile.pre
-    ${SRC_DIR}/Parser/acceler.c
     ${SRC_DIR}/Parser/grammar1.c
     ${SRC_DIR}/Parser/listnode.c
     ${SRC_DIR}/Parser/node.c
     ${SRC_DIR}/Parser/parser.c
 )
+if (PY_VERSION VERSION_LESS_EQUAL "3.9")
+    list(APPEND PARSER_COMMON_SOURCES
+        ${SRC_DIR}/Parser/acceler.c
+    )
+endif()
 if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
     list(APPEND PARSER_COMMON_SOURCES
         ${SRC_DIR}/Parser/pegen/pegen.c
