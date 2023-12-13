@@ -1555,6 +1555,7 @@
 
 /* The size of `long', as computed by sizeof. */
 #cmakedefine SIZEOF_LONG @SIZEOF_LONG@
+#cmakedefine ALIGNOF_LONG @SIZEOF_LONG@
 
 /* The size of `long double', as computed by sizeof. */
 #cmakedefine SIZEOF_LONG_DOUBLE @SIZEOF_LONG_DOUBLE@

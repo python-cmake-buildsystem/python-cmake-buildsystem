@@ -695,6 +695,7 @@ check_type_size(float SIZEOF_FLOAT)
 check_type_size(fpos_t SIZEOF_FPOS_T)
 check_type_size(int SIZEOF_INT)
 check_type_size(long SIZEOF_LONG)
+check_type_size(long ALIGNOF_LONG)
 check_type_size("long double" SIZEOF_LONG_DOUBLE)
 set(HAVE_LONG_DOUBLE ${SIZEOF_LONG_DOUBLE}) # libffi and cpython
 check_type_size("long long" SIZEOF_LONG_LONG)
