@@ -276,7 +276,6 @@ set(PYTHON_COMMON_SOURCES
     ${SRC_DIR}/Python/getopt.c
     ${SRC_DIR}/Python/getplatform.c
     ${SRC_DIR}/Python/getversion.c
-    ${SRC_DIR}/Python/graminit.c
     ${SRC_DIR}/Python/import.c
     ${SRC_DIR}/Python/importdl.c
     ${SRC_DIR}/Python/marshal.c
@@ -298,6 +297,11 @@ set(PYTHON_COMMON_SOURCES
     ${SRC_DIR}/Python/traceback.c
     ${SRC_DIR}/Python/_warnings.c
 )
+if(PY_VERSION VERSION_LESS_EQUAL "3.9")
+    list(APPEND PYTHON_COMMON_SOURCES
+        ${SRC_DIR}/Python/graminit.c
+    )
+endif()
 if(PY_VERSION VERSION_GREATER_EQUAL "3.7")
     list(APPEND PYTHON_COMMON_SOURCES
         ${SRC_DIR}/Python/ast_opt.c
