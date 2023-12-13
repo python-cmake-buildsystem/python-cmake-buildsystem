@@ -282,7 +282,6 @@ set(PYTHON_COMMON_SOURCES
     ${SRC_DIR}/Python/modsupport.c
     ${SRC_DIR}/Python/mysnprintf.c
     ${SRC_DIR}/Python/mystrtoul.c
-    ${SRC_DIR}/Python/peephole.c
     ${SRC_DIR}/Python/pyarena.c
     ${SRC_DIR}/Python/pyctype.c
     ${SRC_DIR}/Python/pyfpe.c
@@ -300,6 +299,7 @@ set(PYTHON_COMMON_SOURCES
 if(PY_VERSION VERSION_LESS_EQUAL "3.9")
     list(APPEND PYTHON_COMMON_SOURCES
         ${SRC_DIR}/Python/graminit.c
+        ${SRC_DIR}/Python/peephole.c
     )
 endif()
 if(PY_VERSION VERSION_GREATER_EQUAL "3.7")
