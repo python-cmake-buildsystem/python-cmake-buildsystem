@@ -683,11 +683,19 @@ add_python_extension(_curses_panel
     SOURCES _curses_panel.c
     LIBRARIES ${curses_common_LIBRARIES} ${PANEL_LIBRARIES}
 )
-add_python_extension(_curses
-    REQUIRES ${curses_common_REQUIRES}
-    SOURCES _cursesmodule.c
-    LIBRARIES ${curses_common_LIBRARIES}
-)
+if(PY_VERSION VERSION_GREATER_EQUAL "3.10")
+    add_python_extension(_curses
+        REQUIRES ${curses_common_REQUIRES} HAVE_LIBNCURSES
+        SOURCES _cursesmodule.c
+        LIBRARIES ${curses_common_LIBRARIES}
+    )
+else()
+    add_python_extension(_curses
+        REQUIRES ${curses_common_REQUIRES}
+        SOURCES _cursesmodule.c
+        LIBRARIES ${curses_common_LIBRARIES}
+    )
+endif()
 set(dbm2_SOURCES dbmmodule.c)
 set(dbm3_SOURCES _dbmmodule.c)
 if(IS_PY3)
