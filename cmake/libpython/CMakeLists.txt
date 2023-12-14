@@ -630,7 +630,7 @@ if(BUILD_LIBPYTHON_SHARED)
     set(targetname "libpython3-shared")
 
     if(IS_PY3 AND MSVC)
-        if(PY_VERSION VERSION_LESS_EQUAL "3.9")
+        if(PY_VERSION VERSION_LESS "3.10")
             # XXX Add BuildPython3_dDef
 
             # Generate 'python3stub.def'

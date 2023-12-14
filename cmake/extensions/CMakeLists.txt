@@ -72,7 +72,7 @@ add_python_extension(math ${WIN32_BUILTIN} REQUIRES HAVE_LIBM SOURCES _math.c ma
 add_python_extension(mmap ${WIN32_BUILTIN} SOURCES mmapmodule.c)
 add_python_extension(_multibytecodec ${WIN32_BUILTIN} SOURCES cjkcodecs/multibytecodec.c)
 add_python_extension(operator ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES operator.c)
-if(PY_VERSION VERSION_LESS_EQUAL "3.9")
+if(PY_VERSION VERSION_LESS "3.10")
     add_python_extension(parser ${WIN32_BUILTIN} SOURCES parsermodule.c)
 endif()
 add_python_extension(_random ${WIN32_BUILTIN} SOURCES _randommodule.c)
