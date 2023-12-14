@@ -303,7 +303,7 @@ set(PYTHON_COMMON_SOURCES
     ${SRC_DIR}/Python/traceback.c
     ${SRC_DIR}/Python/_warnings.c
 )
-if(PY_VERSION VERSION_LESS_EQUAL "3.9")
+if(PY_VERSION VERSION_LESS "3.10")
     list(APPEND PYTHON_COMMON_SOURCES
         ${SRC_DIR}/Python/graminit.c
         ${SRC_DIR}/Python/peephole.c
