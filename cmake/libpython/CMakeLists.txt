@@ -492,6 +492,9 @@ target_link_libraries(_freeze_importlib ${LIBPYTHON_TARGET_LIBRARIES})
 if(builtin_compile_definitions_without_py_limited_api)
   target_compile_definitions(_freeze_importlib PUBLIC ${builtin_compile_definitions_without_py_limited_api})
 endif()
+if(PY_VERSION VERSION_GREATER_EQUAL "3.10" AND MSVC)
+  target_compile_options(_freeze_importlib PRIVATE "/DPY3_DLLNAME=\"python3$<$<CONFIG:Debug>:_d>\"")
+endif()
 
 # Freeze modules
 set(LIBPYTHON_FROZEN_SOURCES
@@ -673,7 +676,6 @@ if(BUILD_LIBPYTHON_SHARED)
             target_link_libraries(${targetname} ${python3stub_lib})
         else()
             add_library(${targetname} SHARED ${SRC_DIR}/PC/python3dll.c)
-            target_compile_options(${targetname} PRIVATE "/DPY3_DLLNAME=\"python3$<$<CONFIG:Debug>:_d>\"")
         endif()
     endif()
 
