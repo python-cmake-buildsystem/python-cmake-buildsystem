@@ -673,6 +673,7 @@ if(BUILD_LIBPYTHON_SHARED)
             target_link_libraries(${targetname} ${python3stub_lib})
         else()
             add_library(${targetname} SHARED ${SRC_DIR}/PC/python3dll.c)
+            target_compile_options(${targetname} PRIVATE "/DPY3_DLLNAME=\"python3$<$<CONFIG:Debug>:_d>\"")
         endif()
     endif()
 
