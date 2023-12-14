@@ -25,6 +25,8 @@ if(UNIX)
             PYTHONPATH="${PYTHONPATH}"
       )
 elseif(WIN32)
+    add_definitions(-DPY3_DLLNAME="python3${CMAKE_DEBUG_POSTFIX}")
+    add_definitions(-DPYTHON_DLL_NAME="python${PY_VERSION_MAJOR}${PY_VERSION_MINOR}")
     list(APPEND MODULE_SOURCES
         ${SRC_DIR}/PC/getpathp.c
     )
@@ -492,9 +494,6 @@ target_link_libraries(_freeze_importlib ${LIBPYTHON_TARGET_LIBRARIES})
 if(builtin_compile_definitions_without_py_limited_api)
   target_compile_definitions(_freeze_importlib PUBLIC ${builtin_compile_definitions_without_py_limited_api})
 endif()
-if(PY_VERSION VERSION_GREATER_EQUAL "3.10" AND MSVC)
-  target_compile_options(_freeze_importlib PRIVATE "/DPY3_DLLNAME=\"python3$<$<CONFIG:Debug>:_d>\"")
-endif()
 
 # Freeze modules
 set(LIBPYTHON_FROZEN_SOURCES
@@ -675,7 +674,31 @@ if(BUILD_LIBPYTHON_SHARED)
 
             target_link_libraries(${targetname} ${python3stub_lib})
         else()
+            # Build 'python3stub.lib' before linking 'python3.dll'
+            set(python3stub_lib ${PROJECT_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}/${CMAKE_CFG_INTDIR}/python3stub.lib)
+            set(machine X86)
+            if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
+                set(machine X64)
+            endif()
+            add_custom_command(
+                OUTPUT ${python3stub_lib}
+                COMMAND lib /nologo /def /out:${python3stub_lib} /MACHINE:${machine}
+                COMMENT "Rebuilding python3stub.lib"
+                VERBATIM
+            )
+            add_custom_target(generate_libpython3stub_lib DEPENDS ${python3stub_lib})
+
+            # Build 'python3.dll'
             add_library(${targetname} SHARED ${SRC_DIR}/PC/python3dll.c)
+            set_target_properties(${targetname} PROPERTIES
+                OUTPUT_NAME python3
+                LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR}
+                RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR}
+                INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/${LIBPYTHON_LIBDIR}
+            )
+            add_dependencies(${targetname} libpython-shared generate_libpython3stub_lib)
+
+            target_link_libraries(${targetname} ${python3stub_lib})
         endif()
     endif()
 
