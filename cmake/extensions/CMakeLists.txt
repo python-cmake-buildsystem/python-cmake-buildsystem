@@ -72,7 +72,9 @@ add_python_extension(math ${WIN32_BUILTIN} REQUIRES HAVE_LIBM SOURCES _math.c ma
 add_python_extension(mmap ${WIN32_BUILTIN} SOURCES mmapmodule.c)
 add_python_extension(_multibytecodec ${WIN32_BUILTIN} SOURCES cjkcodecs/multibytecodec.c)
 add_python_extension(operator ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES operator.c)
-add_python_extension(parser ${WIN32_BUILTIN} SOURCES parsermodule.c)
+if(PY_VERSION VERSION_LESS "3.10")
+    add_python_extension(parser ${WIN32_BUILTIN} SOURCES parsermodule.c)
+endif()
 add_python_extension(_random ${WIN32_BUILTIN} SOURCES _randommodule.c)
 add_python_extension(strop ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES stropmodule.c)
 add_python_extension(_struct ${WIN32_BUILTIN} SOURCES _struct.c)
@@ -159,7 +161,7 @@ if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
 endif()
 
 # Python 3.9
-if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
+if(PY_VERSION VERSION_EQUAL "3.9")
     add_python_extension(_peg_parser ALWAYS_BUILTIN SOURCES _peg_parser.c)
 endif()
 
@@ -382,19 +384,30 @@ if(WIN32)
     endif()
 else()
     if(APPLE)
-        add_python_extension(_ctypes
-            SOURCES ${ctypes_COMMON_SOURCES}
-                    _ctypes/malloc_closure.c
-                    _ctypes/darwin/dlfcn_simple.c
-                    _ctypes/libffi_osx/ffi.c
-                    _ctypes/libffi_osx/x86/darwin64.S
-                    _ctypes/libffi_osx/x86/x86-darwin.S
-                    _ctypes/libffi_osx/x86/x86-ffi_darwin.c
-                    _ctypes/libffi_osx/x86/x86-ffi64.c
-            INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi_osx/include
-                        ${SRC_DIR}/Modules/_ctypes/darwin
-            DEFINITIONS MACOSX
-        )
+        if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" AND CMAKE_OSX_ARCHITECTURES STREQUAL "x86_64")
+            add_python_extension(_ctypes
+                SOURCES ${ctypes_COMMON_SOURCES}
+                        _ctypes/malloc_closure.c
+                        _ctypes/darwin/dlfcn_simple.c
+                        _ctypes/libffi_osx/ffi.c
+                        _ctypes/libffi_osx/x86/darwin64.S
+                        _ctypes/libffi_osx/x86/x86-darwin.S
+                        _ctypes/libffi_osx/x86/x86-ffi_darwin.c
+                        _ctypes/libffi_osx/x86/x86-ffi64.c
+                INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi_osx/include
+                            ${SRC_DIR}/Modules/_ctypes/darwin
+                DEFINITIONS MACOSX
+            )
+        else()
+            # non-x86_64 architectures, e.g. arm64 or arm64+x86_64 universal build
+            add_python_extension(_ctypes
+                REQUIRES LibFFI_INCLUDE_DIR LibFFI_LIBRARY
+                SOURCES ${ctypes_COMMON_SOURCES}
+                DEFINITIONS Py_BUILD_CORE_MODULE FFI_BUILDING
+                INCLUDEDIRS ${LibFFI_INCLUDE_DIR}
+                LIBRARIES ${LibFFI_LIBRARY}
+            )
+        endif()
     else()
         if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
           set(_libffi_system_extra_src
