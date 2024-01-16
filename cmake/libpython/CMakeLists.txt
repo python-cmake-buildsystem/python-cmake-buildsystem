@@ -25,6 +25,8 @@ if(UNIX)
             PYTHONPATH="${PYTHONPATH}"
       )
 elseif(WIN32)
+    add_definitions(-DPY3_DLLNAME="python3${CMAKE_DEBUG_POSTFIX}")
+    add_definitions(-DPYTHON_DLL_NAME="python${PY_VERSION_MAJOR}${PY_VERSION_MINOR}")
     list(APPEND MODULE_SOURCES
         ${SRC_DIR}/PC/getpathp.c
     )
@@ -67,36 +69,48 @@ elseif(WIN32)
     )
 endif()
 
-set(PARSER_COMMON_SOURCES # Equivalent to POBJS in Makefile.pre
-    ${SRC_DIR}/Parser/acceler.c
-    ${SRC_DIR}/Parser/grammar1.c
-    ${SRC_DIR}/Parser/listnode.c
-    ${SRC_DIR}/Parser/node.c
-    ${SRC_DIR}/Parser/parser.c
-)
-if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
-    list(APPEND PARSER_COMMON_SOURCES
-        ${SRC_DIR}/Parser/pegen/pegen.c
-        ${SRC_DIR}/Parser/pegen/parse.c
-        ${SRC_DIR}/Parser/pegen/parse_string.c
-        ${SRC_DIR}/Parser/pegen/peg_api.c
-    )
-endif()
-if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
-    list(APPEND PARSER_COMMON_SOURCES
+if(PY_VERSION VERSION_GREATER_EQUAL "3.10")
+    set(PARSER_COMMON_SOURCES # Equivalent to POBJS in Makefile.pre
         ${SRC_DIR}/Parser/myreadline.c
-        ${SRC_DIR}/Parser/parsetok.c
+        ${SRC_DIR}/Parser/parser.c
+        ${SRC_DIR}/Parser/peg_api.c
+        ${SRC_DIR}/Parser/pegen.c
+        ${SRC_DIR}/Parser/string_parser.c
         ${SRC_DIR}/Parser/token.c
         ${SRC_DIR}/Parser/tokenizer.c
     )
 else()
-    list(APPEND PARSER_COMMON_SOURCES
-        ${SRC_DIR}/Parser/bitset.c
-        ${SRC_DIR}/Parser/firstsets.c
-        ${SRC_DIR}/Parser/grammar.c
-        ${SRC_DIR}/Parser/metagrammar.c
-        ${SRC_DIR}/Parser/pgen.c
+    set(PARSER_COMMON_SOURCES # Equivalent to POBJS in Makefile.pre
+        ${SRC_DIR}/Parser/acceler.c
+        ${SRC_DIR}/Parser/grammar1.c
+        ${SRC_DIR}/Parser/listnode.c
+        ${SRC_DIR}/Parser/node.c
+        ${SRC_DIR}/Parser/parser.c
     )
+    if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
+        list(APPEND PARSER_COMMON_SOURCES
+            ${SRC_DIR}/Parser/pegen/pegen.c
+            ${SRC_DIR}/Parser/pegen/parse.c
+            ${SRC_DIR}/Parser/pegen/parse_string.c
+            ${SRC_DIR}/Parser/pegen/peg_api.c
+        )
+    endif()
+    if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
+        list(APPEND PARSER_COMMON_SOURCES
+            ${SRC_DIR}/Parser/myreadline.c
+            ${SRC_DIR}/Parser/parsetok.c
+            ${SRC_DIR}/Parser/token.c
+            ${SRC_DIR}/Parser/tokenizer.c
+        )
+    else()
+        list(APPEND PARSER_COMMON_SOURCES
+            ${SRC_DIR}/Parser/bitset.c
+            ${SRC_DIR}/Parser/firstsets.c
+            ${SRC_DIR}/Parser/grammar.c
+            ${SRC_DIR}/Parser/metagrammar.c
+            ${SRC_DIR}/Parser/pgen.c
+        )
+    endif()
 endif()
 
 set(OBJECT2_SOURCES
@@ -177,6 +191,11 @@ endif()
 if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
     list(APPEND OBJECT_COMMON_SOURCES
         ${SRC_DIR}/Objects/genericaliasobject.c
+    )
+endif()
+if(PY_VERSION VERSION_GREATER_EQUAL "3.10")
+    list(APPEND OBJECT_COMMON_SOURCES
+        ${SRC_DIR}/Objects/unionobject.c
     )
 endif()
 
@@ -264,14 +283,12 @@ set(PYTHON_COMMON_SOURCES
     ${SRC_DIR}/Python/getopt.c
     ${SRC_DIR}/Python/getplatform.c
     ${SRC_DIR}/Python/getversion.c
-    ${SRC_DIR}/Python/graminit.c
     ${SRC_DIR}/Python/import.c
     ${SRC_DIR}/Python/importdl.c
     ${SRC_DIR}/Python/marshal.c
     ${SRC_DIR}/Python/modsupport.c
     ${SRC_DIR}/Python/mysnprintf.c
     ${SRC_DIR}/Python/mystrtoul.c
-    ${SRC_DIR}/Python/peephole.c
     ${SRC_DIR}/Python/pyarena.c
     ${SRC_DIR}/Python/pyctype.c
     ${SRC_DIR}/Python/pyfpe.c
@@ -286,6 +303,12 @@ set(PYTHON_COMMON_SOURCES
     ${SRC_DIR}/Python/traceback.c
     ${SRC_DIR}/Python/_warnings.c
 )
+if(PY_VERSION VERSION_LESS "3.10")
+    list(APPEND PYTHON_COMMON_SOURCES
+        ${SRC_DIR}/Python/graminit.c
+        ${SRC_DIR}/Python/peephole.c
+    )
+endif()
 if(PY_VERSION VERSION_GREATER_EQUAL "3.7")
     list(APPEND PYTHON_COMMON_SOURCES
         ${SRC_DIR}/Python/ast_opt.c
@@ -304,6 +327,11 @@ if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
     list(APPEND PYTHON_COMMON_SOURCES
         ${SRC_DIR}/Python/initconfig.c
         ${SRC_DIR}/Python/preconfig.c
+    )
+endif()
+if(PY_VERSION VERSION_GREATER_EQUAL "3.10")
+    list(APPEND PYTHON_COMMON_SOURCES
+        ${SRC_DIR}/Python/suggestions.c
     )
 endif()
 
@@ -602,48 +630,76 @@ if(BUILD_LIBPYTHON_SHARED)
     set(targetname "libpython3-shared")
 
     if(IS_PY3 AND MSVC)
-        # XXX Add BuildPython3_dDef
+        if(PY_VERSION VERSION_LESS "3.10")
+            # XXX Add BuildPython3_dDef
 
-        # Generate 'python3stub.def'
-        set(pythonstub_def ${PROJECT_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}/${CMAKE_CFG_INTDIR}/python3stub.def)
-        add_custom_command(
-            OUTPUT ${pythonstub_def}
-            COMMAND ${CMAKE_COMMAND}
-                -DINPUT_DEF_FILE:PATH=${SRC_DIR}/PC/python3.def
-                -DOUTPUT_DEF_FILE:PATH=${PROJECT_BINARY_DIR}/CMakeFiles/python3stub.def
-                -P ${CMAKE_CURRENT_SOURCE_DIR}/generate_libpythonstub_def.cmake
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                ${PROJECT_BINARY_DIR}/CMakeFiles/python3stub.def
-                ${pythonstub_def}
-        )
-        add_custom_target(generate_libpython3stub_def DEPENDS ${pythonstub_def})
+            # Generate 'python3stub.def'
+            set(pythonstub_def ${PROJECT_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}/${CMAKE_CFG_INTDIR}/python3stub.def)
+            add_custom_command(
+                OUTPUT ${pythonstub_def}
+                COMMAND ${CMAKE_COMMAND}
+                    -DINPUT_DEF_FILE:PATH=${SRC_DIR}/PC/python3.def
+                    -DOUTPUT_DEF_FILE:PATH=${PROJECT_BINARY_DIR}/CMakeFiles/python3stub.def
+                    -P ${CMAKE_CURRENT_SOURCE_DIR}/generate_libpythonstub_def.cmake
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    ${PROJECT_BINARY_DIR}/CMakeFiles/python3stub.def
+                    ${pythonstub_def}
+            )
+            add_custom_target(generate_libpython3stub_def DEPENDS ${pythonstub_def})
 
-        # Build 'python3stub.lib' before linking 'python3.dll'
-        set(python3stub_lib ${PROJECT_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}/${CMAKE_CFG_INTDIR}/python3stub.lib)
-        set(machine X86)
-        if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
-            set(machine X64)
+            # Build 'python3stub.lib' before linking 'python3.dll'
+            set(python3stub_lib ${PROJECT_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}/${CMAKE_CFG_INTDIR}/python3stub.lib)
+            set(machine X86)
+            if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
+                set(machine X64)
+            endif()
+            add_custom_command(
+                OUTPUT ${python3stub_lib}
+                COMMAND lib /nologo /def:${pythonstub_def} /out:${python3stub_lib} /MACHINE:${machine}
+                COMMENT "Rebuilding python3stub.lib"
+                DEPENDS generate_libpython3stub_def
+                VERBATIM
+            )
+            add_custom_target(generate_libpython3stub_lib DEPENDS ${python3stub_lib})
+
+            # Build 'python3.dll'
+            add_library(${targetname} SHARED ${SRC_DIR}/PC/python3dll.c ${SRC_DIR}/PC/python3.def)
+            set_target_properties(${targetname} PROPERTIES
+                OUTPUT_NAME python3
+                LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR}
+                RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR}
+                INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/${LIBPYTHON_LIBDIR}
+            )
+            add_dependencies(${targetname} generate_libpython3stub_lib)
+
+            target_link_libraries(${targetname} ${python3stub_lib})
+        else()
+            # Build 'python3stub.lib' before linking 'python3.dll'
+            set(python3stub_lib ${PROJECT_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}/${CMAKE_CFG_INTDIR}/python3stub.lib)
+            set(machine X86)
+            if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
+                set(machine X64)
+            endif()
+            add_custom_command(
+                OUTPUT ${python3stub_lib}
+                COMMAND lib /nologo /def /out:${python3stub_lib} /MACHINE:${machine}
+                COMMENT "Rebuilding python3stub.lib"
+                VERBATIM
+            )
+            add_custom_target(generate_libpython3stub_lib DEPENDS ${python3stub_lib})
+
+            # Build 'python3.dll'
+            add_library(${targetname} SHARED ${SRC_DIR}/PC/python3dll.c)
+            set_target_properties(${targetname} PROPERTIES
+                OUTPUT_NAME python3
+                LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR}
+                RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR}
+                INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/${LIBPYTHON_LIBDIR}
+            )
+            add_dependencies(${targetname} libpython-shared generate_libpython3stub_lib)
+
+            target_link_libraries(${targetname} ${python3stub_lib})
         endif()
-        add_custom_command(
-            OUTPUT ${python3stub_lib}
-            COMMAND lib /nologo /def:${pythonstub_def} /out:${python3stub_lib} /MACHINE:${machine}
-            COMMENT "Rebuilding python3stub.lib"
-            DEPENDS generate_libpython3stub_def
-            VERBATIM
-        )
-        add_custom_target(generate_libpython3stub_lib DEPENDS ${python3stub_lib})
-
-        # Build 'python3.dll'
-        add_library(${targetname} SHARED ${SRC_DIR}/PC/python3dll.c ${SRC_DIR}/PC/python3.def)
-        set_target_properties(${targetname} PROPERTIES
-            OUTPUT_NAME python3
-            LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR}
-            RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR}
-            INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/${LIBPYTHON_LIBDIR}
-        )
-        add_dependencies(${targetname} generate_libpython3stub_lib)
-
-        target_link_libraries(${targetname} ${python3stub_lib})
     endif()
 
     if(IS_PY3 AND UNIX AND NOT APPLE)
