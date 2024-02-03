@@ -287,6 +287,8 @@ set(_download_3.10.10_md5 "6dbe644dd1a520d9853cf6648084c346")
 set(_download_3.10.11_md5 "7e25e2f158b1259e271a45a249cb24bb")
 set(_download_3.10.12_md5 "1d64320e0b0df6e9ab7e611bacb2178d")
 set(_download_3.10.13_md5 "cbcad7f5e759176bf8ce8a5f9d487087")
+# 3.11.x
+set(_download_3.11.7_md5 "ef61f81ec82c490484219c7f0ec96783")
 
 set(_extracted_dir "Python-${PY_VERSION}")
 
