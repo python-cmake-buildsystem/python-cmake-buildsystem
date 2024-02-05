@@ -23,39 +23,20 @@ jobs:
     name: python-${{ matrix.python-version }}-${{ matrix.runs-on }}
     steps:
     - uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-        path: src
 
     - name: Setup cmake
       uses: jwlawson/actions-setup-cmake@v1.13.1
       with:
         cmake-version: 3.13.5
 
-    - name: Setup ninja
-      uses: ashutoshvarma/setup-ninja@master
-      with:
-        version: 1.10.0
-
-    - name: Download dashboard script
-      uses: actions/checkout@v3
-      with:
-        repository: 'python-cmake-buildsystem/python-cmake-buildsystem'
-        ref: dashboard
-        fetch-depth: 0
-        path: scripts
-
-    - name: Writing initial dashboard cache
-      shell: bash
+    - name: Build
       run: |
-        cat > scripts/initial-dashboard-cache.txt << EOF
-        ${{ matrix.initial-dashboard-cache }}
-        EOF
-        cat scripts/initial-dashboard-cache.txt
+        mkdir -p python-build && mkdir -p python-install
+        cd python-build
+        cmake -DCMAKE_INSTALL_PREFIX:PATH=${{ github.workspace }}/python-install ..
+        make -j10
+        make install
 
-    - name: Build & Test
-      run: ctest --timeout 360 -S scripts/github_actions_dashboard.cmake -VV
-      env:
-        PY_VERSION: ${{ matrix.python-version }}
-        CC: ${{ matrix.c-compiler }}
-        CXX: ${{ matrix.cxx-compiler }}
+    - name: Test
+      run: |
+        ./python-install/bin/python -m test
