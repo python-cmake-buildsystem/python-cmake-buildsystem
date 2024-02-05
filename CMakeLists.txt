@@ -119,8 +119,7 @@ endif()
 
 cmake_dependent_option(USE_BUILTIN_ZLIB "Use builtin ZLIB" ${_use_builtin_zlib_default} "NOT USE_SYSTEM_ZLIB" OFF)
 
-cmake_dependent_option(USE_LIBEDIT "Use libedit instead of readline" OFF
-                       "USE_SYSTEM_READLINE" OFF)
+option(USE_LIBEDIT "Use libedit instead of readline" OFF)
 
 option(WITH_TSC "profile with the Pentium timestamp counter" OFF)
 option(ENABLE_IPV6 "Enable IP v6" ON)

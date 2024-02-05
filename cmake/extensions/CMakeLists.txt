@@ -828,7 +828,20 @@ else()
     )
 endif()
 
-if(USE_LIBEDIT AND ENABLE_READLINE AND NOT BUILTIN_READLINE)
-    set_target_properties(extension_readline PROPERTIES
-        COMPILE_DEFINITIONS "USE_LIBEDIT")
+if(USE_LIBEDIT AND ENABLE_READLINE)
+    if(PY_VERSION VERSION_GREATER_EQUAL "3.10")
+        if(BUILTIN_READLINE)
+            set_property(GLOBAL APPEND PROPERTY extension_readline_definitions "WITH_EDITLINE")
+        else()
+            set_target_properties(extension_readline PROPERTIES
+                COMPILE_DEFINITIONS "WITH_EDITLINE")
+        endif()
+    else()
+        if(BUILTIN_READLINE)
+            set_property(GLOBAL APPEND PROPERTY extension_readline_definitions "USE_LIBEDIT")
+        else()
+            set_target_properties(extension_readline PROPERTIES
+                COMPILE_DEFINITIONS "USE_LIBEDIT")
+        endif()
+    endif()
 endif()
