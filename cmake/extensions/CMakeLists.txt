@@ -760,8 +760,7 @@ add_python_extension(readline
 )
 add_python_extension(_sqlite3
     REQUIRES SQLite3_INCLUDE_DIRS SQLite3_LIBRARIES
-    SOURCES _sqlite/cache.c
-            $<$<VERSION_LESS:${PY_VERSION},3.11>:_sqlite/cache.c>
+    SOURCES $<$<VERSION_LESS:${PY_VERSION},3.11>:_sqlite/cache.c>
             $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>:_sqlite/blob.c>
             _sqlite/connection.c
             _sqlite/cursor.c
