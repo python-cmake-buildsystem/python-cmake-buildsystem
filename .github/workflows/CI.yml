@@ -5,6 +5,11 @@ on:
   push:
     branches:
     - portable-python
+  workflow_dispatch:
+    inputs:
+      verbose:
+        required: false
+        type: boolean
 
 jobs:
   tests:
@@ -29,6 +34,7 @@ jobs:
         mkdir -p python-build && mkdir -p python-install
         cd python-build
         cmake \
+          ${{ inputs.verbose && "--trace-expand --debug-find" || "" }} \
           -DCMAKE_INSTALL_PREFIX:PATH=${{ github.workspace }}/python-install \
           -DCMAKE_OSX_DEPLOYMENT_TARGET=10.13 \
           -DCMAKE_C_STANDARD=99 \
