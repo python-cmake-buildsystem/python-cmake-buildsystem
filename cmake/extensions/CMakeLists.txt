@@ -799,9 +799,8 @@ if(UNIX)
     list(APPEND _tkinter_LIBRARIES ${X11_LIBRARIES})
     list(APPEND _tkinter_INCLUDEDIRS ${X11_INCLUDE_DIR})
 endif()
-set(BUILD_TKINTER (NOT APPLE OR PY_VERSION VERSION_LESS_EQUAL "3.10"))
 add_python_extension(_tkinter
-    REQUIRES ${_tkinter_REQUIRES} BUILD_TKINTER
+    REQUIRES ${_tkinter_REQUIRES}
     SOURCES _tkinter.c tkappinit.c
     DEFINITIONS WITH_APPINIT=1
     LIBRARIES ${_tkinter_LIBRARIES}
