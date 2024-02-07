@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [macos-13]
+        runs-on: [macos-latest]
         python-version: [3.8.18, 3.9.18, 3.10.13, 3.11.7]
 
     name: python-${{ matrix.python-version }}-${{ matrix.runs-on }}
