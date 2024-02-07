@@ -6,6 +6,9 @@ on:
     branches:
     - portable-python
 
+env:
+  MACOSX_DEPLOYMENT_TARGET: 10.5
+
 jobs:
   tests:
     runs-on: ${{ matrix.runs-on }}
@@ -24,13 +27,17 @@ jobs:
       with:
         cmake-version: 3.13.5
 
+    - name: Instal dependencies
+      run: |
+        brew install --build-from-source tcl-tk
+
     - name: Build
       run: |
         mkdir -p python-build && mkdir -p python-install
         cd python-build
         cmake \
           -DCMAKE_INSTALL_PREFIX:PATH=${{ github.workspace }}/python-install \
-          -DCMAKE_OSX_DEPLOYMENT_TARGET=10.13 \
+          -DCMAKE_OSX_DEPLOYMENT_TARGET=${{ env.MACOSX_DEPLOYMENT_TARGET }} \
           -DCMAKE_C_STANDARD=99 \
           -DPYTHON_VERSION=${{ matrix.python-version }} \
           ..
