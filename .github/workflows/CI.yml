@@ -48,7 +48,7 @@ jobs:
           ${{ startsWith(matrix.python-version, '3.11') && '-DUSE_SYSTEM_TCL=OFF' || '' }} \
           -DPYTHON_VERSION=${{ matrix.python-version }} \
           ..
-        make -j4
+        make -j4 ${{ inputs.verbose && 'VERBOSE=1' || '' }}
         make install
 
     - name: Test
