@@ -552,7 +552,7 @@ else()
         ${SRC_DIR}/Python/importlib_external.h
         ${SRC_DIR}/Python/importlib.h
         ${SRC_DIR}/Python/importlib_zipimport.h
-        ${SRC_DIR}/Python/getpath.h
+        ${SRC_DIR}/Python/frozen_modules/getpath.h
     )
     add_custom_command(
         OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
@@ -588,7 +588,7 @@ else()
         ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_module>
             getpath
             ${SRC_DIR}/Modules/getpath.py
-            ${SRC_DIR}/Python/getpath.h
+            ${SRC_DIR}/Python/frozen_modules/getpath.h
         DEPENDS
         ${SRC_DIR}/Modules/getpath.py
         APPEND
