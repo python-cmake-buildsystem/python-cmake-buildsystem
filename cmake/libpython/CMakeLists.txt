@@ -488,87 +488,87 @@ if(IS_PY3)
 if(PY_VERSION VERSION_LESS "3.11")
     # Build _freeze_importlib executable
     add_executable(_freeze_importlib
-    ${SRC_DIR}/Programs/_freeze_importlib.c
-    ${LIBPYTHON_OMIT_FROZEN_SOURCES}
+        ${SRC_DIR}/Programs/_freeze_importlib.c
+        ${LIBPYTHON_OMIT_FROZEN_SOURCES}
     )
     target_link_libraries(_freeze_importlib ${LIBPYTHON_TARGET_LIBRARIES})
     if(builtin_compile_definitions_without_py_limited_api)
-    target_compile_definitions(_freeze_importlib PUBLIC ${builtin_compile_definitions_without_py_limited_api})
+        target_compile_definitions(_freeze_importlib PUBLIC ${builtin_compile_definitions_without_py_limited_api})
     endif()
 
     # Freeze modules
     set(LIBPYTHON_FROZEN_SOURCES
-    ${SRC_DIR}/Python/importlib_external.h
-    ${SRC_DIR}/Python/importlib.h
-    )
-    if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
-    list(APPEND LIBPYTHON_FROZEN_SOURCES
-        ${SRC_DIR}/Python/importlib_zipimport.h
-    )
-    endif()
-    add_custom_command(
-    OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
-    COMMAND
-        ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
-        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:importlib._bootstrap_external>
-        ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
         ${SRC_DIR}/Python/importlib_external.h
-    COMMAND
-        ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
-        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:importlib._bootstrap>
-        ${SRC_DIR}/Lib/importlib/_bootstrap.py
         ${SRC_DIR}/Python/importlib.h
-    DEPENDS
-        _freeze_importlib
-        ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
-        ${SRC_DIR}/Lib/importlib/_bootstrap.py
     )
     if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
+        list(APPEND LIBPYTHON_FROZEN_SOURCES
+            ${SRC_DIR}/Python/importlib_zipimport.h
+        )
+    endif()
     add_custom_command(
         OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
         COMMAND
-        ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
-            zipimport
-            ${SRC_DIR}/Lib/zipimport.py
-            ${SRC_DIR}/Python/importlib_zipimport.h
+            ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+            $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:importlib._bootstrap_external>
+            ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
+            ${SRC_DIR}/Python/importlib_external.h
+        COMMAND
+            ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+            $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:importlib._bootstrap>
+            ${SRC_DIR}/Lib/importlib/_bootstrap.py
+            ${SRC_DIR}/Python/importlib.h
         DEPENDS
-        ${SRC_DIR}/Lib/zipimport.py
-        APPEND
+            _freeze_importlib
+            ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
+            ${SRC_DIR}/Lib/importlib/_bootstrap.py
     )
+    if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
+        add_custom_command(
+            OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
+            COMMAND
+            ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+                zipimport
+                ${SRC_DIR}/Lib/zipimport.py
+                ${SRC_DIR}/Python/importlib_zipimport.h
+            DEPENDS
+            ${SRC_DIR}/Lib/zipimport.py
+            APPEND
+        )
     endif()
 else()
     # Build _freeze_module executable
     add_executable(_freeze_module
-    ${SRC_DIR}/Programs/_freeze_module.c
-    ${LIBPYTHON_OMIT_FROZEN_SOURCES}
+        ${SRC_DIR}/Programs/_freeze_module.c
+        ${LIBPYTHON_OMIT_FROZEN_SOURCES}
     )
     target_link_libraries(_freeze_module ${LIBPYTHON_TARGET_LIBRARIES})
     if(builtin_compile_definitions_without_py_limited_api)
-    target_compile_definitions(_freeze_module PUBLIC ${builtin_compile_definitions_without_py_limited_api})
+        target_compile_definitions(_freeze_module PUBLIC ${builtin_compile_definitions_without_py_limited_api})
     endif()
 
     # Freeze modules
     set(LIBPYTHON_FROZEN_SOURCES
-    ${SRC_DIR}/Python/importlib_external.h
-    ${SRC_DIR}/Python/importlib.h
-    ${SRC_DIR}/Python/importlib_zipimport.h
+        ${SRC_DIR}/Python/importlib_external.h
+        ${SRC_DIR}/Python/importlib.h
+        ${SRC_DIR}/Python/importlib_zipimport.h
     )
     add_custom_command(
-    OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
-    COMMAND
-        ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_module>
-        importlib._bootstrap_external
-        ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
-        ${SRC_DIR}/Python/importlib_external.h
-    COMMAND
-        ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_module>
-        importlib._bootstrap
-        ${SRC_DIR}/Lib/importlib/_bootstrap.py
-        ${SRC_DIR}/Python/importlib.h
-    DEPENDS
-        _freeze_module
-        ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
-        ${SRC_DIR}/Lib/importlib/_bootstrap.py
+        OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
+        COMMAND
+            ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_module>
+            importlib._bootstrap_external
+            ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
+            ${SRC_DIR}/Python/importlib_external.h
+        COMMAND
+            ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_module>
+            importlib._bootstrap
+            ${SRC_DIR}/Lib/importlib/_bootstrap.py
+            ${SRC_DIR}/Python/importlib.h
+        DEPENDS
+            _freeze_module
+            ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
+            ${SRC_DIR}/Lib/importlib/_bootstrap.py
     )
     add_custom_command(
         OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
