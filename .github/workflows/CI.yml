@@ -32,10 +32,6 @@ jobs:
       with:
         cmake-version: 3.13.5
 
-    - name: Instal dependencies
-      run: |
-        brew install --build-from-source tcl-tk
-
     - name: Build
       run: |
         mkdir -p python-build && mkdir -p python-install
