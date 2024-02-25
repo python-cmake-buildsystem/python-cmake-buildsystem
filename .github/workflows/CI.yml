@@ -41,6 +41,7 @@ jobs:
           -DCMAKE_INSTALL_PREFIX:PATH=${{ github.workspace }}/python-install \
           -DCMAKE_OSX_DEPLOYMENT_TARGET=${{ env.MACOSX_DEPLOYMENT_TARGET }} \
           -DCMAKE_C_STANDARD=11 \
+          -DPython3_EXECUTABLE=$(which python3) \
           ${{ startsWith(matrix.python-version, '3.11') && '-DUSE_SYSTEM_TCL=OFF' || '' }} \
           -DPYTHON_VERSION=${{ matrix.python-version }} \
           ..
