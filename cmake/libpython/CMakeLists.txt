@@ -533,7 +533,7 @@ if(IS_PY3)
 if(PY_VERSION VERSION_GREATER_EQUAL "3.11")
     set(_freeze_importlib_SOURCE
         ${SRC_DIR}/Programs/_freeze_module.c
-        ${SRC_DIR}/Modules/getpath_noop.c
+        ${SRC_DIR}/Modules/getpath.c
     )
     if(WIN32)
         list(APPEND _freeze_importlib_SOURCE
