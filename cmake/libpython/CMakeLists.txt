@@ -575,6 +575,10 @@ if(PY_VERSION VERSION_LESS "3.11")
         $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:importlib._bootstrap_external>
         ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
         ${SRC_DIR}/Python/importlib_external.h
+    COMMAND
+        ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:importlib._bootstrap>
+        ${SRC_DIR}/Lib/importlib/_bootstrap.py
         ${SRC_DIR}/Python/importlib.h
     DEPENDS
       _freeze_importlib
