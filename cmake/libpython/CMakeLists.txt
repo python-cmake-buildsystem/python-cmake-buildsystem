@@ -809,6 +809,8 @@ endif()
 # the frozen sources.
 add_custom_target(freeze_modules DEPENDS ${LIBPYTHON_FROZEN_SOURCES} ${LIBPYTHON_DEEPFREEZE_SOURCES})
 
+endif()
+
 if(PY_VERSION VERSION_LESS "3.8")
 # Build pgen executable
 set(PGEN2_SOURCES
