@@ -3,70 +3,78 @@ add_definitions(-DPy_BUILD_CORE_BUILTIN)
 add_definitions(-DNDEBUG)
 
 set(MODULE_SOURCES # Equivalent to MODULE_OBJS in Makefile.pre
-    ${PROJECT_BINARY_DIR}/CMakeFiles/config.c
     ${SRC_DIR}/Modules/gcmodule.c
     ${SRC_DIR}/Modules/main.c
 )
-if(UNIX)
+if(UNIX OR (PY_VERSION VERSION_LESS "3.11"))
     list(APPEND MODULE_SOURCES
-        ${SRC_DIR}/Modules/getpath.c
+        ${PROJECT_BINARY_DIR}/CMakeFiles/config.c
     )
-    set(PYTHONPATH "${EXTRA_PYTHONPATH}:lib-dynload:plat-${PY_PLATFORM}")
-    if(ENABLE_TKINTER)
-        set(PYTHONPATH "${PYTHONPATH}:lib-tk")
+endif()
+if(UNIX)
+    if(PY_VERSION VERSION_LESS "3.11")
+        list(APPEND MODULE_SOURCES
+            ${SRC_DIR}/Modules/getpath.c
+        )
+        set(PYTHONPATH "${EXTRA_PYTHONPATH}:lib-dynload:plat-${PY_PLATFORM}")
+        if(ENABLE_TKINTER)
+            set(PYTHONPATH "${PYTHONPATH}:lib-tk")
+        endif()
+        set_property(
+            SOURCE ${SRC_DIR}/Modules/getpath.c
+            PROPERTY COMPILE_DEFINITIONS
+                PREFIX="${CMAKE_INSTALL_PREFIX}"
+                EXEC_PREFIX="${CMAKE_INSTALL_PREFIX}"
+                VERSION="${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}"
+                VPATH="."
+                PYTHONPATH="${PYTHONPATH}"
+          )
     endif()
-    set_property(
-        SOURCE ${SRC_DIR}/Modules/getpath.c
-        PROPERTY COMPILE_DEFINITIONS
-            PREFIX="${CMAKE_INSTALL_PREFIX}"
-            EXEC_PREFIX="${CMAKE_INSTALL_PREFIX}"
-            VERSION="${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}"
-            VPATH="."
-            PYTHONPATH="${PYTHONPATH}"
-      )
 elseif(WIN32)
     add_definitions(-DPY3_DLLNAME="python3${CMAKE_DEBUG_POSTFIX}")
-    add_definitions(-DPYTHON_DLL_NAME="python${PY_VERSION_MAJOR}${PY_VERSION_MINOR}")
-    list(APPEND MODULE_SOURCES
-        ${SRC_DIR}/PC/getpathp.c
-    )
-    # HACK To workaround limitation in escaping logic of CMake, the pythonpath
-    #      separator is conditionally set depending of the version of Visual Studio.
-    #      See http://cmake.org/Bug/view.php?id=14073
-    if( ("${MSVC_VERSION}" VERSION_GREATER "1599") AND ("${CMAKE_GENERATOR}" MATCHES "^Visual Studio") )
-        set(PATHSEP "%3B")
-    elseif( (${MSVC}) AND ("${CMAKE_GENERATOR}" MATCHES "^Ninja") )
-        set(PATHSEP "\;")
-    elseif( (${MSVC}) AND ("${CMAKE_GENERATOR}" MATCHES "^NMake") )
-        set(PATHSEP "\;")
-    elseif(MINGW)
-        set(PATHSEP "\;")
-    else()
-        set(PATHSEP ";")
-    endif()
-    string(REPLACE "/" "\\\\" PYTHONHOME_ESCAPED ${PYTHONHOME})
-    string(REPLACE "/" "\\\\" EXTENSION_INSTALL_DIR_ESCAPED ${EXTENSION_INSTALL_DIR})
-    set(PYTHONPATH "${EXTRA_PYTHONPATH}")
-    set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${PYTHONHOME_ESCAPED}")
-    set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${EXTENSION_INSTALL_DIR_ESCAPED}")
-    set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${EXTENSION_INSTALL_DIR_ESCAPED}\\\\${CMAKE_CFG_INTDIR}")
-    set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${PYTHONHOME_ESCAPED}\\\\plat-${PY_PLATFORM}")
-    if(ENABLE_TKINTER)
-        set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${PYTHONHOME_ESCAPED}\\\\lib-tk")
-    endif()
+    if(PY_VERSION VERSION_LESS "3.11")
+        add_definitions(-DPYTHON_DLL_NAME="python${PY_VERSION_MAJOR}${PY_VERSION_MINOR}")
+        list(APPEND MODULE_SOURCES
+            ${SRC_DIR}/PC/getpathp.c
+        )
+        # HACK To workaround limitation in escaping logic of CMake, the pythonpath
+        #      separator is conditionally set depending of the version of Visual Studio.
+        #      See http://cmake.org/Bug/view.php?id=14073
+        if( ("${MSVC_VERSION}" VERSION_GREATER "1599") AND ("${CMAKE_GENERATOR}" MATCHES "^Visual Studio") )
+            set(PATHSEP "%3B")
+        elseif( (${MSVC}) AND ("${CMAKE_GENERATOR}" MATCHES "^Ninja") )
+            set(PATHSEP "\;")
+        elseif( (${MSVC}) AND ("${CMAKE_GENERATOR}" MATCHES "^NMake") )
+            set(PATHSEP "\;")
+        elseif(MINGW)
+            set(PATHSEP "\;")
+        else()
+            set(PATHSEP ";")
+        endif()
+        string(REPLACE "/" "\\\\" PYTHONHOME_ESCAPED ${PYTHONHOME})
+        string(REPLACE "/" "\\\\" EXTENSION_INSTALL_DIR_ESCAPED ${EXTENSION_INSTALL_DIR})
+        set(PYTHONPATH "${EXTRA_PYTHONPATH}")
+        set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${PYTHONHOME_ESCAPED}")
+        set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${EXTENSION_INSTALL_DIR_ESCAPED}")
+        set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${EXTENSION_INSTALL_DIR_ESCAPED}\\\\${CMAKE_CFG_INTDIR}")
+        set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${PYTHONHOME_ESCAPED}\\\\plat-${PY_PLATFORM}")
+        if(ENABLE_TKINTER)
+            set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${PYTHONHOME_ESCAPED}\\\\lib-tk")
+        endif()
 
-    set(_wide_char_modifier)
-    if(IS_PY3)
-        set(_wide_char_modifier "L")
-    endif()
+        set(_wide_char_modifier)
+        if(IS_PY3)
+            set(_wide_char_modifier "L")
+        endif()
 
-    set_property(
-        SOURCE ${SRC_DIR}/PC/getpathp.c
-        PROPERTY COMPILE_DEFINITIONS
-            "LANDMARK=${_wide_char_modifier}\"${PYTHONHOME_ESCAPED}\\\\os.py\""
-            "PYTHONPATH=${_wide_char_modifier}\"${PYTHONPATH}\""
-            "PY3_DLLNAME=\"python3$<$<CONFIG:Debug>:_d>\""
-    )
+        set_property(
+            SOURCE ${SRC_DIR}/PC/getpathp.c
+            PROPERTY COMPILE_DEFINITIONS
+                "LANDMARK=${_wide_char_modifier}\"${PYTHONHOME_ESCAPED}\\\\os.py\""
+                "PYTHONPATH=${_wide_char_modifier}\"${PYTHONPATH}\""
+                "PY3_DLLNAME=\"python3$<$<CONFIG:Debug>:_d>\""
+        )
+    endif()
 endif()
 
 if(PY_VERSION VERSION_GREATER_EQUAL "3.10")
@@ -79,6 +87,12 @@ if(PY_VERSION VERSION_GREATER_EQUAL "3.10")
         ${SRC_DIR}/Parser/token.c
         ${SRC_DIR}/Parser/tokenizer.c
     )
+    if(PY_VERSION VERSION_GREATER_EQUAL "3.11")
+        list(APPEND PARSER_COMMON_SOURCES
+            ${SRC_DIR}/Parser/action_helpers.c
+            ${SRC_DIR}/Parser/pegen_errors.c
+        )
+    endif()
 else()
     set(PARSER_COMMON_SOURCES # Equivalent to POBJS in Makefile.pre
         ${SRC_DIR}/Parser/acceler.c
@@ -221,19 +235,24 @@ if(UNIX AND HAVE_DLOPEN)
     endif()
 elseif(WIN32)
     list(APPEND DYNLOAD_SOURCES
-        ${SRC_DIR}/PC/dl_nt.c
         ${SRC_DIR}/Python/dynload_win.c
+    )
+    if(PY_VERSION VERSION_LESS "3.11")
+        list(APPEND DYNLOAD_SOURCES
+            ${SRC_DIR}/PC/dl_nt.c
         )
-    set(ms_dll_id "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}")
-    if(${CMAKE_SIZEOF_VOID_P} EQUAL 4)
-      set(ms_dll_id "${ms_dll_id}-32")
-    endif()
-    set_property(
-        SOURCE ${SRC_DIR}/PC/dl_nt.c
-        PROPERTY COMPILE_DEFINITIONS
-            Py_ENABLE_SHARED
-            MS_DLL_ID="${ms_dll_id}"
-        )
+
+        set(ms_dll_id "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}")
+        if(${CMAKE_SIZEOF_VOID_P} EQUAL 4)
+          set(ms_dll_id "${ms_dll_id}-32")
+        endif()
+        set_property(
+            SOURCE ${SRC_DIR}/PC/dl_nt.c
+            PROPERTY COMPILE_DEFINITIONS
+                Py_ENABLE_SHARED
+                MS_DLL_ID="${ms_dll_id}"
+            )
+     endif()
 endif()
 
 set(THREAD_SOURCES )
@@ -334,15 +353,24 @@ if(PY_VERSION VERSION_GREATER_EQUAL "3.10")
         ${SRC_DIR}/Python/suggestions.c
     )
 endif()
+if(PY_VERSION VERSION_GREATER_EQUAL "3.11")
+    list(APPEND PYTHON_COMMON_SOURCES
+        ${SRC_DIR}/Python/Python-tokenize.c
+        ${SRC_DIR}/Python/frame.c
+        ${SRC_DIR}/Python/specialize.c
+    )
+endif()
 
 if(UNIX)
     list(APPEND PYTHON_COMMON_SOURCES
         ${SRC_DIR}/Python/frozenmain.c
     )
 else()
-    list(APPEND PYTHON_COMMON_SOURCES
-        ${SRC_DIR}/Python/frozen.c
-    )
+    if(PY_VERSION VERSION_LESS "3.11")
+        list(APPEND PYTHON_COMMON_SOURCES
+            ${SRC_DIR}/Python/frozen.c
+        )
+    endif()
 endif()
 
 if(UNIX OR MINGW)
@@ -358,6 +386,13 @@ if(UNIX OR MINGW)
             ABIFLAGS="${ABIFLAGS}"
         )
     endif()
+endif()
+if(PY_VERSION VERSION_GREATER_EQUAL "3.11")
+    set_property(
+        SOURCE ${SRC_DIR}/Python/sysmodule.c
+        PROPERTY COMPILE_DEFINITIONS
+            VPATH="..\\\\.."
+        )
 endif()
 
 list(APPEND MODULE_SOURCES
@@ -480,36 +515,61 @@ if(WIN32 AND IS_PY3)
     if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
         list(APPEND LIBPYTHON_TARGET_LIBRARIES pathcch)
     endif()
+    if(PY_VERSION VERSION_GREATER_EQUAL "3.11")
+        list(APPEND LIBPYTHON_TARGET_LIBRARIES bcrypt) # Required by bootstrap_hash
+    endif()
 endif()
 
 set(LIBPYTHON_FROZEN_SOURCES )
+set(LIBPYTHON_DEEPFREEZE_SOURCES )
+if(PY_VERSION VERSION_GREATER_EQUAL "3.11")
+  set(LIBPYTHON_DEEPFREEZE_SOURCES
+    ${SRC_DIR}/Python/deepfreeze/deepfreeze.c
+  )
+endif()
 if(IS_PY3)
 
-if(PY_VERSION VERSION_LESS "3.11")
-    # Build _freeze_importlib executable
-    add_executable(_freeze_importlib
-    ${SRC_DIR}/Programs/_freeze_importlib.c
-    ${LIBPYTHON_OMIT_FROZEN_SOURCES}
+# Build _freeze_importlib executable
+if(PY_VERSION VERSION_GREATER_EQUAL "3.11")
+    set(_freeze_importlib_SOURCE
+        ${SRC_DIR}/Programs/_freeze_module.c
+        ${SRC_DIR}/Modules/getpath_noop.c
     )
-    target_link_libraries(_freeze_importlib ${LIBPYTHON_TARGET_LIBRARIES})
-    if(builtin_compile_definitions_without_py_limited_api)
-    target_compile_definitions(_freeze_importlib PUBLIC ${builtin_compile_definitions_without_py_limited_api})
+    if(WIN32)
+        list(APPEND _freeze_importlib_SOURCE
+            ${SRC_DIR}/PC/config_minimal.c
+        )
     endif()
+else()
+    set(_freeze_importlib_SOURCE ${SRC_DIR}/Programs/_freeze_importlib.c)
+endif()
+add_executable(_freeze_importlib
+  ${_freeze_importlib_SOURCE}
+  ${LIBPYTHON_OMIT_FROZEN_SOURCES}
+  )
+set_target_properties(_freeze_importlib PROPERTIES
+  DEBUG_POSTFIX ${CMAKE_DEBUG_POSTFIX}
+)
+target_link_libraries(_freeze_importlib ${LIBPYTHON_TARGET_LIBRARIES})
+if(builtin_compile_definitions_without_py_limited_api)
+  target_compile_definitions(_freeze_importlib PUBLIC ${builtin_compile_definitions_without_py_limited_api})
+endif()
 
-    # Freeze modules
-    set(LIBPYTHON_FROZEN_SOURCES
+# Freeze modules
+if(PY_VERSION VERSION_LESS "3.11")
+  set(LIBPYTHON_FROZEN_SOURCES
     ${SRC_DIR}/Python/importlib_external.h
     ${SRC_DIR}/Python/importlib.h
-    )
-    if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
+  )
+  if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
     list(APPEND LIBPYTHON_FROZEN_SOURCES
-        ${SRC_DIR}/Python/importlib_zipimport.h
+      ${SRC_DIR}/Python/importlib_zipimport.h
     )
-    endif()
-    add_custom_command(
+  endif()
+  add_custom_command(
     OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
     COMMAND
-        ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
         $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:importlib._bootstrap_external>
         ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
         ${SRC_DIR}/Python/importlib_external.h
@@ -519,75 +579,237 @@ if(PY_VERSION VERSION_LESS "3.11")
         ${SRC_DIR}/Lib/importlib/_bootstrap.py
         ${SRC_DIR}/Python/importlib.h
     DEPENDS
-        _freeze_importlib
-        ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
-        ${SRC_DIR}/Lib/importlib/_bootstrap.py
-    )
-    if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
+      _freeze_importlib
+      ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
+      ${SRC_DIR}/Lib/importlib/_bootstrap.py
+  )
+  if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
     add_custom_command(
-        OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
-        COMMAND
+      OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
+      COMMAND
         ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
-            zipimport
-            ${SRC_DIR}/Lib/zipimport.py
-            ${SRC_DIR}/Python/importlib_zipimport.h
-        DEPENDS
+          zipimport
+          ${SRC_DIR}/Lib/zipimport.py
+          ${SRC_DIR}/Python/importlib_zipimport.h
+      DEPENDS
         ${SRC_DIR}/Lib/zipimport.py
-        APPEND
+      APPEND
     )
-    endif()
+  endif()
 else()
-    # Build _freeze_module executable
-    add_executable(_freeze_module
-    ${SRC_DIR}/Programs/_freeze_module.c
-    ${LIBPYTHON_OMIT_FROZEN_SOURCES}
-    )
-    target_link_libraries(_freeze_module ${LIBPYTHON_TARGET_LIBRARIES})
-    if(builtin_compile_definitions_without_py_limited_api)
-    target_compile_definitions(_freeze_module PUBLIC ${builtin_compile_definitions_without_py_limited_api})
-    endif()
-
-    # Freeze modules
-    set(LIBPYTHON_FROZEN_SOURCES
-    ${SRC_DIR}/Python/importlib_external.h
-    ${SRC_DIR}/Python/importlib.h
-    ${SRC_DIR}/Python/importlib_zipimport.h
-    )
-    add_custom_command(
+  set(LIBPYTHON_FROZEN_SOURCES
+    ${SRC_DIR}/Python/frozen_modules/importlib._bootstrap.h
+    ${SRC_DIR}/Python/frozen_modules/importlib._bootstrap_external.h
+    ${SRC_DIR}/Python/frozen_modules/zipimport.h
+    ${SRC_DIR}/Python/frozen_modules/abc.h
+    ${SRC_DIR}/Python/frozen_modules/codecs.h
+    ${SRC_DIR}/Python/frozen_modules/io.h
+    ${SRC_DIR}/Python/frozen_modules/_collections_abc.h
+    ${SRC_DIR}/Python/frozen_modules/_sitebuiltins.h
+    ${SRC_DIR}/Python/frozen_modules/genericpath.h
+    ${SRC_DIR}/Python/frozen_modules/ntpath.h
+    ${SRC_DIR}/Python/frozen_modules/posixpath.h
+    ${SRC_DIR}/Python/frozen_modules/os.h
+    ${SRC_DIR}/Python/frozen_modules/site.h
+    ${SRC_DIR}/Python/frozen_modules/stat.h
+    ${SRC_DIR}/Python/frozen_modules/importlib.util.h
+    ${SRC_DIR}/Python/frozen_modules/importlib.machinery.h
+    ${SRC_DIR}/Python/frozen_modules/runpy.h
+    ${SRC_DIR}/Python/frozen_modules/__hello__.h
+    ${SRC_DIR}/Python/frozen_modules/__phello__.h
+    ${SRC_DIR}/Python/frozen_modules/__phello__.ham.h
+    ${SRC_DIR}/Python/frozen_modules/__phello__.ham.eggs.h
+    ${SRC_DIR}/Python/frozen_modules/__phello__.spam.h
+    ${SRC_DIR}/Python/frozen_modules/frozen_only.h
+    ${SRC_DIR}/Python/frozen_modules/getpath.h
+  )
+  add_custom_command(
     OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
     COMMAND
-        ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_module>
-        importlib._bootstrap_external
-        ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
-        ${SRC_DIR}/Python/importlib_external.h
-    COMMAND
-        ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_module>
+      ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
         importlib._bootstrap
         ${SRC_DIR}/Lib/importlib/_bootstrap.py
-        ${SRC_DIR}/Python/importlib.h
-    DEPENDS
-        _freeze_module
+        ${SRC_DIR}/Python/frozen_modules/importlib._bootstrap.h
+    COMMAND
+      ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+        importlib._bootstrap_external
         ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
-        ${SRC_DIR}/Lib/importlib/_bootstrap.py
-    )
-    add_custom_command(
-        OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
-        COMMAND
-        ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_module>
-            zipimport
-            ${SRC_DIR}/Lib/zipimport.py
-            ${SRC_DIR}/Python/importlib_zipimport.h
-        DEPENDS
+        ${SRC_DIR}/Python/frozen_modules/importlib._bootstrap_external.h
+    COMMAND
+      ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+        zipimport
         ${SRC_DIR}/Lib/zipimport.py
-        APPEND
+        ${SRC_DIR}/Python/frozen_modules/zipimport.h
+     COMMAND
+       ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+        abc
+        ${SRC_DIR}/Lib/abc.py
+        ${SRC_DIR}/Python/frozen_modules/abc.h
+     COMMAND
+       ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+        codecs
+        ${SRC_DIR}/Lib/codecs.py
+        ${SRC_DIR}/Python/frozen_modules/codecs.h
+     COMMAND
+       ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+        io
+        ${SRC_DIR}/Lib/io.py
+        ${SRC_DIR}/Python/frozen_modules/io.h
+     COMMAND
+       ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+        _collections_abc
+        ${SRC_DIR}/Lib/_collections_abc.py
+        ${SRC_DIR}/Python/frozen_modules/_collections_abc.h
+     COMMAND
+       ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+        _sitebuiltins
+        ${SRC_DIR}/Lib/_sitebuiltins.py
+        ${SRC_DIR}/Python/frozen_modules/_sitebuiltins.h
+     COMMAND
+       ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+        genericpath
+        ${SRC_DIR}/Lib/genericpath.py
+        ${SRC_DIR}/Python/frozen_modules/genericpath.h
+     COMMAND
+       ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+        ntpath
+        ${SRC_DIR}/Lib/ntpath.py
+        ${SRC_DIR}/Python/frozen_modules/ntpath.h
+     COMMAND
+       ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+        posixpath
+        ${SRC_DIR}/Lib/posixpath.py
+        ${SRC_DIR}/Python/frozen_modules/posixpath.h
+     COMMAND
+       ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+        os
+        ${SRC_DIR}/Lib/os.py
+        ${SRC_DIR}/Python/frozen_modules/os.h
+     COMMAND
+       ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+        site
+        ${SRC_DIR}/Lib/site.py
+        ${SRC_DIR}/Python/frozen_modules/site.h
+     COMMAND
+       ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+        stat
+        ${SRC_DIR}/Lib/stat.py
+        ${SRC_DIR}/Python/frozen_modules/stat.h
+     COMMAND
+       ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+        importlib.util
+        ${SRC_DIR}/Lib/importlib/util.py
+        ${SRC_DIR}/Python/frozen_modules/importlib.util.h
+     COMMAND
+       ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+        importlib.machinery
+        ${SRC_DIR}/Lib/importlib/machinery.py
+        ${SRC_DIR}/Python/frozen_modules/importlib.machinery.h
+     COMMAND
+       ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+        runpy
+        ${SRC_DIR}/Lib/runpy.py
+        ${SRC_DIR}/Python/frozen_modules/runpy.h
+     COMMAND
+       ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+        __hello__
+        ${SRC_DIR}/Lib/__hello__.py
+        ${SRC_DIR}/Python/frozen_modules/__hello__.h
+     COMMAND
+       ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+        __phello__
+        ${SRC_DIR}/Lib/__phello__/__init__.py
+        ${SRC_DIR}/Python/frozen_modules/__phello__.h
+     COMMAND
+       ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+        __phello__.ham
+        ${SRC_DIR}/Lib/__phello__/ham/__init__.py
+        ${SRC_DIR}/Python/frozen_modules/__phello__.ham.h
+     COMMAND
+       ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+        __phello__.ham.eggs
+        ${SRC_DIR}/Lib/__phello__/ham/eggs.py
+        ${SRC_DIR}/Python/frozen_modules/__phello__.ham.eggs.h
+     COMMAND
+       ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+        __phello__.spam
+        ${SRC_DIR}/Lib/__phello__/spam.py
+        ${SRC_DIR}/Python/frozen_modules/__phello__.spam.h
+    COMMAND
+      ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+        frozen_only
+        ${SRC_DIR}/Tools/freeze/flag.py
+        ${SRC_DIR}/Python/frozen_modules/frozen_only.h
+    COMMAND
+      ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+        getpath
+        ${SRC_DIR}/Modules/getpath.py
+        ${SRC_DIR}/Python/frozen_modules/getpath.h
+    DEPENDS
+      _freeze_importlib
+      ${SRC_DIR}/Lib/importlib/_bootstrap.py
+      ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
+      ${SRC_DIR}/Lib/zipimport.py
+      ${SRC_DIR}/Lib/abc.py
+      ${SRC_DIR}/Lib/codecs.py
+      ${SRC_DIR}/Lib/io.py
+      ${SRC_DIR}/Lib/_collections_abc.py
+      ${SRC_DIR}/Lib/_sitebuiltins.py
+      ${SRC_DIR}/Lib/genericpath.py
+      ${SRC_DIR}/Lib/ntpath.py
+      ${SRC_DIR}/Lib/posixpath.py
+      ${SRC_DIR}/Lib/os.py
+      ${SRC_DIR}/Lib/site.py
+      ${SRC_DIR}/Lib/stat.py
+      ${SRC_DIR}/Lib/importlib/util.py
+      ${SRC_DIR}/Lib/importlib/machinery.py
+      ${SRC_DIR}/Lib/runpy.py
+      ${SRC_DIR}/Lib/__hello__.py
+      ${SRC_DIR}/Lib/__phello__/__init__.py
+      ${SRC_DIR}/Lib/__phello__/ham/__init__.py
+      ${SRC_DIR}/Lib/__phello__/ham/eggs.py
+      ${SRC_DIR}/Lib/__phello__/spam.py
+      ${SRC_DIR}/Tools/freeze/flag.py
+      ${SRC_DIR}/Modules/getpath.py
     )
+
+  add_custom_command(
+    OUTPUT ${LIBPYTHON_DEEPFREEZE_SOURCES}
+    COMMAND
+      ${Python3_EXECUTABLE} ${SRC_DIR}/Tools/scripts/deepfreeze.py
+        "${SRC_DIR}/Python/frozen_modules/importlib._bootstrap.h:importlib._bootstrap"
+        "${SRC_DIR}/Python/frozen_modules/importlib._bootstrap_external.h:importlib._bootstrap_external"
+        "${SRC_DIR}/Python/frozen_modules/zipimport.h:zipimport"
+        "${SRC_DIR}/Python/frozen_modules/abc.h:abc"
+        "${SRC_DIR}/Python/frozen_modules/codecs.h:codecs"
+        "${SRC_DIR}/Python/frozen_modules/io.h:io"
+        "${SRC_DIR}/Python/frozen_modules/_collections_abc.h:_collections_abc"
+        "${SRC_DIR}/Python/frozen_modules/_sitebuiltins.h:_sitebuiltins"
+        "${SRC_DIR}/Python/frozen_modules/genericpath.h:genericpath"
+        "${SRC_DIR}/Python/frozen_modules/ntpath.h:ntpath"
+        "${SRC_DIR}/Python/frozen_modules/posixpath.h:posixpath"
+        "${SRC_DIR}/Python/frozen_modules/os.h:os"
+        "${SRC_DIR}/Python/frozen_modules/site.h:site"
+        "${SRC_DIR}/Python/frozen_modules/stat.h:stat"
+        "${SRC_DIR}/Python/frozen_modules/importlib.util.h:importlib.util"
+        "${SRC_DIR}/Python/frozen_modules/importlib.machinery.h:importlib.machinery"
+        "${SRC_DIR}/Python/frozen_modules/runpy.h:runpy"
+        "${SRC_DIR}/Python/frozen_modules/__hello__.h:__hello__"
+        "${SRC_DIR}/Python/frozen_modules/__phello__.h:__phello__"
+        "${SRC_DIR}/Python/frozen_modules/__phello__.ham.h:__phello__.ham"
+        "${SRC_DIR}/Python/frozen_modules/__phello__.ham.eggs.h:__phello__.ham.eggs"
+        "${SRC_DIR}/Python/frozen_modules/__phello__.spam.h:__phello__.spam"
+        "${SRC_DIR}/Python/frozen_modules/frozen_only.h:frozen_only"
+        "-o" "${LIBPYTHON_DEEPFREEZE_SOURCES}"
+    DEPENDS
+      ${SRC_DIR}/Tools/scripts/deepfreeze.py
+      ${LIBPYTHON_FROZEN_SOURCES}
+  )
 endif()
 
 # This is a convenience target allowing to regenerate
 # the frozen sources.
-add_custom_target(freeze_modules DEPENDS ${LIBPYTHON_FROZEN_SOURCES})
-
-endif()
+add_custom_target(freeze_modules DEPENDS ${LIBPYTHON_FROZEN_SOURCES} ${LIBPYTHON_DEEPFREEZE_SOURCES})
 
 if(PY_VERSION VERSION_LESS "3.8")
 # Build pgen executable
@@ -618,7 +840,53 @@ set(LIBPYTHON_SOURCES
     ${LIBPYTHON_OMIT_FROZEN_SOURCES}
     ${LIBPYTHON_FROZEN_SOURCES}
 )
-if(UNIX)
+if(PY_VERSION VERSION_GREATER_EQUAL "3.11")
+    list(APPEND LIBPYTHON_SOURCES
+        ${LIBPYTHON_DEEPFREEZE_SOURCES}
+        ${SRC_DIR}/Modules/getpath.c
+        ${SRC_DIR}/Modules/_typingmodule.c
+        ${SRC_DIR}/Python/frozen.c
+    )
+
+    if(WIN32)
+        list(APPEND LIBPYTHON_SOURCES
+            ${PROJECT_BINARY_DIR}/CMakeFiles/config.c
+            ${SRC_DIR}/PC/dl_nt.c
+        )
+
+        set_property(
+            SOURCE ${SRC_DIR}/Modules/getpath.c
+            PROPERTY COMPILE_DEFINITIONS
+                PREFIX=NULL
+                EXEC_PREFIX=NULL
+                VERSION="${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}"
+                VPATH="..\\\\.."
+                PYDEBUGEXT="$<$<CONFIG:Debug>:_d>"
+                PLATLIBDIR="DLLs"
+            )
+
+        set(ms_dll_id "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}")
+        if(${CMAKE_SIZEOF_VOID_P} EQUAL 4)
+          set(ms_dll_id "${ms_dll_id}-32")
+        endif()
+        set_property(
+            SOURCE ${SRC_DIR}/PC/dl_nt.c
+            PROPERTY COMPILE_DEFINITIONS
+                Py_ENABLE_SHARED
+                MS_DLL_ID="${ms_dll_id}"
+            )
+    else()
+        set_property(
+            SOURCE ${SRC_DIR}/Modules/getpath.c
+            PROPERTY COMPILE_DEFINITIONS
+                PREFIX="${CMAKE_INSTALL_PREFIX}"
+                EXEC_PREFIX="${CMAKE_INSTALL_PREFIX}"
+                VERSION="${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}"
+                VPATH="."
+                PLATLIBDIR="lib"
+          )
+    endif()
+elseif(UNIX)
     list(APPEND LIBPYTHON_SOURCES
         ${SRC_DIR}/Python/frozen.c
     )

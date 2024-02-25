@@ -121,9 +121,11 @@ WIN32 is still required for the locale module.
 #define HAVE_SSIZE_T 1
 
 #include <float.h>
-#define Py_IS_NAN _isnan
-#define Py_IS_INFINITY(X) (!_finite(X) && !_isnan(X))
-#define Py_IS_FINITE(X) _finite(X)
+#if PY_VERSION_HEX < 0x030B0000
+#  define Py_IS_NAN _isnan
+#  define Py_IS_INFINITY(X) (!_finite(X) && !_isnan(X))
+#  define Py_IS_FINITE(X) _finite(X)
+#endif
 #define copysign _copysign
 
 #include <basetsd.h>

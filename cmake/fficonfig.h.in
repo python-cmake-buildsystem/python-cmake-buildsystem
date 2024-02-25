@@ -156,6 +156,9 @@
 #define SIZEOF_SIZE_T @SIZEOF_SIZE_T@
 #define ALIGNOF_SIZE_T @SIZEOF_SIZE_T@
 
+/* The size of `size_t', as computed by alignof. */
+#define ALIGNOF_SIZE_T @SIZEOF_SIZE_T@
+
 /* If using the C implementation of alloca, define if you know the
    direction of stack growth for your system; otherwise it will be
    automatically deduced at runtime.

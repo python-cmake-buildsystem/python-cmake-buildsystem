@@ -1557,6 +1557,9 @@
 #cmakedefine SIZEOF_LONG @SIZEOF_LONG@
 #cmakedefine ALIGNOF_LONG @SIZEOF_LONG@
 
+/* The size of `long', as computed by alignof. */
+#cmakedefine ALIGNOF_LONG @SIZEOF_LONG@
+
 /* The size of `long double', as computed by sizeof. */
 #cmakedefine SIZEOF_LONG_DOUBLE @SIZEOF_LONG_DOUBLE@
 
@@ -1580,6 +1583,9 @@
 
 /* The size of `size_t', as computed by sizeof. */
 #cmakedefine SIZEOF_SIZE_T @SIZEOF_SIZE_T@
+#cmakedefine ALIGNOF_SIZE_T @SIZEOF_SIZE_T@
+
+/* The size of `size_t', as computed by alignof. */
 #cmakedefine ALIGNOF_SIZE_T @SIZEOF_SIZE_T@
 
 /* The size of `time_t', as computed by sizeof. */
