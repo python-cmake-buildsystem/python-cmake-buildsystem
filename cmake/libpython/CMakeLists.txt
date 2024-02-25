@@ -12,22 +12,24 @@ if(UNIX OR (PY_VERSION VERSION_LESS "3.11"))
     )
 endif()
 if(UNIX)
-    list(APPEND MODULE_SOURCES
-        ${SRC_DIR}/Modules/getpath.c
-    )
-    set(PYTHONPATH "${EXTRA_PYTHONPATH}:lib-dynload:plat-${PY_PLATFORM}")
-    if(ENABLE_TKINTER)
-        set(PYTHONPATH "${PYTHONPATH}:lib-tk")
+    if(PY_VERSION VERSION_LESS "3.11")
+        list(APPEND MODULE_SOURCES
+            ${SRC_DIR}/Modules/getpath.c
+        )
+        set(PYTHONPATH "${EXTRA_PYTHONPATH}:lib-dynload:plat-${PY_PLATFORM}")
+        if(ENABLE_TKINTER)
+            set(PYTHONPATH "${PYTHONPATH}:lib-tk")
+        endif()
+        set_property(
+            SOURCE ${SRC_DIR}/Modules/getpath.c
+            PROPERTY COMPILE_DEFINITIONS
+                PREFIX="${CMAKE_INSTALL_PREFIX}"
+                EXEC_PREFIX="${CMAKE_INSTALL_PREFIX}"
+                VERSION="${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}"
+                VPATH="."
+                PYTHONPATH="${PYTHONPATH}"
+          )
     endif()
-    set_property(
-        SOURCE ${SRC_DIR}/Modules/getpath.c
-        PROPERTY COMPILE_DEFINITIONS
-            PREFIX="${CMAKE_INSTALL_PREFIX}"
-            EXEC_PREFIX="${CMAKE_INSTALL_PREFIX}"
-            VERSION="${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}"
-            VPATH="."
-            PYTHONPATH="${PYTHONPATH}"
-    )
 elseif(WIN32)
     add_definitions(-DPY3_DLLNAME="python3${CMAKE_DEBUG_POSTFIX}")
     if(PY_VERSION VERSION_LESS "3.11")
