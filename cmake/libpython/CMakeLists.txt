@@ -527,6 +527,7 @@ if(PY_VERSION VERSION_GREATER_EQUAL "3.11")
     ${SRC_DIR}/Python/deepfreeze/deepfreeze.c
   )
 endif()
+if(IS_PY3)
 
 # Build _freeze_importlib executable
 if(PY_VERSION VERSION_GREATER_EQUAL "3.11")
