@@ -2892,7 +2892,11 @@ endif()
 set(PY_PLATFORM generic)
 
 if(CMAKE_SYSTEM MATCHES Linux)
-  set(PY_PLATFORM linux2)
+  if (PY_VERSION VERSION_LESS 3.3)
+    set(PY_PLATFORM linux2)
+  else()
+    set(PY_PLATFORM linux)
+  endif()
 endif()
 
 if(CMAKE_SYSTEM MATCHES Darwin)
