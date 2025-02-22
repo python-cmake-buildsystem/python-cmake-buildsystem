@@ -1,4 +1,4 @@
-From cb3cc08e5a1cf54d0d348d1597c828d85bdbef88 Mon Sep 17 00:00:00 2001
+From f5f464c478f754a8f25c7fa4ddf37e7b41540885 Mon Sep 17 00:00:00 2001
 From: Jean-Christophe Fillion-Robin <jchris.fillionr@kitware.com>
 Date: Mon, 6 Nov 2017 11:27:32 -0500
 Subject: [PATCH 3/3] mpdecimal: Export inlined functions to support extension
