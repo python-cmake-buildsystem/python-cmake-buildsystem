@@ -12,23 +12,23 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [macos-10.15]
-        python-version: [3.7.12, 3.8.12, 3.9.10]
+        runs-on: [macos-latest]
+        python-version: [3.7.17, 3.8.17, 3.9.17]
         include:
-          - runs-on: macos-10.15
+          - runs-on: macos-latest
             c-compiler: "clang"
             cxx-compiler: "clang++"
             initial-dashboard-cache: "CMAKE_OSX_DEPLOYMENT_TARGET:STRING=10.13"
 
     name: python-${{ matrix.python-version }}-${{ matrix.runs-on }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
         path: src
 
     - name: Setup cmake
-      uses: jwlawson/actions-setup-cmake@v1.9
+      uses: jwlawson/actions-setup-cmake@v1.13.1
       with:
         cmake-version: 3.13.5
 
@@ -37,13 +37,8 @@ jobs:
       with:
         version: 1.10.0
 
-    - name: Specific XCode version
-      if: matrix.runs-on == 'macos-10.15'
-      run: |
-        sudo xcode-select -s "/Applications/Xcode_11.7.app"
-
     - name: Download dashboard script
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: 'python-cmake-buildsystem/python-cmake-buildsystem'
         ref: dashboard

@@ -23,6 +23,9 @@ message(STATUS "BZIP2_INCLUDE_DIR=${BZIP2_INCLUDE_DIR}")
 message(STATUS "BZIP2_LIBRARIES=${BZIP2_LIBRARIES}")
 
 if(USE_SYSTEM_Curses)
+    if(PY_VERSION VERSION_GREATER_EQUAL "3.10")
+        set(CURSES_NEED_WIDE TRUE)
+    endif()
     find_package(Curses) # https://cmake.org/cmake/help/latest/module/FindCurses.html
     find_library(PANEL_LIBRARY NAMES panel)
     set(PANEL_LIBRARIES ${PANEL_LIBRARY})
@@ -52,7 +55,7 @@ if(USE_SYSTEM_LibFFI)
 endif()
 
 if(IS_PY3 AND USE_SYSTEM_LIBMPDEC)
-    find_library(LIBMPDEC_LIBRARY NAMES libmpdec)
+    find_library(LIBMPDEC_LIBRARY NAMES mpdec libmpdec)
     set(LIBMPDEC_LIBRARIES ${LIBMPDEC_LIBRARY})
     message(STATUS "LIBMPDEC_LIBRARIES=${LIBMPDEC_LIBRARIES}")
 endif()
@@ -157,7 +160,7 @@ find_library(UUID_LIBRARY uuid)
 if(WIN32)
   set(M_LIBRARIES )
   set(HAVE_LIBM 1)
-  # From PC/pyconfig.h: 
+  # From PC/pyconfig.h:
   #  This is a manually maintained version used for the Watcom,
   #  Borland and Microsoft Visual C++ compilers.  It is a
   #  standard part of the Python distribution.
@@ -467,6 +470,7 @@ if(LIBUTIL_EXPECTED)
 endif()
 
 if(APPLE)
+  find_library(HAVE_LIBCOREFOUNDATION CoreFoundation)
   find_library(HAVE_LIBSYSTEMCONFIGURATION SystemConfiguration)
 endif()
 
@@ -651,7 +655,7 @@ elseif(CMAKE_SYSTEM MATCHES "VxWorks\\-7$")
 
   # VxWorks-7
 
-  # On VxWorks-7, defining _XOPEN_SOURCE or _POSIX_C_SOURCE 
+  # On VxWorks-7, defining _XOPEN_SOURCE or _POSIX_C_SOURCE
   # leads to a failure in select.h because sys/types.h fails
   # to define FD_SETSIZE.
   # Reported by Martin Oberhuber as V7COR-4651.
@@ -704,6 +708,7 @@ check_type_size(float SIZEOF_FLOAT)
 check_type_size(fpos_t SIZEOF_FPOS_T)
 check_type_size(int SIZEOF_INT)
 check_type_size(long SIZEOF_LONG)
+check_type_size(long ALIGNOF_LONG)
 check_type_size("long double" SIZEOF_LONG_DOUBLE)
 set(HAVE_LONG_DOUBLE ${SIZEOF_LONG_DOUBLE}) # libffi and cpython
 check_type_size("long long" SIZEOF_LONG_LONG)
@@ -713,6 +718,7 @@ check_type_size(pid_t SIZEOF_PID_T)
 check_type_size(pthread_t SIZEOF_PTHREAD_T)
 check_type_size(short SIZEOF_SHORT)
 check_type_size(size_t SIZEOF_SIZE_T)
+check_type_size(size_t ALIGNOF_SIZE_T)
 check_type_size(ssize_t HAVE_SSIZE_T)
 check_type_size(time_t SIZEOF_TIME_T)
 check_type_size(uintptr_t SIZEOF_UINTPTR_T)
@@ -742,10 +748,10 @@ set(PYTHONFRAMEWORK "")
 
 if(HAVE_LONG_LONG)
   if(SIZEOF_OFF_T GREATER SIZEOF_LONG
-      AND (SIZEOF_LONG_LONG GREATER SIZEOF_OFF_T OR SIZEOF_LONG_LONG EQUAL SIZEOF_OFF_T))      
+      AND (SIZEOF_LONG_LONG GREATER SIZEOF_OFF_T OR SIZEOF_LONG_LONG EQUAL SIZEOF_OFF_T))
       set(HAVE_LARGEFILE_SUPPORT 1)
   endif()
-  
+
 endif()
 
 
@@ -1471,7 +1477,7 @@ foreach(decl isinf isnan isfinite)
 endforeach()
 
 cmake_pop_check_state()
-  
+
 #######################################################################
 #
 # time
@@ -1647,7 +1653,7 @@ endif()
 
 #######################################################################
 #
-# unicode 
+# unicode
 #
 #######################################################################
 
@@ -2308,7 +2314,7 @@ endif()
 
 if(IS_PY2)
 check_c_source_compiles("
-        void f(char*,...)__attribute((format(PyArg_ParseTuple, 1, 2))) {}; 
+        void f(char*,...)__attribute((format(PyArg_ParseTuple, 1, 2))) {};
         int main() {f(NULL);} "
         HAVE_ATTRIBUTE_FORMAT_PARSETUPLE)
 endif()
@@ -2367,7 +2373,7 @@ cmake_pop_check_state()
 endif()
 
 check_c_source_runs("#include <unistd.h>\n int main() {
-        int val1 = nice(1); 
+        int val1 = nice(1);
         if (val1 != -1 && val1 == nice(2)) exit(0);
         exit(1);}" HAVE_BROKEN_NICE)
 
@@ -2377,7 +2383,7 @@ check_c_source_runs(" #include <poll.h>
     int poll_test = poll (&poll_struct, 1, 0);
     if (poll_test < 0) { exit(0); }
     else if (poll_test == 0 && poll_struct.revents != POLLNVAL) { exit(0); }
-    else { exit(1); } }" 
+    else { exit(1); } }"
     HAVE_BROKEN_POLL)
 
 
@@ -2871,7 +2877,7 @@ int main(int argc, char* argv[]){FSIORefNum fRef = 0; return 0;}")
     )
 endif()
 
-# todo 
+# todo
 set(PTHREAD_SYSTEM_SCHED_SUPPORTED 1)
 set(HAVE_DEVICE_MACROS ${HAVE_MAKEDEV})
 

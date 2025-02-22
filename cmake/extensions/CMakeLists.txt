@@ -72,7 +72,9 @@ add_python_extension(math ${WIN32_BUILTIN} REQUIRES HAVE_LIBM SOURCES _math.c ma
 add_python_extension(mmap ${WIN32_BUILTIN} SOURCES mmapmodule.c)
 add_python_extension(_multibytecodec ${WIN32_BUILTIN} SOURCES cjkcodecs/multibytecodec.c)
 add_python_extension(operator ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES operator.c)
-add_python_extension(parser ${WIN32_BUILTIN} SOURCES parsermodule.c)
+if(PY_VERSION VERSION_LESS "3.10")
+    add_python_extension(parser ${WIN32_BUILTIN} SOURCES parsermodule.c)
+endif()
 add_python_extension(_random ${WIN32_BUILTIN} SOURCES _randommodule.c)
 add_python_extension(strop ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES stropmodule.c)
 add_python_extension(_struct ${WIN32_BUILTIN} SOURCES _struct.c)
@@ -159,7 +161,7 @@ if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
 endif()
 
 # Python 3.9
-if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
+if(PY_VERSION VERSION_EQUAL "3.9")
     add_python_extension(_peg_parser ALWAYS_BUILTIN SOURCES _peg_parser.c)
 endif()
 
@@ -203,9 +205,9 @@ add_python_extension(_posixsubprocess REQUIRES IS_PY3 UNIX SOURCES _posixsubproc
 set(_scproxy2_SOURCES ${SRC_DIR}/Mac/Modules/_scproxy.c)
 set(_scproxy3_SOURCES ${SRC_DIR}/Modules/_scproxy.c)
 add_python_extension(_scproxy
-    REQUIRES APPLE HAVE_LIBSYSTEMCONFIGURATION
+    REQUIRES APPLE HAVE_LIBCOREFOUNDATION HAVE_LIBSYSTEMCONFIGURATION
     SOURCES ${_scproxy${PY_VERSION_MAJOR}_SOURCES}
-    LIBRARIES ${HAVE_LIBSYSTEMCONFIGURATION}
+    LIBRARIES ${HAVE_LIBSYSTEMCONFIGURATION} ${HAVE_LIBCOREFOUNDATION}
 )
 
 # Linux-only extensions
@@ -339,8 +341,8 @@ if(
     # If installed, build ctypes using the system ffi
     # * on Windows for python >= 3.8
     # * on Linux for python >= 3.7
-    if(NOT USE_SYSTEM_FFI)
-        message(AUTHOR_WARNING "Disabling USE_SYSTEM_FFI option is *NOT* supported with Python >= 3.8 on windows and with Python >= 3.7 on Linux. Current version is ${PY_VERSION}")
+    if(NOT USE_SYSTEM_LibFFI)
+        message(AUTHOR_WARNING "Disabling USE_SYSTEM_LibFFI option is *NOT* supported with Python >= 3.8 on windows and with Python >= 3.7 on Linux. Current version is ${PY_VERSION}")
     endif()
     add_python_extension(_ctypes
         REQUIRES LibFFI_INCLUDE_DIR LibFFI_LIBRARY
@@ -384,19 +386,30 @@ if(WIN32)
     endif()
 else()
     if(APPLE)
-        add_python_extension(_ctypes
-            SOURCES ${ctypes_COMMON_SOURCES}
-                    _ctypes/malloc_closure.c
-                    _ctypes/darwin/dlfcn_simple.c
-                    _ctypes/libffi_osx/ffi.c
-                    _ctypes/libffi_osx/x86/darwin64.S
-                    _ctypes/libffi_osx/x86/x86-darwin.S
-                    _ctypes/libffi_osx/x86/x86-ffi_darwin.c
-                    _ctypes/libffi_osx/x86/x86-ffi64.c
-            INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi_osx/include
-                        ${SRC_DIR}/Modules/_ctypes/darwin
-            DEFINITIONS MACOSX
-        )
+        if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" AND CMAKE_OSX_ARCHITECTURES STREQUAL "x86_64")
+            add_python_extension(_ctypes
+                SOURCES ${ctypes_COMMON_SOURCES}
+                        _ctypes/malloc_closure.c
+                        _ctypes/darwin/dlfcn_simple.c
+                        _ctypes/libffi_osx/ffi.c
+                        _ctypes/libffi_osx/x86/darwin64.S
+                        _ctypes/libffi_osx/x86/x86-darwin.S
+                        _ctypes/libffi_osx/x86/x86-ffi_darwin.c
+                        _ctypes/libffi_osx/x86/x86-ffi64.c
+                INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi_osx/include
+                            ${SRC_DIR}/Modules/_ctypes/darwin
+                DEFINITIONS MACOSX
+            )
+        else()
+            # non-x86_64 architectures, e.g. arm64 or arm64+x86_64 universal build
+            add_python_extension(_ctypes
+                REQUIRES LibFFI_INCLUDE_DIR LibFFI_LIBRARY
+                SOURCES ${ctypes_COMMON_SOURCES}
+                DEFINITIONS Py_BUILD_CORE_MODULE FFI_BUILDING
+                INCLUDEDIRS ${LibFFI_INCLUDE_DIR}
+                LIBRARIES ${LibFFI_LIBRARY}
+            )
+        endif()
     else()
         if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
           set(_libffi_system_extra_src
@@ -447,6 +460,7 @@ set(libmpdec_config_universal    UNIVERSAL)
 
 if(USE_SYSTEM_LIBMPDEC)
     set(_decimal_REQUIRES REQUIRES LIBMPDEC_LIBRARIES)
+    set(_decimal_LIBRARIES LIBRARIES ${LIBMPDEC_LIBRARIES})
     set(_decimal_EXTRA_SOURCES )
     set(_decimal_INCLUDEDIRS )
 else()

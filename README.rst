@@ -16,7 +16,7 @@ This `CMake <http://cmake.org>`_ buildsystem has the following advantages:
   autotools configuration separately from four different MSVC project files.
 
 * Support for other build systems and IDE's like `Ninja
-  <https://martine.github.io/ninja/>`_, `Sublime Text
+  <https://ninja-build.org>`_, `Sublime Text
   <https://www.sublimetext.com/>`_, and many others.
 
 * Easily build C-extensions against other C/C++ libraries built with CMake.
@@ -59,7 +59,7 @@ How to use this buildsystem:
 
 .. note::
 
-  By default, the build system will download the python 3.9.10 source from
+  By default, the build system will download the python 3.9.17 source from
   http://www.python.org/ftp/python/
 
 
@@ -72,7 +72,7 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
 
 ::
 
-  PYTHON_VERSION=major.minor.patch (defaults to 3.9.10)
+  PYTHON_VERSION=major.minor.patch (defaults to 3.9.17)
     The version of Python to build.
 
   PYTHON_APPLY_PATCHES=ON|OFF (defaults to ON)
