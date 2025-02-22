@@ -1,4 +1,4 @@
-From 12cd7e4b43f85822d8ab0531cb3097e5f32bd5ff Mon Sep 17 00:00:00 2001
+From cb3cc08e5a1cf54d0d348d1597c828d85bdbef88 Mon Sep 17 00:00:00 2001
 From: Jean-Christophe Fillion-Robin <jchris.fillionr@kitware.com>
 Date: Mon, 6 Nov 2017 11:27:32 -0500
 Subject: [PATCH 3/3] mpdecimal: Export inlined functions to support extension
@@ -15,11 +15,11 @@ with CMakeBuild\libpython\_freeze_importlib.vcxproj:
   3>basearith.obj : error LNK2019: unresolved external symbol _mpd_uint_zero referenced in function __mpd_baseshiftl
   3>io.obj : error LNK2019: unresolved external symbol _mpd_qresize referenced in function _mpd_qset_string
 ---
- Modules/_decimal/libmpdec/mpdecimal.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Modules/_decimal/libmpdec/mpdecimal.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/Modules/_decimal/libmpdec/mpdecimal.c b/Modules/_decimal/libmpdec/mpdecimal.c
-index 328ab92..5812bcd 100644
+index f1626df..1dbc85b 100644
 --- a/Modules/_decimal/libmpdec/mpdecimal.c
 +++ b/Modules/_decimal/libmpdec/mpdecimal.c
 @@ -63,7 +63,7 @@
@@ -28,10 +28,10 @@ index 328ab92..5812bcd 100644
  #if defined(_MSC_VER)
 -  #define ALWAYS_INLINE __forceinline
 +  #define ALWAYS_INLINE extern __forceinline
- #elif defined(__IBMC__) || defined(LEGACY_COMPILER)
+ #elif defined (__IBMC__) || defined(LEGACY_COMPILER)
    #define ALWAYS_INLINE
    #undef inline
-@@ -517,7 +517,7 @@
+@@ -517,7 +517,7 @@ mpd_qresize(mpd_t *result, mpd_ssize_t nwords, uint32_t *status)
  }
  
  /* Same as mpd_qresize, but do not set the result no NaN on failure. */
@@ -40,7 +40,6 @@ index 328ab92..5812bcd 100644
  mpd_qresize_cxx(mpd_t *result, mpd_ssize_t nwords)
  {
      assert(!mpd_isconst_data(result)); /* illegal operation for a const */
- 
 -- 
-2.5.0
+2.47.2
 
