@@ -47,7 +47,7 @@ endif()
 
 # Generate grammar tables in install directory
 # XXX Should a custom target be added to generate file at built time ?
-if(NOT ${CMAKE_SYSTEM_NAME} MATCHES "^Android")
+if(NOT ANDROID)
   install(CODE "find_program(
     PYTHON_EXECUTABLE python
     HINTS \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${BIN_INSTALL_DIR}

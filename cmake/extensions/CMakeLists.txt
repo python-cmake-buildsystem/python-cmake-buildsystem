@@ -164,7 +164,7 @@ if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
 endif()
 
 # UNIX-only extensions
-if(NOT CMAKE_SYSTEM MATCHES Android)
+if(NOT ANDROID)
     add_python_extension(fcntl REQUIRES UNIX SOURCES fcntlmodule.c)
     add_python_extension(grp REQUIRES UNIX SOURCES grpmodule.c)
 endif()
