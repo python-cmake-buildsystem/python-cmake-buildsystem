@@ -161,7 +161,7 @@ endif()
 
 # Python 3.8
 if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
-    add_python_extension(_testinternalcapi SOURCES _testinternalcapi.c DEFINITIONS "PY3_DLLNAME=\"python3$<$<CONFIG:Debug>:_d>\"")
+    add_python_extension(_testinternalcapi NEVER_BUILTIN SOURCES _testinternalcapi.c DEFINITIONS "PY3_DLLNAME=\"python3$<$<CONFIG:Debug>:_d>\"")
 endif()
 
 # Python 3.9
