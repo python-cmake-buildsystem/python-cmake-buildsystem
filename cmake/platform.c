@@ -113,6 +113,14 @@ char *PLATFORM_TRIPLET =
         "sparc64-linux-gnu"
 # elif defined(__sparc__)
         "sparc-linux-gnu"
+# elif defined(__riscv)
+#  if __riscv_xlen == 32
+        "riscv32-linux-gnu"
+#  elif __riscv_xlen == 64
+        "riscv64-linux-gnu"
+#  else
+#       "unknown platform triplet"
+#  endif
 # else
 #       "unknown platform triplet"
 # endif

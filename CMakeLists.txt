@@ -138,8 +138,7 @@ endif()
 
 cmake_dependent_option(USE_BUILTIN_ZLIB "Use builtin ZLIB" ${_use_builtin_zlib_default} "NOT USE_SYSTEM_ZLIB" OFF)
 
-cmake_dependent_option(USE_LIBEDIT "Use libedit instead of readline" OFF
-                       "USE_SYSTEM_READLINE" OFF)
+option(USE_LIBEDIT "Use libedit instead of readline" OFF)
 
 option(WITH_TSC "profile with the Pentium timestamp counter" OFF)
 option(ENABLE_IPV6 "Enable IP v6" ON)
@@ -272,6 +271,7 @@ set(_download_3.8.14_md5 "a82168eb586e19122b747b84038825f2")
 set(_download_3.8.15_md5 "28b111e1e97a9e5acb62e1d153f188d9")
 set(_download_3.8.16_md5 "060040f864f1003b849b33393c9605df")
 set(_download_3.8.17_md5 "d3e789ab828016927a122a0ae9b0e6b0")
+set(_download_3.8.18_md5 "1c611d70ba4d0ec32da3a364490fc6f4")
 # 3.9.x
 set(_download_3.9.0_md5 "e19e75ec81dd04de27797bf3f9d918fd")
 set(_download_3.9.1_md5 "429ae95d24227f8fa1560684fad6fca7")
@@ -291,6 +291,7 @@ set(_download_3.9.14_md5 "324a9dcaaa11b2b0dafe5614e8f01145")
 set(_download_3.9.15_md5 "3e13283a5f4e089db508bf81b60a5cca")
 set(_download_3.9.16_md5 "38c99c7313f416dcf3238f5cf444c6c2")
 set(_download_3.9.17_md5 "ded6379983f364cf790793ca24dcfe3e")
+set(_download_3.9.18_md5 "c3a3e67e35838cadca247237a5a279a7")
 # 3.10.x
 set(_download_3.10.0_md5 "729e36388ae9a832b01cf9138921b383")
 set(_download_3.10.1_md5 "91822157a97da16203877400c810d93e")
@@ -306,6 +307,8 @@ set(_download_3.10.10_md5 "6dbe644dd1a520d9853cf6648084c346")
 set(_download_3.10.11_md5 "7e25e2f158b1259e271a45a249cb24bb")
 set(_download_3.10.12_md5 "1d64320e0b0df6e9ab7e611bacb2178d")
 set(_download_3.10.13_md5 "cbcad7f5e759176bf8ce8a5f9d487087")
+# 3.11.x
+set(_download_3.11.7_md5 "ef61f81ec82c490484219c7f0ec96783")
 
 set(_extracted_dir "Python-${PY_VERSION}")
 
