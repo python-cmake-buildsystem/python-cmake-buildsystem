@@ -1,0 +1,29 @@
+diff --git a/Modules/readline.c b/Modules/readline.c
+index 9b30d597c8..ff14ad6795 100644
+--- a/Modules/readline.c
++++ b/Modules/readline.c
+@@ -28,8 +28,12 @@
+
+ /* GNU readline definitions */
+ #undef HAVE_CONFIG_H /* Else readline/chardefs.h includes strings.h */
+-#include <readline/readline.h>
+-#include <readline/history.h>
++#ifdef USE_LIBEDIT
++#  include <editline/readline.h>
++#else
++#  include <readline/readline.h>
++#  include <readline/history.h>
++#endif
+
+ #ifdef HAVE_RL_COMPLETION_MATCHES
+ #define completion_matches(x, y) \
+@@ -1233,7 +1237,9 @@ readline_until_enter_or_signal(const char *prompt, int *signal)
+             s = PyErr_CheckSignals();
+             PyEval_SaveThread();
+             if (s < 0) {
++#ifndef USE_LIBEDIT
+                 rl_free_line_state();
++#endif
+ #if defined(RL_READLINE_VERSION) && RL_READLINE_VERSION >= 0x0700
+                 rl_callback_sigcleanup();
+ #endif

@@ -77,6 +77,25 @@ else()
   set(BUILD_WININST OFF)
   set(BUILD_WININST_ALWAYS OFF)
 endif()
+if(APPLE)
+  option(BUILD_FRAMEWORK "Build a Mac OSX Framework" OFF)
+  if(BUILD_FRAMEWORK)
+      set(BUILD_LIBPYTHON_SHARED ON CACHE BOOL "Forced to ON because of BUILD_FRAMEWORK=ON" FORCE)
+  endif()
+else()
+  set(BUILD_FRAMEWORK OFF)
+endif()
+if(BUILD_FRAMEWORK)
+  set(FRAMEWORK_NAME Python)
+  set(FRAMEWORK_PREFIX ${CMAKE_INSTALL_PREFIX})
+  set(FRAMEWORK_DIR_ROOT ${FRAMEWORK_NAME}.framework)
+  set(FRAMEWORK_DIR_PREFIX ${FRAMEWORK_DIR_ROOT}/Versions/${PY_VERSION_MAJOR}.${PY_VERSION_MINOR})
+else()
+  set(FRAMEWORK_NAME "")
+  set(FRAMEWORK_PREFIX "")
+  set(FRAMEWORK_DIR_ROOT "no-framework")
+  set(FRAMEWORK_DIR_PREFIX "")
+endif()
 option(INSTALL_DEVELOPMENT "Install files required to develop C extensions" ON)
 option(INSTALL_MANUAL "Install man files" ON)
 option(INSTALL_TEST "Install test files" ON)
@@ -119,8 +138,7 @@ endif()
 
 cmake_dependent_option(USE_BUILTIN_ZLIB "Use builtin ZLIB" ${_use_builtin_zlib_default} "NOT USE_SYSTEM_ZLIB" OFF)
 
-cmake_dependent_option(USE_LIBEDIT "Use libedit instead of readline" OFF
-                       "USE_SYSTEM_READLINE" OFF)
+option(USE_LIBEDIT "Use libedit instead of readline" OFF)
 
 option(WITH_TSC "profile with the Pentium timestamp counter" OFF)
 option(ENABLE_IPV6 "Enable IP v6" ON)
@@ -253,6 +271,7 @@ set(_download_3.8.14_md5 "a82168eb586e19122b747b84038825f2")
 set(_download_3.8.15_md5 "28b111e1e97a9e5acb62e1d153f188d9")
 set(_download_3.8.16_md5 "060040f864f1003b849b33393c9605df")
 set(_download_3.8.17_md5 "d3e789ab828016927a122a0ae9b0e6b0")
+set(_download_3.8.18_md5 "1c611d70ba4d0ec32da3a364490fc6f4")
 # 3.9.x
 set(_download_3.9.0_md5 "e19e75ec81dd04de27797bf3f9d918fd")
 set(_download_3.9.1_md5 "429ae95d24227f8fa1560684fad6fca7")
@@ -272,6 +291,26 @@ set(_download_3.9.14_md5 "324a9dcaaa11b2b0dafe5614e8f01145")
 set(_download_3.9.15_md5 "3e13283a5f4e089db508bf81b60a5cca")
 set(_download_3.9.16_md5 "38c99c7313f416dcf3238f5cf444c6c2")
 set(_download_3.9.17_md5 "ded6379983f364cf790793ca24dcfe3e")
+set(_download_3.9.18_md5 "c3a3e67e35838cadca247237a5a279a7")
+# 3.10.x
+set(_download_3.10.0_md5 "729e36388ae9a832b01cf9138921b383")
+set(_download_3.10.1_md5 "91822157a97da16203877400c810d93e")
+set(_download_3.10.2_md5 "67c92270be6701f4a6fed57c4530139b")
+set(_download_3.10.3_md5 "f276ffcd05bccafe46da023d0a5bb04a")
+set(_download_3.10.4_md5 "7011fa5e61dc467ac9a98c3d62cfe2be")
+set(_download_3.10.5_md5 "d87193c077541e22f892ff1353fac76c")
+set(_download_3.10.6_md5 "d76638ca8bf57e44ef0841d2cde557a0")
+set(_download_3.10.7_md5 "1aea68575c0e97bc83ff8225977b0d46")
+set(_download_3.10.8_md5 "fbe3fff11893916ad1756b15c8a48834")
+set(_download_3.10.9_md5 "25eb3686327c157dcb8ac9f01105c306")
+set(_download_3.10.10_md5 "6dbe644dd1a520d9853cf6648084c346")
+set(_download_3.10.11_md5 "7e25e2f158b1259e271a45a249cb24bb")
+set(_download_3.10.12_md5 "1d64320e0b0df6e9ab7e611bacb2178d")
+set(_download_3.10.13_md5 "cbcad7f5e759176bf8ce8a5f9d487087")
+set(_download_3.10.16_md5 "2515d8571c6fdd7fc620aa9e1cc6d202")
+# 3.11.x
+set(_download_3.11.7_md5 "ef61f81ec82c490484219c7f0ec96783")
+set(_download_3.11.11_md5 "9a5b43fcc06810b8ae924b0a080e6569")
 
 set(_extracted_dir "Python-${PY_VERSION}")
 
@@ -455,18 +494,25 @@ if(USE_LIB64)
     set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS ON)
     set(LIBDIR "lib64")
 endif()
-set(PYTHONHOME "${LIBDIR}")
-if(UNIX)
-    set(PYTHONHOME "${PYTHONHOME}/${LIBPYTHON}")
+if(BUILD_FRAMEWORK)
+    set(LIBDIR ${FRAMEWORK_DIR_PREFIX}/lib)
 endif()
+set(PYTHONHOME "${LIBDIR}/${LIBPYTHON}")
 
 # Install tree directory
 set(BIN_INSTALL_DIR bin)                         # Contains the python executable
 if(INSTALL_WINDOWS_TRADITIONAL)
     set(BIN_INSTALL_DIR .)                       # Contains the python executable
 endif()
+if(BUILD_FRAMEWORK)
+    set(BIN_INSTALL_DIR ${FRAMEWORK_DIR_PREFIX}/bin)
+endif()
+set(SHARE_INSTALL_DIR share)
+if(BUILD_FRAMEWORK)
+    set(SHARE_INSTALL_DIR ${FRAMEWORK_DIR_PREFIX}/share)
+endif()
 set(LD_VERSION ${LIBPYTHON_VERSION}${ABIFLAGS})
-set(CONFIG_INSTALL_DIR share/${LIBPYTHON})
+set(CONFIG_INSTALL_DIR ${SHARE_INSTALL_DIR}/${LIBPYTHON})
 set(EXTENSION_INSTALL_DIR ${PYTHONHOME}/lib-dynload)
 
 if (${LIBPYTHON_VERSION} GREATER 3.1)
@@ -480,7 +526,11 @@ if(INSTALL_WINDOWS_TRADITIONAL)
 endif()
 set(INCLUDE_INSTALL_DIR include/python${LD_VERSION})
 if(MSVC)
-    set(INCLUDE_INSTALL_DIR include)
+    set(INCLUDE_INSTALL_DIR include/python${PY_VERSION_MAJOR}.${PY_VERSION_MINOR})
+endif()
+if(BUILD_FRAMEWORK)
+    set(REL_INCLUDE_INSTALL_DIR include/python${PY_VERSION_MAJOR}.${PY_VERSION_MINOR})
+    set(INCLUDE_INSTALL_DIR ${FRAMEWORK_DIR_PREFIX}/include/python${PY_VERSION_MAJOR}.${PY_VERSION_MINOR})
 endif()
 # Build tree directory
 set(BIN_BUILD_DIR ${PROJECT_BINARY_DIR}/bin)
@@ -488,7 +538,7 @@ set(CONFIG_BUILD_DIR ${PROJECT_BINARY_DIR}/${CONFIG_INSTALL_DIR})
 set(EXTENSION_BUILD_DIR ${PROJECT_BINARY_DIR}/${PYTHONHOME}/lib-dynload)
 set(INCLUDE_BUILD_DIR ${SRC_DIR}/Include)
 
-set(ARCHIVEDIR "libs")      # Contains the static (*.a) and import libraries (*.lib)
+set(ARCHIVEDIR "lib")      # Contains the static (*.a) and import libraries (*.lib)
 
 # Directories specific to 'libpython'
 set(LIBPYTHON_LIBDIR ${LIBDIR})
@@ -508,6 +558,9 @@ if(UNIX)
     set(PYCONFIG_BUILD_DIR ${BIN_BUILD_DIR})
     configure_file(cmake/config-unix/pyconfig.h.in
                    ${PYCONFIG_BUILD_DIR}/pyconfig.h)
+    file(GENERATE
+         OUTPUT $<TARGET_FILE_DIR:python>/pyconfig.h
+         INPUT ${PYCONFIG_BUILD_DIR}/pyconfig.h)
 elseif(WIN32)
     set(PYCONFIG_BUILD_DIR ${SRC_DIR}/PC) # In a windows build tree, 'pyconfig.h' is NOT required to
                                           # live along side the python executable.
@@ -575,7 +628,11 @@ if(BUILD_LIBPYTHON_SHARED AND UNIX)
     if(APPLE)
         set(_envvar DYLD_LIBRARY_PATH)
     endif()
-    set(PYTHON_WRAPPER_COMMAND env ${_envvar}=${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR})
+    set(PYTHON_HOME_PATH )
+    if(BUILD_FRAMEWORK)
+        set(PYTHON_HOME_PATH PYTHONHOME=${PROJECT_BINARY_DIR}/${PYTHONHOME} PYTHONPATH=${PROJECT_BINARY_DIR}/${PYTHONHOME})
+    endif()
+    set(PYTHON_WRAPPER_COMMAND env ${_envvar}=${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR} ${PYTHON_HOME_PATH})
 endif()
 
 # Add extension modules
@@ -596,7 +653,7 @@ endif()
 # Add target to run "Argument Clinic" over all source files
 if(IS_PY3)
 add_custom_target(clinic
-    COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> ${SRC_DIR}/Tools/clinic/clinic.py --make
+    COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> -B ${SRC_DIR}/Tools/clinic/clinic.py --make
     DEPENDS python
     WORKING_DIRECTORY ${SRC_DIR}
     COMMENT "Running 'Argument Clinic' over all source files"
@@ -665,7 +722,7 @@ endif()
 
 # Add target to generate 'opcode.h' header file
 add_custom_target(generate_opcode_h
-    COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> ${SRC_DIR}/Tools/scripts/generate_opcode_h.py
+    COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> -B ${SRC_DIR}/Tools/scripts/generate_opcode_h.py
         ${SRC_DIR}/Lib/opcode.py
         ${PROJECT_BINARY_DIR}/CMakeFiles/opcode.h
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -679,7 +736,7 @@ add_custom_target(generate_opcode_h
 
 # Add target to generate 'Include/Python-ast.h' from 'Python.asdl'
 add_custom_target(generate_python_ast_h
-    COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> ${SRC_DIR}/Parser/asdl_c.py
+    COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> -B ${SRC_DIR}/Parser/asdl_c.py
         -h ${SRC_DIR}/Include
         ${SRC_DIR}/Parser/Python.asdl
     DEPENDS python
@@ -690,7 +747,7 @@ add_custom_target(generate_python_ast_h
 
 # Add target to generate 'Python/Python-ast.c' from 'Python.asdl'
 add_custom_target(generate_python_ast_c
-    COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> ${SRC_DIR}/Parser/asdl_c.py
+    COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> -B ${SRC_DIR}/Parser/asdl_c.py
         -c ${SRC_DIR}/Python
         ${SRC_DIR}/Parser/Python.asdl
     DEPENDS python
@@ -732,19 +789,22 @@ if(UNIX)
                     ${PROJECT_BINARY_DIR}/Misc/python-${LIBPYTHON_VERSION}.pc
                     ${PROJECT_BINARY_DIR}/Misc/python-${PY_VERSION_MAJOR}.pc
                     ${PROJECT_BINARY_DIR}/Misc/python.pc
-                DESTINATION lib/pkgconfig
+                DESTINATION ${LIBDIR}/pkgconfig
                 COMPONENT Development)
     endif()
 
     # Makefile
     set(MAKEFILE_LDSHARED_FLAGS "-shared")
-    if(APPLE)
+    if(APPLE OR ANDROID)
         set(MAKEFILE_LDSHARED_FLAGS "-dynamiclib -headerpad_max_install_names -undefined dynamic_lookup")
     endif()
     configure_file(cmake/makefile-variables.in
-                   ${BIN_BUILD_DIR}/Makefile @ONLY)
+                   ${BIN_BUILD_DIR}/Makefile.in @ONLY)
+    file(GENERATE
+         OUTPUT $<TARGET_FILE_DIR:python>/Makefile
+         INPUT ${BIN_BUILD_DIR}/Makefile.in)
     if(INSTALL_DEVELOPMENT)
-        install(FILES ${BIN_BUILD_DIR}/Makefile
+        install(FILES $<TARGET_FILE_DIR:python>/Makefile
                 DESTINATION ${LIB_CONFIG_INSTALL_DIR}
                 RENAME Makefile
                 COMPONENT Development)
@@ -759,7 +819,7 @@ if(UNIX)
 
     # Install manual
     if(INSTALL_MANUAL)
-        set(_install_man FILES ${SRC_DIR}/Misc/python.man DESTINATION share/man/man1 COMPONENT Runtime)
+        set(_install_man FILES ${SRC_DIR}/Misc/python.man DESTINATION ${SHARE_INSTALL_DIR}/man/man1 COMPONENT Runtime)
         install(${_install_man} RENAME python${LIBPYTHON_VERSION}.1)
         install(${_install_man} RENAME python${PY_VERSION_MAJOR}.1)
     endif()
@@ -777,9 +837,9 @@ if(BUILD_TESTING)
     set(TESTPROG ${PROJECT_BINARY_DIR}/${PYTHONHOME}/test/regrtest.py)
     set(TESTPYTHONOPTS )
     if(IS_PY2)
-      set(TESTPYTHON $<TARGET_FILE:python> -Wd -3 -E -tt ${TESTPYTHONOPTS})
+      set(TESTPYTHON $<TARGET_FILE:python> -B -Wd -3 -E -tt ${TESTPYTHONOPTS})
     else()
-      set(TESTPYTHON $<TARGET_FILE:python> ${TESTPYTHONOPTS})
+      set(TESTPYTHON $<TARGET_FILE:python> -B ${TESTPYTHONOPTS})
     endif()
     set(TESTPYTHON ${CMAKE_CROSSCOMPILING_EMULATOR} ${TESTPYTHON})
     include(cmake/UnitTests.cmake)
@@ -846,18 +906,6 @@ write_basic_package_version_file(
     VERSION ${PY_VERSION}
     COMPATIBILITY SameMajorVersion
 )
-
-if(INSTALL_DEVELOPMENT)
-    # Install 'PythonTargets.cmake', 'PythonConfig.cmake' and 'PythonConfigVersion.cmake
-    install(EXPORT PythonTargets
-        FILE PythonTargets.cmake
-        DESTINATION ${CONFIG_INSTALL_DIR} COMPONENT Development)
-
-    install(
-        FILES ${python_install_config} ${python_config_version}
-        DESTINATION ${CONFIG_INSTALL_DIR} COMPONENT Development
-    )
-endif()
 
 # Install License
 set(license_destination ${PYTHONHOME})

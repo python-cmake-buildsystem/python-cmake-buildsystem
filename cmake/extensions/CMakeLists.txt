@@ -13,7 +13,7 @@ endif()
 add_python_extension(array ${WIN32_BUILTIN} SOURCES arraymodule.c)
 add_python_extension(audioop ${WIN32_BUILTIN} REQUIRES HAVE_LIBM SOURCES audioop.c LIBRARIES ${M_LIBRARIES})
 add_python_extension(_bisect ${WIN32_BUILTIN} SOURCES _bisectmodule.c)
-add_python_extension(cmath REQUIRES HAVE_LIBM ${WIN32_BUILTIN} SOURCES _math.c cmathmodule.c LIBRARIES ${M_LIBRARIES})
+add_python_extension(cmath REQUIRES HAVE_LIBM ${WIN32_BUILTIN} SOURCES $<$<VERSION_LESS:${PY_VERSION},3.11>:_math.c> cmathmodule.c LIBRARIES ${M_LIBRARIES})
 add_python_extension(_codecs_cn ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_cn.c)
 add_python_extension(_codecs_hk ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_hk.c)
 add_python_extension(_codecs_iso2022 ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_iso2022.c)
@@ -68,11 +68,13 @@ add_python_extension(itertools ${WIN32_BUILTIN} ${PY3_BUILTIN} SOURCES itertools
 add_python_extension(_json ${WIN32_BUILTIN} SOURCES _json.c)
 add_python_extension(_locale ${WIN32_BUILTIN} ${PY3_BUILTIN} SOURCES _localemodule.c) # access to ISO C locale support
 add_python_extension(_lsprof ${WIN32_BUILTIN} SOURCES _lsprof.c rotatingtree.c)
-add_python_extension(math ${WIN32_BUILTIN} REQUIRES HAVE_LIBM SOURCES _math.c mathmodule.c LIBRARIES ${M_LIBRARIES})
+add_python_extension(math ${WIN32_BUILTIN} REQUIRES HAVE_LIBM SOURCES $<$<VERSION_LESS:${PY_VERSION},3.11>:_math.c> mathmodule.c LIBRARIES ${M_LIBRARIES})
 add_python_extension(mmap ${WIN32_BUILTIN} SOURCES mmapmodule.c)
 add_python_extension(_multibytecodec ${WIN32_BUILTIN} SOURCES cjkcodecs/multibytecodec.c)
 add_python_extension(operator ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES operator.c)
-add_python_extension(parser ${WIN32_BUILTIN} SOURCES parsermodule.c)
+if(PY_VERSION VERSION_LESS "3.10")
+    add_python_extension(parser ${WIN32_BUILTIN} SOURCES parsermodule.c)
+endif()
 add_python_extension(_random ${WIN32_BUILTIN} SOURCES _randommodule.c)
 add_python_extension(strop ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES stropmodule.c)
 add_python_extension(_struct ${WIN32_BUILTIN} SOURCES _struct.c)
@@ -100,7 +102,11 @@ add_python_extension(faulthandler ALWAYS_BUILTIN REQUIRES IS_PY3 SOURCES faultha
 add_python_extension(_opcode ${WIN32_BUILTIN} REQUIRES IS_PY3 SOURCES _opcode.c)
 add_python_extension(_operator BUILTIN REQUIRES IS_PY3 SOURCES _operator.c)
 add_python_extension(_pickle ${WIN32_BUILTIN} REQUIRES IS_PY3 SOURCES _pickle.c)
-add_python_extension(_sre BUILTIN SOURCES _sre.c) # Fredrik Lundh's new regular expressions
+if(PY_VERSION VERSION_LESS "3.11")
+    add_python_extension(_sre BUILTIN SOURCES _sre.c) # Fredrik Lundh's new regular expressions
+else()
+    add_python_extension(_sre BUILTIN SOURCES _sre/sre.c) # Fredrik Lundh's new regular expressions
+endif()
 add_python_extension(_stat BUILTIN REQUIRES IS_PY3 SOURCES _stat.c) # stat.h interface
 add_python_extension(_symtable BUILTIN SOURCES symtablemodule.c)
 # Python PEP-3118 (buffer protocol) test module
@@ -155,17 +161,19 @@ endif()
 
 # Python 3.8
 if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
-    add_python_extension(_testinternalcapi SOURCES _testinternalcapi.c DEFINITIONS "PY3_DLLNAME=\"python3$<$<CONFIG:Debug>:_d>\"")
+    add_python_extension(_testinternalcapi NEVER_BUILTIN SOURCES _testinternalcapi.c DEFINITIONS "PY3_DLLNAME=\"python3$<$<CONFIG:Debug>:_d>\"")
 endif()
 
 # Python 3.9
-if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
+if(PY_VERSION VERSION_EQUAL "3.9")
     add_python_extension(_peg_parser ALWAYS_BUILTIN SOURCES _peg_parser.c)
 endif()
 
 # UNIX-only extensions
-add_python_extension(fcntl REQUIRES UNIX SOURCES fcntlmodule.c)
-add_python_extension(grp REQUIRES UNIX SOURCES grpmodule.c)
+if(NOT ANDROID)
+    add_python_extension(fcntl REQUIRES UNIX SOURCES fcntlmodule.c)
+    add_python_extension(grp REQUIRES UNIX SOURCES grpmodule.c)
+endif()
 
 set(nis_REQUIRES UNIX HAVE_LIBNSL)
 set(nis_LIBRARIES ${HAVE_LIBNSL})
@@ -382,19 +390,30 @@ if(WIN32)
     endif()
 else()
     if(APPLE)
-        add_python_extension(_ctypes
-            SOURCES ${ctypes_COMMON_SOURCES}
-                    _ctypes/malloc_closure.c
-                    _ctypes/darwin/dlfcn_simple.c
-                    _ctypes/libffi_osx/ffi.c
-                    _ctypes/libffi_osx/x86/darwin64.S
-                    _ctypes/libffi_osx/x86/x86-darwin.S
-                    _ctypes/libffi_osx/x86/x86-ffi_darwin.c
-                    _ctypes/libffi_osx/x86/x86-ffi64.c
-            INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi_osx/include
-                        ${SRC_DIR}/Modules/_ctypes/darwin
-            DEFINITIONS MACOSX
-        )
+        if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" AND CMAKE_OSX_ARCHITECTURES STREQUAL "x86_64")
+            add_python_extension(_ctypes
+                SOURCES ${ctypes_COMMON_SOURCES}
+                        _ctypes/malloc_closure.c
+                        _ctypes/darwin/dlfcn_simple.c
+                        _ctypes/libffi_osx/ffi.c
+                        _ctypes/libffi_osx/x86/darwin64.S
+                        _ctypes/libffi_osx/x86/x86-darwin.S
+                        _ctypes/libffi_osx/x86/x86-ffi_darwin.c
+                        _ctypes/libffi_osx/x86/x86-ffi64.c
+                INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi_osx/include
+                            ${SRC_DIR}/Modules/_ctypes/darwin
+                DEFINITIONS MACOSX
+            )
+        else()
+            # non-x86_64 architectures, e.g. arm64 or arm64+x86_64 universal build
+            add_python_extension(_ctypes
+                REQUIRES LibFFI_INCLUDE_DIR LibFFI_LIBRARY
+                SOURCES ${ctypes_COMMON_SOURCES}
+                DEFINITIONS Py_BUILD_CORE_MODULE FFI_BUILDING
+                INCLUDEDIRS ${LibFFI_INCLUDE_DIR}
+                LIBRARIES ${LibFFI_LIBRARY}
+            )
+        endif()
     else()
         if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
           set(_libffi_system_extra_src
@@ -501,7 +520,7 @@ elseif(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
 elseif(${CMAKE_SIZEOF_VOID_P} EQUAL 4)
     if(HAVE_GCC_ASM_FOR_X87 AND
         (CMAKE_C_COMPILER_ID MATCHES "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
-        AND NOT CMAKE_SYSTEM MATCHES SunOS
+        AND NOT CMAKE_SYSTEM MATCHES SunOS AND NOT CMAKE_SYSTEM MATCHES Android
     )
         # solaris: problems with register allocation.
         # icc >= 11.0 works as well.
@@ -696,7 +715,7 @@ endif()
 add_python_extension(${dbm_name}
     REQUIRES NDBM_TAG GDBM_LIBRARY GDBM_COMPAT_LIBRARY
     SOURCES ${dbm${PY_VERSION_MAJOR}_SOURCES}
-    DEFINITIONS HAVE_${NDBM_TAG}_H
+    DEFINITIONS HAVE_${NDBM_TAG}_H USE_${NDBM_USE}
     LIBRARIES ${GDBM_LIBRARY} ${GDBM_COMPAT_LIBRARY}
     INCLUDEDIRS ${${NDBM_TAG}_INCLUDE_PATH}
 )
@@ -743,7 +762,8 @@ add_python_extension(readline
 )
 add_python_extension(_sqlite3
     REQUIRES SQLite3_INCLUDE_DIRS SQLite3_LIBRARIES
-    SOURCES _sqlite/cache.c
+    SOURCES $<$<VERSION_LESS:${PY_VERSION},3.11>:_sqlite/cache.c>
+            $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>:_sqlite/blob.c>
             _sqlite/connection.c
             _sqlite/cursor.c
             _sqlite/microprotocols.c
@@ -777,9 +797,9 @@ set(_tkinter_REQUIRES TCL_LIBRARY TK_LIBRARY TCL_INCLUDE_PATH TK_INCLUDE_PATH)
 set(_tkinter_LIBRARIES ${TCL_LIBRARY} ${TK_LIBRARY})
 set(_tkinter_INCLUDEDIRS ${TCL_INCLUDE_PATH} ${TK_INCLUDE_PATH})
 if(UNIX)
-  list(APPEND _tkinter_REQUIRES X11_INCLUDE_DIR X11_LIBRARIES)
-  list(APPEND _tkinter_LIBRARIES ${X11_LIBRARIES})
-  list(APPEND _tkinter_INCLUDEDIRS ${X11_INCLUDE_DIR})
+    list(APPEND _tkinter_REQUIRES X11_INCLUDE_DIR X11_LIBRARIES)
+    list(APPEND _tkinter_LIBRARIES ${X11_LIBRARIES})
+    list(APPEND _tkinter_INCLUDEDIRS ${X11_INCLUDE_DIR})
 endif()
 add_python_extension(_tkinter
     REQUIRES ${_tkinter_REQUIRES}
@@ -815,7 +835,20 @@ else()
     )
 endif()
 
-if(USE_LIBEDIT AND ENABLE_READLINE AND NOT BUILTIN_READLINE)
-    set_target_properties(extension_readline PROPERTIES
-        COMPILE_DEFINITIONS "USE_LIBEDIT")
+if(USE_LIBEDIT AND ENABLE_READLINE)
+    if(PY_VERSION VERSION_GREATER_EQUAL "3.10")
+        if(BUILTIN_READLINE)
+            set_property(GLOBAL APPEND PROPERTY extension_readline_definitions "WITH_EDITLINE")
+        else()
+            set_target_properties(extension_readline PROPERTIES
+                COMPILE_DEFINITIONS "WITH_EDITLINE")
+        endif()
+    else()
+        if(BUILTIN_READLINE)
+            set_property(GLOBAL APPEND PROPERTY extension_readline_definitions "USE_LIBEDIT")
+        else()
+            set_target_properties(extension_readline PROPERTIES
+                COMPILE_DEFINITIONS "USE_LIBEDIT")
+        endif()
+    endif()
 endif()

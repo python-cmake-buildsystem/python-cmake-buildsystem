@@ -12,3 +12,21 @@ foreach(file ${hfiles})
         install(FILES ${includedir}/${file} DESTINATION ${INCLUDE_INSTALL_DIR}/${path} COMPONENT Development)
     endif()
 endforeach()
+if(BUILD_FRAMEWORK)
+    install(CODE "
+        message(STATUS \"Creating Python header framework symlinks...\")
+        execute_process(
+            COMMAND
+                \${CMAKE_COMMAND} -E create_symlink Versions/Current/Headers Headers
+            WORKING_DIRECTORY
+                \"${CMAKE_INSTALL_PREFIX}/${FRAMEWORK_DIR_ROOT}\"
+        )
+
+        execute_process(
+            COMMAND
+                \${CMAKE_COMMAND} -E create_symlink \"${REL_INCLUDE_INSTALL_DIR}\" Headers
+            WORKING_DIRECTORY
+                \"${CMAKE_INSTALL_PREFIX}/${FRAMEWORK_DIR_PREFIX}\"
+        )
+    ")
+endif()

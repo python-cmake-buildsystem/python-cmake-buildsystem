@@ -18,16 +18,28 @@ char *PLATFORM_TRIPLET =
 
 #if defined(__linux__)
 # if defined(__x86_64__) && defined(__LP64__)
+#  if defined(__ANDROID_NDK__)
+        "x86_64-linux-android"
+#  else
         "x86_64-linux-gnu"
+#  endif
 # elif defined(__x86_64__) && defined(__ILP32__)
         "x86_64-linux-gnux32"
 # elif defined(__i386__)
+#  if defined(__ANDROID_NDK__)
+        "i686-linux-android"
+#  else
         "i386-linux-gnu"
+#  endif
 # elif defined(__aarch64__) && defined(__AARCH64EL__)
 #  if defined(__ILP32__)
         "aarch64_ilp32-linux-gnu"
 #  else
+#   if defined(__ANDROID_NDK__)
+        "aarch64-linux-android"
+#   else
         "aarch64-linux-gnu"
+#   endif
 #  endif
 # elif defined(__aarch64__) && defined(__AARCH64EB__)
 #  if defined(__ILP32__)
@@ -45,7 +57,11 @@ char *PLATFORM_TRIPLET =
 #  endif
 # elif defined(__ARM_EABI__) && !defined(__ARM_PCS_VFP)
 #  if defined(__ARMEL__)
+#   if defined(__ANDROID_NDK__)
+        "arm-linux-androideabi"
+#   else
         "arm-linux-gnueabi"
+#   endif
 #  else
         "armeb-linux-gnueabi"
 #  endif
@@ -97,6 +113,14 @@ char *PLATFORM_TRIPLET =
         "sparc64-linux-gnu"
 # elif defined(__sparc__)
         "sparc-linux-gnu"
+# elif defined(__riscv)
+#  if __riscv_xlen == 32
+        "riscv32-linux-gnu"
+#  elif __riscv_xlen == 64
+        "riscv64-linux-gnu"
+#  else
+#       "unknown platform triplet"
+#  endif
 # else
 #       "unknown platform triplet"
 # endif

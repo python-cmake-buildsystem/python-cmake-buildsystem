@@ -23,6 +23,9 @@ message(STATUS "BZIP2_INCLUDE_DIR=${BZIP2_INCLUDE_DIR}")
 message(STATUS "BZIP2_LIBRARIES=${BZIP2_LIBRARIES}")
 
 if(USE_SYSTEM_Curses)
+    if(PY_VERSION VERSION_GREATER_EQUAL "3.10")
+        set(CURSES_NEED_WIDE TRUE)
+    endif()
     find_package(Curses) # https://cmake.org/cmake/help/latest/module/FindCurses.html
     find_library(PANEL_LIBRARY NAMES panel)
     set(PANEL_LIBRARIES ${PANEL_LIBRARY})
@@ -93,7 +96,9 @@ if(USE_SYSTEM_GDBM)
 
     if(NDBM_INCLUDE_PATH)
         set(NDBM_TAG NDBM)
+        set(NDBM_USE NDBM)
     else()
+        set(NDBM_USE GDBM_COMPAT)
         find_path(GDBM_NDBM_INCLUDE_PATH gdbm/ndbm.h)
         if(GDBM_NDBM_INCLUDE_PATH)
             set(NDBM_TAG GDBM_NDBM)
@@ -270,7 +275,12 @@ check_include_files(grp.h HAVE_GRP_H)
 check_include_files(ieeefp.h HAVE_IEEEFP_H)
 check_include_files(inttypes.h HAVE_INTTYPES_H) # libffi and cpython
 check_include_files(io.h HAVE_IO_H)
-check_include_files(langinfo.h HAVE_LANGINFO_H)
+if (ANDROID)
+  set(HAVE_LANGINFO_H 0) # Android cann't link functions from langinfo.h
+else()
+  check_include_files(langinfo.h HAVE_LANGINFO_H)
+endif()
+
 check_include_files(libintl.h HAVE_LIBINTL_H)
 check_include_files(libutil.h HAVE_LIBUTIL_H)
 check_include_files(linux/tipc.h HAVE_LINUX_TIPC_H)
@@ -318,7 +328,11 @@ check_include_files(process.h HAVE_PROCESS_H)
 check_include_files(pthread.h HAVE_PTHREAD_H)
 check_include_files(pty.h HAVE_PTY_H)
 check_include_files(pwd.h HAVE_PWD_H)
-check_include_files("stdio.h;readline/readline.h" HAVE_READLINE_READLINE_H)
+if(USE_LIBEDIT)
+  check_include_files("stdio.h;editline/readline.h" HAVE_READLINE_READLINE_H)
+else()
+  check_include_files("stdio.h;readline/readline.h" HAVE_READLINE_READLINE_H)
+endif()
 check_include_files(semaphore.h HAVE_SEMAPHORE_H)
 check_include_files(shadow.h HAVE_SHADOW_H)
 check_include_files(signal.h HAVE_SIGNAL_H)
@@ -423,6 +437,11 @@ endif()
 find_library(HAVE_LIBNCURSES ncurses)
 find_library(HAVE_LIBNSL nsl)
 find_library(HAVE_LIBREADLINE readline)
+if(USE_LIBEDIT)
+  find_library(HAVE_LIBREADLINE edit)
+else()
+  find_library(HAVE_LIBREADLINE readline)
+endif()
 if(IS_PY3)
 find_library(HAVE_LIBSENDFILE sendfile)
 endif()
@@ -432,6 +451,11 @@ set(LIBUTIL_LIBRARIES )
 set(LIBUTIL_EXPECTED 1)
 
 if(CMAKE_SYSTEM MATCHES "VxWorks\\-7$")
+  set(LIBUTIL_EXPECTED 0)
+  set(HAVE_LIBUTIL 0)
+endif()
+
+if(ANDROID)
   set(LIBUTIL_EXPECTED 0)
   set(HAVE_LIBUTIL 0)
 endif()
@@ -695,6 +719,7 @@ check_type_size(float SIZEOF_FLOAT)
 check_type_size(fpos_t SIZEOF_FPOS_T)
 check_type_size(int SIZEOF_INT)
 check_type_size(long SIZEOF_LONG)
+check_type_size(long ALIGNOF_LONG)
 check_type_size("long double" SIZEOF_LONG_DOUBLE)
 set(HAVE_LONG_DOUBLE ${SIZEOF_LONG_DOUBLE}) # libffi and cpython
 check_type_size("long long" SIZEOF_LONG_LONG)
@@ -704,6 +729,7 @@ check_type_size(pid_t SIZEOF_PID_T)
 check_type_size(pthread_t SIZEOF_PTHREAD_T)
 check_type_size(short SIZEOF_SHORT)
 check_type_size(size_t SIZEOF_SIZE_T)
+check_type_size(size_t ALIGNOF_SIZE_T)
 check_type_size(ssize_t HAVE_SSIZE_T)
 check_type_size(time_t SIZEOF_TIME_T)
 check_type_size(uintptr_t SIZEOF_UINTPTR_T)
@@ -725,7 +751,9 @@ set(WITH_DYLD 0)
 set(WITH_NEXT_FRAMEWORK 0)
 if(APPLE)
   set(WITH_DYLD 1)
-  set(WITH_NEXT_FRAMEWORK 0) # TODO: See --enable-framework option.
+  if(BUILD_FRAMEWORK)
+      set(WITH_NEXT_FRAMEWORK 1) # TODO: See --enable-framework option.
+  endif()
 endif()
 set(PYTHONFRAMEWORK "")
 
@@ -1085,60 +1113,38 @@ endif()
 # Check for various properties of floating point
 #
 #######################################################################
-
-# Check whether C doubles are little-endian IEEE 754 binary64
-set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_little_endian_double.c)
-file(WRITE ${check_src} "#include <string.h>
-int main() {
-    double x = 9006104071832581.0;
-    if (memcmp(&x, \"\\x05\\x04\\x03\\x02\\x01\\xff\\x3f\\x43\", 8) == 0)
-        return 0;
-    else
-        return 1;
-}
-")
-python_platform_test_run(
-  DOUBLE_IS_LITTLE_ENDIAN_IEEE754
-  "Checking whether C doubles are little-endian IEEE 754 binary64"
-  ${check_src}
-  DIRECT
-  )
-
-# Check whether C doubles are big-endian IEEE 754 binary64
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_big_endian_double.c)
-file(WRITE ${check_src} "#include <string.h>
-int main() {
-    double x = 9006104071832581.0;
-    if (memcmp(&x, \"\\x43\\x3f\\xff\\x01\\x02\\x03\\x04\\x05\", 8) == 0)
-        return 0;
-    else
-        return 1;
-}
+file(WRITE ${check_src} "
+double d = 90904234967036810337470478905505011476211692735615632014797120844053488865816695273723469097858056257517020191247487429516932130503560650002327564517570778480236724525140520121371739201496540132640109977779420565776568942592.0;
 ")
-python_platform_test_run(
-  DOUBLE_IS_BIG_ENDIAN_IEEE754
-  "Checking whether C doubles are big-endian IEEE 754 binary64"
-  ${check_src}
-  DIRECT
-  )
 
-# Check whether C doubles are ARM mixed-endian IEEE 754 binary64
-set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_mixed_endian_double.c)
-file(WRITE ${check_src} "#include <string.h>
-int main() {
-    double x = 9006104071832581.0;
-    if (memcmp(&x, \"\\x01\\xff\\x3f\\x43\\x05\\x04\\x03\\x02\", 8) == 0)
-        return 0;
-    else
-        return 1;
-}
-")
-python_platform_test_run(
-  DOUBLE_IS_ARM_MIXED_ENDIAN_IEEE754
-  "Checking doubles are ARM mixed-endian IEEE 754 binary64"
-  ${check_src}
-  DIRECT
-  )
+# TODO: factorize this try_compile statement
+try_compile(DOUBLE_BIG_ENDIAN_TEST_COMPILED
+        ${CMAKE_CURRENT_BINARY_DIR}
+        ${check_src}
+        COMPILE_DEFINITIONS ${CMAKE_REQUIRED_DEFINITIONS}
+        COMPILE_DEFINITIONS ${CMAKE_REQUIRED_DEFINITIONS}
+        CMAKE_FLAGS -DCOMPILE_DEFINITIONS:STRING=${MACRO_CHECK_FUNCTION_DEFINITIONS}
+        "${CHECK_C_SOURCE_COMPILES_ADD_LIBRARIES}"
+        "${CHECK_C_SOURCE_COMPILES_ADD_INCLUDES}"
+        COPY_FILE ${CMAKE_CURRENT_BINARY_DIR}/double_big_endian.bin)
+
+if(DOUBLE_BIG_ENDIAN_TEST_COMPILED)
+    file(READ ${CMAKE_CURRENT_BINARY_DIR}/double_big_endian.bin DOUBLE_BIG_ENDIAN_DATA)
+    string(FIND ${DOUBLE_BIG_ENDIAN_DATA} "noonsees" NOONSEES)
+    if(NOONSEES)
+        set(DOUBLE_IS_BIG_ENDIAN_IEEE754 1)
+        set(DOUBLE_IS_LITTLE_ENDIAN_IEEE754 0)
+    else()
+        string(FIND ${DOUBLE_BIG_ENDIAN_DATA} "seesnoon" SEESNOON)
+        if(SEESNOON)
+            set(DOUBLE_IS_BIG_ENDIAN_IEEE754 0)
+            set(DOUBLE_IS_LITTLE_ENDIAN_IEEE754 1)
+        else()
+            message(WARNING "Could not determine if double precision floats endianness")
+        endif()
+    endif()
+endif()
 
 # The short float repr introduced in Python 3.1 requires the
 # correctly-rounded string <-> double conversion functions from
@@ -1796,7 +1802,8 @@ if(HAVE_GETHOSTBYNAME_R)
 
   # Checking gethostbyname_r with 6 args
   set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_gethostbyname_r_6_arg.c)
-  file(WRITE ${check_src} "int main() {
+  file(WRITE ${check_src} "#include <netdb.h>
+int main() {
     char *name;
     struct hostent *he, *res;
     char buffer[2048];
@@ -2037,7 +2044,11 @@ if(HAVE_READLINE_READLINE_H)
   cmake_push_check_state()
   set(CFG_HEADERS_SAVE ${CFG_HEADERS})
 
-  add_cond(CFG_HEADERS HAVE_READLINE_READLINE_H readline/readline.h)
+  if(USE_LIBEDIT)
+    add_cond(CFG_HEADERS HAVE_READLINE_READLINE_H editline/readline.h)
+  else()
+    add_cond(CFG_HEADERS HAVE_READLINE_READLINE_H readline/readline.h)
+  endif()
   add_cond(CMAKE_REQUIRED_LIBRARIES HAVE_LIBREADLINE ${HAVE_LIBREADLINE})
   check_symbol_exists(rl_callback_handler_install "${CFG_HEADERS}" HAVE_RL_CALLBACK)
   check_symbol_exists(rl_catch_signals            "${CFG_HEADERS}" HAVE_RL_CATCH_SIGNAL)

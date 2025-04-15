@@ -6,15 +6,24 @@ set(PYTHON_SOURCES
 )
 
 add_executable(python ${PYTHON_SOURCES})
-set_property(
-    TARGET python
-    PROPERTY RUNTIME_OUTPUT_DIRECTORY ${BIN_BUILD_DIR}
+set_target_properties(
+    python
+    PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY ${BIN_BUILD_DIR}
+    OUTPUT_NAME python${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}
     )
 target_compile_definitions(python PRIVATE Py_BUILD_CORE)
 add_definitions(-DPy_BUILD_CORE)
 
 # Link against the shared libpython if it was built, otherwise use the static
 # version.
+if(LINUX)
+    # Sets the rpath of the python executable to look for libpython in its sibling
+    # directory. Useful for self-contained python distributions, but will break
+    # things like venv where the rpath of the venv python tries to look up the
+    # library in a sibling directory that does not exist.
+    set_target_properties(python PROPERTIES LINK_FLAGS "-Wl,-rpath,$ORIGIN/../lib")
+endif()
 if(BUILD_LIBPYTHON_SHARED)
     target_link_libraries(python libpython-shared)
 else()
@@ -29,10 +38,16 @@ if(MSVC)
     set_target_properties(python PROPERTIES LINK_FLAGS /STACK:2000000)
 endif()
 
+if(BUILD_FRAMEWORK)
+    set_target_properties(python PROPERTIES
+        INSTALL_RPATH "@loader_path/../../../.."
+    )
+endif()
+
 # Export target
 set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS python)
 
-install(TARGETS python EXPORT PythonTargets RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT Runtime)
+install(TARGETS python RUNTIME DESTINATION ${BIN_INSTALL_DIR} COMPONENT Runtime)
 
 # See "is_python_build()" in sysconfig.py
 add_custom_command(TARGET python PRE_BUILD
@@ -50,7 +65,7 @@ if(WIN32)
         )
 endif()
 
-if(UNIX AND PY_VERSION VERSION_GREATER "2.7.4")
+if(UNIX AND PY_VERSION VERSION_GREATER "2.7.4" AND NOT ANDROID)
     # Setup landmark allowing to run the interpreter from a build tree. See 'getpath.c' for details.
     set(_sysconfigdata_py "_sysconfigdata.py")
     if("${PY_VERSION}" VERSION_GREATER_EQUAL "3.6.0")
@@ -61,7 +76,7 @@ if(UNIX AND PY_VERSION VERSION_GREATER "2.7.4")
     add_custom_command(
         OUTPUT ${BIN_BUILD_DIR}/pybuilddir.txt ${EXTENSION_BUILD_DIR}/${_sysconfigdata_py}
         COMMAND ${PYTHON_WRAPPER_COMMAND}
-          ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> -E -S -m sysconfig --generate-posix-vars
+          ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> -B -S -m sysconfig --generate-posix-vars
         COMMAND ${CMAKE_COMMAND}
           -DBIN_BUILD_DIR:PATH=${BIN_BUILD_DIR}
           -DSYSCONFIGDATA_PY:STRING=${_sysconfigdata_py}
@@ -83,10 +98,10 @@ if(UNIX AND NOT CMAKE_CROSSCOMPILING)
   install(CODE
 "message(STATUS \"Creating Python executable symlinks...\")
 execute_process(
-  COMMAND \${CMAKE_COMMAND} -E create_symlink python
+  COMMAND \${CMAKE_COMMAND} -E create_symlink python${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}
     python${PY_VERSION_MAJOR}
-  COMMAND \${CMAKE_COMMAND} -E create_symlink python
-    python${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}
+  COMMAND \${CMAKE_COMMAND} -E create_symlink python${PY_VERSION_MAJOR}
+    python
   WORKING_DIRECTORY
     \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${BIN_INSTALL_DIR}
   )"
