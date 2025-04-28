@@ -113,9 +113,7 @@ cmake_dependent_option(USE_SYSTEM_ZLIB "Use system ZLIB" ${_use_system_zlib_defa
 cmake_dependent_option(USE_SYSTEM_GDBM "Use system GDBM" ON "USE_SYSTEM_LIBRARIES" OFF)
 cmake_dependent_option(USE_SYSTEM_READLINE "Use system READLINE" ON "USE_SYSTEM_LIBRARIES" OFF)
 cmake_dependent_option(USE_SYSTEM_SQLite3 "Use system SQLITE3" ON "USE_SYSTEM_LIBRARIES" OFF)
-if(IS_PY3)
   cmake_dependent_option(USE_SYSTEM_LIBMPDEC "Use system LIBMPDEC" ON "USE_SYSTEM_LIBRARIES" OFF)
-endif()
 
 cmake_dependent_option(USE_BUILTIN_ZLIB "Use builtin ZLIB" ${_use_builtin_zlib_default} "NOT USE_SYSTEM_ZLIB" OFF)
 
@@ -333,11 +331,8 @@ if(PYTHON_APPLY_PATCHES)
   include(cmake/PythonApplyPatches.cmake)
 endif()
 
-# Convenience boolean variables to easily test python version
-set(IS_PY3 1)
-
 # Enable CXX language to support building of _distutils_findvs extension
-if(WIN32 AND IS_PY3)
+if(WIN32)
   enable_language(CXX)
 endif()
 
@@ -362,10 +357,8 @@ endif()
 option(WITH_COMPUTED_GOTOS "Improve performance enabling the computed goto based dispatch" OFF)
 set(USE_COMPUTED_GOTOS ${WITH_COMPUTED_GOTOS})
 
-if(IS_PY3)
 set(WITH_HASH_ALGORITHM "default" CACHE STRING "Define hash algorithm for str, bytes and memoryview.")
 set_property(CACHE WITH_HASH_ALGORITHM PROPERTY STRINGS "default" "siphash24" "fnv")
-endif()
 
 if(PY_VERSION VERSION_LESS "3.7")
     option(WITH_THREAD "Compile in rudimentary thread support" ON)
@@ -562,7 +555,6 @@ if(BUILD_WININST)
 endif()
 
 # Add target to run "Argument Clinic" over all source files
-if(IS_PY3)
 add_custom_target(clinic
     COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> ${SRC_DIR}/Tools/clinic/clinic.py --make
     DEPENDS python
@@ -570,7 +562,6 @@ add_custom_target(clinic
     COMMENT "Running 'Argument Clinic' over all source files"
     VERBATIM
 )
-endif()
 
 # Add target to generate 'Include/graminit.h' and 'Python/graminit.c'
 if(PY_VERSION VERSION_GREATER_EQUAL "3.8")

@@ -51,7 +51,7 @@ if(USE_SYSTEM_LibFFI)
     message(STATUS "LibFFI_LIBRARY=${LibFFI_LIBRARY}")
 endif()
 
-if(IS_PY3 AND USE_SYSTEM_LIBMPDEC)
+if(USE_SYSTEM_LIBMPDEC)
     find_library(LIBMPDEC_LIBRARY NAMES mpdec libmpdec)
     set(LIBMPDEC_LIBRARIES ${LIBMPDEC_LIBRARY})
     message(STATUS "LIBMPDEC_LIBRARIES=${LIBMPDEC_LIBRARIES}")
@@ -163,7 +163,6 @@ if(WIN32)
   #  standard part of the Python distribution.
 else()
 
-if(IS_PY3)
 set(_msg "Checking WITH_HASH_ALGORITHM option")
 message(STATUS "${_msg}")
 if(WITH_HASH_ALGORITHM STREQUAL "default")
@@ -214,8 +213,6 @@ set(SOABI "cpython-${PY_VERSION_MAJOR}${PY_VERSION_MINOR}${ABIFLAGS}-${PLATFORM_
 
 message(STATUS "${_msg} - ${SOABI}")
 
-endif()
-
 if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
 
 # Alternative SOABI used in debug build to load C extensions built in release mode
@@ -249,9 +246,7 @@ if(NOT HAVE_DIRENT_H)
   check_type_size(DIR HAVE_SYS_DIR_H)
   check_include_files(ndir.h HAVE_NDIR_H)
 endif()
-if(IS_PY3)
   check_symbol_exists("dirfd" "sys/types.h;dirent.h" HAVE_DIRFD)
-endif()
 
 check_include_files(alloca.h HAVE_ALLOCA_H) # libffi and cpython
 check_include_files(asm/types.h HAVE_ASM_TYPES_H)
@@ -284,7 +279,6 @@ add_cond(LINUX_NETLINK_HEADERS HAVE_SYS_SOCKET_H sys/socket.h)
 set(LINUX_NETLINK_HEADERS ${LINUX_NETLINK_HEADERS} linux/netlink.h)
 check_include_files("${LINUX_NETLINK_HEADERS}" HAVE_LINUX_NETLINK_H)
 
-if(IS_PY3)
 set(LINUX_QRTR_HEADERS)
 add_cond(LINUX_QRTR_HEADERS HAVE_ASM_TYPES_H  asm/types.h)
 add_cond(LINUX_QRTR_HEADERS HAVE_SYS_SOCKET_H sys/socket.h)
@@ -302,7 +296,6 @@ check_include_files("${LINUX_CAN_HEADERS};linux/can/raw.h" HAVE_LINUX_CAN_RAW_H)
 set(LINUX_VM_SOCKETS_HEADERS)
 add_cond(LINUX_VM_SOCKETS_HEADERS HAVE_SYS_SOCKET_H sys/socket.h)
 check_include_files("${LINUX_VM_SOCKETS_HEADERS};linux/vm_sockets.h" HAVE_LINUX_VM_SOCKETS_H)
-endif()
 
 check_include_files(mach-o/dyld.h HAVE_MACH_O_DYLD_H)
 check_include_files(memory.h HAVE_MEMORY_H) # libffi and cpython
@@ -365,7 +358,6 @@ check_include_files("stdlib.h;stdarg.h;string.h;float.h" STDC_HEADERS) # libffi 
 
 check_include_files(stdarg.h HAVE_STDARG_PROTOTYPES)
 
-if(IS_PY3)
 check_include_files(endian.h HAVE_ENDIAN_H)
 check_include_files(sched.h HAVE_SCHED_H)
 check_include_files(linux/memfd.h HAVE_LINUX_MEMFD_H)
@@ -391,8 +383,6 @@ endif()
 add_cond(NET_IF_HEADERS HAVE_SYS_SOCKET_H sys/socket.h)
 list(APPEND NET_IF_HEADERS net/if.h)
 check_include_files("${NET_IF_HEADERS}" HAVE_NET_IF_H)
-
-endif()
 
 find_file(HAVE_DEV_PTMX NAMES /dev/ptmx PATHS / NO_DEFAULT_PATH)
 find_file(HAVE_DEV_PTC  NAMES /dev/ptc  PATHS / NO_DEFAULT_PATH)
@@ -420,9 +410,7 @@ endif()
 find_library(HAVE_LIBNCURSES ncurses)
 find_library(HAVE_LIBNSL nsl)
 find_library(HAVE_LIBREADLINE readline)
-if(IS_PY3)
 find_library(HAVE_LIBSENDFILE sendfile)
-endif()
 find_library(HAVE_LIBTERMCAP termcap)
 
 set(LIBUTIL_LIBRARIES )
@@ -466,7 +454,6 @@ if(WITH_THREAD OR PY_VERSION VERSION_GREATER_EQUAL "3.7")
   endif()
 endif()
 
-if(IS_PY3)
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_lib_crypto_RAND_egd.c)
 file(WRITE ${check_src} "/* Override any GCC internal prototype to avoid an error.
   Use char because int might match the return type of a GCC
@@ -486,7 +473,6 @@ python_platform_test(
   DIRECT
   )
 cmake_pop_check_state()
-endif()
 
 set_required_def(_POSIX_THREADS 1)    # Define on Linux as it is required for threading
 set_required_def(_POSIX_SOURCE 1)     # Define on Linux in order for 'stat' and other things to work.
@@ -766,7 +752,6 @@ add_cond(CFG_HEADERS HAVE_UTIL_H util.h)
 add_cond(CFG_HEADERS HAVE_UNISTD_H unistd.h)
 add_cond(CFG_HEADERS HAVE_UTIME_H utime.h)
 add_cond(CFG_HEADERS HAVE_WCHAR_H wchar.h)
-if(IS_PY3)
 add_cond(CFG_HEADERS HAVE_DIRENT_H dirent.h)
 add_cond(CFG_HEADERS HAVE_ENDIAN_H endian.h)
 add_cond(CFG_HEADERS HAVE_LINUX_MEMFD_H linux/memfd.h)
@@ -779,7 +764,6 @@ add_cond(CFG_HEADERS HAVE_SYS_MEMFD_H sys/memfd.h)
 add_cond(CFG_HEADERS HAVE_SYS_RESOURCE_H sys/resource.h)
 add_cond(CFG_HEADERS HAVE_SYS_SENDFILE_H sys/sendfile.h)
 add_cond(CFG_HEADERS HAVE_SYS_TIME_H sys/time.h)
-endif()
 
 if(HAVE_PTY_H)
   set(CFG_HEADERS ${CFG_HEADERS} pty.h utmp.h)
@@ -800,9 +784,7 @@ check_symbol_exists(ctermid      "${CFG_HEADERS}" HAVE_CTERMID)
 check_symbol_exists(ctermid_r    "${CFG_HEADERS}" HAVE_CTERMID_R)
 check_symbol_exists(dup2         "${CFG_HEADERS}" HAVE_DUP2)
 check_symbol_exists(epoll_create "${CFG_HEADERS}" HAVE_EPOLL)
-if(IS_PY3)
 check_symbol_exists(epoll_create1 "${CFG_HEADERS}" HAVE_EPOLL_CREATE1)
-endif()
 check_symbol_exists(execv        "${CFG_HEADERS}" HAVE_EXECV)
 check_symbol_exists(fchdir       "${CFG_HEADERS}" HAVE_FCHDIR)
 check_symbol_exists(fchmod       "${CFG_HEADERS}" HAVE_FCHMOD)
@@ -921,7 +903,6 @@ check_symbol_exists(waitpid      "${CFG_HEADERS}" HAVE_WAITPID)
 check_symbol_exists(wcscoll      "${CFG_HEADERS}" HAVE_WCSCOLL)
 check_symbol_exists(_getpty      "${CFG_HEADERS}" HAVE__GETPTY)
 
-if(IS_PY3)
 check_symbol_exists(accept4      "${CFG_HEADERS}" HAVE_ACCEPT4)
 check_symbol_exists(copy_file_range "${CFG_HEADERS}" HAVE_COPY_FILE_RANGE)
 check_symbol_exists(dup3         "${CFG_HEADERS}" HAVE_DUP3)
@@ -1005,7 +986,6 @@ check_symbol_exists(wcsftime               "${CFG_HEADERS}" HAVE_WCSFTIME)
 check_symbol_exists(wcsxfrm                "${CFG_HEADERS}" HAVE_WCSXFRM)
 check_symbol_exists(wmemcmp                "${CFG_HEADERS}" HAVE_WMEMCMP)
 check_symbol_exists(writev                 "${CFG_HEADERS}" HAVE_WRITEV)
-endif()
 
 check_struct_has_member("struct stat" st_mtim.tv_nsec "${CFG_HEADERS}" HAVE_STAT_TV_NSEC)
 check_struct_has_member("struct stat" st_mtimespec.tv_nsec "${CFG_HEADERS}"    HAVE_STAT_TV_NSEC2)
@@ -1017,12 +997,10 @@ check_struct_has_member("struct stat" st_flags   "${CFG_HEADERS}"    HAVE_STRUCT
 check_struct_has_member("struct stat" st_gen     "${CFG_HEADERS}"    HAVE_STRUCT_STAT_ST_GEN)
 check_struct_has_member("struct stat" st_rdev    "${CFG_HEADERS}"    HAVE_STRUCT_STAT_ST_RDEV)
 
-if(IS_PY3)
 check_struct_has_member("struct passwd" pw_gecos  "${CFG_HEADERS}" HAVE_STRUCT_PASSWD_PW_GECOS)
 check_struct_has_member("struct passwd" pw_passwd "${CFG_HEADERS}" HAVE_STRUCT_PASSWD_PW_PASSWD)
 
 check_struct_has_member("struct siginfo_t" si_band "${CFG_HEADERS}" HAVE_SIGINFO_T_SI_BAND)
-endif()
 
 #######################################################################
 #
@@ -1052,8 +1030,6 @@ endif()
 #
 #######################################################################
 
-if(IS_PY3)
-
 # Check for x64 gcc inline assembler
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_gcc_asm_for_x64.c)
 file(WRITE ${check_src} "int main () {
@@ -1066,8 +1042,6 @@ python_platform_test(
   ${check_src}
   DIRECT
   )
-
-endif()
 
 #######################################################################
 #
@@ -1296,8 +1270,6 @@ int main(void) {
   exit(0);
 }" HAVE_MMAP_DEV_ZERO)
 
-if(IS_PY3)
-
 # Check whether we can use gcc inline assembler to get and set mc68881 fpcr
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_gcc_asm_for_mc68881.c)
 file(WRITE ${check_src} "int main() {
@@ -1312,9 +1284,6 @@ python_platform_test(
   ${check_src}
   DIRECT
   )
-
-endif()
-
 
 # Check for x87-style double rounding
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_x87_double_rounding.c)
@@ -1433,7 +1402,6 @@ python_platform_test_run(
   DIRECT
   )
 
-if(IS_PY3)
 # Check whether log1p drops the sign of negative zero
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_log1p_drops_zero_sign.c)
 file(WRITE ${check_src} "#include <math.h>
@@ -1452,14 +1420,11 @@ python_platform_test_run(
   ${check_src}
   INVERT
   )
-endif()
 
 set(_funcs acosh asinh atanh copysign erf erfc expm1 finite gamma
   hypot lgamma log1p round tgamma
+  log2
   )
-if(IS_PY3)
-  list(APPEND _funcs log2)
-endif()
 foreach(func ${_funcs})
   string(TOUPPER ${func} _func_upper)
   check_function_exists(${func} HAVE_${_func_upper})
@@ -1507,8 +1472,6 @@ if(GETTIMEOFDAY_WITH_TZ)
 else()
   set(GETTIMEOFDAY_NO_TZ 1)
 endif()
-
-if(IS_PY3)
 
 if(APPLE)
   cmake_push_check_state()
@@ -1641,8 +1604,6 @@ if(NOT HAVE_CLOCK_SETTIME)
   if(HAVE_CLOCK_SETTIME)
     set(TIMEMODULE_LIB rt)
   endif()
-endif()
-
 endif()
 
 #######################################################################
@@ -2097,9 +2058,7 @@ check_type_size("uint64_t" HAVE_UINT64_T)
 check_type_size("int64_t" HAVE_INT64_T)
 check_type_size("uint32_t" HAVE_UINT32_T)
 check_type_size("int32_t" HAVE_INT32_T)
-if(IS_PY3)
 check_type_size("__uint128_t" HAVE_GCC_UINT128_T)
-endif()
 unset(CMAKE_EXTRA_INCLUDE_FILES)
 
 set(CMAKE_EXTRA_INCLUDE_FILES "sys/socket.h")
@@ -2186,8 +2145,6 @@ if(HAVE_C_CHAR_UNSIGNED AND NOT CMAKE_C_COMPILER_ID MATCHES "^GNU$")
   set(__CHAR_UNSIGNED__ 1)
 endif()
 
-if(IS_PY3)
-
 # Check if the dirent structure of a d_type field and DT_UNKNOWN is defined
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_dirent_d_type.c)
 file(WRITE ${check_src} "#include <dirent.h>
@@ -2242,8 +2199,6 @@ python_platform_test(
   DIRECT
   )
 
-endif()
-
 #######################################################################
 #
 # tests for bugs and other stuff
@@ -2254,7 +2209,6 @@ check_c_source_compiles("#include <unistd.h>\n int main() {getpgrp(0);}" GETPGRP
 
 check_c_source_compiles("#include <unistd.h>\n int main() {setpgrp(0, 0);}" SETPGRP_HAVE_ARG)
 
-if(IS_PY3)
 # Check for inline
 set(USE_INLINE 0)
 foreach(inline_type inline __inline__ __inline)
@@ -2301,7 +2255,6 @@ python_platform_test(
   DIRECT
   )
 cmake_pop_check_state()
-endif()
 
 check_c_source_runs("#include <unistd.h>\n int main() {
         int val1 = nice(1);
@@ -2414,8 +2367,6 @@ if(CMAKE_SYSTEM MATCHES AIX)
   set(HAVE_BROKEN_PIPE_BUF 1)
 endif()
 
-if(IS_PY3)
-
 # Define if aligned memory access is required
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/aligned_required.c)
 file(WRITE ${check_src} "int main()
@@ -2473,8 +2424,6 @@ if(HAVE_PTHREAD_H)
   endif()
 endif()
 
-endif(IS_PY3)
-
 # Check whether the compiler supports computed gotos
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_computed_gotos.c)
 file(WRITE ${check_src} "int main(int argc, char **argv)
@@ -2494,8 +2443,6 @@ python_platform_test_run(
   ${check_src}
   DIRECT
   )
-
-if(IS_PY3)
 
 # Availability of -O2
 cmake_push_check_state()
@@ -2592,8 +2539,6 @@ python_platform_test(
   ${check_src}
   DIRECT
   )
-
-endif(IS_PY3)
 
 if(HAVE_LONG_LONG)
   # Checking for %lld and %llu printf() format support
@@ -2786,7 +2731,6 @@ endif()
 
 ############################################
 
-if(IS_PY3)
 # Check for CAN_RAW_FD_FRAMES
 check_c_source_compiles("#include <linux/can/raw.h>\n int main () { int can_raw_fd_frames = CAN_RAW_FD_FRAMES; }" HAVE_LINUX_CAN_RAW_FD_FRAMES)
 
@@ -2811,8 +2755,6 @@ endif()
 # todo
 set(PTHREAD_SYSTEM_SCHED_SUPPORTED 1)
 set(HAVE_DEVICE_MACROS ${HAVE_MAKEDEV})
-
-endif()
 
 # setup the python platform
 set(PY_PLATFORM generic)
