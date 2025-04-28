@@ -54,9 +54,7 @@ elseif(WIN32)
     endif()
 
     set(_wide_char_modifier)
-    if(IS_PY3)
         set(_wide_char_modifier "L")
-    endif()
 
     set_property(
         SOURCE ${SRC_DIR}/PC/getpathp.c
@@ -193,13 +191,11 @@ if(UNIX AND HAVE_DLOPEN)
     list(APPEND DYNLOAD_SOURCES
         ${SRC_DIR}/Python/dynload_shlib.c
     )
-    if(IS_PY3)
     set_property(
         SOURCE ${SRC_DIR}/Python/dynload_shlib.c
         PROPERTY COMPILE_DEFINITIONS
             SOABI="${SOABI}"
         )
-    endif()
 elseif(WIN32)
     list(APPEND DYNLOAD_SOURCES
         ${SRC_DIR}/PC/dl_nt.c
@@ -323,13 +319,11 @@ if(UNIX OR MINGW)
         PROPERTY COMPILE_DEFINITIONS
             PLATFORM="${PY_PLATFORM}"
     )
-    if(IS_PY3)
     set_property(
         SOURCE ${SRC_DIR}/Python/sysmodule.c
         PROPERTY COMPILE_DEFINITIONS
             ABIFLAGS="${ABIFLAGS}"
         )
-    endif()
 endif()
 
 list(APPEND MODULE_SOURCES
@@ -441,7 +435,7 @@ endif()
 if(UNIX)
     list(APPEND LIBPYTHON_TARGET_LIBRARIES ${LIBUTIL_LIBRARIES} ${M_LIBRARIES})
 endif()
-if(WIN32 AND IS_PY3)
+if(WIN32)
     list(APPEND LIBPYTHON_TARGET_LIBRARIES ws2_32) # Required by signalmodule
     if(PY_VERSION VERSION_GREATER_EQUAL "3.5")
         list(APPEND LIBPYTHON_TARGET_LIBRARIES version) # Required by sysmodule
@@ -455,7 +449,6 @@ if(WIN32 AND IS_PY3)
 endif()
 
 set(LIBPYTHON_FROZEN_SOURCES )
-if(IS_PY3)
 
 # Build _freeze_importlib executable
 add_executable(_freeze_importlib
@@ -511,8 +504,6 @@ endif()
 # This is a convenience target allowing to regenerate
 # the frozen sources.
 add_custom_target(freeze_modules DEPENDS ${LIBPYTHON_FROZEN_SOURCES})
-
-endif()
 
 if(PY_VERSION VERSION_LESS "3.8")
 # Build pgen executable
@@ -601,7 +592,7 @@ if(BUILD_LIBPYTHON_SHARED)
 
     set(targetname "libpython3-shared")
 
-    if(IS_PY3 AND MSVC)
+    if(MSVC)
         # XXX Add BuildPython3_dDef
 
         # Generate 'python3stub.def'
@@ -646,7 +637,7 @@ if(BUILD_LIBPYTHON_SHARED)
         target_link_libraries(${targetname} ${python3stub_lib})
     endif()
 
-    if(IS_PY3 AND UNIX AND NOT APPLE)
+    if(UNIX AND NOT APPLE)
         add_library(${targetname} SHARED ${PROJECT_SOURCE_DIR}/cmake/empty.c)
         set_target_properties(${targetname} PROPERTIES
             LINK_FLAGS "-Wl,--no-as-needed"

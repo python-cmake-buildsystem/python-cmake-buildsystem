@@ -3,13 +3,6 @@ if(WIN32)
     set(WIN32_BUILTIN BUILTIN)
 endif()
 
-set(PY3_BUILTIN )
-set(PY3_ALWAYS_BUILTIN )
-if(IS_PY3)
-    set(PY3_BUILTIN BUILTIN)
-    set(PY3_ALWAYS_BUILTIN ALWAYS_BUILTIN)
-endif()
-
 add_python_extension(array ${WIN32_BUILTIN} SOURCES arraymodule.c)
 add_python_extension(audioop ${WIN32_BUILTIN} REQUIRES HAVE_LIBM SOURCES audioop.c LIBRARIES ${M_LIBRARIES})
 add_python_extension(_bisect ${WIN32_BUILTIN} SOURCES _bisectmodule.c)
@@ -20,7 +13,7 @@ add_python_extension(_codecs_iso2022 ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_
 add_python_extension(_codecs_jp ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_jp.c)
 add_python_extension(_codecs_kr ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_kr.c)
 add_python_extension(_codecs_tw ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_tw.c)
-add_python_extension(_collections ${WIN32_BUILTIN} ${PY3_BUILTIN} SOURCES _collectionsmodule.c) # Container types
+add_python_extension(_collections ${WIN32_BUILTIN} BUILTIN SOURCES _collectionsmodule.c) # Container types
 set(crypt2_NAME crypt)
 set(crypt2_SOURCES cryptmodule.c)
 set(crypt3_NAME _crypt)
@@ -41,7 +34,7 @@ add_python_extension(${datetime${PY_VERSION_MAJOR}_NAME} ${WIN32_BUILTIN} REQUIR
 #if(ENABLE_DATETIME AND CMAKE_C_COMPILER_ID MATCHES GNU)
 #    set_property(SOURCE ${SRC_DIR}/Modules/datetimemodule.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
 #endif()
-add_python_extension(_functools ${WIN32_BUILTIN} ${PY3_BUILTIN} SOURCES _functoolsmodule.c DEFINITIONS Py_BUILD_CORE) # Tools for working with functions and callable objects
+add_python_extension(_functools ${WIN32_BUILTIN} BUILTIN SOURCES _functoolsmodule.c DEFINITIONS Py_BUILD_CORE) # Tools for working with functions and callable objects
 add_python_extension(_heapq ${WIN32_BUILTIN} SOURCES _heapqmodule.c)
 
 set(_io_SOURCES
@@ -58,11 +51,11 @@ if(WIN32 AND EXISTS ${SRC_DIR}/Modules/_io/winconsoleio.c)
         ${SRC_DIR}/Modules/_io/winconsoleio.c
         )
 endif()
-add_python_extension(_io ${WIN32_BUILTIN} ${PY3_ALWAYS_BUILTIN} SOURCES ${_io_SOURCES} DEFINITIONS Py_BUILD_CORE)
+add_python_extension(_io ${WIN32_BUILTIN} ALWAYS_BUILTIN SOURCES ${_io_SOURCES} DEFINITIONS Py_BUILD_CORE)
 
-add_python_extension(itertools ${WIN32_BUILTIN} ${PY3_BUILTIN} SOURCES itertoolsmodule.c) # Functions creating iterators for efficient looping
+add_python_extension(itertools ${WIN32_BUILTIN} BUILTIN SOURCES itertoolsmodule.c) # Functions creating iterators for efficient looping
 add_python_extension(_json ${WIN32_BUILTIN} SOURCES _json.c)
-add_python_extension(_locale ${WIN32_BUILTIN} ${PY3_BUILTIN} SOURCES _localemodule.c) # access to ISO C locale support
+add_python_extension(_locale ${WIN32_BUILTIN} BUILTIN SOURCES _localemodule.c) # access to ISO C locale support
 add_python_extension(_lsprof ${WIN32_BUILTIN} SOURCES _lsprof.c rotatingtree.c)
 add_python_extension(math ${WIN32_BUILTIN} REQUIRES HAVE_LIBM SOURCES _math.c mathmodule.c LIBRARIES ${M_LIBRARIES})
 add_python_extension(mmap ${WIN32_BUILTIN} SOURCES mmapmodule.c)
@@ -84,32 +77,32 @@ set(time_SOURCES timemodule.c)
 if(PY_VERSION VERSION_EQUAL "3.2")
   list(APPEND datetime${PY_VERSION_MAJOR}_SOURCES _time.c)
 endif()
-add_python_extension(time ${WIN32_BUILTIN} ${PY3_BUILTIN} REQUIRES HAVE_LIBM SOURCES ${time_SOURCES} DEFINITIONS Py_BUILD_CORE LIBRARIES ${M_LIBRARIES} ${TIMEMODULE_LIB})
+add_python_extension(time ${WIN32_BUILTIN} BUILTIN REQUIRES HAVE_LIBM SOURCES ${time_SOURCES} DEFINITIONS Py_BUILD_CORE LIBRARIES ${M_LIBRARIES} ${TIMEMODULE_LIB})
 add_python_extension(unicodedata SOURCES unicodedata.c)
 
 # Python3
-add_python_extension(atexit BUILTIN REQUIRES IS_PY3 SOURCES atexitmodule.c) # Register functions to be run at interpreter-shutdown
+add_python_extension(atexit BUILTIN REQUIRES SOURCES atexitmodule.c) # Register functions to be run at interpreter-shutdown
 add_python_extension(_codecs BUILTIN SOURCES _codecsmodule.c) # access to the builtin codecs and codec registry
-add_python_extension(faulthandler ALWAYS_BUILTIN REQUIRES IS_PY3 SOURCES faulthandler.c)
-add_python_extension(_opcode ${WIN32_BUILTIN} REQUIRES IS_PY3 SOURCES _opcode.c)
-add_python_extension(_operator BUILTIN REQUIRES IS_PY3 SOURCES _operator.c)
-add_python_extension(_pickle ${WIN32_BUILTIN} REQUIRES IS_PY3 SOURCES _pickle.c)
+add_python_extension(faulthandler ALWAYS_BUILTIN REQUIRES SOURCES faulthandler.c)
+add_python_extension(_opcode ${WIN32_BUILTIN} REQUIRES SOURCES _opcode.c)
+add_python_extension(_operator BUILTIN REQUIRES SOURCES _operator.c)
+add_python_extension(_pickle ${WIN32_BUILTIN} REQUIRES SOURCES _pickle.c)
 add_python_extension(_sre BUILTIN SOURCES _sre.c) # Fredrik Lundh's new regular expressions
-add_python_extension(_stat BUILTIN REQUIRES IS_PY3 SOURCES _stat.c) # stat.h interface
+add_python_extension(_stat BUILTIN REQUIRES SOURCES _stat.c) # stat.h interface
 add_python_extension(_symtable BUILTIN SOURCES symtablemodule.c)
 # Python PEP-3118 (buffer protocol) test module
-add_python_extension(_testbuffer REQUIRES IS_PY3 SOURCES _testbuffer.c)
+add_python_extension(_testbuffer REQUIRES SOURCES _testbuffer.c)
 # Test loading multiple modules from one compiled file (http://bugs.python.org/issue16421)
-add_python_extension(_testimportmultiple REQUIRES IS_PY3 SOURCES _testimportmultiple.c)
+add_python_extension(_testimportmultiple REQUIRES SOURCES _testimportmultiple.c)
 # Test multi-phase extension module init (PEP 489)
-add_python_extension(_testmultiphase REQUIRES IS_PY3 SOURCES _testmultiphase.c)
+add_python_extension(_testmultiphase REQUIRES SOURCES _testmultiphase.c)
 # debug tool to trace memory blocks allocated by Python
-add_python_extension(_tracemalloc ALWAYS_BUILTIN REQUIRES IS_PY3
+add_python_extension(_tracemalloc ALWAYS_BUILTIN REQUIRES
     SOURCES ${SRC_DIR}/$<IF:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>,Python,Modules>/hashtable.c _tracemalloc.c
 )
 add_python_extension(_weakref ALWAYS_BUILTIN SOURCES _weakref.c)
 math(EXPR _limited_api_version "${PY_VERSION_MAJOR} * 100 + ${PY_VERSION_MINOR}")
-add_python_extension(xxlimited REQUIRES IS_PY3 BUILD_TESTING
+add_python_extension(xxlimited REQUIRES BUILD_TESTING
     SOURCES xxlimited.c
     DEFINITIONS Py_LIMITED_API=0x${_limited_api_version}0000
     NO_INSTALL
@@ -189,7 +182,7 @@ add_python_extension(termios REQUIRES UNIX SOURCES termios.c)
 
 # Python3: UNIX-only extensions
 add_python_extension(errno BUILTIN UNIX SOURCES errnomodule.c)
-add_python_extension(_posixsubprocess REQUIRES IS_PY3 UNIX SOURCES _posixsubprocess.c)
+add_python_extension(_posixsubprocess REQUIRES UNIX SOURCES _posixsubprocess.c)
 
 # MacOSX-only extensions
 set(_scproxy2_SOURCES ${SRC_DIR}/Mac/Modules/_scproxy.c)
@@ -227,18 +220,18 @@ add_python_extension(${winreg${PY_VERSION_MAJOR}_NAME} REQUIRES WIN32 BUILTIN SO
 
 # Python3: Windows-only extensions
 add_python_extension(_overlapped
-    REQUIRES WIN32 IS_PY3
+    REQUIRES WIN32
     SOURCES ${SRC_DIR}/Modules/overlapped.c
     LIBRARIES ws2_32 $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>:pathcch>
 )
-add_python_extension(_winapi REQUIRES WIN32 IS_PY3 BUILTIN SOURCES ${SRC_DIR}/Modules/_winapi.c)
+add_python_extension(_winapi REQUIRES WIN32 BUILTIN SOURCES ${SRC_DIR}/Modules/_winapi.c)
 
 set(HAS_DISTUTILS_FINDVS_MODULE_SRC 0)
 set(module_src ${SRC_DIR}/PC/_findvs.cpp)
 if(EXISTS ${module_src})
   set(HAS_DISTUTILS_FINDVS_MODULE_SRC 1)
 endif()
-add_python_extension(_distutils_findvs REQUIRES WIN32 IS_PY3 HAS_DISTUTILS_FINDVS_MODULE_SRC SOURCES ${module_src})
+add_python_extension(_distutils_findvs REQUIRES WIN32 HAS_DISTUTILS_FINDVS_MODULE_SRC SOURCES ${module_src})
 
 # Multiprocessing is different on unix and windows
 if(UNIX)
@@ -422,8 +415,6 @@ endif()
 endif()
 
 # Python3: _decimal
-if(IS_PY3)
-
 set(libmpdec_config_x64          CONFIG_64 ASM)
 set(libmpdec_config_uint128      CONFIG_64 ANSI HAVE_UINT128_T)
 set(libmpdec_config_ansi64       CONFIG_64 ANSI)
@@ -550,8 +541,6 @@ if(_decimal_compile_flags AND ENABLE_DECIMAL AND TARGET extension_decimal AND NO
     set_target_properties(extension_decimal PROPERTIES COMPILE_FLAGS ${_decimal_compile_flags})
 endif()
 
-endif()
-
 # Build expat using the system expat if it's installed, otherwise use the
 # builtin version.
 if(EXPAT_LIBRARIES AND EXPAT_INCLUDE_DIRS)
@@ -653,11 +642,7 @@ add_python_extension(_curses
 )
 set(dbm2_SOURCES dbmmodule.c)
 set(dbm3_SOURCES _dbmmodule.c)
-if(IS_PY3)
   set(dbm_name _dbm)
-else()
-  set(dbm_name dbm)
-endif()
 add_python_extension(${dbm_name}
     REQUIRES NDBM_TAG GDBM_LIBRARY GDBM_COMPAT_LIBRARY
     SOURCES ${dbm${PY_VERSION_MAJOR}_SOURCES}
@@ -667,11 +652,7 @@ add_python_extension(${dbm_name}
 )
 set(gdbm2_SOURCES gdbmmodule.c)
 set(gdbm3_SOURCES _gdbmmodule.c)
-if(IS_PY3)
   set(gdbm_name _gdbm)
-else()
-  set(gdbm_name gdbm)
-endif()
 add_python_extension(${gdbm_name}
     REQUIRES GDBM_INCLUDE_PATH GDBM_LIBRARY GDBM_COMPAT_LIBRARY
     SOURCES ${gdbm${PY_VERSION_MAJOR}_SOURCES}
@@ -690,7 +671,7 @@ if(ENABLE_HASHLIB AND CMAKE_C_COMPILER_ID MATCHES GNU)
 endif()
 # lzma module was introduced in Python 3.3
 set(is_py33_or_greater 0)
-if(IS_PY3 AND PY_VERSION_MINOR VERSION_GREATER 2)
+if(PY_VERSION_MINOR VERSION_GREATER 2)
   set(is_py33_or_greater 1)
 endif()
 add_python_extension(_lzma
