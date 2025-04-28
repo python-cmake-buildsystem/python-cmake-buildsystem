@@ -21,13 +21,11 @@ add_python_extension(_codecs_jp ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_jp.c)
 add_python_extension(_codecs_kr ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_kr.c)
 add_python_extension(_codecs_tw ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_tw.c)
 add_python_extension(_collections ${WIN32_BUILTIN} ${PY3_BUILTIN} SOURCES _collectionsmodule.c) # Container types
-add_python_extension(cPickle ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES cPickle.c)
 set(crypt2_NAME crypt)
 set(crypt2_SOURCES cryptmodule.c)
 set(crypt3_NAME _crypt)
 set(crypt3_SOURCES _cryptmodule.c)
 add_python_extension(${crypt${PY_VERSION_MAJOR}_NAME} REQUIRES HAVE_LIBCRYPT SOURCES ${crypt${PY_VERSION_MAJOR}_SOURCES} LIBRARIES ${HAVE_LIBCRYPT})
-add_python_extension(cStringIO ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES cStringIO.c)
 add_python_extension(_csv ${WIN32_BUILTIN} SOURCES _csv.c)
 add_python_extension(_ctypes_test NEVER_BUILTIN REQUIRES HAVE_LIBM SOURCES _ctypes/_ctypes_test.c LIBRARIES ${M_LIBRARIES})
 set(datetime2_NAME datetime)
@@ -44,9 +42,7 @@ add_python_extension(${datetime${PY_VERSION_MAJOR}_NAME} ${WIN32_BUILTIN} REQUIR
 #    set_property(SOURCE ${SRC_DIR}/Modules/datetimemodule.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
 #endif()
 add_python_extension(_functools ${WIN32_BUILTIN} ${PY3_BUILTIN} SOURCES _functoolsmodule.c DEFINITIONS Py_BUILD_CORE) # Tools for working with functions and callable objects
-add_python_extension(future_builtins ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES future_builtins.c)
 add_python_extension(_heapq ${WIN32_BUILTIN} SOURCES _heapqmodule.c)
-add_python_extension(_hotshot ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES _hotshot.c)
 
 set(_io_SOURCES
     _io/_iomodule.c
@@ -71,10 +67,8 @@ add_python_extension(_lsprof ${WIN32_BUILTIN} SOURCES _lsprof.c rotatingtree.c)
 add_python_extension(math ${WIN32_BUILTIN} REQUIRES HAVE_LIBM SOURCES _math.c mathmodule.c LIBRARIES ${M_LIBRARIES})
 add_python_extension(mmap ${WIN32_BUILTIN} SOURCES mmapmodule.c)
 add_python_extension(_multibytecodec ${WIN32_BUILTIN} SOURCES cjkcodecs/multibytecodec.c)
-add_python_extension(operator ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES operator.c)
 add_python_extension(parser ${WIN32_BUILTIN} SOURCES parsermodule.c)
 add_python_extension(_random ${WIN32_BUILTIN} SOURCES _randommodule.c)
-add_python_extension(strop ${WIN32_BUILTIN} REQUIRES IS_PY2 SOURCES stropmodule.c)
 add_python_extension(_struct ${WIN32_BUILTIN} SOURCES _struct.c)
 add_python_extension(_testcapi NEVER_BUILTIN SOURCES _testcapimodule.c)
 set(thread2_NAME thread)
@@ -207,7 +201,6 @@ add_python_extension(_scproxy
 )
 
 # Linux-only extensions
-add_python_extension(linuxaudiodev REQUIRES LINUX IS_PY2 SOURCES linuxaudiodev.c)
 add_python_extension(ossaudiodev REQUIRES LINUX SOURCES ossaudiodev.c)
 
 # Python 3.8: UNIX-only extensions
@@ -227,7 +220,6 @@ add_python_extension(_msi
 )
 add_python_extension(msvcrt REQUIRES MSVC BUILTIN SOURCES ${SRC_DIR}/PC/msvcrtmodule.c)
 add_python_extension(nt REQUIRES WIN32 ALWAYS_BUILTIN SOURCES posixmodule.c)
-add_python_extension(_subprocess REQUIRES WIN32 IS_PY2 BUILTIN SOURCES ${SRC_DIR}/PC/_subprocess.c)
 
 set(winreg2_NAME _winreg)
 set(winreg3_NAME winreg)
@@ -302,9 +294,6 @@ if(WIN32)
         LIBRARIES ws2_32 ${M_LIBRARIES} $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:iphlpapi>
     )
 else()
-    if(PY_VERSION VERSION_GREATER_EQUAL "2.7.4" AND PY_VERSION VERSION_LESS "3")
-    list(APPEND _socket_SOURCES timemodule.c)
-    endif()
     add_python_extension(_socket
         REQUIRES HAVE_LIBM
         SOURCES ${_socket_SOURCES}
@@ -611,21 +600,6 @@ else()
     )
 endif()
 
-if(IS_PY2)
-
-# If openssl is NOT available then build some other hash implementations on UNIX
-set(HASH_NOT_AVAILABLE ON)
-if(NOT WIN32 AND OPENSSL_LIBRARIES)
-  set(HASH_NOT_AVAILABLE OFF)
-endif()
-
-add_python_extension(_md5 REQUIRES HASH_NOT_AVAILABLE ${WIN32_BUILTIN} SOURCES md5.c md5module.c)
-add_python_extension(_sha REQUIRES HASH_NOT_AVAILABLE ${WIN32_BUILTIN} SOURCES shamodule.c)
-add_python_extension(_sha256 REQUIRES HASH_NOT_AVAILABLE ${WIN32_BUILTIN} SOURCES sha256module.c)
-add_python_extension(_sha512 REQUIRES HASH_NOT_AVAILABLE ${WIN32_BUILTIN} SOURCES sha512module.c)
-
-else()
-
 # We always compile these even when OpenSSL is available (issue #14693).
 # It's harmless and the object code is tiny (40-50 KB per module,
 # only loaded when actually used).
@@ -633,9 +607,6 @@ add_python_extension(_md5 ${WIN32_BUILTIN} SOURCES md5module.c)
 add_python_extension(_sha1 ${WIN32_BUILTIN} SOURCES sha1module.c)
 add_python_extension(_sha256 ${WIN32_BUILTIN} SOURCES sha256module.c)
 add_python_extension(_sha512 ${WIN32_BUILTIN} SOURCES sha512module.c)
-
-endif()
-
 
 # Extensions that depend on other libraries
 set(binascii_REQUIRES "")
@@ -655,12 +626,6 @@ add_python_extension(binascii
     DEFINITIONS ${binascii_DEFINITIONS}
     LIBRARIES ${binascii_LIBRARIES}
     INCLUDEDIRS ${binascii_INCLUDEDIRS}
-)
-add_python_extension(_bsddb
-    REQUIRES IS_PY2 DB_INCLUDE_PATH DB_LIBRARY
-    SOURCES _bsddb.c
-    LIBRARIES ${DB_LIBRARIES}
-    INCLUDEDIRS ${DB_INCLUDE_PATH}
 )
 set(bz2_2_NAME bz2)
 set(bz2_3_NAME _bz2)

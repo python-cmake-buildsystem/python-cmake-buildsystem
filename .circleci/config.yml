@@ -130,17 +130,6 @@ workflows:
             python_version: 3.6.15
             python_arch: x86
 
-        # 2.7.18
-        - build-test-python:
-            name: python-2.7.18-x64
-            python_version: 2.7.18
-            python_arch: x64
-
-        - build-test-python:
-            name: python-2.7.18-x86
-            python_version: 2.7.18
-            python_arch: x86
-
 
     build-and-test-win:
       jobs:
