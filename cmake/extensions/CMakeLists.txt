@@ -546,7 +546,7 @@ add_python_extension(_decimal
     ${_decimal_LIBRARIES}
     ${_decimal_INCLUDEDIRS}
 )
-if(_decimal_compile_flags AND ENABLE_DECIMAL AND NOT BUILTIN_DECIMAL)
+if(_decimal_compile_flags AND ENABLE_DECIMAL AND TARGET extension_decimal AND NOT BUILTIN_DECIMAL)
     set_target_properties(extension_decimal PROPERTIES COMPILE_FLAGS ${_decimal_compile_flags})
 endif()
 
@@ -780,7 +780,7 @@ else()
     )
 endif()
 
-if(USE_LIBEDIT AND ENABLE_READLINE AND NOT BUILTIN_READLINE)
+if(USE_LIBEDIT AND ENABLE_READLINE AND TARGET extension_readline AND NOT BUILTIN_READLINE)
     set_target_properties(extension_readline PROPERTIES
         COMPILE_DEFINITIONS "USE_LIBEDIT")
 endif()
