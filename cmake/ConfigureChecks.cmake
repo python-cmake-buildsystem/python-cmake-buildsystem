@@ -357,9 +357,6 @@ check_include_files(sys/utsname.h HAVE_SYS_UTSNAME_H)
 check_include_files(sys/wait.h HAVE_SYS_WAIT_H)
 check_include_files(termios.h HAVE_TERMIOS_H)
 check_include_files(term.h HAVE_TERM_H)
-if(IS_PY2)
-check_include_files(thread.h HAVE_THREAD_H)
-endif()
 check_include_files(unistd.h HAVE_UNISTD_H) # libffi and cpython
 check_include_files(util.h HAVE_UTIL_H)
 check_include_files(utime.h HAVE_UTIME_H)
@@ -654,13 +651,8 @@ endif()
 if(define_xopen_source)
   message(STATUS "Checking for XOPEN_SOURCE - yes")
   set_required_def(_XOPEN_SOURCE_EXTENDED 1) # Define to activate Unix95-and-earlier features
-  if(IS_PY2)
-    set_required_def(_XOPEN_SOURCE 600)        # Define to the level of X/Open that your system supports
-    set_required_def(_POSIX_C_SOURCE 200112L)  # Define to activate features from IEEE Stds 1003.1-2001
-  else()
     set_required_def(_XOPEN_SOURCE 700)        # Define to the level of X/Open that your system supports
     set_required_def(_POSIX_C_SOURCE 200809L)  # Define to activate features from IEEE Stds 1003.1-2008
-  endif()
 else()
   message(STATUS "Checking for XOPEN_SOURCE - no")
 endif()
@@ -840,9 +832,6 @@ check_symbol_exists(ftell64      "${CFG_HEADERS}" HAVE_FTELL64)
 check_symbol_exists(ftello       "${CFG_HEADERS}" HAVE_FTELLO)
 check_symbol_exists(ftime        "${CFG_HEADERS}" HAVE_FTIME)
 check_symbol_exists(ftruncate    "${CFG_HEADERS}" HAVE_FTRUNCATE)
-if(IS_PY2)
-check_symbol_exists(getcwd       "${CFG_HEADERS}" HAVE_GETCWD)
-endif()
 check_symbol_exists(getc_unlocked   "${CFG_HEADERS}" HAVE_GETC_UNLOCKED)
 check_symbol_exists(getgroups       "${CFG_HEADERS}" HAVE_GETGROUPS)
 check_symbol_exists(getitimer    "${CFG_HEADERS}" HAVE_GETITIMER)
@@ -1680,53 +1669,6 @@ python_platform_test(
 #ucs2
 set(HAVE_USABLE_WCHAR_T 0)
 
-if(IS_PY2)
-
-if(Py_USING_UNICODE AND NOT DEFINED Py_UNICODE_SIZE)
-  if(HAVE_UCS4_TCL)
-    message(STATUS "Defaulting Py_UNICODE_SIZE to 4 because HAVE_UCS4_TCL is set")
-    set(Py_UNICODE_SIZE 4)
-  else()
-    # Py_UNICODE defaults to two-byte mode
-    set(Py_UNICODE_SIZE 2)
-  endif()
-endif()
-
-if("${Py_UNICODE_SIZE}" STREQUAL "${SIZEOF_WCHAR_T}")
-  set(PY_UNICODE_TYPE wchar_t)
-  set(HAVE_USABLE_WCHAR_T 1)
-  message(STATUS "Using wchar_t for unicode [Py_UNICODE_SIZE: ${Py_UNICODE_SIZE}]")
-else()
-
-  if("${Py_UNICODE_SIZE}" STREQUAL "${SIZEOF_SHORT}")
-    set(PY_UNICODE_TYPE "unsigned short")
-    set(HAVE_USABLE_WCHAR_T 0)
-    message(STATUS "Using unsigned short for unicode [Py_UNICODE_SIZE: ${Py_UNICODE_SIZE}]")
-  else()
-
-    if("${Py_UNICODE_SIZE}" STREQUAL "${SIZEOF_LONG}")
-      set(PY_UNICODE_TYPE "unsigned long")
-      set(HAVE_USABLE_WCHAR_T 0)
-      message(STATUS "Using unsigned long for unicode [Py_UNICODE_SIZE: ${Py_UNICODE_SIZE}]")
-    else()
-
-      if(Py_USING_UNICODE)
-        message(SEND_ERROR "No usable unicode type found for [Py_UNICODE_SIZE: ${Py_UNICODE_SIZE}]
-Two paths forward:
-(1) set Py_UNICODE_SIZE to either ${SIZEOF_WCHAR_T}, ${SIZEOF_SHORT} or ${SIZEOF_LONG}
-(2) disable Py_USING_UNICODE option")
-      else()
-        message(STATUS "No usable unicode type found [Py_USING_UNICODE: ${Py_USING_UNICODE}]")
-      endif()
-
-    endif()
-
-  endif()
-
-endif()
-
-endif()
-
 if(PY_VERSION VERSION_GREATER_EQUAL "3.7")
 set(PY_COERCE_C_LOCALE ${WITH_C_LOCALE_COERCION})
 endif()
@@ -1896,15 +1838,6 @@ cmake_pop_check_state()
 #######################################################################
 cmake_push_check_state()
 set(CFG_HEADERS_SAVE ${CFG_HEADERS})
-
-if(IS_PY2)
-set(ATHEOS_THREADS 0)
-set(BEOS_THREADS 0)
-set(C_THREADS 0)
-set(HURD_C_THREADS 0)
-set(MACH_C_THREADS 0)
-set(HAVE_PTH 0) # GNU PTH threads
-endif()
 
 set(HAVE_PTHREAD_DESTRUCTOR 0) # for Solaris 2.6
 add_cond(CFG_HEADERS  HAVE_PTHREAD_H  pthread.h)
@@ -2316,13 +2249,6 @@ endif()
 # tests for bugs and other stuff
 #
 #######################################################################
-
-if(IS_PY2)
-check_c_source_compiles("
-        void f(char*,...)__attribute((format(PyArg_ParseTuple, 1, 2))) {};
-        int main() {f(NULL);} "
-        HAVE_ATTRIBUTE_FORMAT_PARSETUPLE)
-endif()
 
 check_c_source_compiles("#include <unistd.h>\n int main() {getpgrp(0);}" GETPGRP_HAVE_ARG)
 
