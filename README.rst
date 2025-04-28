@@ -280,8 +280,10 @@ the PSF will require you to license code under "Academic Free License" or
 Which python versions are supported?
 ....................................
 
-This project supports building multiple versions of CPython 2.7 and CPython 3.
+This project supports building multiple versions of CPython 3.
 See current list of supported version in top-level `CMakeLists.txt <https://github.com/python-cmake-buildsystem/python-cmake-buildsystem/blob/master/CMakeLists.txt>`_.
+
+Support for building CPython 2.7 was retired in April 2025. Archived version associated with tag [v2.7](https://github.com/python-cmake-buildsystem/python-cmake-buildsystem/releases/tag/v2.7).
 
 Since this repository is maintained separately from `python/CPython <https://github.com/python/cpython>`_ itself,
 it needs to be manually updated whenever there is a new release of Python.
