@@ -134,16 +134,7 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
                                  NT extensions which are builtin by default)
     These two options control how individual python extensions are built.
     <extension> is the name of the extension in upper case, and without any
-    leading underscore (_).  Known extensions for 2.7.12 include:
-
-      ARRAY AUDIOOP BINASCII BISECT BSDDB BZ2 CMATH CODECS_CN CODECS_HK
-      CODECS_ISO2022 CODECS_JP CODECS_KR CODECS_TW COLLECTIONS CPICKLE CRYPT
-      CSTRINGIO CSV CTYPES CTYPES_TEST CURSES CURSES_PANEL DATETIME DBM
-      ELEMENTTREE FCNTL FUNCTOOLS FUTURE_BUILTINS GDBM GRP HASHLIB HEAPQ
-      HOTSHOT IO ITERTOOLS JSON LINUXAUDIODEV LOCALE LSPROF LZMA MATH MMAP
-      MULTIBYTECODEC MULTIPROCESSING NIS NT OPERATOR OSSAUDIODEV PARSER POSIX
-      PWD PYEXPAT RANDOM READLINE RESOURCE SELECT SOCKET SPWD SQLITE3 SSL
-      STROP STRUCT SYSLOG TERMIOS TESTCAPI TIME TKINTER UNICODEDATA ZLIB
+    leading underscore (_).
 
     All extensions are enabled by default, but some might depend on system
     libraries and will get disabled if they're not available (a list of
@@ -151,15 +142,15 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
     printed when you run cmake).
 
     By default extensions are compiled as separate shared libraries (.so or
-    .dll files) and installed in lib/python2.7/lib-dynload.  If you set
+    .dll files) and installed in lib/pythonX.Y/lib-dynload.  If you set
     BUILTIN_<extension> to ON then the extension is compiled into libpython
     instead.
 
   USE_LIB64=ON|OFF              (defaults to OFF)
     If this is set to ON then cmake will look for dependencies in lib64 as
     well as lib directories.  Compiled python extensions will also be
-    installed into lib64/python2.7/lib-dynload instead of
-    lib/python2.7/lib-dynload.
+    installed into lib64/pythonX.Y/lib-dynload instead of
+    lib/pythonX.Y/lib-dynload.
 
   Py_USING_UNICODE             (only for python2, defaults to ON)
     Enable unicode support. By default, ucs2 is used. It can be
