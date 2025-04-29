@@ -17,6 +17,12 @@
    support for AIX C++ shared extension modules. */
 #cmakedefine AIX_GENUINE_CPLUSPLUS 1
 
+/* The normal alignment of `long', in bytes. [Python 3.10] */
+#cmakedefine ALIGNOF_LONG @SIZEOF_LONG@
+
+/* The normal alignment of `size_t', in bytes. [Python 3.10] */
+#cmakedefine ALIGNOF_SIZE_T @SIZEOF_SIZE_T@
+
 /* Alternative SOABI used in debug build to load C extensions built in release
    mode [Python 3.8] */
 #cmakedefine ALT_SOABI 1
@@ -143,6 +149,9 @@
 
 /* Define to 1 if you have the `clock_settime' function. [Python 3.6] */
 #cmakedefine HAVE_CLOCK_SETTIME 1
+
+/* Define to 1 if you have the `close_range' function. [Python 3.10] */
+#cmakedefine HAVE_CLOSE_RANGE 1
 
 /* Define if the C compiler supports computed gotos. */
 #cmakedefine HAVE_COMPUTED_GOTOS 1
@@ -312,6 +321,9 @@
 
 /* Define to 1 if you have the <errno.h> header file. */
 #cmakedefine HAVE_ERRNO_H 1
+
+/* Define if you have the 'eventfd' function. [Python 3.10] */
+#cmakedefine HAVE_EVENTFD 1
 
 /* Define to 1 if you have the `execv' function. */
 #cmakedefine HAVE_EXECV 1
@@ -638,6 +650,9 @@
 
 /* Define to 1 if you have the `linkat' function. [Python 3] */
 #cmakedefine HAVE_LINKAT 1
+
+/* Define to 1 if you have the <linux/auxvec.h> header file. [Python 3.10] */
+#cmakedefine HAVE_LINUX_AUXVEC_H 1
 
 /* Define to 1 if you have the <linux/can/bcm.h> header file. [Python 3] */
 #cmakedefine HAVE_LINUX_CAN_BCM_H 1
@@ -1066,6 +1081,9 @@
 /* Define to 1 if you have the <spawn.h> header file. */
 #cmakedefine HAVE_SPAWN_H 1
 
+/* Define to 1 if you have the `splice' function. [Python 3.10] */
+#cmakedefine HAVE_SPLICE 1
+
 /* Define if your compiler provides ssize_t */
 #cmakedefine HAVE_SSIZE_T 1
 
@@ -1161,6 +1179,9 @@
 /* Define to 1 if you have the <sys/audioio.h> header file. */
 #cmakedefine HAVE_SYS_AUDIOIO_H 1
 
+/* Define to 1 if you have the <sys/auxv.h> header file. [Python 3.10] */
+#cmakedefine HAVE_SYS_AUXV_H 1
+
 /* Define to 1 if you have the <sys/bsdtty.h> header file. */
 #cmakedefine HAVE_SYS_BSDTTY_H 1
 
@@ -1176,6 +1197,9 @@
 
 /* Define to 1 if you have the <sys/epoll.h> header file. */
 #cmakedefine HAVE_SYS_EPOLL_H 1
+
+/* Define to 1 if you have the <sys/eventfd.h> header file. [Python 3.10] */
+#cmakedefine HAVE_SYS_EVENTFD_H 1
 
 /* Define to 1 if you have the <sys/event.h> header file. */
 #cmakedefine HAVE_SYS_EVENT_H 1
@@ -1373,6 +1397,9 @@
 
 /* Define to 1 if you have the <uuid/uuid.h> header file. [Python 3.7] */
 #cmakedefine HAVE_UUID_UUID_H 1
+
+/* Define to 1 if you have the `vfork' function. [Python 3.10] */
+#cmakedefine HAVE_VFORK 1
 
 /* Define to 1 if you have the `wait3' function. */
 #cmakedefine HAVE_WAIT3 1
@@ -1639,6 +1666,9 @@
    Dyld is necessary to support frameworks. */
 #cmakedefine WITH_DYLD 1
 
+/* Define to build the readline module against Editline. [Python 3.10] */
+#cmakedefine WITH_EDITLINE 1
+
 /* Define to 1 if libintl is needed for locale functions. */
 #cmakedefine WITH_LIBINTL 1
 
@@ -1648,6 +1678,9 @@
 
 /* Define if you want to compile in Python-specific mallocs */
 #cmakedefine WITH_PYMALLOC 1
+
+/* Define if you want pymalloc to be disabled when running under valgrind [Python 3.10] */
+#cmakedefine WITH_VALGRIND 1
 
 /* Define if you want to compile in rudimentary thread support */
 #cmakedefine WITH_THREAD 1
@@ -1813,6 +1846,8 @@
 #endif
 
 #define PLATLIBDIR "lib"
+
+#cmakedefine DYNAMIC_ANNOTATIONS_ENABLED 1
 
 #endif /*Py_PYCONFIG_H*/
 

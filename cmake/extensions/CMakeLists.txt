@@ -8,6 +8,10 @@ set(IS_PY_LESS_3_8 0)
 if(PY_VERSION VERSION_LESS "3.8")
     set(IS_PY_LESS_3_8 1)
 endif()
+set(IS_PY_LESS_3_10 0)
+if(PY_VERSION VERSION_LESS "3.10")
+    set(IS_PY_LESS_3_10 1)
+endif()
 
 set(IS_PY3_3_OR_GREATER 0)
 if(PY_VERSION VERSION_GREATER_EQUAL "3.3")
@@ -128,6 +132,8 @@ add_python_extension(math ${WIN32_BUILTIN}
 add_python_extension(mmap ${WIN32_BUILTIN} SOURCES mmapmodule.c)
 add_python_extension(_multibytecodec ${WIN32_BUILTIN} SOURCES cjkcodecs/multibytecodec.c)
 add_python_extension(parser ${WIN32_BUILTIN}
+    REQUIRES
+        IS_PY_LESS_3_10
     SOURCES
         parsermodule.c
 )
@@ -332,8 +338,25 @@ add_python_extension(_testinternalcapi
 add_python_extension(_peg_parser ALWAYS_BUILTIN
     REQUIRES
         IS_PY3_9_OR_GREATER
+        IS_PY_LESS_3_10
     SOURCES
         _peg_parser.c
+)
+
+# Python Argument Clinic functional test module
+add_python_extension(_testclinic
+    REQUIRES
+        "PY_VERSION VERSION_GREATER_EQUAL 3.10.10"
+    SOURCES
+        _testclinic.c
+)
+
+# Python interface to subinterpreter C-API.
+add_python_extension(_xxsubinterpreters ${WIN32_BUILTIN}
+    REQUIRES
+        IS_PY3_8_OR_GREATER
+    SOURCES
+        _xxsubinterpretersmodule.c
 )
 
 # UNIX-only extensions
@@ -924,7 +947,9 @@ add_python_extension(_lzma
 )
 set(readline_DEFINITIONS "")
 if(USE_LIBEDIT)
-  list(APPEND readline_DEFINITIONS USE_LIBEDIT)
+  if(PY_VERSION VERSION_GREATER_EQUAL "3.10")
+    list(APPEND readline_DEFINITIONS WITH_EDITLINE)
+  endif()
 endif()
 add_python_extension(readline
     REQUIRES READLINE_INCLUDE_PATH READLINE_LIBRARY CURSES_LIBRARIES HAVE_READLINE_READLINE_H

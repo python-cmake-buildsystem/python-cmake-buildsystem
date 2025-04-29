@@ -66,10 +66,6 @@ elseif(WIN32)
 endif()
 
 set(PARSER_COMMON_SOURCES # Equivalent to POBJS in Makefile.pre
-    ${SRC_DIR}/Parser/acceler.c
-    ${SRC_DIR}/Parser/grammar1.c
-    ${SRC_DIR}/Parser/listnode.c
-    ${SRC_DIR}/Parser/node.c
     ${SRC_DIR}/Parser/parser.c
 
     # Removed in Python 3.8
@@ -81,15 +77,28 @@ set(PARSER_COMMON_SOURCES # Equivalent to POBJS in Makefile.pre
 
     # Introduced in Python 3.8
     $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:${SRC_DIR}/Parser/myreadline.c>
-    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:${SRC_DIR}/Parser/parsetok.c>
     $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:${SRC_DIR}/Parser/token.c>
     $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:${SRC_DIR}/Parser/tokenizer.c>
 
-    # Introduced in Python 3.9
-    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>:${SRC_DIR}/Parser/pegen/pegen.c>
-    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>:${SRC_DIR}/Parser/pegen/parse.c>
-    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>:${SRC_DIR}/Parser/pegen/parse_string.c>
-    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>:${SRC_DIR}/Parser/pegen/peg_api.c>
+    # Introduced in Python 3.8 and removed in Python 3.10
+    $<$<AND:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>,$<VERSION_LESS:${PY_VERSION},3.10>>:${SRC_DIR}/Parser/parsetok.c>
+
+    # Introduced in Python 3.9 and removed in Python 3.10
+    $<$<VERSION_EQUAL:${PY_VERSION_MAJOR}.${PY_VERSION_MINOR},3.9>:${SRC_DIR}/Parser/pegen/pegen.c>
+    $<$<VERSION_EQUAL:${PY_VERSION_MAJOR}.${PY_VERSION_MINOR},3.9>:${SRC_DIR}/Parser/pegen/parse.c>
+    $<$<VERSION_EQUAL:${PY_VERSION_MAJOR}.${PY_VERSION_MINOR},3.9>:${SRC_DIR}/Parser/pegen/parse_string.c>
+    $<$<VERSION_EQUAL:${PY_VERSION_MAJOR}.${PY_VERSION_MINOR},3.9>:${SRC_DIR}/Parser/pegen/peg_api.c>
+
+    # Removed in Python 3.10
+    $<$<VERSION_LESS:${PY_VERSION},3.10>:${SRC_DIR}/Parser/acceler.c>
+    $<$<VERSION_LESS:${PY_VERSION},3.10>:${SRC_DIR}/Parser/grammar1.c>
+    $<$<VERSION_LESS:${PY_VERSION},3.10>:${SRC_DIR}/Parser/listnode.c>
+    $<$<VERSION_LESS:${PY_VERSION},3.10>:${SRC_DIR}/Parser/node.c>
+
+    # Introduced in Python 3.10
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.10>:${SRC_DIR}/Parser/peg_api.c>
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.10>:${SRC_DIR}/Parser/pegen.c>
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.10>:${SRC_DIR}/Parser/string_parser.c>
 )
 
 set(OBJECT_COMMON_SOURCES # Equivalent to OBJECT_OBJS in Makefile.pre
@@ -147,6 +156,9 @@ set(OBJECT_COMMON_SOURCES # Equivalent to OBJECT_OBJS in Makefile.pre
 
     # Introduced in Python 3.9
     $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>:${SRC_DIR}/Objects/genericaliasobject.c>
+
+    # Introduced in Python 3.10
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.10>:${SRC_DIR}/Objects/unionobject.c>
 )
 
 if(CMAKE_C_COMPILER_ID MATCHES GNU)
@@ -206,14 +218,12 @@ set(PYTHON_COMMON_SOURCES
     ${SRC_DIR}/Python/getopt.c
     ${SRC_DIR}/Python/getplatform.c
     ${SRC_DIR}/Python/getversion.c
-    ${SRC_DIR}/Python/graminit.c
     ${SRC_DIR}/Python/import.c
     ${SRC_DIR}/Python/importdl.c
     ${SRC_DIR}/Python/marshal.c
     ${SRC_DIR}/Python/modsupport.c
     ${SRC_DIR}/Python/mysnprintf.c
     ${SRC_DIR}/Python/mystrtoul.c
-    ${SRC_DIR}/Python/peephole.c
     ${SRC_DIR}/Python/pyarena.c
     ${SRC_DIR}/Python/pyctype.c
     ${SRC_DIR}/Python/pyfpe.c
@@ -250,6 +260,13 @@ set(PYTHON_COMMON_SOURCES
     # Introduced in Python 3.8
     $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:${SRC_DIR}/Python/initconfig.c>
     $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:${SRC_DIR}/Python/preconfig.c>
+
+    # Removed in Python 3.10
+    $<$<VERSION_LESS:${PY_VERSION},3.10>:${SRC_DIR}/Python/graminit.c>
+    $<$<VERSION_LESS:${PY_VERSION},3.10>:${SRC_DIR}/Python/peephole.c>
+
+    # Introduced in Python 3.10
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.10>:${SRC_DIR}/Python/suggestions.c>
 )
 
 if(UNIX)
@@ -272,6 +289,15 @@ if(UNIX OR MINGW)
         SOURCE ${SRC_DIR}/Python/sysmodule.c
         PROPERTY COMPILE_DEFINITIONS
             ABIFLAGS="${ABIFLAGS}"
+        )
+endif()
+
+# Introduced in Python 3.10 and removed in Python 3.11
+if(WIN32 AND "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}" VERSION_EQUAL "3.10")
+    set_property(
+        SOURCE ${SRC_DIR}/Python/pathconfig.c
+        PROPERTY COMPILE_DEFINITIONS
+            "PY3_DLLNAME=\"python3$<$<CONFIG:Debug>:_d>\""
         )
 endif()
 
@@ -528,7 +554,7 @@ if(BUILD_LIBPYTHON_SHARED)
 
     set(targetname "libpython3-shared")
 
-    if(MSVC)
+    if(MSVC AND PY_VERSION VERSION_LESS "3.10")
         # XXX Add BuildPython3_dDef
 
         # Generate 'python3stub.def'
@@ -559,11 +585,15 @@ if(BUILD_LIBPYTHON_SHARED)
             VERBATIM
         )
         add_custom_target(generate_libpython3stub_lib DEPENDS ${python3stub_lib})
+    endif()
 
+    if(MSVC)
         # Build 'python3.dll'
         add_library(${targetname} SHARED
             ${SRC_DIR}/PC/python3dll.c
-            ${SRC_DIR}/PC/python3.def
+
+            # Removed in Python 3.10
+            $<$<VERSION_LESS:${PY_VERSION},3.10>:${SRC_DIR}/PC/python3.def>
         )
         set_target_properties(${targetname} PROPERTIES
             OUTPUT_NAME python3
@@ -571,11 +601,24 @@ if(BUILD_LIBPYTHON_SHARED)
             RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR}
             INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/${LIBPYTHON_LIBDIR}
         )
-        add_dependencies(${targetname} generate_libpython3stub_lib)
+        if(PY_VERSION VERSION_LESS "3.10")
+            add_dependencies(${targetname} generate_libpython3stub_lib)
+        endif()
 
         target_link_libraries(${targetname}
-            ${python3stub_lib}
+            libpython-shared
+
+            # Removed in Python 3.10
+            $<$<VERSION_LESS:${PY_VERSION},3.10>:${python3stub_lib}>
         )
+
+        if(PY_VERSION VERSION_GREATER_EQUAL "3.10")
+            set_property(
+                SOURCE ${SRC_DIR}/PC/python3dll.c
+                PROPERTY COMPILE_DEFINITIONS
+                    "PYTHON_DLL_NAME=\"python${PY_VERSION_MAJOR}${PY_VERSION_MINOR}$<$<CONFIG:Debug>:_d>\""
+                )
+        endif()
     endif()
 
     if(UNIX AND NOT APPLE)
