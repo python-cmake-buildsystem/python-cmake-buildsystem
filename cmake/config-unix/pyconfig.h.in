@@ -24,15 +24,6 @@
 /* The Android API level. [Python 3.7] */
 #cmakedefine ANDROID_API_LEVEL 1
 
-/* Define this if you have AtheOS threads. [Python 2.7] */
-#cmakedefine ATHEOS_THREADS 1
-
-/* Define this if you have BeOS threads. [Python 2.7] */
-#cmakedefine BEOS_THREADS 1
-
-/* Define if you have the Mach cthreads package [Python 2.7] */
-#cmakedefine C_THREADS 1
-
 /* Define if C doubles are 64-bit IEEE 754 binary format, stored in ARM
    mixed-endian order (byte order 45670123) */
 #cmakedefine DOUBLE_IS_ARM_MIXED_ENDIAN_IEEE754 1
@@ -91,9 +82,6 @@
 
 /* Define to 1 if you have the `atanh' function. */
 #cmakedefine HAVE_ATANH 1
-
-/* Define if GCC supports __attribute__((format(PyArg_ParseTuple, 2, 3))) [Python 2.7] */
-#cmakedefine HAVE_ATTRIBUTE_FORMAT_PARSETUPLE 1
 
 /* Define to 1 if you have the `bind_textdomain_codeset' function. */
 #cmakedefine HAVE_BIND_TEXTDOMAIN_CODESET 1
@@ -442,9 +430,6 @@
 
 /* Define if you have the getaddrinfo function. */
 #cmakedefine HAVE_GETADDRINFO 1
-
-/* Define to 1 if you have the `getcwd' function. [Python 2.7] */
-#cmakedefine HAVE_GETCWD 1
 
 /* Define this if you have flockfile(), getc_unlocked(), and funlockfile() */
 #cmakedefine HAVE_GETC_UNLOCKED 1
@@ -837,9 +822,6 @@
 
 /* Define if your compiler supports function prototype */
 #cmakedefine HAVE_PROTOTYPES 1
-
-/* Define if you have GNU PTH threads. [Python 2.7] */
-#cmakedefine HAVE_PTH 1
 
 /* Define to 1 if you have the `pthread_atfork' function. */
 #cmakedefine HAVE_PTHREAD_ATFORK 1
@@ -1310,9 +1292,6 @@
 /* Define to 1 if you have the `tgamma' function. */
 #cmakedefine HAVE_TGAMMA 1
 
-/* Define to 1 if you have the <thread.h> header file. [Python 2.7] */
-#cmakedefine HAVE_THREAD_H 1
-
 /* Define to 1 if you have the `timegm' function. */
 #cmakedefine HAVE_TIMEGM 1
 
@@ -1438,12 +1417,6 @@
 /* Define to 1 if you have the `_getpty' function. */
 #cmakedefine HAVE__GETPTY 1
 
-/* Define if you are using Mach cthreads directly under /include [Python 2.7] */
-#cmakedefine HURD_C_THREADS 1
-
-/* Define if you are using Mach cthreads under mach / [Python 2.7] */
-#cmakedefine MACH_C_THREADS 1
-
 /* Define if log1p(-0.) is 0. rather than -0. [Python 3] */
 #cmakedefine LOG1P_DROPS_ZERO_SIGN 1
 
@@ -1504,20 +1477,11 @@
 /* Cipher suite string for PY_SSL_DEFAULT_CIPHERS=0 [Python 3.7] */
 #cmakedefine PY_SSL_DEFAULT_CIPHER_STRING "@PY_SSL_DEFAULT_CIPHER_STRING@"
 
-/* Define as the integral type used for Unicode representation. [Python 2.7] */
-#cmakedefine PY_UNICODE_TYPE @PY_UNICODE_TYPE@
-
 /* Define if you want to build an interpreter with many run-time checks. */
 #cmakedefine Py_DEBUG 1
 
 /* Defined if Python is built as a shared library. */
 #cmakedefine Py_ENABLE_SHARED
-
-/* Define as the size of the unicode type. [Python 2.7] */
-#cmakedefine Py_UNICODE_SIZE @Py_UNICODE_SIZE@
-
-/* Define if you want to have a Unicode type. [Python 2.7] */
-#cmakedefine Py_USING_UNICODE 1
 
 /* assume C89 semantics that RETSIGTYPE is always void */
 #define RETSIGTYPE void
@@ -1640,10 +1604,6 @@
 #ifndef __EXTENSIONS__
 #cmakedefine __EXTENSIONS__ 1
 #endif
-
-
-/* Define if you want to use MacPython modules on MacOSX in unix-Python. [Python 2.7] */
-#cmakedefine USE_TOOLBOX_OBJECT_GLUE
 
 /* Define if a va_list is an array of some kind */
 #cmakedefine VA_LIST_IS_ARRAY 1
