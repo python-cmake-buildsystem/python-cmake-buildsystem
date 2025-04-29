@@ -681,9 +681,14 @@ add_python_extension(_lzma
     INCLUDEDIRS ${LZMA_INCLUDE_PATH}
     LIBRARIES ${LZMA_LIBRARY}
 )
+set(readline_DEFINITIONS "")
+if(USE_LIBEDIT)
+  list(APPEND readline_DEFINITIONS USE_LIBEDIT)
+endif()
 add_python_extension(readline
     REQUIRES READLINE_INCLUDE_PATH READLINE_LIBRARY CURSES_LIBRARIES HAVE_READLINE_READLINE_H
     SOURCES readline.c
+    DEFINITIONS ${readline_DEFINITIONS}
     LIBRARIES ${READLINE_LIBRARY} ${CURSES_LIBRARIES}
     INCLUDEDIRS ${READLINE_INCLUDE_PATH}
 )
@@ -759,9 +764,4 @@ else()
             zlib/zutil.c
         INCLUDEDIRS ${SRC_DIR}/Modules/zlib
     )
-endif()
-
-if(USE_LIBEDIT AND ENABLE_READLINE AND TARGET extension_readline AND NOT BUILTIN_READLINE)
-    set_target_properties(extension_readline PROPERTIES
-        COMPILE_DEFINITIONS "USE_LIBEDIT")
 endif()
