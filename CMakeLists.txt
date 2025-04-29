@@ -364,7 +364,7 @@ if(PY_VERSION VERSION_LESS "3.7")
     option(WITH_THREAD "Compile in rudimentary thread support" ON)
 else()
     if(DEFINED WITH_THREAD)
-        message(AUTHOR_WARNING "WITH_THREAD option is *NOT* supported with Python < 3.7. Current version is ${PY_VERSION}")
+        message(AUTHOR_WARNING "WITH_THREAD option is *NOT* supported. Threading is always built-in with Python >= 3.7. Current version is ${PY_VERSION}")
     endif()
 endif()
 
