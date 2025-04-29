@@ -86,26 +86,26 @@ jobs:
 workflows:
     build-and-test:
       jobs:
-        # 3.9.17
+        # 3.9.22
         - build-test-python:
-            name: python-3.9.17-x64
-            python_version: 3.9.17
+            name: python-3.9.22-x64
+            python_version: 3.9.22
             python_arch: x64
 
         - build-test-python:
-            name: python-3.9.17-x86
-            python_version: 3.9.17
+            name: python-3.9.22-x86
+            python_version: 3.9.22
             python_arch: x86
 
-        # 3.8.17
+        # 3.8.20
         - build-test-python:
-            name: python-3.8.17-x64
-            python_version: 3.8.17
+            name: python-3.8.20-x64
+            python_version: 3.8.20
             python_arch: x64
 
         - build-test-python:
-            name: python-3.8.17-x86
-            python_version: 3.8.17
+            name: python-3.8.20-x86
+            python_version: 3.8.20
             python_arch: x86
 
         # 3.7.17
@@ -133,17 +133,17 @@ workflows:
 
     build-and-test-win:
       jobs:
-        # 3.9.17
+        # 3.9.22
         - build-test-python-win:
-            name: python-3.9.17-win-x64
-            python_version: 3.9.17
+            name: python-3.9.22-win-x64
+            python_version: 3.9.22
             python_arch: x64
             generator: "Visual Studio 16 2019"
 
-        # 3.8.17
+        # 3.8.20
         - build-test-python-win:
-            name: python-3.8.17-win-x64
-            python_version: 3.8.17
+            name: python-3.8.20-win-x64
+            python_version: 3.8.20
             python_arch: x64
             generator: "Visual Studio 16 2019"
 
