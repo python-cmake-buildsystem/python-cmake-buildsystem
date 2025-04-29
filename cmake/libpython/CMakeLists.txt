@@ -398,9 +398,6 @@ include_directories(${builtin_includedirs})
 
 # Create the parts of config.c for platform-specific and user-controlled
 # builtin modules.
-set(init_return_type_2 "void")
-set(init_prefix_2 "init")
-
 set(init_return_type_3 "PyObject*")
 set(init_prefix_3 "PyInit_")
 
