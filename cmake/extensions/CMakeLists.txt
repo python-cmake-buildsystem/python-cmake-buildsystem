@@ -235,9 +235,6 @@ add_python_extension(_distutils_findvs REQUIRES WIN32 HAS_DISTUTILS_FINDVS_MODUL
 
 # Multiprocessing is different on unix and windows
 if(UNIX)
-    set(_multiprocessing2_SOURCES
-        _multiprocessing/socket_connection.c
-    )
     set(_multiprocessing3_SOURCES )
     if(HAVE_SEM_OPEN AND NOT POSIX_SEMAPHORES_NOT_ENABLED)
         list(APPEND _multiprocessing${PY_VERSION_MAJOR}_SOURCES
@@ -254,11 +251,6 @@ if(UNIX)
         REQUIRES ${_multiprocessing_REQUIRES}
     )
 elseif(WIN32)
-    set(_multiprocessing2_SOURCES
-        _multiprocessing/pipe_connection.c
-        _multiprocessing/socket_connection.c
-        _multiprocessing/win32_functions.c
-    )
     set(_multiprocessing3_SOURCES )
     add_python_extension(_multiprocessing
         SOURCES _multiprocessing/multiprocessing.c
@@ -616,7 +608,6 @@ add_python_extension(binascii
     LIBRARIES ${binascii_LIBRARIES}
     INCLUDEDIRS ${binascii_INCLUDEDIRS}
 )
-set(bz2_2_NAME bz2)
 set(bz2_3_NAME _bz2)
 add_python_extension(${bz2_${PY_VERSION_MAJOR}_NAME}
     REQUIRES BZIP2_LIBRARIES BZIP2_INCLUDE_DIR

@@ -97,20 +97,6 @@ else()
     )
 endif()
 
-set(OBJECT2_SOURCES
-    ${SRC_DIR}/Objects/bufferobject.c
-    ${SRC_DIR}/Objects/cobject.c
-    ${SRC_DIR}/Objects/intobject.c
-    ${SRC_DIR}/Objects/stringobject.c
-)
-if(MSVC)
-    if(EXISTS ${SRC_DIR}/PC/invalid_parameter_handler.c)
-        list(APPEND OBJECT2_SOURCES
-            ${SRC_DIR}/PC/invalid_parameter_handler.c
-        )
-    endif()
-endif()
-
 set(OBJECT3_SOURCES
     ${SRC_DIR}/Objects/accu.c
     ${SRC_DIR}/Objects/bytesobject.c
@@ -217,16 +203,6 @@ set(THREAD_SOURCES )
 if(WITH_THREAD OR PY_VERSION VERSION_GREATER_EQUAL "3.7")
     list(APPEND THREAD_SOURCES
         ${SRC_DIR}/Python/thread.c
-    )
-endif()
-
-set(PYTHON2_COMMON_SOURCES
-    ${SRC_DIR}/Python/formatter_string.c
-    ${SRC_DIR}/Python/pystrtod.c
-)
-if(WIN32)
-    list(APPEND PYTHON2_COMMON_SOURCES
-        ${SRC_DIR}/PC/import_nt.c
     )
 endif()
 
@@ -504,9 +480,6 @@ add_custom_target(freeze_modules DEPENDS ${LIBPYTHON_FROZEN_SOURCES})
 
 if(PY_VERSION VERSION_LESS "3.8")
 # Build pgen executable
-set(PGEN2_SOURCES
-    ${SRC_DIR}/Parser/parsetok.c
-)
 set(PGEN3_SOURCES
     ${SRC_DIR}/Python/dynamic_annotations.c
     ${SRC_DIR}/Parser/parsetok_pgen.c

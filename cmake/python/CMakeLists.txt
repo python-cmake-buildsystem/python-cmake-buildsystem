@@ -1,4 +1,3 @@
-set(subdir_2  Modules)
 set(subdir_3  Programs)
 
 set(PYTHON_SOURCES
