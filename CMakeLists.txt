@@ -758,7 +758,7 @@ if(BUILD_TESTING)
     function(add_cmakescript_test testname script)
       add_test(cmake_${testname}_test ${CMAKE_COMMAND}
         -DTEST_${testname}:BOOL=ON
-        -P ${CMAKE_SOURCE_DIR}/${script})
+        -P ${PROJECT_SOURCE_DIR}/${script})
       set_tests_properties(cmake_${testname}_test PROPERTIES
         LABELS CMake
         PASS_REGULAR_EXPRESSION "SUCCESS")
