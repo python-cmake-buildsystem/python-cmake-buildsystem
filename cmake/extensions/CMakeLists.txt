@@ -428,16 +428,13 @@ else()
         _decimal/libmpdec/numbertheory.c
         _decimal/libmpdec/sixstep.c
         _decimal/libmpdec/transpose.c
+
+        # Removed in Python 3.9
+        $<$<VERSION_LESS:${PY_VERSION},3.9>:_decimal/libmpdec/memory.c>
+
+        # Introduced in Python 3.9
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>:_decimal/libmpdec/mpalloc.c>
     )
-    if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
-        list(APPEND _decimal_EXTRA_SOURCES
-            _decimal/libmpdec/mpalloc.c
-        )
-    else()
-        list(APPEND _decimal_EXTRA_SOURCES
-            _decimal/libmpdec/memory.c
-        )
-    endif()
     if(WIN32)
         if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
             enable_language(ASM_MASM)
