@@ -71,51 +71,33 @@ set(PARSER_COMMON_SOURCES # Equivalent to POBJS in Makefile.pre
     ${SRC_DIR}/Parser/listnode.c
     ${SRC_DIR}/Parser/node.c
     ${SRC_DIR}/Parser/parser.c
-)
-if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
-    list(APPEND PARSER_COMMON_SOURCES
-        ${SRC_DIR}/Parser/pegen/pegen.c
-        ${SRC_DIR}/Parser/pegen/parse.c
-        ${SRC_DIR}/Parser/pegen/parse_string.c
-        ${SRC_DIR}/Parser/pegen/peg_api.c
-    )
-endif()
-if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
-    list(APPEND PARSER_COMMON_SOURCES
-        ${SRC_DIR}/Parser/myreadline.c
-        ${SRC_DIR}/Parser/parsetok.c
-        ${SRC_DIR}/Parser/token.c
-        ${SRC_DIR}/Parser/tokenizer.c
-    )
-else()
-    list(APPEND PARSER_COMMON_SOURCES
-        ${SRC_DIR}/Parser/bitset.c
-        ${SRC_DIR}/Parser/firstsets.c
-        ${SRC_DIR}/Parser/grammar.c
-        ${SRC_DIR}/Parser/metagrammar.c
-        ${SRC_DIR}/Parser/pgen.c
-    )
-endif()
 
-set(OBJECT3_SOURCES
+    # Removed in Python 3.8
+    $<$<VERSION_LESS:${PY_VERSION},3.8>:${SRC_DIR}/Parser/bitset.c>
+    $<$<VERSION_LESS:${PY_VERSION},3.8>:${SRC_DIR}/Parser/firstsets.c>
+    $<$<VERSION_LESS:${PY_VERSION},3.8>:${SRC_DIR}/Parser/grammar.c>
+    $<$<VERSION_LESS:${PY_VERSION},3.8>:${SRC_DIR}/Parser/metagrammar.c>
+    $<$<VERSION_LESS:${PY_VERSION},3.8>:${SRC_DIR}/Parser/pgen.c>
+
+    # Introduced in Python 3.8
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:${SRC_DIR}/Parser/myreadline.c>
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:${SRC_DIR}/Parser/parsetok.c>
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:${SRC_DIR}/Parser/token.c>
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:${SRC_DIR}/Parser/tokenizer.c>
+
+    # Introduced in Python 3.9
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>:${SRC_DIR}/Parser/pegen/pegen.c>
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>:${SRC_DIR}/Parser/pegen/parse.c>
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>:${SRC_DIR}/Parser/pegen/parse_string.c>
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>:${SRC_DIR}/Parser/pegen/peg_api.c>
+)
+
+set(OBJECT_COMMON_SOURCES # Equivalent to OBJECT_OBJS in Makefile.pre
     ${SRC_DIR}/Objects/accu.c
     ${SRC_DIR}/Objects/bytesobject.c
     ${SRC_DIR}/Objects/namespaceobject.c
     ${SRC_DIR}/Objects/odictobject.c
-)
-if(MSVC)
-    list(APPEND OBJECT3_SOURCES
-        ${SRC_DIR}/PC/invalid_parameter_handler.c
-    )
-endif()
-if(PY_VERSION VERSION_GREATER_EQUAL "3.7")
-    list(APPEND OBJECT3_SOURCES
-        ${SRC_DIR}/Objects/call.c
-    )
-endif()
-
-set(OBJECT_COMMON_SOURCES # Equivalent to OBJECT_OBJS in Makefile.pre
-    ${OBJECT${PY_VERSION_MAJOR}_SOURCES}
+    $<$<C_COMPILER_ID:MSVC>:${SRC_DIR}/PC/invalid_parameter_handler.c>
     ${SRC_DIR}/Objects/abstract.c
     ${SRC_DIR}/Objects/boolobject.c
     ${SRC_DIR}/Objects/bytearrayobject.c
@@ -151,18 +133,17 @@ set(OBJECT_COMMON_SOURCES # Equivalent to OBJECT_OBJS in Makefile.pre
     ${SRC_DIR}/Objects/unicodectype.c
     ${SRC_DIR}/Objects/unicodeobject.c
     ${SRC_DIR}/Objects/weakrefobject.c
+
+    # Introduced in Python 3.7
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.7>:${SRC_DIR}/Objects/call.c>
+
+    # Introduced in Python 3.8
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:${SRC_DIR}/Objects/interpreteridobject.c>
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:${SRC_DIR}/Objects/picklebufobject.c>
+
+    # Introduced in Python 3.9
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>:${SRC_DIR}/Objects/genericaliasobject.c>
 )
-if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
-    list(APPEND OBJECT_COMMON_SOURCES
-        ${SRC_DIR}/Objects/interpreteridobject.c
-        ${SRC_DIR}/Objects/picklebufobject.c
-    )
-endif()
-if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
-    list(APPEND OBJECT_COMMON_SOURCES
-        ${SRC_DIR}/Objects/genericaliasobject.c
-    )
-endif()
 
 if(CMAKE_C_COMPILER_ID MATCHES GNU)
     foreach(filename class complex float int method string type unicode weakref)
@@ -199,14 +180,8 @@ elseif(WIN32)
         )
 endif()
 
-set(THREAD_SOURCES )
-if(WITH_THREAD OR PY_VERSION VERSION_GREATER_EQUAL "3.7")
-    list(APPEND THREAD_SOURCES
-        ${SRC_DIR}/Python/thread.c
-    )
-endif()
-
-set(PYTHON3_COMMON_SOURCES
+set(PYTHON_COMMON_SOURCES
+    ${DYNLOAD_SOURCES}
     ${SRC_DIR}/Python/dynamic_annotations.c
     ${SRC_DIR}/Python/fileutils.c
     ${SRC_DIR}/Python/pyhash.c
@@ -214,12 +189,6 @@ set(PYTHON3_COMMON_SOURCES
     ${SRC_DIR}/Python/pystrhex.c
     ${SRC_DIR}/Python/pystrtod.c
     ${SRC_DIR}/Python/pytime.c
-)
-
-set(PYTHON_COMMON_SOURCES
-    ${DYNLOAD_SOURCES}
-    ${PYTHON${PY_VERSION_MAJOR}_COMMON_SOURCES}
-    ${THREAD_SOURCES}
     ${SRC_DIR}/Python/asdl.c
     ${SRC_DIR}/Python/ast.c
     ${SRC_DIR}/Python/bltinmodule.c
@@ -257,27 +226,23 @@ set(PYTHON_COMMON_SOURCES
     ${SRC_DIR}/Python/sysmodule.c
     ${SRC_DIR}/Python/traceback.c
     ${SRC_DIR}/Python/_warnings.c
+
+    # Removed in Python 3.7
+    $<$<VERSION_LESS:${PY_VERSION},3.7>:${SRC_DIR}/Python/random.c>
+
+    # Introduced in Python 3.7
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.7>:${SRC_DIR}/Python/ast_opt.c>
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.7>:${SRC_DIR}/Python/ast_unparse.c>
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.7>:${SRC_DIR}/Python/bootstrap_hash.c>
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.7>:${SRC_DIR}/Python/context.c>
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.7>:${SRC_DIR}/Python/hamt.c>
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.7>:${SRC_DIR}/Python/pathconfig.c>
+    $<$<OR:$<BOOL:${WITH_THREAD}>,$<VERSION_GREATER_EQUAL:${PY_VERSION},3.7>>:${SRC_DIR}/Python/thread.c>
+
+    # Introduced in Python 3.8
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:${SRC_DIR}/Python/initconfig.c>
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:${SRC_DIR}/Python/preconfig.c>
 )
-if(PY_VERSION VERSION_GREATER_EQUAL "3.7")
-    list(APPEND PYTHON_COMMON_SOURCES
-        ${SRC_DIR}/Python/ast_opt.c
-        ${SRC_DIR}/Python/ast_unparse.c
-        ${SRC_DIR}/Python/bootstrap_hash.c
-        ${SRC_DIR}/Python/context.c
-        ${SRC_DIR}/Python/hamt.c
-        ${SRC_DIR}/Python/pathconfig.c
-    )
-else()
-    list(APPEND PYTHON_COMMON_SOURCES
-        ${SRC_DIR}/Python/random.c
-    )
-endif()
-if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
-    list(APPEND PYTHON_COMMON_SOURCES
-        ${SRC_DIR}/Python/initconfig.c
-        ${SRC_DIR}/Python/preconfig.c
-    )
-endif()
 
 if(UNIX)
     list(APPEND PYTHON_COMMON_SOURCES
@@ -312,14 +277,11 @@ set(LIBPYTHON_OMIT_FROZEN_SOURCES
     ${OBJECT_COMMON_SOURCES}
     ${PARSER_COMMON_SOURCES}
     ${PYTHON_COMMON_SOURCES}
+
+    $<$<VERSION_LESS:${PY_VERSION},3.8>:${SRC_DIR}/Parser/myreadline.c>
+    $<$<VERSION_LESS:${PY_VERSION},3.8>:${SRC_DIR}/Parser/parsetok.c>
+    $<$<VERSION_LESS:${PY_VERSION},3.8>:${SRC_DIR}/Parser/tokenizer.c>
 )
-if(PY_VERSION VERSION_LESS "3.8")
-    list(APPEND LIBPYTHON_OMIT_FROZEN_SOURCES
-        ${SRC_DIR}/Parser/myreadline.c
-        ${SRC_DIR}/Parser/parsetok.c
-        ${SRC_DIR}/Parser/tokenizer.c
-    )
-endif()
 
 # List of builtin extensions
 get_property(builtin_extensions GLOBAL PROPERTY builtin_extensions)
@@ -409,16 +371,12 @@ if(UNIX)
     list(APPEND LIBPYTHON_TARGET_LIBRARIES ${LIBUTIL_LIBRARIES} ${M_LIBRARIES})
 endif()
 if(WIN32)
-    list(APPEND LIBPYTHON_TARGET_LIBRARIES ws2_32) # Required by signalmodule
-    if(PY_VERSION VERSION_GREATER_EQUAL "3.5")
-        list(APPEND LIBPYTHON_TARGET_LIBRARIES version) # Required by sysmodule
-    endif()
-    if(PY_VERSION VERSION_GREATER_EQUAL "3.6")
-        list(APPEND LIBPYTHON_TARGET_LIBRARIES shlwapi) # Required by PC/getpathp
-    endif()
-    if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
-        list(APPEND LIBPYTHON_TARGET_LIBRARIES pathcch)
-    endif()
+    list(APPEND LIBPYTHON_TARGET_LIBRARIES
+      ws2_32 # Required by signalmodule
+      $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.5>:version> # Required by sysmodule
+      $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.6>:shlwapi> # Required by PC/getpathp
+      $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>:pathcch>
+     )
 endif()
 
 set(LIBPYTHON_FROZEN_SOURCES )
@@ -437,12 +395,8 @@ endif()
 set(LIBPYTHON_FROZEN_SOURCES
   ${SRC_DIR}/Python/importlib_external.h
   ${SRC_DIR}/Python/importlib.h
+  $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:${SRC_DIR}/Python/importlib_zipimport.h>
 )
-if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
-  list(APPEND LIBPYTHON_FROZEN_SOURCES
-    ${SRC_DIR}/Python/importlib_zipimport.h
-  )
-endif()
 add_custom_command(
   OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
   COMMAND
@@ -480,13 +434,10 @@ add_custom_target(freeze_modules DEPENDS ${LIBPYTHON_FROZEN_SOURCES})
 
 if(PY_VERSION VERSION_LESS "3.8")
 # Build pgen executable
-set(PGEN3_SOURCES
-    ${SRC_DIR}/Python/dynamic_annotations.c
-    ${SRC_DIR}/Parser/parsetok_pgen.c
-)
 add_executable(pgen
     ${PARSER_COMMON_SOURCES}
-    ${PGEN${PY_VERSION_MAJOR}_SOURCES}
+    ${SRC_DIR}/Python/dynamic_annotations.c
+    ${SRC_DIR}/Parser/parsetok_pgen.c
     ${SRC_DIR}/Objects/obmalloc.c
     ${SRC_DIR}/Python/mysnprintf.c
     ${SRC_DIR}/Python/pyctype.c
