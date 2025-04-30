@@ -30,7 +30,7 @@ jobs:
     - name: Setup cmake
       uses: jwlawson/actions-setup-cmake@802fa1a2c4e212495c05bf94dba2704a92a472be # v2.0.2
       with:
-        cmake-version: 3.13.5
+        cmake-version: 3.20.6
 
     - name: Setup ninja
       uses: ashutoshvarma/setup-ninja@66ad2db9ed7d211c065daeeb849e9c8c895773c9 # master

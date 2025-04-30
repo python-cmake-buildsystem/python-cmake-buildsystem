@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13.5)
+cmake_minimum_required(VERSION 3.20.6)
 
 set(PYTHON_VERSION "3.9.22" CACHE STRING "The version of Python to build.")
 
