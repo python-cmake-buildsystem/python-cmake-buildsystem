@@ -22,7 +22,7 @@ jobs:
 
     name: python-${{ matrix.python-version }}-${{ matrix.runs-on }}
     steps:
-    - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       with:
         fetch-depth: 0
         path: src
@@ -38,7 +38,7 @@ jobs:
         version: 1.10.0
 
     - name: Download dashboard script
-      uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       with:
         repository: 'python-cmake-buildsystem/python-cmake-buildsystem'
         ref: dashboard
