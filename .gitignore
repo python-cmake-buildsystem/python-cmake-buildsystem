@@ -17,6 +17,7 @@ Makefile
 .*
 !.gitattributes
 !.circleci
+!.github/
 
 # Ignore all back-up files...
 *~
