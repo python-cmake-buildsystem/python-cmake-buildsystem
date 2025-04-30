@@ -28,7 +28,7 @@ jobs:
         path: src
 
     - name: Setup cmake
-      uses: jwlawson/actions-setup-cmake@65b272e1213f99771fbba0c237e0b3312270e0c9 # v1.13.1
+      uses: jwlawson/actions-setup-cmake@802fa1a2c4e212495c05bf94dba2704a92a472be # v2.0.2
       with:
         cmake-version: 3.13.5
 
