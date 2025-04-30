@@ -22,23 +22,23 @@ jobs:
 
     name: python-${{ matrix.python-version }}-${{ matrix.runs-on }}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
       with:
         fetch-depth: 0
         path: src
 
     - name: Setup cmake
-      uses: jwlawson/actions-setup-cmake@v1.13.1
+      uses: jwlawson/actions-setup-cmake@65b272e1213f99771fbba0c237e0b3312270e0c9 # v1.13.1
       with:
         cmake-version: 3.13.5
 
     - name: Setup ninja
-      uses: ashutoshvarma/setup-ninja@master
+      uses: ashutoshvarma/setup-ninja@66ad2db9ed7d211c065daeeb849e9c8c895773c9 # master
       with:
         version: 1.10.0
 
     - name: Download dashboard script
-      uses: actions/checkout@v3
+      uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
       with:
         repository: 'python-cmake-buildsystem/python-cmake-buildsystem'
         ref: dashboard
