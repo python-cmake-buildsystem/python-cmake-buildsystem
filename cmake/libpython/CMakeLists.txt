@@ -336,14 +336,14 @@ include_directories(${builtin_includedirs})
 
 # Create the parts of config.c for platform-specific and user-controlled
 # builtin modules.
-set(init_return_type_3 "PyObject*")
-set(init_prefix_3 "PyInit_")
+set(init_return_type "PyObject*")
+set(init_prefix "PyInit_")
 
 set(config_inits "")
 set(config_entries "")
 foreach(ext ${builtin_extensions})
-    set(config_inits "${config_inits}extern ${init_return_type_${PY_VERSION_MAJOR}} ${init_prefix_${PY_VERSION_MAJOR}}${ext}(void);\n")
-    set(config_entries "${config_entries}    {\"${ext}\", ${init_prefix_${PY_VERSION_MAJOR}}${ext}},\n")
+    set(config_inits "${config_inits}extern ${init_return_type} ${init_prefix}${ext}(void);\n")
+    set(config_entries "${config_entries}    {\"${ext}\", ${init_prefix}${ext}},\n")
 endforeach()
 
 if(PY_VERSION VERSION_GREATER_EQUAL "3.7")
