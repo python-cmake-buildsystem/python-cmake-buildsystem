@@ -14,15 +14,11 @@ add_python_extension(_codecs_jp ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_jp.c)
 add_python_extension(_codecs_kr ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_kr.c)
 add_python_extension(_codecs_tw ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_tw.c)
 add_python_extension(_collections ${WIN32_BUILTIN} BUILTIN SOURCES _collectionsmodule.c) # Container types
-set(crypt2_NAME crypt)
-set(crypt2_SOURCES cryptmodule.c)
 set(crypt3_NAME _crypt)
 set(crypt3_SOURCES _cryptmodule.c)
 add_python_extension(${crypt${PY_VERSION_MAJOR}_NAME} REQUIRES HAVE_LIBCRYPT SOURCES ${crypt${PY_VERSION_MAJOR}_SOURCES} LIBRARIES ${HAVE_LIBCRYPT})
 add_python_extension(_csv ${WIN32_BUILTIN} SOURCES _csv.c)
 add_python_extension(_ctypes_test NEVER_BUILTIN REQUIRES HAVE_LIBM SOURCES _ctypes/_ctypes_test.c LIBRARIES ${M_LIBRARIES})
-set(datetime2_NAME datetime)
-set(datetime2_SOURCES datetimemodule.c)
 set(datetime3_NAME _datetime)
 set(datetime3_SOURCES _datetimemodule.c)
 if(PY_VERSION VERSION_EQUAL "3.2")
@@ -64,9 +60,7 @@ add_python_extension(parser ${WIN32_BUILTIN} SOURCES parsermodule.c)
 add_python_extension(_random ${WIN32_BUILTIN} SOURCES _randommodule.c)
 add_python_extension(_struct ${WIN32_BUILTIN} SOURCES _struct.c)
 add_python_extension(_testcapi NEVER_BUILTIN SOURCES _testcapimodule.c)
-set(thread2_NAME thread)
 set(thread3_NAME _thread)
-set(thread2_SOURCES ${SRC_DIR}/Modules/threadmodule.c)
 set(thread3_SOURCES ${SRC_DIR}/Modules/_threadmodule.c)
 set(thread_REQUIRES)
 if(PY_VERSION VERSION_LESS "3.7")
@@ -185,7 +179,6 @@ add_python_extension(errno BUILTIN UNIX SOURCES errnomodule.c)
 add_python_extension(_posixsubprocess REQUIRES UNIX SOURCES _posixsubprocess.c)
 
 # MacOSX-only extensions
-set(_scproxy2_SOURCES ${SRC_DIR}/Mac/Modules/_scproxy.c)
 set(_scproxy3_SOURCES ${SRC_DIR}/Modules/_scproxy.c)
 add_python_extension(_scproxy
     REQUIRES APPLE HAVE_LIBCOREFOUNDATION HAVE_LIBSYSTEMCONFIGURATION
@@ -214,7 +207,6 @@ add_python_extension(_msi
 add_python_extension(msvcrt REQUIRES MSVC BUILTIN SOURCES ${SRC_DIR}/PC/msvcrtmodule.c)
 add_python_extension(nt REQUIRES WIN32 ALWAYS_BUILTIN SOURCES posixmodule.c)
 
-set(winreg2_NAME _winreg)
 set(winreg3_NAME winreg)
 add_python_extension(${winreg${PY_VERSION_MAJOR}_NAME} REQUIRES WIN32 BUILTIN SOURCES ${SRC_DIR}/PC/${winreg${PY_VERSION_MAJOR}_NAME}.c)
 
@@ -631,7 +623,6 @@ add_python_extension(_curses
     SOURCES _cursesmodule.c
     LIBRARIES ${curses_common_LIBRARIES}
 )
-set(dbm2_SOURCES dbmmodule.c)
 set(dbm3_SOURCES _dbmmodule.c)
   set(dbm_name _dbm)
 add_python_extension(${dbm_name}
@@ -641,7 +632,6 @@ add_python_extension(${dbm_name}
     LIBRARIES ${GDBM_LIBRARY} ${GDBM_COMPAT_LIBRARY}
     INCLUDEDIRS ${${NDBM_TAG}_INCLUDE_PATH}
 )
-set(gdbm2_SOURCES gdbmmodule.c)
 set(gdbm3_SOURCES _gdbmmodule.c)
   set(gdbm_name _gdbm)
 add_python_extension(${gdbm_name}
