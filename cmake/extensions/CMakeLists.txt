@@ -106,7 +106,7 @@ add_python_extension(${thread${PY_VERSION_MAJOR}_NAME} ALWAYS_BUILTIN
 )
 set(time_SOURCES timemodule.c)
 if(PY_VERSION VERSION_EQUAL "3.2")
-  list(APPEND datetime${PY_VERSION_MAJOR}_SOURCES _time.c)
+  list(APPEND time_SOURCES _time.c)
 endif()
 add_python_extension(time ${WIN32_BUILTIN} BUILTIN
     REQUIRES
