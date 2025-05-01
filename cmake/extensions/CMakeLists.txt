@@ -16,9 +16,17 @@ add_python_extension(_codecs_tw ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_tw.c)
 add_python_extension(_collections ${WIN32_BUILTIN} BUILTIN SOURCES _collectionsmodule.c) # Container types
 set(crypt3_NAME _crypt)
 set(crypt3_SOURCES _cryptmodule.c)
-add_python_extension(${crypt${PY_VERSION_MAJOR}_NAME} REQUIRES HAVE_LIBCRYPT SOURCES ${crypt${PY_VERSION_MAJOR}_SOURCES} LIBRARIES ${HAVE_LIBCRYPT})
+add_python_extension(${crypt${PY_VERSION_MAJOR}_NAME}
+    REQUIRES
+        HAVE_LIBCRYPT
+    SOURCES
+        _cryptmodule.c
+    LIBRARIES
+        ${HAVE_LIBCRYPT}
+)
 add_python_extension(_csv ${WIN32_BUILTIN} SOURCES _csv.c)
 add_python_extension(_ctypes_test NEVER_BUILTIN REQUIRES HAVE_LIBM SOURCES _ctypes/_ctypes_test.c LIBRARIES ${M_LIBRARIES})
+
 set(datetime3_NAME _datetime)
 set(datetime3_SOURCES _datetimemodule.c)
 if(PY_VERSION VERSION_EQUAL "3.2")
@@ -26,10 +34,18 @@ if(PY_VERSION VERSION_EQUAL "3.2")
 elseif(PY_VERSION VERSION_LESS_EQUAL "3.1")
   list(APPEND datetime${PY_VERSION_MAJOR}_SOURCES timemodule.c)
 endif()
-add_python_extension(${datetime${PY_VERSION_MAJOR}_NAME} ${WIN32_BUILTIN} REQUIRES HAVE_LIBM SOURCES ${datetime${PY_VERSION_MAJOR}_SOURCES} LIBRARIES ${M_LIBRARIES})
+add_python_extension(${datetime${PY_VERSION_MAJOR}_NAME} ${WIN32_BUILTIN}
+    REQUIRES
+        HAVE_LIBM
+    SOURCES
+        ${datetime${PY_VERSION_MAJOR}_SOURCES}
+    LIBRARIES
+        ${M_LIBRARIES}
+)
 #if(ENABLE_DATETIME AND CMAKE_C_COMPILER_ID MATCHES GNU)
 #    set_property(SOURCE ${SRC_DIR}/Modules/datetimemodule.c PROPERTY COMPILE_FLAGS -Wno-unused-value)
 #endif()
+
 add_python_extension(_functools ${WIN32_BUILTIN} BUILTIN SOURCES _functoolsmodule.c DEFINITIONS Py_BUILD_CORE) # Tools for working with functions and callable objects
 add_python_extension(_heapq ${WIN32_BUILTIN} SOURCES _heapqmodule.c)
 
@@ -53,25 +69,56 @@ add_python_extension(itertools ${WIN32_BUILTIN} BUILTIN SOURCES itertoolsmodule.
 add_python_extension(_json ${WIN32_BUILTIN} SOURCES _json.c)
 add_python_extension(_locale ${WIN32_BUILTIN} BUILTIN SOURCES _localemodule.c) # access to ISO C locale support
 add_python_extension(_lsprof ${WIN32_BUILTIN} SOURCES _lsprof.c rotatingtree.c)
-add_python_extension(math ${WIN32_BUILTIN} REQUIRES HAVE_LIBM SOURCES _math.c mathmodule.c LIBRARIES ${M_LIBRARIES})
+add_python_extension(math ${WIN32_BUILTIN}
+    REQUIRES
+        HAVE_LIBM
+    SOURCES
+        _math.c
+        mathmodule.c
+    LIBRARIES
+        ${M_LIBRARIES}
+)
 add_python_extension(mmap ${WIN32_BUILTIN} SOURCES mmapmodule.c)
 add_python_extension(_multibytecodec ${WIN32_BUILTIN} SOURCES cjkcodecs/multibytecodec.c)
-add_python_extension(parser ${WIN32_BUILTIN} SOURCES parsermodule.c)
+add_python_extension(parser ${WIN32_BUILTIN}
+    SOURCES
+        parsermodule.c
+)
 add_python_extension(_random ${WIN32_BUILTIN} SOURCES _randommodule.c)
 add_python_extension(_struct ${WIN32_BUILTIN} SOURCES _struct.c)
-add_python_extension(_testcapi NEVER_BUILTIN SOURCES _testcapimodule.c)
+add_python_extension(_testcapi NEVER_BUILTIN
+    SOURCES
+        _testcapimodule.c
+)
 set(thread3_NAME _thread)
 set(thread3_SOURCES ${SRC_DIR}/Modules/_threadmodule.c)
 set(thread_REQUIRES)
 if(PY_VERSION VERSION_LESS "3.7")
   list(APPEND thread_REQUIRES WITH_THREAD)
 endif()
-add_python_extension(${thread${PY_VERSION_MAJOR}_NAME} ALWAYS_BUILTIN REQUIRES ${thread_REQUIRES} SOURCES ${thread${PY_VERSION_MAJOR}_SOURCES} DEFINITIONS Py_BUILD_CORE)
+add_python_extension(${thread${PY_VERSION_MAJOR}_NAME} ALWAYS_BUILTIN
+    REQUIRES
+        ${thread_REQUIRES}
+    SOURCES
+        ${thread${PY_VERSION_MAJOR}_SOURCES}
+    DEFINITIONS
+        Py_BUILD_CORE
+)
 set(time_SOURCES timemodule.c)
 if(PY_VERSION VERSION_EQUAL "3.2")
   list(APPEND datetime${PY_VERSION_MAJOR}_SOURCES _time.c)
 endif()
-add_python_extension(time ${WIN32_BUILTIN} BUILTIN REQUIRES HAVE_LIBM SOURCES ${time_SOURCES} DEFINITIONS Py_BUILD_CORE LIBRARIES ${M_LIBRARIES} ${TIMEMODULE_LIB})
+add_python_extension(time ${WIN32_BUILTIN} BUILTIN
+    REQUIRES
+        HAVE_LIBM
+    SOURCES
+        ${time_SOURCES}
+    DEFINITIONS
+        Py_BUILD_CORE
+    LIBRARIES
+        ${M_LIBRARIES}
+        ${TIMEMODULE_LIB}
+)
 add_python_extension(unicodedata SOURCES unicodedata.c)
 
 # Python3
@@ -81,7 +128,11 @@ add_python_extension(faulthandler ALWAYS_BUILTIN REQUIRES SOURCES faulthandler.c
 add_python_extension(_opcode ${WIN32_BUILTIN} REQUIRES SOURCES _opcode.c)
 add_python_extension(_operator BUILTIN REQUIRES SOURCES _operator.c)
 add_python_extension(_pickle ${WIN32_BUILTIN} REQUIRES SOURCES _pickle.c)
-add_python_extension(_sre BUILTIN SOURCES _sre.c) # Fredrik Lundh's new regular expressions
+# Fredrik Lundh's new regular expressions
+add_python_extension(_sre BUILTIN
+    SOURCES
+        _sre.c
+)
 add_python_extension(_stat BUILTIN REQUIRES SOURCES _stat.c) # stat.h interface
 add_python_extension(_symtable BUILTIN SOURCES symtablemodule.c)
 # Python PEP-3118 (buffer protocol) test module
@@ -92,7 +143,9 @@ add_python_extension(_testimportmultiple REQUIRES SOURCES _testimportmultiple.c)
 add_python_extension(_testmultiphase REQUIRES SOURCES _testmultiphase.c)
 # debug tool to trace memory blocks allocated by Python
 add_python_extension(_tracemalloc ALWAYS_BUILTIN REQUIRES
-    SOURCES ${SRC_DIR}/$<IF:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>,Python,Modules>/hashtable.c _tracemalloc.c
+    SOURCES
+       ${SRC_DIR}/$<IF:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>,Python,Modules>/hashtable.c
+       _tracemalloc.c
 )
 add_python_extension(_weakref ALWAYS_BUILTIN SOURCES _weakref.c)
 math(EXPR _limited_api_version "${PY_VERSION_MAJOR} * 100 + ${PY_VERSION_MINOR}")
@@ -213,8 +266,11 @@ add_python_extension(${winreg${PY_VERSION_MAJOR}_NAME} REQUIRES WIN32 BUILTIN SO
 # Python3: Windows-only extensions
 add_python_extension(_overlapped
     REQUIRES WIN32
-    SOURCES ${SRC_DIR}/Modules/overlapped.c
-    LIBRARIES ws2_32 $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>:pathcch>
+    SOURCES
+        ${SRC_DIR}/Modules/overlapped.c
+    LIBRARIES
+        ws2_32
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>:pathcch>
 )
 add_python_extension(_winapi REQUIRES WIN32 BUILTIN SOURCES ${SRC_DIR}/Modules/_winapi.c)
 
@@ -263,18 +319,27 @@ endif()
 set(_socket_SOURCES socketmodule.c)
 if(WIN32)
     add_python_extension(_socket
-        REQUIRES HAVE_LIBM
-        SOURCES ${_socket_SOURCES}
-        DEFINITIONS EAI_ADDRFAMILY
-                    HAVE_SOCKADDR_STORAGE
-                    HAVE_ADDRINFO
-        LIBRARIES ws2_32 ${M_LIBRARIES} $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:iphlpapi>
+        REQUIRES
+            HAVE_LIBM
+        SOURCES
+            ${_socket_SOURCES}
+        DEFINITIONS
+            EAI_ADDRFAMILY
+            HAVE_SOCKADDR_STORAGE
+            HAVE_ADDRINFO
+        LIBRARIES
+            ws2_32
+            ${M_LIBRARIES}
+            $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:iphlpapi>
     )
 else()
     add_python_extension(_socket
-        REQUIRES HAVE_LIBM
-        SOURCES ${_socket_SOURCES}
-        LIBRARIES ${M_LIBRARIES}
+        REQUIRES
+            HAVE_LIBM
+        SOURCES
+            ${_socket_SOURCES}
+        LIBRARIES
+            ${M_LIBRARIES}
     )
 endif()
 
@@ -307,27 +372,37 @@ if(
         message(AUTHOR_WARNING "Disabling USE_SYSTEM_LibFFI option is *NOT* supported with Python >= 3.8 on windows and with Python >= 3.7 on Linux. Current version is ${PY_VERSION}")
     endif()
     add_python_extension(_ctypes
-        REQUIRES LibFFI_INCLUDE_DIR LibFFI_LIBRARY
-        SOURCES ${ctypes_COMMON_SOURCES}
-        DEFINITIONS Py_BUILD_CORE_MODULE FFI_BUILDING
-        INCLUDEDIRS ${LibFFI_INCLUDE_DIR}
-        LIBRARIES ${LibFFI_LIBRARY}
+        REQUIRES
+            LibFFI_INCLUDE_DIR
+            LibFFI_LIBRARY
+        SOURCES
+            ${ctypes_COMMON_SOURCES}
+        DEFINITIONS
+            Py_BUILD_CORE_MODULE
+            FFI_BUILDING
+        INCLUDEDIRS
+            ${LibFFI_INCLUDE_DIR}
+        LIBRARIES
+            ${LibFFI_LIBRARY}
     )
 else()
 # ctypes is different on Windows
 if(WIN32)
     if(MINGW)
       add_python_extension(_ctypes
-          SOURCES ${ctypes_COMMON_SOURCES}
-                  _ctypes/libffi_mingw/closures.c
-                  _ctypes/libffi_mingw/debug.c
-                  _ctypes/libffi_mingw/prep_cif.c
-                  _ctypes/libffi_mingw/raw_api.c
-                  _ctypes/libffi_mingw/${_libffi_system_dir}/ffi.c
-                  _ctypes/libffi_mingw/${_libffi_system_dir}/win32.S
-          INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi/src/${_libffi_system_dir}
-                      ${SRC_DIR}/Modules/_ctypes/libffi/include
-          DEFINITIONS X86_WIN32
+          SOURCES
+              ${ctypes_COMMON_SOURCES}
+              _ctypes/libffi_mingw/closures.c
+              _ctypes/libffi_mingw/debug.c
+              _ctypes/libffi_mingw/prep_cif.c
+              _ctypes/libffi_mingw/raw_api.c
+              _ctypes/libffi_mingw/${_libffi_system_dir}/ffi.c
+              _ctypes/libffi_mingw/${_libffi_system_dir}/win32.S
+          INCLUDEDIRS
+              ${SRC_DIR}/Modules/_ctypes/libffi/src/${_libffi_system_dir}
+              ${SRC_DIR}/Modules/_ctypes/libffi/include
+          DEFINITIONS
+              X86_WIN32
         )
     else() # Visual Studio
       if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
@@ -337,29 +412,35 @@ if(WIN32)
           set(_ctype_arch_impl win32.c)
       endif()
       add_python_extension(_ctypes
-          SOURCES ${ctypes_COMMON_SOURCES}
-                  _ctypes/malloc_closure.c
-                  _ctypes/libffi_msvc/prep_cif.c
-                  _ctypes/libffi_msvc/ffi.c
-                  _ctypes/libffi_msvc/${_ctype_arch_impl}
-          REQUIRES BUILD_LIBPYTHON_SHARED
-          INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi_msvc
+          SOURCES
+              ${ctypes_COMMON_SOURCES}
+              _ctypes/malloc_closure.c
+              _ctypes/libffi_msvc/prep_cif.c
+              _ctypes/libffi_msvc/ffi.c
+              _ctypes/libffi_msvc/${_ctype_arch_impl}
+          REQUIRES
+              BUILD_LIBPYTHON_SHARED
+          INCLUDEDIRS
+              ${SRC_DIR}/Modules/_ctypes/libffi_msvc
         )
     endif()
 else()
     if(APPLE)
         add_python_extension(_ctypes
-            SOURCES ${ctypes_COMMON_SOURCES}
-                    _ctypes/malloc_closure.c
-                    _ctypes/darwin/dlfcn_simple.c
-                    _ctypes/libffi_osx/ffi.c
-                    _ctypes/libffi_osx/x86/darwin64.S
-                    _ctypes/libffi_osx/x86/x86-darwin.S
-                    _ctypes/libffi_osx/x86/x86-ffi_darwin.c
-                    _ctypes/libffi_osx/x86/x86-ffi64.c
-            INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi_osx/include
-                        ${SRC_DIR}/Modules/_ctypes/darwin
-            DEFINITIONS MACOSX
+            SOURCES
+                ${ctypes_COMMON_SOURCES}
+                _ctypes/malloc_closure.c
+                _ctypes/darwin/dlfcn_simple.c
+                _ctypes/libffi_osx/ffi.c
+                _ctypes/libffi_osx/x86/darwin64.S
+                _ctypes/libffi_osx/x86/x86-darwin.S
+                _ctypes/libffi_osx/x86/x86-ffi_darwin.c
+                _ctypes/libffi_osx/x86/x86-ffi64.c
+            INCLUDEDIRS
+                ${SRC_DIR}/Modules/_ctypes/libffi_osx/include
+                ${SRC_DIR}/Modules/_ctypes/darwin
+            DEFINITIONS
+                MACOSX
         )
     else()
         if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
@@ -383,16 +464,18 @@ else()
           ${INCLUDE_BUILD_DIR}/fficonfig.h
           )
         add_python_extension(_ctypes
-            SOURCES ${ctypes_COMMON_SOURCES}
-                    _ctypes/libffi/src/closures.c
-                    _ctypes/libffi/src/prep_cif.c
-                    _ctypes/libffi/src/${_libffi_system_dir}/ffi.c
-                    _ctypes/libffi/src/${_libffi_system_dir}/sysv.S
-                    ${_libffi_system_extra_src}
-            INCLUDEDIRS ${SRC_DIR}/Modules/_ctypes/libffi/src/${_libffi_system_dir}
-                        ${SRC_DIR}/Modules/_ctypes/libffi/include
-                        ${INCLUDE_BUILD_DIR}      # For fficonfig.h
-                        ${PROJECT_SOURCE_DIR}/cmake # For ffi.h
+            SOURCES
+                ${ctypes_COMMON_SOURCES}
+                _ctypes/libffi/src/closures.c
+                _ctypes/libffi/src/prep_cif.c
+                _ctypes/libffi/src/${_libffi_system_dir}/ffi.c
+                _ctypes/libffi/src/${_libffi_system_dir}/sysv.S
+                ${_libffi_system_extra_src}
+            INCLUDEDIRS
+                ${SRC_DIR}/Modules/_ctypes/libffi/src/${_libffi_system_dir}
+                ${SRC_DIR}/Modules/_ctypes/libffi/include
+                ${INCLUDE_BUILD_DIR}      # For fficonfig.h
+                ${PROJECT_SOURCE_DIR}/cmake # For ffi.h
         )
     endif()
 endif()
