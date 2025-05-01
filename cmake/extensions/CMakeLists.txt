@@ -14,31 +14,27 @@ add_python_extension(_codecs_jp ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_jp.c)
 add_python_extension(_codecs_kr ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_kr.c)
 add_python_extension(_codecs_tw ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_tw.c)
 add_python_extension(_collections ${WIN32_BUILTIN} BUILTIN SOURCES _collectionsmodule.c) # Container types
-set(crypt3_NAME _crypt)
-set(crypt3_SOURCES _cryptmodule.c)
-add_python_extension(${crypt${PY_VERSION_MAJOR}_NAME}
+
+set(crypt_NAME _crypt)
+add_python_extension(${crypt_NAME}
     REQUIRES
         HAVE_LIBCRYPT
     SOURCES
-        _cryptmodule.c
+        ${crypt_NAME}module.c
     LIBRARIES
         ${HAVE_LIBCRYPT}
 )
+
 add_python_extension(_csv ${WIN32_BUILTIN} SOURCES _csv.c)
 add_python_extension(_ctypes_test NEVER_BUILTIN REQUIRES HAVE_LIBM SOURCES _ctypes/_ctypes_test.c LIBRARIES ${M_LIBRARIES})
 
-set(datetime3_NAME _datetime)
-set(datetime3_SOURCES _datetimemodule.c)
-if(PY_VERSION VERSION_EQUAL "3.2")
-  list(APPEND datetime${PY_VERSION_MAJOR}_SOURCES _time.c)
-elseif(PY_VERSION VERSION_LESS_EQUAL "3.1")
-  list(APPEND datetime${PY_VERSION_MAJOR}_SOURCES timemodule.c)
-endif()
-add_python_extension(${datetime${PY_VERSION_MAJOR}_NAME} ${WIN32_BUILTIN}
+add_python_extension(_datetime ${WIN32_BUILTIN}
     REQUIRES
         HAVE_LIBM
     SOURCES
-        ${datetime${PY_VERSION_MAJOR}_SOURCES}
+        _datetimemodule.c
+        $<$<VERSION_LESS_EQUAL:${PY_VERSION},3.1>:timemodule.c>
+        $<$<VERSION_EQUAL:${PY_VERSION},3.2>:_time.c>
     LIBRARIES
         ${M_LIBRARIES}
 )
@@ -90,29 +86,28 @@ add_python_extension(_testcapi NEVER_BUILTIN
     SOURCES
         _testcapimodule.c
 )
-set(thread3_NAME _thread)
-set(thread3_SOURCES ${SRC_DIR}/Modules/_threadmodule.c)
+
 set(thread_REQUIRES)
 if(PY_VERSION VERSION_LESS "3.7")
   list(APPEND thread_REQUIRES WITH_THREAD)
 endif()
-add_python_extension(${thread${PY_VERSION_MAJOR}_NAME} ALWAYS_BUILTIN
+add_python_extension(_thread ALWAYS_BUILTIN
     REQUIRES
         ${thread_REQUIRES}
     SOURCES
-        ${thread${PY_VERSION_MAJOR}_SOURCES}
+        ${SRC_DIR}/Modules/_threadmodule.c
     DEFINITIONS
         Py_BUILD_CORE
 )
-set(time_SOURCES timemodule.c)
+
 if(PY_VERSION VERSION_EQUAL "3.2")
-  list(APPEND time_SOURCES _time.c)
+  list(APPEND datetime${PY_VERSION_MAJOR}_SOURCES _time.c)
 endif()
 add_python_extension(time ${WIN32_BUILTIN} BUILTIN
     REQUIRES
         HAVE_LIBM
     SOURCES
-        ${time_SOURCES}
+        timemodule.c
     DEFINITIONS
         Py_BUILD_CORE
     LIBRARIES
@@ -260,8 +255,7 @@ add_python_extension(_msi
 add_python_extension(msvcrt REQUIRES MSVC BUILTIN SOURCES ${SRC_DIR}/PC/msvcrtmodule.c)
 add_python_extension(nt REQUIRES WIN32 ALWAYS_BUILTIN SOURCES posixmodule.c)
 
-set(winreg3_NAME winreg)
-add_python_extension(${winreg${PY_VERSION_MAJOR}_NAME} REQUIRES WIN32 BUILTIN SOURCES ${SRC_DIR}/PC/${winreg${PY_VERSION_MAJOR}_NAME}.c)
+add_python_extension(winreg REQUIRES WIN32 BUILTIN SOURCES ${SRC_DIR}/PC/winreg.c)
 
 # Python3: Windows-only extensions
 add_python_extension(_overlapped
@@ -680,10 +674,9 @@ add_python_extension(binascii
     LIBRARIES ${binascii_LIBRARIES}
     INCLUDEDIRS ${binascii_INCLUDEDIRS}
 )
-set(bz2_3_NAME _bz2)
-add_python_extension(${bz2_${PY_VERSION_MAJOR}_NAME}
+add_python_extension(_bz2
     REQUIRES BZIP2_LIBRARIES BZIP2_INCLUDE_DIR
-    SOURCES ${bz2_${PY_VERSION_MAJOR}_NAME}module.c
+    SOURCES _bz2module.c
     LIBRARIES ${BZIP2_LIBRARIES}
     INCLUDEDIRS ${BZIP2_INCLUDE_DIR}
 )
@@ -703,20 +696,16 @@ add_python_extension(_curses
     SOURCES _cursesmodule.c
     LIBRARIES ${curses_common_LIBRARIES}
 )
-set(dbm3_SOURCES _dbmmodule.c)
-  set(dbm_name _dbm)
-add_python_extension(${dbm_name}
+add_python_extension(_dbm
     REQUIRES NDBM_TAG GDBM_LIBRARY GDBM_COMPAT_LIBRARY
-    SOURCES ${dbm${PY_VERSION_MAJOR}_SOURCES}
+    SOURCES _dbmmodule.c
     DEFINITIONS HAVE_${NDBM_TAG}_H
     LIBRARIES ${GDBM_LIBRARY} ${GDBM_COMPAT_LIBRARY}
     INCLUDEDIRS ${${NDBM_TAG}_INCLUDE_PATH}
 )
-set(gdbm3_SOURCES _gdbmmodule.c)
-  set(gdbm_name _gdbm)
-add_python_extension(${gdbm_name}
+add_python_extension(_gdbm
     REQUIRES GDBM_INCLUDE_PATH GDBM_LIBRARY GDBM_COMPAT_LIBRARY
-    SOURCES ${gdbm${PY_VERSION_MAJOR}_SOURCES}
+    SOURCES _gdbmmodule.c
     DEFINITIONS HAVE_GDBM_DASH_NDBM_H
     LIBRARIES ${GDBM_LIBRARY}
     INCLUDEDIRS ${GDBM_INCLUDE_PATH}
