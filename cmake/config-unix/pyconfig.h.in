@@ -1477,11 +1477,17 @@
 /* Cipher suite string for PY_SSL_DEFAULT_CIPHERS=0 [Python 3.7] */
 #cmakedefine PY_SSL_DEFAULT_CIPHER_STRING "@PY_SSL_DEFAULT_CIPHER_STRING@"
 
+/* Define as the integral type used for Unicode representation. [Python 2.7 to 3.2] */
+#cmakedefine PY_UNICODE_TYPE @PY_UNICODE_TYPE@
+
 /* Define if you want to build an interpreter with many run-time checks. */
 #cmakedefine Py_DEBUG 1
 
 /* Defined if Python is built as a shared library. */
 #cmakedefine Py_ENABLE_SHARED
+
+/* Define as the size of the unicode type. [Python 2.7 to 3.2] */
+#cmakedefine Py_UNICODE_SIZE @Py_UNICODE_SIZE@
 
 /* assume C89 semantics that RETSIGTYPE is always void */
 #define RETSIGTYPE void
