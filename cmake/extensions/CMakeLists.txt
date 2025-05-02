@@ -82,6 +82,7 @@ add_python_extension(parser ${WIN32_BUILTIN}
 )
 add_python_extension(_random ${WIN32_BUILTIN} SOURCES _randommodule.c)
 add_python_extension(_struct ${WIN32_BUILTIN} SOURCES _struct.c)
+
 add_python_extension(_testcapi NEVER_BUILTIN
     SOURCES
         _testcapimodule.c
@@ -114,30 +115,50 @@ add_python_extension(time ${WIN32_BUILTIN} BUILTIN
         ${M_LIBRARIES}
         ${TIMEMODULE_LIB}
 )
+
 add_python_extension(unicodedata SOURCES unicodedata.c)
 
 # Python3
 add_python_extension(atexit BUILTIN REQUIRES SOURCES atexitmodule.c) # Register functions to be run at interpreter-shutdown
 add_python_extension(_codecs BUILTIN SOURCES _codecsmodule.c) # access to the builtin codecs and codec registry
-add_python_extension(faulthandler ALWAYS_BUILTIN REQUIRES SOURCES faulthandler.c)
-add_python_extension(_opcode ${WIN32_BUILTIN} REQUIRES SOURCES _opcode.c)
 add_python_extension(_operator BUILTIN REQUIRES SOURCES _operator.c)
+add_python_extension(faulthandler ALWAYS_BUILTIN
+    SOURCES faulthandler.c
+)
+add_python_extension(_opcode ${WIN32_BUILTIN}
+    SOURCES _opcode.c
+)
+
 add_python_extension(_pickle ${WIN32_BUILTIN} REQUIRES SOURCES _pickle.c)
+
 # Fredrik Lundh's new regular expressions
 add_python_extension(_sre BUILTIN
     SOURCES
         _sre.c
 )
-add_python_extension(_stat BUILTIN REQUIRES SOURCES _stat.c) # stat.h interface
+
+# stat.h interface
+add_python_extension(_stat BUILTIN
+    SOURCES _stat.c
+)
+
 add_python_extension(_symtable BUILTIN SOURCES symtablemodule.c)
+
 # Python PEP-3118 (buffer protocol) test module
-add_python_extension(_testbuffer REQUIRES SOURCES _testbuffer.c)
+add_python_extension(_testbuffer
+    SOURCES _testbuffer.c
+)
+
 # Test loading multiple modules from one compiled file (http://bugs.python.org/issue16421)
-add_python_extension(_testimportmultiple REQUIRES SOURCES _testimportmultiple.c)
+add_python_extension(_testimportmultiple
+    SOURCES _testimportmultiple.c
+)
 # Test multi-phase extension module init (PEP 489)
-add_python_extension(_testmultiphase REQUIRES SOURCES _testmultiphase.c)
+add_python_extension(_testmultiphase
+    SOURCES _testmultiphase.c
+)
 # debug tool to trace memory blocks allocated by Python
-add_python_extension(_tracemalloc ALWAYS_BUILTIN REQUIRES
+add_python_extension(_tracemalloc ALWAYS_BUILTIN
     SOURCES
        ${SRC_DIR}/$<IF:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>,Python,Modules>/hashtable.c
        _tracemalloc.c
