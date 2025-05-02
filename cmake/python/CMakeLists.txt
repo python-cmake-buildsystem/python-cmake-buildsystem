@@ -28,6 +28,12 @@ if(MSVC)
     set_target_properties(python PROPERTIES LINK_FLAGS /STACK:2000000)
 endif()
 
+if(BUILD_FRAMEWORK)
+    set_target_properties(python PROPERTIES
+        INSTALL_RPATH "@rpath/..";
+    )
+endif()
+
 # Export target
 set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS python)
 
@@ -60,7 +66,7 @@ if(UNIX)
     add_custom_command(
         OUTPUT ${BIN_BUILD_DIR}/pybuilddir.txt ${EXTENSION_BUILD_DIR}/${_sysconfigdata_py}
         COMMAND ${PYTHON_WRAPPER_COMMAND}
-          ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> -E -S -m sysconfig --generate-posix-vars
+          ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> -S -m sysconfig --generate-posix-vars
         COMMAND ${CMAKE_COMMAND}
           -DBIN_BUILD_DIR:PATH=${BIN_BUILD_DIR}
           -DSYSCONFIGDATA_PY:STRING=${_sysconfigdata_py}

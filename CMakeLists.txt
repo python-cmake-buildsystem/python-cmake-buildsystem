@@ -77,6 +77,25 @@ else()
   set(BUILD_WININST OFF)
   set(BUILD_WININST_ALWAYS OFF)
 endif()
+if(APPLE)
+  option(BUILD_FRAMEWORK "Build a Mac OSX Framework" OFF)
+  if(BUILD_FRAMEWORK)
+      set(BUILD_LIBPYTHON_SHARED ON CACHE BOOL "Forced to ON because of BUILD_FRAMEWORK=ON" FORCE)
+  endif()
+else()
+  set(BUILD_FRAMEWORK OFF)
+endif()
+if(BUILD_FRAMEWORK)
+  set(FRAMEWORK_NAME Python)
+  set(FRAMEWORK_PREFIX ${CMAKE_INSTALL_PREFIX})
+  set(FRAMEWORK_DIR_ROOT ${FRAMEWORK_NAME}.framework)
+  set(FRAMEWORK_DIR_PREFIX ${FRAMEWORK_DIR_ROOT}/Versions/${PY_VERSION_MAJOR}.${PY_VERSION_MINOR})
+else()
+  set(FRAMEWORK_NAME "")
+  set(FRAMEWORK_PREFIX "")
+  set(FRAMEWORK_DIR_ROOT "no-framework")
+  set(FRAMEWORK_DIR_PREFIX "")
+endif()
 option(INSTALL_DEVELOPMENT "Install files required to develop C extensions" ON)
 option(INSTALL_MANUAL "Install man files" ON)
 option(INSTALL_TEST "Install test files" ON)
@@ -425,6 +444,9 @@ if(USE_LIB64)
     set(LIBDIR "lib64")
 endif()
 set(PYTHONHOME "${LIBDIR}")
+if(BUILD_FRAMEWORK)
+    set(LIBDIR ${FRAMEWORK_DIR_PREFIX}/lib)
+endif()
 if(UNIX)
     set(PYTHONHOME "${PYTHONHOME}/${LIBPYTHON}")
 endif()
@@ -434,8 +456,15 @@ set(BIN_INSTALL_DIR bin)                         # Contains the python executabl
 if(INSTALL_WINDOWS_TRADITIONAL)
     set(BIN_INSTALL_DIR .)                       # Contains the python executable
 endif()
+if(BUILD_FRAMEWORK)
+    set(BIN_INSTALL_DIR ${FRAMEWORK_DIR_PREFIX}/bin)
+endif()
+set(SHARE_INSTALL_DIR share)
+if(BUILD_FRAMEWORK)
+    set(SHARE_INSTALL_DIR ${FRAMEWORK_DIR_PREFIX}/share)
+endif()
 set(LD_VERSION ${LIBPYTHON_VERSION}${ABIFLAGS})
-set(CONFIG_INSTALL_DIR share/${LIBPYTHON})
+set(CONFIG_INSTALL_DIR ${SHARE_INSTALL_DIR}/${LIBPYTHON})
 set(EXTENSION_INSTALL_DIR ${PYTHONHOME}/lib-dynload)
 
 if (${LIBPYTHON_VERSION} GREATER 3.1)
@@ -450,6 +479,10 @@ endif()
 set(INCLUDE_INSTALL_DIR include/python${LD_VERSION})
 if(MSVC)
     set(INCLUDE_INSTALL_DIR include)
+endif()
+if(BUILD_FRAMEWORK)
+    set(REL_INCLUDE_INSTALL_DIR include/python${PY_VERSION_MAJOR}.${PY_VERSION_MINOR})
+    set(INCLUDE_INSTALL_DIR ${FRAMEWORK_DIR_PREFIX}/include/python${PY_VERSION_MAJOR}.${PY_VERSION_MINOR})
 endif()
 # Build tree directory
 set(BIN_BUILD_DIR ${PROJECT_BINARY_DIR}/bin)
@@ -477,6 +510,9 @@ if(UNIX)
     set(PYCONFIG_BUILD_DIR ${BIN_BUILD_DIR})
     configure_file(cmake/config-unix/pyconfig.h.in
                    ${PYCONFIG_BUILD_DIR}/pyconfig.h)
+    file(GENERATE
+         OUTPUT $<TARGET_FILE_DIR:python>/pyconfig.h
+         INPUT ${PYCONFIG_BUILD_DIR}/pyconfig.h)
 elseif(WIN32)
     set(PYCONFIG_BUILD_DIR ${SRC_DIR}/PC) # In a windows build tree, 'pyconfig.h' is NOT required to
                                           # live along side the python executable.
@@ -544,7 +580,11 @@ if(BUILD_LIBPYTHON_SHARED AND UNIX)
     if(APPLE)
         set(_envvar DYLD_LIBRARY_PATH)
     endif()
-    set(PYTHON_WRAPPER_COMMAND env ${_envvar}=${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR})
+    set(PYTHON_HOME_PATH )
+    if(BUILD_FRAMEWORK)
+        set(PYTHON_HOME_PATH PYTHONHOME=${PROJECT_BINARY_DIR}/${PYTHONHOME} PYTHONPATH=${PROJECT_BINARY_DIR}/${PYTHONHOME})
+    endif()
+    set(PYTHON_WRAPPER_COMMAND env ${_envvar}=${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR} ${PYTHON_HOME_PATH})
 endif()
 
 # Add extension modules
@@ -699,7 +739,7 @@ if(UNIX)
                     ${PROJECT_BINARY_DIR}/Misc/python-${LIBPYTHON_VERSION}.pc
                     ${PROJECT_BINARY_DIR}/Misc/python-${PY_VERSION_MAJOR}.pc
                     ${PROJECT_BINARY_DIR}/Misc/python.pc
-                DESTINATION lib/pkgconfig
+                DESTINATION ${LIBDIR}/pkgconfig
                 COMPONENT Development)
     endif()
 
@@ -709,9 +749,12 @@ if(UNIX)
         set(MAKEFILE_LDSHARED_FLAGS "-dynamiclib -headerpad_max_install_names -undefined dynamic_lookup")
     endif()
     configure_file(cmake/makefile-variables.in
-                   ${BIN_BUILD_DIR}/Makefile @ONLY)
+                   ${BIN_BUILD_DIR}/Makefile.in @ONLY)
+    file(GENERATE
+         OUTPUT $<TARGET_FILE_DIR:python>/Makefile
+         INPUT ${BIN_BUILD_DIR}/Makefile.in)
     if(INSTALL_DEVELOPMENT)
-        install(FILES ${BIN_BUILD_DIR}/Makefile
+        install(FILES $<TARGET_FILE_DIR:python>/Makefile
                 DESTINATION ${LIB_CONFIG_INSTALL_DIR}
                 RENAME Makefile
                 COMPONENT Development)
@@ -726,7 +769,7 @@ if(UNIX)
 
     # Install manual
     if(INSTALL_MANUAL)
-        set(_install_man FILES ${SRC_DIR}/Misc/python.man DESTINATION share/man/man1 COMPONENT Runtime)
+        set(_install_man FILES ${SRC_DIR}/Misc/python.man DESTINATION ${SHARE_INSTALL_DIR}/man/man1 COMPONENT Runtime)
         install(${_install_man} RENAME python${LIBPYTHON_VERSION}.1)
         install(${_install_man} RENAME python${PY_VERSION_MAJOR}.1)
     endif()

@@ -477,7 +477,6 @@ function(add_libpython name type install component)
         OUTPUT_NAME ${LIBPYTHON}${ABIFLAGS}
         LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR}
         RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR}
-        INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/${LIBPYTHON_LIBDIR}
     )
     set_target_properties(${name} PROPERTIES
         POSITION_INDEPENDENT_CODE ON
@@ -486,11 +485,28 @@ function(add_libpython name type install component)
     # Export target
     set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS ${name})
 
+    if(BUILD_FRAMEWORK)
+        set_target_properties(${name} PROPERTIES
+            FRAMEWORK TRUE
+            FRAMEWORK_VERSION "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}"
+            MACOSX_FRAMEWORK_IDENTIFIER org.python.python
+            MACOSX_FRAMEWORK_SHORT_VERSION_STRING "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}"
+            MACOSX_FRAMEWORK_BUNDLE_VERSION "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}"
+            MACOSX_RPATH ON
+            OUTPUT_NAME ${FRAMEWORK_NAME}
+        )
+    else()
+        set_target_properties(${name} PROPERTIES
+            INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/${LIBPYTHON_LIBDIR}
+        )
+    endif()
+
     if(install)
         install(TARGETS ${name} EXPORT PythonTargets
             ARCHIVE DESTINATION ${LIBPYTHON_ARCHIVEDIR}
             LIBRARY DESTINATION ${LIBPYTHON_LIBDIR}
             RUNTIME DESTINATION ${LIBPYTHON_LIBDIR}
+            FRAMEWORK DESTINATION ${CMAKE_INSTALL_PREFIX}
             COMPONENT ${component}
         )
     endif()
