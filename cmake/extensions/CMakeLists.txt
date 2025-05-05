@@ -101,14 +101,12 @@ add_python_extension(_thread ALWAYS_BUILTIN
         Py_BUILD_CORE
 )
 
-if(PY_VERSION VERSION_EQUAL "3.2")
-  list(APPEND datetime${PY_VERSION_MAJOR}_SOURCES _time.c)
-endif()
 add_python_extension(time ${WIN32_BUILTIN} BUILTIN
     REQUIRES
         HAVE_LIBM
     SOURCES
         timemodule.c
+        $<$<VERSION_EQUAL:${PY_VERSION},3.2>:_time.c>
     DEFINITIONS
         Py_BUILD_CORE
     LIBRARIES
