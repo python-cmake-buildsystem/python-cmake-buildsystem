@@ -18,9 +18,22 @@ if(PY_VERSION VERSION_GREATER_EQUAL "3.5")
 endif()
 
 add_python_extension(array ${WIN32_BUILTIN} SOURCES arraymodule.c)
-add_python_extension(audioop ${WIN32_BUILTIN} REQUIRES HAVE_LIBM SOURCES audioop.c LIBRARIES ${M_LIBRARIES})
+add_python_extension(audioop ${WIN32_BUILTIN}
+    REQUIRES
+        HAVE_LIBM
+    SOURCES
+        audioop.c
+    LIBRARIES
+        ${M_LIBRARIES}
+)
 add_python_extension(_bisect ${WIN32_BUILTIN} SOURCES _bisectmodule.c)
-add_python_extension(cmath REQUIRES HAVE_LIBM ${WIN32_BUILTIN} SOURCES _math.c cmathmodule.c LIBRARIES ${M_LIBRARIES})
+add_python_extension(cmath
+    REQUIRES HAVE_LIBM ${WIN32_BUILTIN}
+    SOURCES
+        _math.c
+        cmathmodule.c
+    LIBRARIES
+        ${M_LIBRARIES})
 add_python_extension(_codecs_cn ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_cn.c)
 add_python_extension(_codecs_hk ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_hk.c)
 add_python_extension(_codecs_iso2022 ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_iso2022.c)
@@ -200,43 +213,89 @@ add_python_extension(xxsubtype BUILTIN SOURCES xxsubtype.c)
 if(PY_VERSION VERSION_LESS "3.8")
 # The zipimport module is always imported at startup. Having it as a
 # builtin module avoids some bootstrapping problems and reduces overhead.
-add_python_extension(zipimport ALWAYS_BUILTIN SOURCES zipimport.c DEFINITIONS Py_BUILD_CORE)
+add_python_extension(zipimport ALWAYS_BUILTIN
+    SOURCES
+        zipimport.c
+    DEFINITIONS
+        Py_BUILD_CORE
+)
 endif()
 
 # Python 3.6
 if(PY_VERSION VERSION_GREATER_EQUAL "3.6")
     # asyncio speedups
-    add_python_extension(_asyncio SOURCES _asynciomodule.c)
+    add_python_extension(_asyncio
+        SOURCES
+            _asynciomodule.c
+    )
     # blake module
     set(_blake2_SOURCES
         _blake2/blake2module.c
         _blake2/blake2b_impl.c
         _blake2/blake2s_impl.c
     )
-    add_python_extension(_blake2 ${WIN32_BUILTIN} SOURCES ${_blake2_SOURCES})
-    add_python_extension(_sha3 ${WIN32_BUILTIN} SOURCES _sha3/sha3module.c)
-    add_python_extension(_testconsole ${WIN32_BUILTIN} REQUIRES WIN32 SOURCES ../PC/_testconsole.c)
+    add_python_extension(_blake2 ${WIN32_BUILTIN}
+        SOURCES
+            ${_blake2_SOURCES}
+    )
+    add_python_extension(_sha3 ${WIN32_BUILTIN}
+        SOURCES
+            _sha3/sha3module.c
+    )
+    add_python_extension(_testconsole ${WIN32_BUILTIN}
+        REQUIRES
+            WIN32
+        SOURCES
+            ../PC/_testconsole.c
+    )
 endif()
 
 # Python 3.7
 if(PY_VERSION VERSION_GREATER_EQUAL "3.7")
-    add_python_extension(_abc BUILTIN SOURCES _abc.c)
-    add_python_extension(_contextvars ${WIN32_BUILTIN} SOURCES _contextvarsmodule.c)
-    add_python_extension(_queue SOURCES _queuemodule.c)
-    add_python_extension(_uuid REQUIRES UUID_LIBRARY "HAVE_UUID_H OR HAVE_UUID_UUID_H" SOURCES _uuidmodule.c LIBRARIES ${UUID_LIBRARY})
-    add_python_extension(_xxtestfuzz SOURCES _xxtestfuzz/_xxtestfuzz.c
-                                             _xxtestfuzz/fuzzer.c
+    add_python_extension(_abc BUILTIN
+        SOURCES
+            _abc.c
+    )
+    add_python_extension(_contextvars ${WIN32_BUILTIN}
+        SOURCES
+            _contextvarsmodule.c
+    )
+    add_python_extension(_queue
+        SOURCES
+            _queuemodule.c
+    )
+    add_python_extension(_uuid
+        REQUIRES
+            UUID_LIBRARY
+            "HAVE_UUID_H OR HAVE_UUID_UUID_H"
+        SOURCES
+            _uuidmodule.c
+        LIBRARIES
+            ${UUID_LIBRARY}
+    )
+    add_python_extension(_xxtestfuzz
+        SOURCES
+            _xxtestfuzz/_xxtestfuzz.c
+            _xxtestfuzz/fuzzer.c
     )
 endif()
 
 # Python 3.8
 if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
-    add_python_extension(_testinternalcapi SOURCES _testinternalcapi.c DEFINITIONS "PY3_DLLNAME=\"python3$<$<CONFIG:Debug>:_d>\"")
+    add_python_extension(_testinternalcapi
+        SOURCES
+            _testinternalcapi.c
+        DEFINITIONS
+            "PY3_DLLNAME=\"python3$<$<CONFIG:Debug>:_d>\""
+    )
 endif()
 
 # Python 3.9
 if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
-    add_python_extension(_peg_parser ALWAYS_BUILTIN SOURCES _peg_parser.c)
+    add_python_extension(_peg_parser ALWAYS_BUILTIN
+        SOURCES
+            _peg_parser.c
+    )
 endif()
 
 # UNIX-only extensions
@@ -256,16 +315,27 @@ if(TIRPC_LIBRARY AND TIRPC_RPC_INCLUDE_PATH)
     endif()
 endif()
 add_python_extension(nis
-    REQUIRES ${nis_REQUIRES}
-    SOURCES nismodule.c
-    LIBRARIES ${nis_LIBRARIES}
-    INCLUDEDIRS ${nis_INCLUDEDIRS}
+    REQUIRES
+        ${nis_REQUIRES}
+    SOURCES
+        nismodule.c
+    LIBRARIES
+        ${nis_LIBRARIES}
+    INCLUDEDIRS
+        ${nis_INCLUDEDIRS}
 )
 
 add_python_extension(posix REQUIRES UNIX ALWAYS_BUILTIN SOURCES posixmodule.c DEFINITIONS Py_BUILD_CORE)
 add_python_extension(pwd REQUIRES UNIX BUILTIN SOURCES pwdmodule.c) # this is needed to find out the user's home dir if $HOME is not set
 add_python_extension(resource REQUIRES UNIX SOURCES resource.c)
-add_python_extension(spwd REQUIRES UNIX HAVE_GETSPNAM HAVE_GETSPENT SOURCES spwdmodule.c)
+add_python_extension(spwd
+    REQUIRES
+        UNIX
+        HAVE_GETSPNAM
+        HAVE_GETSPENT
+    SOURCES
+        spwdmodule.c
+)
 add_python_extension(syslog REQUIRES UNIX SOURCES syslogmodule.c)
 add_python_extension(termios REQUIRES UNIX SOURCES termios.c)
 
@@ -282,7 +352,12 @@ add_python_extension(_scproxy
 )
 
 # Linux-only extensions
-add_python_extension(ossaudiodev REQUIRES LINUX SOURCES ossaudiodev.c)
+add_python_extension(ossaudiodev
+    REQUIRES
+        LINUX
+    SOURCES
+        ossaudiodev.c
+)
 
 # Python 3.8: UNIX-only extensions
 if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
@@ -290,14 +365,26 @@ if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
     if(HAVE_SHM_OPEN_IN_RT)
         list(APPEND _posixshmem_LIBRARIES rt)
     endif()
-    add_python_extension(_posixshmem REQUIRES UNIX SOURCES _multiprocessing/posixshmem.c LIBRARIES ${_posixshmem_LIBRARIES})
+    add_python_extension(_posixshmem
+        REQUIRES
+            UNIX
+        SOURCES
+            _multiprocessing/posixshmem.c
+        LIBRARIES
+            ${_posixshmem_LIBRARIES}
+    )
 endif()
 
 # Windows-only extensions
 add_python_extension(_msi
-    REQUIRES WIN32
-    SOURCES ${SRC_DIR}/PC/_msi.c
-    LIBRARIES cabinet.lib msi.lib rpcrt4.lib
+    REQUIRES
+        WIN32
+    SOURCES
+        ${SRC_DIR}/PC/_msi.c
+    LIBRARIES
+        cabinet.lib
+        msi.lib
+        rpcrt4.lib
 )
 add_python_extension(msvcrt REQUIRES MSVC BUILTIN SOURCES ${SRC_DIR}/PC/msvcrtmodule.c)
 add_python_extension(nt REQUIRES WIN32 ALWAYS_BUILTIN SOURCES posixmodule.c)
@@ -306,7 +393,8 @@ add_python_extension(winreg REQUIRES WIN32 BUILTIN SOURCES ${SRC_DIR}/PC/winreg.
 
 # Python3: Windows-only extensions
 add_python_extension(_overlapped
-    REQUIRES WIN32
+    REQUIRES
+        WIN32
     SOURCES
         ${SRC_DIR}/Modules/overlapped.c
     LIBRARIES
@@ -335,17 +423,21 @@ if(UNIX)
       list(APPEND _multiprocessing_REQUIRES WITH_THREAD)
     endif()
     add_python_extension(_multiprocessing
-        SOURCES _multiprocessing/multiprocessing.c
-                ${_multiprocessing${PY_VERSION_MAJOR}_SOURCES}
-        REQUIRES ${_multiprocessing_REQUIRES}
+        SOURCES
+            _multiprocessing/multiprocessing.c
+            ${_multiprocessing${PY_VERSION_MAJOR}_SOURCES}
+        REQUIRES
+            ${_multiprocessing_REQUIRES}
     )
 elseif(WIN32)
     set(_multiprocessing3_SOURCES )
     add_python_extension(_multiprocessing
-        SOURCES _multiprocessing/multiprocessing.c
-                _multiprocessing/semaphore.c
-                ${_multiprocessing${PY_VERSION_MAJOR}_SOURCES}
-        LIBRARIES ws2_32
+        SOURCES
+            _multiprocessing/multiprocessing.c
+            _multiprocessing/semaphore.c
+            ${_multiprocessing${PY_VERSION_MAJOR}_SOURCES}
+        LIBRARIES
+            ws2_32
     )
 endif()
 
@@ -633,7 +725,8 @@ if(ENABLE_DECIMAL)
     message(STATUS "extension_decimal: libmpdec_config [${libmpdec_config}]")
 endif()
 add_python_extension(_decimal
-    REQUIRES IS_PY3_3_OR_GREATER
+    REQUIRES
+        IS_PY3_3_OR_GREATER
     SOURCES
         _decimal/_decimal.c
         _decimal/docstrings.h
@@ -698,10 +791,22 @@ endif()
 # We always compile these even when OpenSSL is available (issue #14693).
 # It's harmless and the object code is tiny (40-50 KB per module,
 # only loaded when actually used).
-add_python_extension(_md5 ${WIN32_BUILTIN} SOURCES md5module.c)
-add_python_extension(_sha1 ${WIN32_BUILTIN} SOURCES sha1module.c)
-add_python_extension(_sha256 ${WIN32_BUILTIN} SOURCES sha256module.c)
-add_python_extension(_sha512 ${WIN32_BUILTIN} SOURCES sha512module.c)
+add_python_extension(_md5 ${WIN32_BUILTIN}
+    SOURCES
+        md5module.c
+)
+add_python_extension(_sha1 ${WIN32_BUILTIN}
+    SOURCES
+        sha1module.c
+)
+add_python_extension(_sha256 ${WIN32_BUILTIN}
+    SOURCES
+        sha256module.c
+)
+add_python_extension(_sha512 ${WIN32_BUILTIN}
+    SOURCES
+        sha512module.c
+)
 
 # Extensions that depend on other libraries
 set(binascii_REQUIRES "")
@@ -747,9 +852,13 @@ add_python_extension(_curses
 add_python_extension(_dbm
     REQUIRES NDBM_TAG GDBM_LIBRARY GDBM_COMPAT_LIBRARY
     SOURCES _dbmmodule.c
-    DEFINITIONS HAVE_${NDBM_TAG}_H
-    LIBRARIES ${GDBM_LIBRARY} ${GDBM_COMPAT_LIBRARY}
-    INCLUDEDIRS ${${NDBM_TAG}_INCLUDE_PATH}
+    DEFINITIONS
+        HAVE_${NDBM_TAG}_H
+    LIBRARIES
+        ${GDBM_LIBRARY}
+        ${GDBM_COMPAT_LIBRARY}
+    INCLUDEDIRS
+        ${${NDBM_TAG}_INCLUDE_PATH}
 )
 add_python_extension(_gdbm
     REQUIRES GDBM_INCLUDE_PATH GDBM_LIBRARY GDBM_COMPAT_LIBRARY
@@ -789,18 +898,23 @@ add_python_extension(readline
 )
 add_python_extension(_sqlite3
     REQUIRES SQLite3_INCLUDE_DIRS SQLite3_LIBRARIES
-    SOURCES _sqlite/cache.c
-            _sqlite/connection.c
-            _sqlite/cursor.c
-            _sqlite/microprotocols.c
-            _sqlite/module.c
-            _sqlite/prepare_protocol.c
-            _sqlite/row.c
-            _sqlite/statement.c
-            _sqlite/util.c
-    DEFINITIONS MODULE_NAME="sqlite3" SQLITE_OMIT_LOAD_EXTENSION=1
-    INCLUDEDIRS ${SQLite3_INCLUDE_DIRS}
-    LIBRARIES ${SQLite3_LIBRARIES}
+    SOURCES
+        _sqlite/cache.c
+        _sqlite/connection.c
+        _sqlite/cursor.c
+        _sqlite/microprotocols.c
+        _sqlite/module.c
+        _sqlite/prepare_protocol.c
+        _sqlite/row.c
+        _sqlite/statement.c
+        _sqlite/util.c
+    DEFINITIONS
+        MODULE_NAME="sqlite3"
+        SQLITE_OMIT_LOAD_EXTENSION=1
+    INCLUDEDIRS
+        ${SQLite3_INCLUDE_DIRS}
+    LIBRARIES
+        ${SQLite3_LIBRARIES}
 )
 if(ENABLE_SQLITE3 AND CMAKE_C_COMPILER_ID MATCHES GNU)
     set_property(SOURCE ${SRC_DIR}/Modules/_sqlite/module.c PROPERTY COMPILE_FLAGS -Wno-deprecated-declarations)
