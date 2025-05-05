@@ -4,6 +4,11 @@ if(WIN32)
 endif()
 
 # Boolean variables intended to be associated with the REQUIRES argument of add_python_extension
+set(IS_PY_LESS_3_8 0)
+if(PY_VERSION VERSION_LESS "3.8")
+    set(IS_PY_LESS_3_8 1)
+endif()
+
 set(IS_PY3_3_OR_GREATER 0)
 if(PY_VERSION VERSION_GREATER_EQUAL "3.3")
     set(IS_PY3_3_OR_GREATER 1)
@@ -15,6 +20,18 @@ endif()
 set(IS_PY3_5_OR_GREATER 0)
 if(PY_VERSION VERSION_GREATER_EQUAL "3.5")
     set(IS_PY3_5_OR_GREATER 1)
+endif()
+set(IS_PY3_6_OR_GREATER 0)
+if(PY_VERSION VERSION_GREATER_EQUAL "3.6")
+    set(IS_PY3_6_OR_GREATER 1)
+endif()
+set(IS_PY3_8_OR_GREATER 0)
+if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
+    set(IS_PY3_8_OR_GREATER 1)
+endif()
+set(IS_PY3_9_OR_GREATER 0)
+if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
+    set(IS_PY3_9_OR_GREATER 1)
 endif()
 
 add_python_extension(array ${WIN32_BUILTIN} SOURCES arraymodule.c)
@@ -210,21 +227,23 @@ add_python_extension(xxlimited REQUIRES BUILD_TESTING
     NO_INSTALL
 )
 add_python_extension(xxsubtype BUILTIN SOURCES xxsubtype.c)
-if(PY_VERSION VERSION_LESS "3.8")
+
 # The zipimport module is always imported at startup. Having it as a
 # builtin module avoids some bootstrapping problems and reduces overhead.
 add_python_extension(zipimport ALWAYS_BUILTIN
+    REQUIRES
+        IS_PY_LESS_3_8
     SOURCES
         zipimport.c
     DEFINITIONS
         Py_BUILD_CORE
 )
-endif()
 
 # Python 3.6
-if(PY_VERSION VERSION_GREATER_EQUAL "3.6")
 # asyncio speedups
 add_python_extension(_asyncio
+    REQUIRES
+        IS_PY3_6_OR_GREATER
     SOURCES
         _asynciomodule.c
 )
@@ -235,37 +254,47 @@ set(_blake2_SOURCES
     _blake2/blake2s_impl.c
 )
 add_python_extension(_blake2 ${WIN32_BUILTIN}
+    REQUIRES
+        IS_PY3_6_OR_GREATER
     SOURCES
         ${_blake2_SOURCES}
 )
 add_python_extension(_sha3 ${WIN32_BUILTIN}
+    REQUIRES
+        IS_PY3_6_OR_GREATER
     SOURCES
         _sha3/sha3module.c
 )
 add_python_extension(_testconsole ${WIN32_BUILTIN}
     REQUIRES
+        IS_PY3_6_OR_GREATER
         WIN32
     SOURCES
         ../PC/_testconsole.c
 )
-endif()
 
 # Python 3.7
-if(PY_VERSION VERSION_GREATER_EQUAL "3.7")
 add_python_extension(_abc BUILTIN
+    REQUIRES
+        IS_PY3_7_OR_GREATER
     SOURCES
         _abc.c
 )
 add_python_extension(_contextvars ${WIN32_BUILTIN}
+    REQUIRES
+        IS_PY3_7_OR_GREATER
     SOURCES
         _contextvarsmodule.c
 )
 add_python_extension(_queue
+    REQUIRES
+        IS_PY3_7_OR_GREATER
     SOURCES
         _queuemodule.c
 )
 add_python_extension(_uuid
     REQUIRES
+        IS_PY3_7_OR_GREATER
         UUID_LIBRARY
         "HAVE_UUID_H OR HAVE_UUID_UUID_H"
     SOURCES
@@ -274,29 +303,30 @@ add_python_extension(_uuid
         ${UUID_LIBRARY}
 )
 add_python_extension(_xxtestfuzz
+    REQUIRES
+        IS_PY3_7_OR_GREATER
     SOURCES
         _xxtestfuzz/_xxtestfuzz.c
         _xxtestfuzz/fuzzer.c
 )
-endif()
 
 # Python 3.8
-if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
 add_python_extension(_testinternalcapi
+    REQUIRES
+        IS_PY3_8_OR_GREATER
     SOURCES
         _testinternalcapi.c
     DEFINITIONS
         "PY3_DLLNAME=\"python3$<$<CONFIG:Debug>:_d>\""
 )
-endif()
 
 # Python 3.9
-if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
 add_python_extension(_peg_parser ALWAYS_BUILTIN
+    REQUIRES
+        IS_PY3_9_OR_GREATER
     SOURCES
         _peg_parser.c
 )
-endif()
 
 # UNIX-only extensions
 add_python_extension(fcntl REQUIRES UNIX SOURCES fcntlmodule.c)
@@ -360,20 +390,19 @@ add_python_extension(ossaudiodev
 )
 
 # Python 3.8: UNIX-only extensions
-if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
 set(_posixshmem_LIBRARIES)
 if(HAVE_SHM_OPEN_IN_RT)
     list(APPEND _posixshmem_LIBRARIES rt)
 endif()
 add_python_extension(_posixshmem
     REQUIRES
+        IS_PY3_8_OR_GREATER
         UNIX
     SOURCES
         _multiprocessing/posixshmem.c
     LIBRARIES
         ${_posixshmem_LIBRARIES}
 )
-endif()
 
 # Windows-only extensions
 add_python_extension(_msi
