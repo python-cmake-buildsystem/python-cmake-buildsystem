@@ -223,79 +223,79 @@ endif()
 
 # Python 3.6
 if(PY_VERSION VERSION_GREATER_EQUAL "3.6")
-    # asyncio speedups
-    add_python_extension(_asyncio
-        SOURCES
-            _asynciomodule.c
-    )
-    # blake module
-    set(_blake2_SOURCES
-        _blake2/blake2module.c
-        _blake2/blake2b_impl.c
-        _blake2/blake2s_impl.c
-    )
-    add_python_extension(_blake2 ${WIN32_BUILTIN}
-        SOURCES
-            ${_blake2_SOURCES}
-    )
-    add_python_extension(_sha3 ${WIN32_BUILTIN}
-        SOURCES
-            _sha3/sha3module.c
-    )
-    add_python_extension(_testconsole ${WIN32_BUILTIN}
-        REQUIRES
-            WIN32
-        SOURCES
-            ../PC/_testconsole.c
-    )
+# asyncio speedups
+add_python_extension(_asyncio
+    SOURCES
+        _asynciomodule.c
+)
+# blake module
+set(_blake2_SOURCES
+    _blake2/blake2module.c
+    _blake2/blake2b_impl.c
+    _blake2/blake2s_impl.c
+)
+add_python_extension(_blake2 ${WIN32_BUILTIN}
+    SOURCES
+        ${_blake2_SOURCES}
+)
+add_python_extension(_sha3 ${WIN32_BUILTIN}
+    SOURCES
+        _sha3/sha3module.c
+)
+add_python_extension(_testconsole ${WIN32_BUILTIN}
+    REQUIRES
+        WIN32
+    SOURCES
+        ../PC/_testconsole.c
+)
 endif()
 
 # Python 3.7
 if(PY_VERSION VERSION_GREATER_EQUAL "3.7")
-    add_python_extension(_abc BUILTIN
-        SOURCES
-            _abc.c
-    )
-    add_python_extension(_contextvars ${WIN32_BUILTIN}
-        SOURCES
-            _contextvarsmodule.c
-    )
-    add_python_extension(_queue
-        SOURCES
-            _queuemodule.c
-    )
-    add_python_extension(_uuid
-        REQUIRES
-            UUID_LIBRARY
-            "HAVE_UUID_H OR HAVE_UUID_UUID_H"
-        SOURCES
-            _uuidmodule.c
-        LIBRARIES
-            ${UUID_LIBRARY}
-    )
-    add_python_extension(_xxtestfuzz
-        SOURCES
-            _xxtestfuzz/_xxtestfuzz.c
-            _xxtestfuzz/fuzzer.c
-    )
+add_python_extension(_abc BUILTIN
+    SOURCES
+        _abc.c
+)
+add_python_extension(_contextvars ${WIN32_BUILTIN}
+    SOURCES
+        _contextvarsmodule.c
+)
+add_python_extension(_queue
+    SOURCES
+        _queuemodule.c
+)
+add_python_extension(_uuid
+    REQUIRES
+        UUID_LIBRARY
+        "HAVE_UUID_H OR HAVE_UUID_UUID_H"
+    SOURCES
+        _uuidmodule.c
+    LIBRARIES
+        ${UUID_LIBRARY}
+)
+add_python_extension(_xxtestfuzz
+    SOURCES
+        _xxtestfuzz/_xxtestfuzz.c
+        _xxtestfuzz/fuzzer.c
+)
 endif()
 
 # Python 3.8
 if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
-    add_python_extension(_testinternalcapi
-        SOURCES
-            _testinternalcapi.c
-        DEFINITIONS
-            "PY3_DLLNAME=\"python3$<$<CONFIG:Debug>:_d>\""
-    )
+add_python_extension(_testinternalcapi
+    SOURCES
+        _testinternalcapi.c
+    DEFINITIONS
+        "PY3_DLLNAME=\"python3$<$<CONFIG:Debug>:_d>\""
+)
 endif()
 
 # Python 3.9
 if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
-    add_python_extension(_peg_parser ALWAYS_BUILTIN
-        SOURCES
-            _peg_parser.c
-    )
+add_python_extension(_peg_parser ALWAYS_BUILTIN
+    SOURCES
+        _peg_parser.c
+)
 endif()
 
 # UNIX-only extensions
@@ -361,18 +361,18 @@ add_python_extension(ossaudiodev
 
 # Python 3.8: UNIX-only extensions
 if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
-    set(_posixshmem_LIBRARIES)
-    if(HAVE_SHM_OPEN_IN_RT)
-        list(APPEND _posixshmem_LIBRARIES rt)
-    endif()
-    add_python_extension(_posixshmem
-        REQUIRES
-            UNIX
-        SOURCES
-            _multiprocessing/posixshmem.c
-        LIBRARIES
-            ${_posixshmem_LIBRARIES}
-    )
+set(_posixshmem_LIBRARIES)
+if(HAVE_SHM_OPEN_IN_RT)
+    list(APPEND _posixshmem_LIBRARIES rt)
+endif()
+add_python_extension(_posixshmem
+    REQUIRES
+        UNIX
+    SOURCES
+        _multiprocessing/posixshmem.c
+    LIBRARIES
+        ${_posixshmem_LIBRARIES}
+)
 endif()
 
 # Windows-only extensions
