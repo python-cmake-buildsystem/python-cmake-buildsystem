@@ -3,6 +3,11 @@ if(WIN32)
     set(WIN32_BUILTIN BUILTIN)
 endif()
 
+# Boolean variables intended to be associated with the REQUIRES argument of add_python_extension
+set(IS_PY3_3_OR_GREATER 0)
+if(PY_VERSION VERSION_GREATER_EQUAL "3.3")
+    set(IS_PY3_3_OR_GREATER 1)
+endif()
 add_python_extension(array ${WIN32_BUILTIN} SOURCES arraymodule.c)
 add_python_extension(audioop ${WIN32_BUILTIN} REQUIRES HAVE_LIBM SOURCES audioop.c LIBRARIES ${M_LIBRARIES})
 add_python_extension(_bisect ${WIN32_BUILTIN} SOURCES _bisectmodule.c)
@@ -739,12 +744,8 @@ if(ENABLE_HASHLIB AND CMAKE_C_COMPILER_ID MATCHES GNU)
     set_property(SOURCE ${SRC_DIR}/Modules/_hashopenssl.c PROPERTY COMPILE_FLAGS -Wno-deprecated-declarations)
 endif()
 # lzma module was introduced in Python 3.3
-set(is_py33_or_greater 0)
-if(PY_VERSION_MINOR VERSION_GREATER 2)
-  set(is_py33_or_greater 1)
-endif()
 add_python_extension(_lzma
-    REQUIRES LZMA_INCLUDE_PATH LZMA_LIBRARY is_py33_or_greater
+    REQUIRES LZMA_INCLUDE_PATH LZMA_LIBRARY IS_PY3_3_OR_GREATER
     SOURCES _lzmamodule.c
     DEFINITIONS MODULE_NAME="lzma" LZMA_API_STATIC=1
     INCLUDEDIRS ${LZMA_INCLUDE_PATH}
