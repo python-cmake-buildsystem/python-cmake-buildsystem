@@ -95,8 +95,6 @@ set(PARSER_COMMON_SOURCES # Equivalent to POBJS in Makefile.pre
 set(OBJECT_COMMON_SOURCES # Equivalent to OBJECT_OBJS in Makefile.pre
     ${SRC_DIR}/Objects/accu.c
     ${SRC_DIR}/Objects/bytesobject.c
-    ${SRC_DIR}/Objects/namespaceobject.c
-    ${SRC_DIR}/Objects/odictobject.c
     $<$<C_COMPILER_ID:MSVC>:${SRC_DIR}/PC/invalid_parameter_handler.c>
     ${SRC_DIR}/Objects/abstract.c
     ${SRC_DIR}/Objects/boolobject.c
@@ -133,6 +131,12 @@ set(OBJECT_COMMON_SOURCES # Equivalent to OBJECT_OBJS in Makefile.pre
     ${SRC_DIR}/Objects/unicodectype.c
     ${SRC_DIR}/Objects/unicodeobject.c
     ${SRC_DIR}/Objects/weakrefobject.c
+
+    # Introduced in Python 3.3
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.3>:${SRC_DIR}/Objects/namespaceobject.c>
+
+    # Introduced in Python 3.5
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.5>:${SRC_DIR}/Objects/odictobject.c>
 
     # Introduced in Python 3.7
     $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.7>:${SRC_DIR}/Objects/call.c>
@@ -184,9 +188,6 @@ set(PYTHON_COMMON_SOURCES
     ${DYNLOAD_SOURCES}
     ${SRC_DIR}/Python/dynamic_annotations.c
     ${SRC_DIR}/Python/fileutils.c
-    ${SRC_DIR}/Python/pyhash.c
-    ${SRC_DIR}/Python/pylifecycle.c
-    ${SRC_DIR}/Python/pystrhex.c
     ${SRC_DIR}/Python/pystrtod.c
     ${SRC_DIR}/Python/pytime.c
     ${SRC_DIR}/Python/asdl.c
@@ -226,6 +227,13 @@ set(PYTHON_COMMON_SOURCES
     ${SRC_DIR}/Python/sysmodule.c
     ${SRC_DIR}/Python/traceback.c
     ${SRC_DIR}/Python/_warnings.c
+
+    # Introduced in Python 3.4
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.4>:${SRC_DIR}/Python/pyhash.c>
+
+    # Introduced in Python 3.5
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.5>:${SRC_DIR}/Python/pylifecycle.c>
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.5>:${SRC_DIR}/Python/pystrhex.c>
 
     # Removed in Python 3.7
     $<$<VERSION_LESS:${PY_VERSION},3.7>:${SRC_DIR}/Python/random.c>
@@ -383,7 +391,7 @@ set(LIBPYTHON_FROZEN_SOURCES )
 
 # Build _freeze_importlib executable
 add_executable(_freeze_importlib
-  ${SRC_DIR}/Programs/_freeze_importlib.c
+  $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.3>:${SRC_DIR}/$<IF:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.5>,Programs,Modules>/_freeze_importlib.c>
   ${LIBPYTHON_OMIT_FROZEN_SOURCES}
   )
 target_link_libraries(_freeze_importlib ${LIBPYTHON_TARGET_LIBRARIES})
@@ -437,13 +445,20 @@ if(PY_VERSION VERSION_LESS "3.8")
 add_executable(pgen
     ${PARSER_COMMON_SOURCES}
     ${SRC_DIR}/Python/dynamic_annotations.c
-    ${SRC_DIR}/Parser/parsetok_pgen.c
     ${SRC_DIR}/Objects/obmalloc.c
     ${SRC_DIR}/Python/mysnprintf.c
     ${SRC_DIR}/Python/pyctype.c
     ${SRC_DIR}/Parser/tokenizer_pgen.c
     ${SRC_DIR}/Parser/printgrammar.c
     ${SRC_DIR}/Parser/pgenmain.c
+
+    # Removed in Python 3.10 but excluded starting with Python 3.3 when the new parser
+    # was introduced.
+    # See cpython/cpython@1ed83adb0e9 ("bpo-40939: Remove the old parser (GH-20768)", 2020-06-11)
+    $<$<VERSION_LESS:${PY_VERSION},3.3>:${SRC_DIR}/Parser/parsetok.c>
+
+    # Introduced in Python 3.3
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.3>:${SRC_DIR}/Parser/parsetok_pgen.c>
 )
 if(builtin_compile_definitions_without_py_limited_api)
   target_compile_definitions(pgen PUBLIC ${builtin_compile_definitions_without_py_limited_api})
