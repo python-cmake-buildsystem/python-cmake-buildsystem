@@ -8,6 +8,15 @@ set(IS_PY3_3_OR_GREATER 0)
 if(PY_VERSION VERSION_GREATER_EQUAL "3.3")
     set(IS_PY3_3_OR_GREATER 1)
 endif()
+set(IS_PY3_4_OR_GREATER 0)
+if(PY_VERSION VERSION_GREATER_EQUAL "3.4")
+    set(IS_PY3_4_OR_GREATER 1)
+endif()
+set(IS_PY3_5_OR_GREATER 0)
+if(PY_VERSION VERSION_GREATER_EQUAL "3.5")
+    set(IS_PY3_5_OR_GREATER 1)
+endif()
+
 add_python_extension(array ${WIN32_BUILTIN} SOURCES arraymodule.c)
 add_python_extension(audioop ${WIN32_BUILTIN} REQUIRES HAVE_LIBM SOURCES audioop.c LIBRARIES ${M_LIBRARIES})
 add_python_extension(_bisect ${WIN32_BUILTIN} SOURCES _bisectmodule.c)
@@ -21,6 +30,9 @@ add_python_extension(_codecs_tw ${WIN32_BUILTIN} SOURCES cjkcodecs/_codecs_tw.c)
 add_python_extension(_collections ${WIN32_BUILTIN} BUILTIN SOURCES _collectionsmodule.c) # Container types
 
 set(crypt_NAME _crypt)
+if(PY_VERSION VERSION_LESS 3.3)
+    set(crypt_NAME crypt)
+endif()
 add_python_extension(${crypt_NAME}
     REQUIRES
         HAVE_LIBCRYPT
@@ -124,11 +136,17 @@ add_python_extension(unicodedata SOURCES unicodedata.c)
 # Python3
 add_python_extension(atexit BUILTIN REQUIRES SOURCES atexitmodule.c) # Register functions to be run at interpreter-shutdown
 add_python_extension(_codecs BUILTIN SOURCES _codecsmodule.c) # access to the builtin codecs and codec registry
-add_python_extension(_operator BUILTIN REQUIRES SOURCES _operator.c)
+set(operator_NAME _operator)
+if(PY_VERSION VERSION_LESS 3.4)
+    set(operator_NAME operator)
+endif()
+add_python_extension(${operator_NAME} BUILTIN REQUIRES SOURCES ${operator_NAME}.c)
 add_python_extension(faulthandler ALWAYS_BUILTIN
+    REQUIRES IS_PY3_3_OR_GREATER
     SOURCES faulthandler.c
 )
 add_python_extension(_opcode ${WIN32_BUILTIN}
+    REQUIRES IS_PY3_4_OR_GREATER
     SOURCES _opcode.c
 )
 
@@ -142,6 +160,7 @@ add_python_extension(_sre BUILTIN
 
 # stat.h interface
 add_python_extension(_stat BUILTIN
+    REQUIRES IS_PY3_4_OR_GREATER
     SOURCES _stat.c
 )
 
@@ -149,19 +168,23 @@ add_python_extension(_symtable BUILTIN SOURCES symtablemodule.c)
 
 # Python PEP-3118 (buffer protocol) test module
 add_python_extension(_testbuffer
+    REQUIRES IS_PY3_3_OR_GREATER
     SOURCES _testbuffer.c
 )
 
 # Test loading multiple modules from one compiled file (http://bugs.python.org/issue16421)
 add_python_extension(_testimportmultiple
+    REQUIRES IS_PY3_4_OR_GREATER
     SOURCES _testimportmultiple.c
 )
 # Test multi-phase extension module init (PEP 489)
 add_python_extension(_testmultiphase
+    REQUIRES IS_PY3_5_OR_GREATER
     SOURCES _testmultiphase.c
 )
 # debug tool to trace memory blocks allocated by Python
 add_python_extension(_tracemalloc ALWAYS_BUILTIN
+    REQUIRES IS_PY3_4_OR_GREATER
     SOURCES
        ${SRC_DIR}/$<IF:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>,Python,Modules>/hashtable.c
        _tracemalloc.c
@@ -610,6 +633,7 @@ if(ENABLE_DECIMAL)
     message(STATUS "extension_decimal: libmpdec_config [${libmpdec_config}]")
 endif()
 add_python_extension(_decimal
+    REQUIRES IS_PY3_3_OR_GREATER
     SOURCES
         _decimal/_decimal.c
         _decimal/docstrings.h
@@ -736,6 +760,7 @@ add_python_extension(_gdbm
 )
 add_python_extension(_hashlib
     REQUIRES OPENSSL_INCLUDE_DIR OPENSSL_LIBRARIES
+      IS_PY3_5_OR_GREATER
     SOURCES _hashopenssl.c
     LIBRARIES ${OPENSSL_LIBRARIES}
     INCLUDEDIRS ${OPENSSL_INCLUDE_DIR}
@@ -790,6 +815,7 @@ if(WIN32)
 endif()
 add_python_extension(_ssl
     REQUIRES OPENSSL_INCLUDE_DIR OPENSSL_LIBRARIES
+      IS_PY3_5_OR_GREATER
     SOURCES ${_ssl_SOURCES}
     LIBRARIES ${_ssl_LIBRARIES}
     INCLUDEDIRS ${OPENSSL_INCLUDE_DIR}

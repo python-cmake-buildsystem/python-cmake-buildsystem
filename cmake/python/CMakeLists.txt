@@ -1,5 +1,5 @@
 set(PYTHON_SOURCES
-    ${SRC_DIR}/Programs/python.c
+    ${SRC_DIR}/$<IF:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.5>,Programs,Modules>/python.c
 )
 
 add_executable(python ${PYTHON_SOURCES})
