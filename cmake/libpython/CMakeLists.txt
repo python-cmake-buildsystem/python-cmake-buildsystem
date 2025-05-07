@@ -561,7 +561,10 @@ if(BUILD_LIBPYTHON_SHARED)
         add_custom_target(generate_libpython3stub_lib DEPENDS ${python3stub_lib})
 
         # Build 'python3.dll'
-        add_library(${targetname} SHARED ${SRC_DIR}/PC/python3dll.c ${SRC_DIR}/PC/python3.def)
+        add_library(${targetname} SHARED
+            ${SRC_DIR}/PC/python3dll.c
+            ${SRC_DIR}/PC/python3.def
+        )
         set_target_properties(${targetname} PROPERTIES
             OUTPUT_NAME python3
             LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR}
@@ -570,7 +573,9 @@ if(BUILD_LIBPYTHON_SHARED)
         )
         add_dependencies(${targetname} generate_libpython3stub_lib)
 
-        target_link_libraries(${targetname} ${python3stub_lib})
+        target_link_libraries(${targetname}
+            ${python3stub_lib}
+        )
     endif()
 
     if(UNIX AND NOT APPLE)
