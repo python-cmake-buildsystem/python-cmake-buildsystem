@@ -81,7 +81,7 @@ add_python_extension(_datetime ${WIN32_BUILTIN}
     SOURCES
         _datetimemodule.c
         $<$<VERSION_LESS_EQUAL:${PY_VERSION},3.1>:timemodule.c>
-        $<$<VERSION_EQUAL:${PY_VERSION},3.2>:_time.c>
+        $<$<VERSION_EQUAL:${PY_VERSION_MAJOR}.${PY_VERSION_MINOR},3.2>:_time.c>
     LIBRARIES
         ${M_LIBRARIES}
 )
@@ -153,7 +153,7 @@ add_python_extension(time ${WIN32_BUILTIN} BUILTIN
         HAVE_LIBM
     SOURCES
         timemodule.c
-        $<$<VERSION_EQUAL:${PY_VERSION},3.2>:_time.c>
+        $<$<VERSION_EQUAL:${PY_VERSION_MAJOR}.${PY_VERSION_MINOR},3.2>:_time.c>
     DEFINITIONS
         Py_BUILD_CORE
     LIBRARIES
