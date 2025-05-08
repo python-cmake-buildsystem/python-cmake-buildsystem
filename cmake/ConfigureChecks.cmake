@@ -21,6 +21,7 @@ if(USE_SYSTEM_BZip2)
 endif()
 message(STATUS "BZIP2_INCLUDE_DIR=${BZIP2_INCLUDE_DIR}")
 message(STATUS "BZIP2_LIBRARIES=${BZIP2_LIBRARIES}")
+set(HAVE_BZLIB_H "${BZIP2_INCLUDE_DIR}") # Python 3.11
 
 if(USE_SYSTEM_Curses)
 
@@ -104,7 +105,9 @@ if(USE_SYSTEM_TCL)
             message(STATUS "TK_PATCH_LEVEL: ${TK_PATCH_LEVEL}")
 
             set(_tk_expected_version)
-            if(PY_VERSION VERSION_GREATER_EQUAL "3.5")
+            if(PY_VERSION VERSION_GREATER_EQUAL "3.11")
+                set(_tk_expected_version "8.5.12")
+            elseif(PY_VERSION VERSION_GREATER_EQUAL "3.5")
                 set(_tk_expected_version "8.4")
             else()
                 set(_tk_expected_version "8.3.1")
@@ -133,6 +136,7 @@ if(USE_SYSTEM_ZLIB)
     message(STATUS "ZLIB_INCLUDE_DIRS=${ZLIB_INCLUDE_DIRS}")
     message(STATUS "ZLIB_LIBRARIES=${ZLIB_LIBRARIES}")
 endif()
+set(HAVE_ZLIB_H ${ZLIB_INCLUDE_DIRS}) # Python 3.11
 
 if(USE_SYSTEM_DB)
     find_path(DB_INCLUDE_PATH db.h)
@@ -140,21 +144,32 @@ if(USE_SYSTEM_DB)
     message(STATUS "DB_INCLUDE_PATH=${DB_INCLUDE_PATH}")
     message(STATUS "DB_LIBRARY=${DB_LIBRARY}")
 endif()
+set(HAVE_DB_H ${DB_INCLUDE_PATH}) # Python 3.11
+set(HAVE_LIBDB ${DB_LIBRARY}) # Python 3.11
 
 if(USE_SYSTEM_GDBM)
     find_path(GDBM_INCLUDE_PATH gdbm.h)
+    set(HAVE_GDBM_H ${GDBM_INCLUDE_PATH}) # Python 3.11
     find_library(GDBM_LIBRARY gdbm)
     find_library(GDBM_COMPAT_LIBRARY gdbm_compat)
+    set(HAVE_LIBGDBM_COMPAT ${GDBM_COMPAT_LIBRARY}) # Python 3.11
     find_path(NDBM_INCLUDE_PATH ndbm.h)
+    set(HAVE_NDBM_H ${NDBM_INCLUDE_PATH}) # Python 3.11
 
     if(NDBM_INCLUDE_PATH)
         set(NDBM_TAG NDBM)
+        set(NDBM_USE NDBM)
+        find_library(NDBM_LIBRARY ndbm)
+        set(HAVE_LIBNDBM ${NDBM_LIBRARY}) # Python 3.11
     else()
+        set(NDBM_USE GDBM_COMPAT)
         find_path(GDBM_NDBM_INCLUDE_PATH gdbm/ndbm.h)
+        set(HAVE_GDBM_NDBM_H ${GDBM_NDBM_INCLUDE_PATH}) # Python 3.11
         if(GDBM_NDBM_INCLUDE_PATH)
             set(NDBM_TAG GDBM_NDBM)
         else()
             find_path(GDBM_DASH_NDBM_INCLUDE_PATH gdbm-ndbm.h)
+            set(HAVE_GDBM_DASH_NDBM_H ${GDBM_DASH_NDBM_INCLUDE_PATH}) # Python 3.11
             if(GDBM_DASH_NDBM_INCLUDE_PATH)
                 set(NDBM_TAG GDBM_DASH_NDBM)
             endif()
@@ -165,12 +180,14 @@ message(STATUS "GDBM_INCLUDE_PATH=${GDBM_INCLUDE_PATH}")
 message(STATUS "GDBM_LIBRARY=${GDBM_LIBRARY}")
 message(STATUS "GDBM_COMPAT_LIBRARY=${GDBM_COMPAT_LIBRARY}")
 message(STATUS "NDBM_TAG=${NDBM_TAG}")
+message(STATUS "NDBM_USE=${NDBM_USE}")
 message(STATUS "<NDBM_TAG>_INCLUDE_PATH=${${NDBM_TAG}_INCLUDE_PATH}")
 
 find_path(LZMA_INCLUDE_PATH lzma.h)
 find_library(LZMA_LIBRARY lzma)
 message(STATUS "LZMA_INCLUDE_PATH=${LZMA_INCLUDE_PATH}")
 message(STATUS "LZMA_LIBRARY=${LZMA_LIBRARY}")
+set(HAVE_LZMA_H ${LZMA_INCLUDE_PATH}) # Python 3.11
 
 if(USE_SYSTEM_READLINE)
     if(USE_LIBEDIT)
@@ -199,8 +216,10 @@ set(SQLite3_INCLUDE_DIRS ${SQLite3_INCLUDE_DIR})
 set(SQLite3_LIBRARIES ${SQLite3_LIBRARY})
 message(STATUS "SQLite3_INCLUDE_DIRS=${SQLite3_INCLUDE_DIRS}")
 message(STATUS "SQLite3_LIBRARIES=${SQLite3_LIBRARIES}")
+set(HAVE_LIBSQLITE3 ${SQLite3_LIBRARIES}) # Python 3.11
 
 find_path(TIRPC_RPC_INCLUDE_PATH rpc.h PATHS "/usr/include/tirpc/rpc")
+set(HAVE_RPC_RPC_H ${TIRPC_RPC_INCLUDE_PATH}) # Python 3.11
 find_library(TIRPC_LIBRARY tirpc)
 
 find_library(UUID_LIBRARY uuid)
@@ -332,6 +351,7 @@ check_include_files(linux/auxvec.h HAVE_LINUX_AUXVEC_H) # Python 3.10
 check_include_files(locale.h HAVE_LOCALE_H)
 
 check_include_files(sys/socket.h HAVE_SYS_SOCKET_H)
+check_include_files(sys/soundcard.h> HAVE_SYS_SOUNDCARD_H) # Python 3.11
 
 set(LINUX_NETLINK_HEADERS)
 add_cond(LINUX_NETLINK_HEADERS HAVE_ASM_TYPES_H  asm/types.h)
@@ -352,6 +372,7 @@ check_include_files("${LINUX_CAN_HEADERS};linux/can.h" HAVE_LINUX_CAN_H)
 check_include_files("${LINUX_CAN_HEADERS};linux/can/bcm.h" HAVE_LINUX_CAN_BCM_H)
 check_include_files("${LINUX_CAN_HEADERS};linux/can/j1939.h" HAVE_LINUX_CAN_J1939_H)
 check_include_files("${LINUX_CAN_HEADERS};linux/can/raw.h" HAVE_LINUX_CAN_RAW_H)
+check_include_files("${LINUX_CAN_HEADERS};netcan/can.h" HAVE_NETCAN_CAN_H) # Python 3.11
 
 set(LINUX_VM_SOCKETS_HEADERS)
 add_cond(LINUX_VM_SOCKETS_HEADERS HAVE_SYS_SOCKET_H sys/socket.h)
@@ -377,6 +398,7 @@ else()
   check_include_files("stdio.h;readline/readline.h" HAVE_READLINE_READLINE_H)
 endif()
 check_include_files(semaphore.h HAVE_SEMAPHORE_H)
+check_include_files(setjmp.h HAVE_SETJMP_H) # Python 3.11
 check_include_files(shadow.h HAVE_SHADOW_H)
 check_include_files(signal.h HAVE_SIGNAL_H)
 check_include_files(spawn.h HAVE_SPAWN_H)
@@ -386,6 +408,7 @@ check_include_files(strings.h HAVE_STRINGS_H) # libffi and cpython
 check_include_files(string.h HAVE_STRING_H)   # libffi and cpython
 check_include_files(stropts.h HAVE_STROPTS_H)
 check_include_files(sysexits.h HAVE_SYSEXITS_H)
+check_include_files(syslog.h HAVE_SYSLOG_H) # Python 3.11
 check_include_files(sys/audioio.h HAVE_SYS_AUDIOIO_H)
 check_include_files(sys/auxv.h HAVE_SYS_AUXV_H) # Python 3.10
 check_include_files(sys/bsdtty.h HAVE_SYS_BSDTTY_H)
@@ -419,6 +442,7 @@ check_include_files(term.h HAVE_TERM_H)
 check_include_files(unistd.h HAVE_UNISTD_H) # libffi and cpython
 check_include_files(util.h HAVE_UTIL_H)
 check_include_files(utime.h HAVE_UTIME_H)
+check_include_files(utmp.h HAVE_UTMP_H) # Python 3.11
 check_include_files(wchar.h HAVE_WCHAR_H)
 check_include_files("stdlib.h;stdarg.h;string.h;float.h" STDC_HEADERS) # libffi and cpython
 
@@ -426,8 +450,10 @@ check_include_files(stdarg.h HAVE_STDARG_PROTOTYPES)
 
 check_include_files(endian.h HAVE_ENDIAN_H)
 check_include_files(sched.h HAVE_SCHED_H)
+check_include_files(linux/limits.h HAVE_LINUX_LIMITS_H) # Python 3.11
 check_include_files(linux/memfd.h HAVE_LINUX_MEMFD_H)
 check_include_files(linux/random.h HAVE_LINUX_RANDOM_H)
+check_include_files(linux/soundcard.h HAVE_LINUX_SOUNDCARD_H) # Python 3.11
 check_include_files(sys/devpoll.h HAVE_SYS_DEVPOLL_H)
 check_include_files(sys/endian.h HAVE_SYS_ENDIAN_H)
 check_include_files(sys/ioctl.h HAVE_SYS_IOCTL_H)
@@ -872,6 +898,7 @@ check_symbol_exists(confstr      "${CFG_HEADERS}" HAVE_CONFSTR)
 check_symbol_exists(connect      "${CFG_HEADERS}" HAVE_CONNECT) # Python 3.11
 check_symbol_exists(ctermid      "${CFG_HEADERS}" HAVE_CTERMID)
 check_symbol_exists(ctermid_r    "${CFG_HEADERS}" HAVE_CTERMID_R)
+check_symbol_exists(dup          "${CFG_HEADERS}" HAVE_DUP) # Python 3.11
 check_symbol_exists(dup2         "${CFG_HEADERS}" HAVE_DUP2)
 check_symbol_exists(epoll_create "${CFG_HEADERS}" HAVE_EPOLL)
 check_symbol_exists(epoll_create1 "${CFG_HEADERS}" HAVE_EPOLL_CREATE1)
@@ -885,6 +912,7 @@ if(NOT HAVE_FLOCK)
   check_library_exists(bsd flock "" FLOCK_NEEDS_LIBBSD)
 endif()
 check_symbol_exists(fork         "${CFG_HEADERS}" HAVE_FORK)
+check_symbol_exists(fork1        "${CFG_HEADERS}" HAVE_FORK1) # Python 3.11
 check_symbol_exists(forkpty      "${CFG_HEADERS}" HAVE_FORKPTY)
 check_symbol_exists(fpathconf    "${CFG_HEADERS}" HAVE_FPATHCONF)
 cmake_push_check_state()
@@ -939,6 +967,7 @@ python_check_function(lchmod HAVE_LCHMOD)
 check_symbol_exists(lchown       "${CFG_HEADERS}" HAVE_LCHOWN)
 check_symbol_exists(link         "${CFG_HEADERS}" HAVE_LINK)
 check_symbol_exists(listen       "${CFG_HEADERS}" HAVE_LISTEN) # Python 3.11
+check_symbol_exists(login_tty    "${CFG_HEADERS}" HAVE_LOGIN_TTY) # Python 3.11
 check_symbol_exists(lstat        "${CFG_HEADERS}" HAVE_LSTAT)
 check_symbol_exists(makedev      "${CFG_HEADERS}" HAVE_MAKEDEV)
 check_symbol_exists(memcpy       "${CFG_HEADERS}" HAVE_MEMCPY) # libffi and cpython
@@ -1033,10 +1062,12 @@ check_symbol_exists(futimes      "${CFG_HEADERS}" HAVE_FUTIMES)
 check_symbol_exists(futimesat    "${CFG_HEADERS}" HAVE_FUTIMESAT)
 check_symbol_exists(getentropy   "${CFG_HEADERS}" HAVE_GETENTROPY)
 python_check_function(getpriority HAVE_GETPRIORITY)
+check_symbol_exists(getgrgid     "${CFG_HEADERS}" HAVE_GETGRGID) # Python 3.11
 check_symbol_exists(getgrgid_r   "${CFG_HEADERS}" HAVE_GETGRGID_R)
 check_symbol_exists(getgrnam_r   "${CFG_HEADERS}" HAVE_GETGRNAM_R)
 check_symbol_exists(getgrouplist "${CFG_HEADERS}" HAVE_GETGROUPLIST)
 check_symbol_exists(getpwnam_r   "${CFG_HEADERS}" HAVE_GETPWNAM_R)
+check_symbol_exists(getpwuid     "${CFG_HEADERS}" HAVE_GETPWUID) # Python 3.11
 check_symbol_exists(getpwuid_r   "${CFG_HEADERS}" HAVE_GETPWUID_R)
 check_symbol_exists(htole64      "${CFG_HEADERS}" HAVE_HTOLE64)
 check_symbol_exists(if_nameindex "${CFG_HEADERS}" HAVE_IF_NAMEINDEX)
@@ -1720,6 +1751,50 @@ if(NOT HAVE_CLOCK_SETTIME)
   endif()
 endif()
 
+if(NOT HAVE_CLOCK_NANOSLEEP)
+  cmake_push_check_state()
+  set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_lib_rt_clock_nanosleep.c)
+  file(WRITE ${check_src} "/* Override any GCC internal prototype to avoid an error.
+  Use char because int might match the return type of a GCC
+  builtin and then its argument prototype would still apply.  */
+  #ifdef __cplusplus
+  extern \"C\"
+  #endif
+  char clock_nanosleep ();
+  int main () { return clock_nanosleep (); }
+  ")
+  list(APPEND CMAKE_REQUIRED_LIBRARIES rt)
+  python_platform_test(
+    HAVE_CLOCK_NANOSLEEP
+    "Checking for clock_nanosleep in -lrt"
+    ${check_src}
+    DIRECT
+    )
+  cmake_pop_check_state()
+endif()
+
+if(NOT HAVE_NANOSLEEP)
+  cmake_push_check_state()
+  set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ac_cv_lib_rt_nanosleep.c)
+  file(WRITE ${check_src} "/* Override any GCC internal prototype to avoid an error.
+  Use char because int might match the return type of a GCC
+  builtin and then its argument prototype would still apply.  */
+  #ifdef __cplusplus
+  extern \"C\"
+  #endif
+  char nanosleep ();
+  int main () { return nanosleep (); }
+  ")
+  list(APPEND CMAKE_REQUIRED_LIBRARIES rt)
+  python_platform_test(
+    HAVE_NANOSLEEP
+    "Checking for nanosleep in -lrt"
+    ${check_src}
+    DIRECT
+    )
+  cmake_pop_check_state()
+endif()
+
 #######################################################################
 #
 # unicode
@@ -1921,6 +1996,8 @@ check_symbol_exists(getaddrinfo     "${CFG_HEADERS}" HAVE_GETADDRINFO)
 check_symbol_exists(gethostname     "${CFG_HEADERS}" HAVE_GETHOSTNAME) # Python 3.11
 check_symbol_exists(getnameinfo     "${CFG_HEADERS}" HAVE_GETNAMEINFO)
 check_symbol_exists(gethostbyaddr   "${CFG_HEADERS}" HAVE_GETHOSTBYADDR) # Python 3.11
+check_symbol_exists(getprotobyname  "${CFG_HEADERS}" HAVE_GETPROTOBYNAME) # Python 3.11
+
 check_symbol_exists(getpeername     "${CFG_HEADERS}" HAVE_GETPEERNAME)
 check_symbol_exists(getservbyname   "${CFG_HEADERS}" HAVE_GETSERVBYNAME) # Python 3.11
 check_symbol_exists(getservbyport   "${CFG_HEADERS}" HAVE_GETSERVBYPORT) # Python 3.11
@@ -1929,6 +2006,7 @@ check_symbol_exists(inet_aton       "${CFG_HEADERS}" HAVE_INET_ATON)
 if(NOT HAVE_INET_ATON)
   check_library_exists(resolv inet_aton "" HAVE_LIBRESOLV)
 endif()
+check_symbol_exists(inet_ntoa       "${CFG_HEADERS}" HAVE_INET_NTOA) # Python 3.11
 check_symbol_exists(inet_pton       "${CFG_HEADERS}" HAVE_INET_PTON)
 
 set(CMAKE_EXTRA_INCLUDE_FILES ${CFG_HEADERS})
@@ -2092,6 +2170,7 @@ if(HAVE_READLINE_READLINE_H)
   add_cond(CMAKE_REQUIRED_LIBRARIES HAVE_LIBREADLINE ${HAVE_LIBREADLINE})
   check_symbol_exists(rl_callback_handler_install "${CFG_HEADERS}" HAVE_RL_CALLBACK)
   check_symbol_exists(rl_catch_signals            "${CFG_HEADERS}" HAVE_RL_CATCH_SIGNAL)
+  check_symbol_exists(rl_compdisp_func_t          "${CFG_HEADERS}" HAVE_RL_COMPDISP_FUNC_T) # Python 3.11
   check_symbol_exists(rl_completion_append_character     "${CFG_HEADERS}" HAVE_RL_COMPLETION_APPEND_CHARACTER)
   check_symbol_exists(rl_completion_display_matches_hook "${CFG_HEADERS}" HAVE_RL_COMPLETION_DISPLAY_MATCHES_HOOK)
   check_symbol_exists(rl_completion_suppress_append      "${CFG_HEADERS}" HAVE_RL_COMPLETION_SUPPRESS_APPEND)

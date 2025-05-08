@@ -3,15 +3,24 @@ add_definitions(-DPy_BUILD_CORE_BUILTIN)
 add_definitions(-DNDEBUG)
 
 set(MODULE_SOURCES # Equivalent to MODULE_OBJS in Makefile.pre
-    ${PROJECT_BINARY_DIR}/CMakeFiles/config.c
     ${SRC_DIR}/Modules/gcmodule.c
     ${SRC_DIR}/Modules/main.c
 )
+if(UNIX OR PY_VERSION VERSION_LESS "3.11")
+    list(APPEND MODULE_SOURCES
+        ${PROJECT_BINARY_DIR}/CMakeFiles/config.c
+    )
+endif()
 if(UNIX)
     list(APPEND MODULE_SOURCES
-        ${SRC_DIR}/Modules/getpath.c
+        # Starting with Python 3.11 "Modules/getpath.c" is deepfrozen and later appended to LIBPYTHON_SOURCES
+        $<$<VERSION_LESS:${PY_VERSION},3.11>:${SRC_DIR}/Modules/getpath.c>
     )
     set(PYTHONPATH "${EXTRA_PYTHONPATH}:lib-dynload:plat-${PY_PLATFORM}")
+    if(PY_VERSION VERSION_GREATER_EQUAL "3.11")
+        set(PYTHONPATH "${PYTHONPATH}:lib/python${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}")
+        set(PYTHONPATH "${PYTHONPATH}:lib/python${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}/lib-dynload")
+    endif()
     if(ENABLE_TKINTER)
         set(PYTHONPATH "${PYTHONPATH}:lib-tk")
     endif()
@@ -23,8 +32,12 @@ if(UNIX)
             VERSION="${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}"
             VPATH="."
             PYTHONPATH="${PYTHONPATH}"
+            PLATLIBDIR="${LIBDIR}" # Introduced in Python 3.11
       )
-elseif(WIN32)
+endif()
+
+# Removed in Python 3.11
+if(WIN32 AND PY_VERSION VERSION_LESS "3.11")
     list(APPEND MODULE_SOURCES
         ${SRC_DIR}/PC/getpathp.c
     )
@@ -99,6 +112,10 @@ set(PARSER_COMMON_SOURCES # Equivalent to POBJS in Makefile.pre
     $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.10>:${SRC_DIR}/Parser/peg_api.c>
     $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.10>:${SRC_DIR}/Parser/pegen.c>
     $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.10>:${SRC_DIR}/Parser/string_parser.c>
+
+    # Introduced in Python 3.11
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>:${SRC_DIR}/Parser/action_helpers.c>
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>:${SRC_DIR}/Parser/pegen_errors.c>
 )
 
 set(OBJECT_COMMON_SOURCES # Equivalent to OBJECT_OBJS in Makefile.pre
@@ -178,10 +195,11 @@ if(UNIX AND HAVE_DLOPEN)
         SOURCE ${SRC_DIR}/Python/dynload_shlib.c
         PROPERTY COMPILE_DEFINITIONS
             SOABI="${SOABI}"
+            #MULTIARCH
         )
 elseif(WIN32)
     list(APPEND DYNLOAD_SOURCES
-        ${SRC_DIR}/PC/dl_nt.c
+        $<$<VERSION_LESS:${PY_VERSION},3.11>:${SRC_DIR}/PC/dl_nt.c>
         ${SRC_DIR}/Python/dynload_win.c
         )
     set(ms_dll_id "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}")
@@ -193,6 +211,11 @@ elseif(WIN32)
         PROPERTY COMPILE_DEFINITIONS
             Py_ENABLE_SHARED
             MS_DLL_ID="${ms_dll_id}"
+        )
+    set_property(
+        SOURCE ${SRC_DIR}/Python/dynload_win.c
+        PROPERTY COMPILE_DEFINITIONS
+            "PY3_DLLNAME=\"python3$<$<CONFIG:Debug>:_d>\"" # Python 3.11
         )
 endif()
 
@@ -267,6 +290,11 @@ set(PYTHON_COMMON_SOURCES
 
     # Introduced in Python 3.10
     $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.10>:${SRC_DIR}/Python/suggestions.c>
+
+    # Introduced in Python 3.11
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>:${SRC_DIR}/Python/Python-tokenize.c>
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>:${SRC_DIR}/Python/frame.c>
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>:${SRC_DIR}/Python/specialize.c>
 )
 
 if(UNIX)
@@ -275,7 +303,8 @@ if(UNIX)
     )
 else()
     list(APPEND PYTHON_COMMON_SOURCES
-        ${SRC_DIR}/Python/frozen.c
+        # Removed in Python 3.11
+        $<$<VERSION_LESS:${PY_VERSION},3.11>:${SRC_DIR}/Python/frozen.c>
     )
 endif()
 
@@ -285,9 +314,12 @@ if(UNIX OR MINGW)
         PROPERTY COMPILE_DEFINITIONS
             PLATFORM="${PY_PLATFORM}"
     )
+endif()
+if(UNIX OR MINGW OR PY_VERSION VERSION_GREATER_EQUAL "3.11")
     set_property(
         SOURCE ${SRC_DIR}/Python/sysmodule.c
         PROPERTY COMPILE_DEFINITIONS
+            VPATH="..\\\\.." # Python 3.11
             ABIFLAGS="${ABIFLAGS}"
         )
 endif()
@@ -410,6 +442,7 @@ if(WIN32)
       $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.5>:version> # Required by sysmodule
       $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.6>:shlwapi> # Required by PC/getpathp
       $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>:pathcch>
+      $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>:bcrypt> # Required by bootstrap_hash
      )
 endif()
 
@@ -417,15 +450,28 @@ set(LIBPYTHON_FROZEN_SOURCES )
 
 # Build _freeze_importlib executable
 add_executable(_freeze_importlib
-  $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.3>:${SRC_DIR}/$<IF:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.5>,Programs,Modules>/_freeze_importlib.c>
+
+  # Introduced in Python 3.3 and removed in Python 3.11
+  $<$<AND:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.3>,$<VERSION_LESS:${PY_VERSION},3.11>>:${SRC_DIR}/$<IF:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.5>,Programs,Modules>/_freeze_importlib.c>
+
+  # Introduced in Python 3.11
+  $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>:${SRC_DIR}/Programs/_freeze_module.c>
+  $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>:${SRC_DIR}/Modules/getpath_noop.c>
+  $<$<AND:$<BOOL:${WIN32}>,$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>>:${SRC_DIR}/PC/config_minimal.c>
+
   ${LIBPYTHON_OMIT_FROZEN_SOURCES}
   )
 target_link_libraries(_freeze_importlib ${LIBPYTHON_TARGET_LIBRARIES})
 if(builtin_compile_definitions_without_py_limited_api)
   target_compile_definitions(_freeze_importlib PUBLIC ${builtin_compile_definitions_without_py_limited_api})
 endif()
+target_compile_definitions(_freeze_importlib
+  PUBLIC
+    Py_NO_ENABLE_SHARED
+)
 
-# Freeze modules
+# Freeze modules for Python < 3.11
+if(PY_VERSION VERSION_LESS "3.11")
 set(LIBPYTHON_FROZEN_SOURCES
   ${SRC_DIR}/Python/importlib_external.h
   ${SRC_DIR}/Python/importlib.h
@@ -448,6 +494,7 @@ add_custom_command(
     ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
     ${SRC_DIR}/Lib/importlib/_bootstrap.py
 )
+
 if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
   add_custom_command(
     OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
@@ -461,10 +508,258 @@ if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
     APPEND
   )
 endif()
+endif()
+
+# Freeze modules for Python >= 3.11
+if(PY_VERSION VERSION_GREATER_EQUAL "3.11")
+
+set(LIBPYTHON_FROZEN_SOURCES
+  ${SRC_DIR}/Python/frozen_modules/importlib._bootstrap.h
+  ${SRC_DIR}/Python/frozen_modules/importlib._bootstrap_external.h
+  ${SRC_DIR}/Python/frozen_modules/zipimport.h
+  ${SRC_DIR}/Python/frozen_modules/abc.h
+  ${SRC_DIR}/Python/frozen_modules/codecs.h
+  ${SRC_DIR}/Python/frozen_modules/io.h
+  ${SRC_DIR}/Python/frozen_modules/_collections_abc.h
+  ${SRC_DIR}/Python/frozen_modules/_sitebuiltins.h
+  ${SRC_DIR}/Python/frozen_modules/genericpath.h
+  ${SRC_DIR}/Python/frozen_modules/ntpath.h
+  ${SRC_DIR}/Python/frozen_modules/posixpath.h
+  ${SRC_DIR}/Python/frozen_modules/os.h
+  ${SRC_DIR}/Python/frozen_modules/site.h
+  ${SRC_DIR}/Python/frozen_modules/stat.h
+  ${SRC_DIR}/Python/frozen_modules/importlib.util.h
+  ${SRC_DIR}/Python/frozen_modules/importlib.machinery.h
+  ${SRC_DIR}/Python/frozen_modules/runpy.h
+  ${SRC_DIR}/Python/frozen_modules/__hello__.h
+  ${SRC_DIR}/Python/frozen_modules/__phello__.h
+  ${SRC_DIR}/Python/frozen_modules/__phello__.ham.h
+  ${SRC_DIR}/Python/frozen_modules/__phello__.ham.eggs.h
+  ${SRC_DIR}/Python/frozen_modules/__phello__.spam.h
+  ${SRC_DIR}/Python/frozen_modules/frozen_only.h
+  ${SRC_DIR}/Python/frozen_modules/getpath.h
+)
+add_custom_command(
+  OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
+  COMMAND
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      importlib._bootstrap
+      ${SRC_DIR}/Lib/importlib/_bootstrap.py
+      ${SRC_DIR}/Python/frozen_modules/importlib._bootstrap.h
+  COMMAND
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      importlib._bootstrap_external
+      ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
+      ${SRC_DIR}/Python/frozen_modules/importlib._bootstrap_external.h
+  COMMAND
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      zipimport
+      ${SRC_DIR}/Lib/zipimport.py
+      ${SRC_DIR}/Python/frozen_modules/zipimport.h
+  COMMAND
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      abc
+      ${SRC_DIR}/Lib/abc.py
+      ${SRC_DIR}/Python/frozen_modules/abc.h
+  COMMAND
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      codecs
+      ${SRC_DIR}/Lib/codecs.py
+      ${SRC_DIR}/Python/frozen_modules/codecs.h
+  COMMAND
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      io
+      ${SRC_DIR}/Lib/io.py
+      ${SRC_DIR}/Python/frozen_modules/io.h
+  COMMAND
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      _collections_abc
+      ${SRC_DIR}/Lib/_collections_abc.py
+      ${SRC_DIR}/Python/frozen_modules/_collections_abc.h
+  COMMAND
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      _sitebuiltins
+      ${SRC_DIR}/Lib/_sitebuiltins.py
+      ${SRC_DIR}/Python/frozen_modules/_sitebuiltins.h
+  COMMAND
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      genericpath
+      ${SRC_DIR}/Lib/genericpath.py
+      ${SRC_DIR}/Python/frozen_modules/genericpath.h
+  COMMAND
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      ntpath
+      ${SRC_DIR}/Lib/ntpath.py
+      ${SRC_DIR}/Python/frozen_modules/ntpath.h
+  COMMAND
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      posixpath
+      ${SRC_DIR}/Lib/posixpath.py
+      ${SRC_DIR}/Python/frozen_modules/posixpath.h
+  COMMAND
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      os
+      ${SRC_DIR}/Lib/os.py
+      ${SRC_DIR}/Python/frozen_modules/os.h
+  COMMAND
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      site
+      ${SRC_DIR}/Lib/site.py
+      ${SRC_DIR}/Python/frozen_modules/site.h
+  COMMAND
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      stat
+      ${SRC_DIR}/Lib/stat.py
+      ${SRC_DIR}/Python/frozen_modules/stat.h
+  COMMAND
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      importlib.util
+      ${SRC_DIR}/Lib/importlib/util.py
+      ${SRC_DIR}/Python/frozen_modules/importlib.util.h
+  COMMAND
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      importlib.machinery
+      ${SRC_DIR}/Lib/importlib/machinery.py
+      ${SRC_DIR}/Python/frozen_modules/importlib.machinery.h
+  COMMAND
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      runpy
+      ${SRC_DIR}/Lib/runpy.py
+      ${SRC_DIR}/Python/frozen_modules/runpy.h
+  COMMAND
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      __hello__
+      ${SRC_DIR}/Lib/__hello__.py
+      ${SRC_DIR}/Python/frozen_modules/__hello__.h
+  COMMAND
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      __phello__
+      ${SRC_DIR}/Lib/__phello__/__init__.py
+      ${SRC_DIR}/Python/frozen_modules/__phello__.h
+  COMMAND
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      __phello__.ham
+      ${SRC_DIR}/Lib/__phello__/ham/__init__.py
+      ${SRC_DIR}/Python/frozen_modules/__phello__.ham.h
+  COMMAND
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      __phello__.ham.eggs
+      ${SRC_DIR}/Lib/__phello__/ham/eggs.py
+      ${SRC_DIR}/Python/frozen_modules/__phello__.ham.eggs.h
+  COMMAND
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      __phello__.spam
+      ${SRC_DIR}/Lib/__phello__/spam.py
+      ${SRC_DIR}/Python/frozen_modules/__phello__.spam.h
+  COMMAND
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      frozen_only
+      ${SRC_DIR}/Tools/freeze/flag.py
+      ${SRC_DIR}/Python/frozen_modules/frozen_only.h
+  COMMAND
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      getpath
+      ${SRC_DIR}/Modules/getpath.py
+      ${SRC_DIR}/Python/frozen_modules/getpath.h
+  DEPENDS
+      _freeze_importlib
+      ${SRC_DIR}/Lib/importlib/_bootstrap.py
+      ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
+      ${SRC_DIR}/Lib/zipimport.py
+      ${SRC_DIR}/Lib/abc.py
+      ${SRC_DIR}/Lib/codecs.py
+      ${SRC_DIR}/Lib/io.py
+      ${SRC_DIR}/Lib/_collections_abc.py
+      ${SRC_DIR}/Lib/_sitebuiltins.py
+      ${SRC_DIR}/Lib/genericpath.py
+      ${SRC_DIR}/Lib/ntpath.py
+      ${SRC_DIR}/Lib/posixpath.py
+      ${SRC_DIR}/Lib/os.py
+      ${SRC_DIR}/Lib/site.py
+      ${SRC_DIR}/Lib/stat.py
+      ${SRC_DIR}/Lib/importlib/util.py
+      ${SRC_DIR}/Lib/importlib/machinery.py
+      ${SRC_DIR}/Lib/runpy.py
+      ${SRC_DIR}/Lib/__hello__.py
+      ${SRC_DIR}/Lib/__phello__/__init__.py
+      ${SRC_DIR}/Lib/__phello__/ham/__init__.py
+      ${SRC_DIR}/Lib/__phello__/ham/eggs.py
+      ${SRC_DIR}/Lib/__phello__/spam.py
+      ${SRC_DIR}/Tools/freeze/flag.py
+      ${SRC_DIR}/Modules/getpath.py
+  )
+endif()
 
 # This is a convenience target allowing to regenerate
 # the frozen sources.
-add_custom_target(freeze_modules DEPENDS ${LIBPYTHON_FROZEN_SOURCES})
+add_custom_target(freeze_modules DEPENDS
+    ${LIBPYTHON_FROZEN_SOURCES}
+)
+
+set(LIBPYTHON_DEEPFREEZE_SOURCES )
+
+if(PY_VERSION VERSION_GREATER_EQUAL "3.11")
+
+# Build _bootstrap_python executable
+add_executable(_bootstrap_python
+    ${SRC_DIR}/Programs/_bootstrap_python.c
+    ${SRC_DIR}/Modules/getpath.c
+    $<$<BOOL:${WIN32}>:${SRC_DIR}/PC/config_minimal.c>
+    ${LIBPYTHON_OMIT_FROZEN_SOURCES}
+    ${LIBPYTHON_FROZEN_SOURCES}
+)
+target_link_libraries(_bootstrap_python ${LIBPYTHON_TARGET_LIBRARIES})
+target_compile_definitions(_bootstrap_python
+    PUBLIC
+        Py_NO_ENABLE_SHARED
+)
+
+list(APPEND LIBPYTHON_DEEPFREEZE_SOURCES
+    ${SRC_DIR}/Python/deepfreeze/deepfreeze.c
+)
+
+set(DEEPFREEZE_PY ${SRC_DIR}/Tools/scripts/deepfreeze.py)
+
+add_custom_command(
+  OUTPUT ${LIBPYTHON_DEEPFREEZE_SOURCES}
+  COMMAND
+    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_bootstrap_python>
+      ${DEEPFREEZE_PY}
+        "${SRC_DIR}/Python/frozen_modules/importlib._bootstrap.h:importlib._bootstrap"
+        "${SRC_DIR}/Python/frozen_modules/importlib._bootstrap_external.h:importlib._bootstrap_external"
+        "${SRC_DIR}/Python/frozen_modules/zipimport.h:zipimport"
+        "${SRC_DIR}/Python/frozen_modules/abc.h:abc"
+        "${SRC_DIR}/Python/frozen_modules/codecs.h:codecs"
+        "${SRC_DIR}/Python/frozen_modules/io.h:io"
+        "${SRC_DIR}/Python/frozen_modules/_collections_abc.h:_collections_abc"
+        "${SRC_DIR}/Python/frozen_modules/_sitebuiltins.h:_sitebuiltins"
+        "${SRC_DIR}/Python/frozen_modules/genericpath.h:genericpath"
+        "${SRC_DIR}/Python/frozen_modules/ntpath.h:ntpath"
+        "${SRC_DIR}/Python/frozen_modules/posixpath.h:posixpath"
+        "${SRC_DIR}/Python/frozen_modules/os.h:os"
+        "${SRC_DIR}/Python/frozen_modules/site.h:site"
+        "${SRC_DIR}/Python/frozen_modules/stat.h:stat"
+        "${SRC_DIR}/Python/frozen_modules/importlib.util.h:importlib.util"
+        "${SRC_DIR}/Python/frozen_modules/importlib.machinery.h:importlib.machinery"
+        "${SRC_DIR}/Python/frozen_modules/runpy.h:runpy"
+        "${SRC_DIR}/Python/frozen_modules/__hello__.h:__hello__"
+        "${SRC_DIR}/Python/frozen_modules/__phello__.h:__phello__"
+        "${SRC_DIR}/Python/frozen_modules/__phello__.ham.h:__phello__.ham"
+        "${SRC_DIR}/Python/frozen_modules/__phello__.ham.eggs.h:__phello__.ham.eggs"
+        "${SRC_DIR}/Python/frozen_modules/__phello__.spam.h:__phello__.spam"
+        "${SRC_DIR}/Python/frozen_modules/frozen_only.h:frozen_only"
+      "-o" "${LIBPYTHON_DEEPFREEZE_SOURCES}"
+  DEPENDS
+    ${DEEPFREEZE_PY}
+    ${LIBPYTHON_FROZEN_SOURCES}
+)
+
+# This is a convenience target allowing to regenerate
+# the deepfreeze sources.
+add_custom_target(deepfreeze_modules DEPENDS
+    ${LIBPYTHON_DEEPFREEZE_SOURCES}
+)
+endif()
 
 if(PY_VERSION VERSION_LESS "3.8")
 # Build pgen executable
@@ -495,11 +790,33 @@ endif()
 set(LIBPYTHON_SOURCES
     ${LIBPYTHON_OMIT_FROZEN_SOURCES}
     ${LIBPYTHON_FROZEN_SOURCES}
+    ${LIBPYTHON_DEEPFREEZE_SOURCES}
+    $<$<OR:$<BOOL:${UNIX}>,$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>>:${SRC_DIR}/Python/frozen.c>
+
+    # Introduced in Python 3.11
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>:${SRC_DIR}/Modules/getpath.c>
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>:${SRC_DIR}/Modules/_typingmodule.c>
+    $<$<AND:$<BOOL:${WIN32}>,$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>>:${PROJECT_BINARY_DIR}/CMakeFiles/config.c>
+    $<$<AND:$<BOOL:${WIN32}>,$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>>:${SRC_DIR}/PC/dl_nt.c>
 )
-if(UNIX)
-    list(APPEND LIBPYTHON_SOURCES
-        ${SRC_DIR}/Python/frozen.c
-    )
+if(WIN32 AND PY_VERSION VERSION_GREATER_EQUAL "3.11")
+    set_property(
+        SOURCE ${SRC_DIR}/Modules/getpath.c
+        PROPERTY COMPILE_DEFINITIONS
+            PREFIX=NULL
+            EXEC_PREFIX=NULL
+            VERSION="${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}"
+            VPATH="..\\\\.."
+            PYDEBUGEXT="$<$<CONFIG:Debug>:_d>"
+            PLATLIBDIR="DLLs"
+            PYTHONPATH="Lib\\\\lib-dynload"
+        )
+    set_property(
+        SOURCE ${SRC_DIR}/PC/dl_nt.c
+        PROPERTY COMPILE_DEFINITIONS
+            Py_ENABLE_SHARED
+            MS_DLL_ID="${ms_dll_id}"
+        )
 endif()
 
 # Build python libraries
