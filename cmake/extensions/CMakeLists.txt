@@ -167,8 +167,12 @@ add_python_extension(time ${WIN32_BUILTIN} BUILTIN
 
 add_python_extension(unicodedata SOURCES unicodedata.c)
 
-# Python3
-add_python_extension(atexit BUILTIN REQUIRES SOURCES atexitmodule.c) # Register functions to be run at interpreter-shutdown
+# Register functions to be run at interpreter-shutdown
+add_python_extension(atexit BUILTIN
+    REQUIRES
+    SOURCES
+        atexitmodule.c
+)
 add_python_extension(_codecs BUILTIN SOURCES _codecsmodule.c) # access to the builtin codecs and codec registry
 set(operator_NAME _operator)
 if(PY_VERSION VERSION_LESS 3.4)
