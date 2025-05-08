@@ -387,6 +387,9 @@ Py_NO_ENABLE_SHARED to find out.  Also support MS_NO_COREDLL for b/w compat */
 /* Use Python's own small-block memory-allocator. */
 #define WITH_PYMALLOC 1
 
+/* Define if you want to compile in object freelists optimization [Python 3.11] */
+#define WITH_FREELISTS 1
+
 /* Define if you have clock.  */
 /* #define HAVE_CLOCK */
 

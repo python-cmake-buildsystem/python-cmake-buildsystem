@@ -59,6 +59,9 @@
    the case on Motorola V4 (R40V4.2) */
 #cmakedefine GETTIMEOFDAY_NO_TZ 1
 
+/* Define to 1 if you have the `accept' function. [Python 3.11] */
+#cmakedefine HAVE_ACCEPT 1
+
 /* Define to 1 if you have the `accept4' function. [Python 3] */
 #cmakedefine HAVE_ACCEPT4 1
 
@@ -88,6 +91,9 @@
 
 /* Define to 1 if you have the `atanh' function. */
 #cmakedefine HAVE_ATANH 1
+
+/* Define to 1 if you have the `bind' function. [Python 3.11] */
+#cmakedefine HAVE_BIND 1
 
 /* Define to 1 if you have the `bind_textdomain_codeset' function. */
 #cmakedefine HAVE_BIND_TEXTDOMAIN_CODESET 1
@@ -129,8 +135,14 @@
 /* Define this if you have the type _Bool. */
 #cmakedefine HAVE_C99_BOOL 1
 
+/* Define to 1 if you have the <bzlib.h> header file. [Python 3.11] */
+#cmakedefine HAVE_BZLIB_H 1
+
 /* Define to 1 if you have the 'chflags' function. */
 #cmakedefine HAVE_CHFLAGS 1
+
+/* Define to 1 if you have the `chmod' function. [Python 3.11] */
+#cmakedefine HAVE_CHMOD 1
 
 /* Define to 1 if you have the `chown' function. */
 #cmakedefine HAVE_CHOWN 1
@@ -147,6 +159,9 @@
 /* Define to 1 if you have the `clock_gettime' function. [Python 3] */
 #cmakedefine HAVE_CLOCK_GETTIME 1
 
+/* Define to 1 if you have the `clock_nanosleep' function. [Python 3.11] */
+#cmakedefine HAVE_CLOCK_NANOSLEEP 1
+
 /* Define to 1 if you have the `clock_settime' function. [Python 3.6] */
 #cmakedefine HAVE_CLOCK_SETTIME 1
 
@@ -161,6 +176,9 @@
 
 /* Define to 1 if you have the <conio.h> header file. */
 #cmakedefine HAVE_CONIO_H 1
+
+/* Define to 1 if you have the `connect' function. [Python 3.11] */
+#cmakedefine HAVE_CONNECT 1
 
 /* Define to 1 if you have the `copysign' function. */
 #cmakedefine HAVE_COPYSIGN 1
@@ -215,6 +233,9 @@
 
 /* Define if you have the 'wchgat' function. [Python 3.6] */
 #cmakedefine HAVE_CURSES_WCHGAT 1
+
+/* Define to 1 if you have the <db.h> header file. [Python 3.11] */
+#cmakedefine HAVE_DB_H 1
 
 /* Define to 1 if you have the declaration of `isfinite', and to 0 if you
    don't. */
@@ -291,6 +312,9 @@
 
 /* Define to 1 if you have the `dlopen' function. */
 #cmakedefine HAVE_DLOPEN 1
+
+/* Define to 1 if you have the `dup' function. [Python 3.11] */
+#cmakedefine HAVE_DUP 1
 
 /* Define to 1 if you have the `dup2' function. */
 #cmakedefine HAVE_DUP2 1
@@ -379,6 +403,9 @@
 /* Define to 1 if you have the `fork' function. */
 #cmakedefine HAVE_FORK 1
 
+/* Define to 1 if you have the `fork1' function. [Python 3.11] */
+#cmakedefine HAVE_FORK1 1
+
 /* Define to 1 if you have the `forkpty' function. */
 #cmakedefine HAVE_FORKPTY 1
 
@@ -440,14 +467,35 @@
 /* Define if your compiler provides __uint128_t [Python 3] */
 #cmakedefine HAVE_GCC_UINT128_T 1
 
+/* Define to 1 if you have the <gdbm-ndbm.h> header file. [Python 3.11] */
+#cmakedefine HAVE_GDBM_DASH_NDBM_H 1
+
+/* Define to 1 if you have the <gdbm.h> header file. [Python 3.11] */
+#cmakedefine HAVE_GDBM_H 1
+
+/* Define to 1 if you have the <gdbm/ndbm.h> header file. [Python 3.11] */
+#cmakedefine HAVE_GDBM_NDBM_H 1
+
 /* Define if you have the getaddrinfo function. */
 #cmakedefine HAVE_GETADDRINFO 1
 
 /* Define this if you have flockfile(), getc_unlocked(), and funlockfile() */
 #cmakedefine HAVE_GETC_UNLOCKED 1
 
+/* Define to 1 if you have the `getegid' function. [Python 3.11] */
+#cmakedefine HAVE_GETEGID 1
+
+/* Define to 1 if you have the `geteuid' function. [Python 3.11] */
+#cmakedefine HAVE_GETEUID 1
+
 /* Define to 1 if you have the `getentropy' function. [Python 3] */
 #cmakedefine HAVE_GETENTROPY 1
+
+/* Define to 1 if you have the `getgid' function. [Python 3.11] */
+#cmakedefine HAVE_GETGID 1
+
+/* Define to 1 if you have the `getgrgid' function. [Python 3.11] */
+#cmakedefine HAVE_GETGRGID 1
 
 /* Define to 1 if you have the `getgrgid_r' function. [Python 3.8] */
 #cmakedefine HAVE_GETGRGID_R 1
@@ -460,6 +508,9 @@
 
 /* Define to 1 if you have the `getgroups' function. */
 #cmakedefine HAVE_GETGROUPS 1
+
+/* Define to 1 if you have the `gethostbyaddr' function. [Python 3.11] */
+#cmakedefine HAVE_GETHOSTBYADDR 1
 
 /* Define to 1 if you have the `gethostbyname' function. */
 #cmakedefine HAVE_GETHOSTBYNAME 1
@@ -475,6 +526,9 @@
 
 /* Define this if you have the 6-arg version of gethostbyname_r(). */
 #cmakedefine HAVE_GETHOSTBYNAME_R_6_ARG 1
+
+/* Define if you have the gethostname function. [Python 3.11] */
+#cmakedefine HAVE_GETHOSTNAME 1
 
 /* Define to 1 if you have the `getitimer' function. */
 #cmakedefine HAVE_GETITIMER 1
@@ -503,14 +557,23 @@
 /* Define to 1 if you have the `getpid' function. */
 #cmakedefine HAVE_GETPID 1
 
+/* Define if you have the 'getppid' function. [Python 3.11] */
+#cmakedefine HAVE_GETPPID 1
+
 /* Define to 1 if you have the `getpriority' function. */
 #cmakedefine HAVE_GETPRIORITY 1
+
+/* Define if you have the 'getprotobyname' function. [Python 3.11] */
+#cmakedefine HAVE_GETPROTOBYNAME 1
 
 /* Define to 1 if you have the `getpwent' function. */
 #cmakedefine HAVE_GETPWENT 1
 
 /* Define to 1 if you have the `getpwnam_r' function. [Python 3.8] */
 #cmakedefine HAVE_GETPWNAM_R 1
+
+/* Define to 1 if you have the `getpwuid' function. [Python 3.11] */
+#cmakedefine HAVE_GETPWUID 1
 
 /* Define to 1 if you have the `getpwuid_r' function. [Python 3.8] */
 #cmakedefine HAVE_GETPWUID_R 1
@@ -527,8 +590,20 @@
 /* Define to 1 if you have the `getresuid' function. */
 #cmakedefine HAVE_GETRESUID 1
 
+/* Define to 1 if you have the `getrusage' function. [Python 3.11] */
+#cmakedefine HAVE_GETRUSAGE 1
+
+/* Define to 1 if you have the `getservbyname' function. [Python 3.11] */
+#cmakedefine HAVE_GETSERVBYNAME 1
+
+/* Define if you have the 'getservbyport' function. [Python 3.11] */
+#cmakedefine HAVE_GETSERVBYPORT 1
+
 /* Define to 1 if you have the `getsid' function. */
 #cmakedefine HAVE_GETSID 1
+
+/* Define to 1 if you have the `getsockname' function. [Python 3.11] */
+#cmakedefine HAVE_GETSOCKNAME 1
 
 /* Define to 1 if you have the `getspent' function. */
 #cmakedefine HAVE_GETSPENT 1
@@ -538,6 +613,9 @@
 
 /* Define to 1 if you have the `gettimeofday' function. */
 #cmakedefine HAVE_GETTIMEOFDAY 1
+
+/* Define to 1 if you have the `getuid' function. [Python 3.11] */
+#cmakedefine HAVE_GETUID 1
 
 /* Define to 1 if you have the `getwd' function. */
 #cmakedefine HAVE_GETWD 1
@@ -566,6 +644,9 @@
 
 /* Define if you have the 'inet_aton' function. */
 #cmakedefine HAVE_INET_ATON 1
+
+/* Define if you have the 'inet_ntoa' function. [Python 3.11] */
+#cmakedefine HAVE_INET_NTOA 1
 
 /* Define if you have the 'inet_pton' function. */
 #cmakedefine HAVE_INET_PTON 1
@@ -615,6 +696,9 @@
 /* Define to 1 if you have the `lchown' function. */
 #cmakedefine HAVE_LCHOWN 1
 
+/* Define to 1 if you have the `db' library (-ldb). [Python 3.11] */
+#cmakedefine HAVE_LIBDB 1
+
 /* Define to 1 if you have the `lgamma' function. */
 #cmakedefine HAVE_LGAMMA 1
 
@@ -624,11 +708,17 @@
 /* Define to 1 if you have the `dld' library (-ldld). */
 #cmakedefine HAVE_LIBDLD 1
 
+/* Define to 1 if you have the `gdbm_compat' library (-lgdbm_compat). [Python 3.11] */
+#cmakedefine HAVE_LIBGDBM_COMPAT 1
+
 /* Define to 1 if you have the `ieee' library (-lieee). */
 #cmakedefine HAVE_LIBIEEE 1
 
 /* Define to 1 if you have the <libintl.h> header file. */
 #cmakedefine HAVE_LIBINTL_H 1
+
+/* Define to 1 if you have the `ndbm' library (-lndbm). [Python 3.11] */
+#cmakedefine HAVE_LIBNDBM 1
 
 /* Define if you have the readline library (-lreadline). */
 #cmakedefine HAVE_LIBREADLINE 1
@@ -638,6 +728,9 @@
 
 /* Define to 1 if you have the `sendfile' library (-lsendfile). [Python 3] */
 #cmakedefine HAVE_LIBSENDFILE 1
+
+/* Define to 1 if you have the `sqlite3' library (-lsqlite3). [Python 3.11] */
+#cmakedefine HAVE_LIBSQLITE3 1
 
 /* Define to 1 if you have the <libutil.h> header file. */
 #cmakedefine HAVE_LIBUTIL_H 1
@@ -672,6 +765,9 @@
 /* Define if compiling using Linux 4.1 or later. [Python 3.9] */
 #cmakedefine HAVE_LINUX_CAN_RAW_JOIN_FILTERS 1
 
+/* Define to 1 if you have the <linux/limits.h> header file. [Python 3.11] */
+#cmakedefine HAVE_LINUX_LIMITS_H 1
+
 /* Define to 1 if you have the <linux/memfd.h> header file. [Python 3.8] */
 #cmakedefine HAVE_LINUX_MEMFD_H 1
 
@@ -684,6 +780,9 @@
 /* Define to 1 if you have the <linux/random.h> header file. */
 #cmakedefine HAVE_LINUX_RANDOM_H 1
 
+/* Define to 1 if you have the <linux/soundcard.h> header file. [Python 3.11] */
+#cmakedefine HAVE_LINUX_SOUNDCARD_H 1
+
 /* Define to 1 if you have the <linux/tipc.h> header file. */
 #cmakedefine HAVE_LINUX_TIPC_H 1
 
@@ -693,6 +792,9 @@
 /* Define to 1 if you have the <linux/wait.h> header file. [Python 3.9] */
 #cmakedefine HAVE_LINUX_WAIT_H 1
 
+/* Define to 1 if you have the `listen' function. [Python 3.11] */
+#cmakedefine HAVE_LISTEN 1
+
 /* Define to 1 if you have the `lockf' function. [Python 3] */
 #cmakedefine HAVE_LOCKF 1
 
@@ -701,6 +803,9 @@
 
 /* Define to 1 if you have the `log2' function. [Python 3] */
 #cmakedefine HAVE_LOG2 1
+
+/* Define to 1 if you have the `login_tty' function. [Python 3.11] */
+#cmakedefine HAVE_LOGIN_TTY 1
 
 /* Define this if you have the type long double. */
 #cmakedefine HAVE_LONG_DOUBLE 1
@@ -713,6 +818,9 @@
 
 /* Define to 1 if you have the `lutimes' function. [Python 3] */
 #cmakedefine HAVE_LUTIMES 1
+
+/* Define to 1 if you have the <lzma.h> header file. [Python 3.11] */
+#cmakedefine HAVE_LZMA_H 1
 
 /* Define to 1 if you have the `madvise' function. [Python 3.8] */
 #cmakedefine HAVE_MADVISE 1
@@ -759,11 +867,26 @@
 /* Define to 1 if you have the `mremap' function. */
 #cmakedefine HAVE_MREMAP 1
 
+/* Define to 1 if you have the `nanosleep' function. [Python 3.11] */
+#cmakedefine HAVE_NANOSLEEP 1
+
 /* Define to 1 if you have the <ncurses.h> header file. */
 #cmakedefine HAVE_NCURSES_H 1
 
+/* Define to 1 if you have the <ndbm.h> header file. [Python 3.11] */
+#cmakedefine HAVE_NDBM_H 1
+
 /* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
 #cmakedefine HAVE_NDIR_H 1
+
+/* Define to 1 if you have the <netcan/can.h> header file. [Python 3.11] */
+#cmakedefine HAVE_NETCAN_CAN_H 1
+
+/* Define to 1 if you have the <netdb.h> header file. [Python 3.11] */
+#cmakedefine HAVE_NETDB_H 1
+
+/* Define to 1 if you have the <netinet/in.h> header file. [Python 3.11] */
+#cmakedefine HAVE_NETINET_IN_H 1
 
 /* Define to 1 if you have the <netpacket/packet.h> header file. */
 #cmakedefine HAVE_NETPACKET_PACKET_H 1
@@ -781,6 +904,9 @@
 /* Define to 1 if you have the `openat' function. [Python 3] */
 #cmakedefine HAVE_OPENAT 1
 
+/* Define to 1 if you have the `opendir' function. [Python 3.11] */
+#cmakedefine HAVE_OPENDIR 1
+
 /* Define to 1 if you have the `openpty' function. */
 #cmakedefine HAVE_OPENPTY 1
 
@@ -792,6 +918,9 @@
 
 /* Define to 1 if you have the `pause' function. */
 #cmakedefine HAVE_PAUSE 1
+
+/* Define to 1 if you have the `pipe' function. [Python 3.11] */
+#cmakedefine HAVE_PIPE 1
 
 /* Define to 1 if you have the `pipe2' function. [Python 3] */
 #cmakedefine HAVE_PIPE2 1
@@ -892,6 +1021,9 @@
 /* Define to 1 if you have the `realpath' function. */
 #cmakedefine HAVE_REALPATH 1
 
+/* Define to 1 if you have the `recvfrom' function. [Python 3.11] */
+#cmakedefine HAVE_RECVFROM 1
+
 /* Define to 1 if you have the `renameat' function. [Python 3] */
 #cmakedefine HAVE_RENAMEAT 1
 
@@ -903,6 +1035,9 @@
 
 /* Define if you can turn off readline's signal handling. */
 #cmakedefine HAVE_RL_CATCH_SIGNAL 1
+
+/* Define if readline supports rl_compdisp_func_t [Python 3.11] */
+#cmakedefine HAVE_RL_COMPDISP_FUNC_T 1
 
 /* Define if you have readline 2.2 */
 #cmakedefine HAVE_RL_COMPLETION_APPEND_CHARACTER 1
@@ -924,6 +1059,9 @@
 
 /* Define to 1 if you have the `round' function. */
 #cmakedefine HAVE_ROUND 1
+
+/* Define to 1 if you have the <rpc/rpc.h> header file. [Python 3.11] */
+#cmakedefine HAVE_RPC_RPC_H 1
 
 /* Define to 1 if you have the `rtpSpawn' function. [Python 3.8] */
 #cmakedefine HAVE_RTPSPAWN 1
@@ -967,6 +1105,9 @@
 /* Define to 1 if you have the `sendfile' function. [Python 3] */
 #cmakedefine HAVE_SENDFILE 1
 
+/* Define to 1 if you have the `sendto' function. [Python 3.11] */
+#cmakedefine HAVE_SENDTO 1
+
 /* Define to 1 if you have the `setegid' function. */
 #cmakedefine HAVE_SETEGID 1
 
@@ -984,6 +1125,9 @@
 
 /* Define to 1 if you have the `setitimer' function. */
 #cmakedefine HAVE_SETITIMER 1
+
+/* Define to 1 if you have the <setjmp.h> header file. [Python 3.11] */
+#cmakedefine HAVE_SETJMP_H 1
 
 /* Define to 1 if you have the `setlocale' function. */
 #cmakedefine HAVE_SETLOCALE 1
@@ -1012,6 +1156,9 @@
 /* Define to 1 if you have the `setsid' function. */
 #cmakedefine HAVE_SETSID 1
 
+/* Define to 1 if you have the `setsockopt' function. [Python 3.11] */
+#cmakedefine HAVE_SETSOCKOPT 1
+
 /* Define to 1 if you have the `setuid' function. */
 #cmakedefine HAVE_SETUID 1
 
@@ -1026,6 +1173,9 @@
 
 /* Define to 1 if you have the `shm_unlink' function. [Python 3.8] */
 #cmakedefine HAVE_SHM_UNLINK 1
+
+/* Define to 1 if you have the `shutdown' function. [Python 3.11] */
+#cmakedefine HAVE_SHUTDOWN 1
 
 /* Define to 1 if you have the `sigaction' function. */
 #cmakedefine HAVE_SIGACTION 1
@@ -1074,6 +1224,9 @@
 
 /* struct sockaddr_storage (sys/socket.h) */
 #cmakedefine HAVE_SOCKADDR_STORAGE 1
+
+/* Define if you have the 'socket' function. [Python 3.11] */
+#cmakedefine HAVE_SOCKET 1
 
 /* Define if you have the 'socketpair' function. */
 #cmakedefine HAVE_SOCKETPAIR 1
@@ -1176,6 +1329,12 @@
 /* Define to 1 if you have the <sysexits.h> header file. */
 #cmakedefine HAVE_SYSEXITS_H 1
 
+/* Define to 1 if you have the <syslog.h> header file. [Python 3.11] */
+#cmakedefine HAVE_SYSLOG_H 1
+
+/* Define to 1 if you have the `system' function. [Python 3.11] */
+#cmakedefine HAVE_SYSTEM 1
+
 /* Define to 1 if you have the <sys/audioio.h> header file. */
 #cmakedefine HAVE_SYS_AUDIOIO_H 1
 
@@ -1255,6 +1414,9 @@
 
 /* Define to 1 if you have the <sys/socket.h> header file. */
 #cmakedefine HAVE_SYS_SOCKET_H 1
+
+/* Define to 1 if you have the <sys/soundcard.h> header file. [Python 3.11] */
+#cmakedefine HAVE_SYS_SOUNDCARD_H 1
 
 /* Define to 1 if you have the <sys/statvfs.h> header file. */
 #cmakedefine HAVE_SYS_STATVFS_H 1
@@ -1338,6 +1500,9 @@
 /* Define to 1 if you have the `truncate' function. */
 #cmakedefine HAVE_TRUNCATE 1
 
+/* Define to 1 if you have the `ttyname' function. [Python 3.11] */
+#cmakedefine HAVE_TTYNAME 1
+
 /* Define to 1 if you don't have `tm_zone' but do have the external array
    `tzname'. */
 #cmakedefine HAVE_TZNAME 1
@@ -1353,6 +1518,9 @@
 
 /* Define to 1 if the system has the type `uintptr_t'. */
 #cmakedefine HAVE_UINTPTR_T 1
+
+/* Define to 1 if you have the `umask' function. [Python 3.11] */
+#cmakedefine HAVE_UMASK 1
 
 /* Define to 1 if you have the `uname' function. */
 #cmakedefine HAVE_UNAME 1
@@ -1383,6 +1551,9 @@
 /* Define to 1 if you have the <utime.h> header file. */
 #cmakedefine HAVE_UTIME_H 1
 
+/* Define to 1 if you have the <utmp.h> header file. [Python 3.11] */
+#cmakedefine HAVE_UTMP_H 1
+
 /* Define if uuid_create() exists. [Python 3.7] */
 #cmakedefine HAVE_UUID_CREATE 1
 
@@ -1400,6 +1571,9 @@
 
 /* Define to 1 if you have the `vfork' function. [Python 3.10] */
 #cmakedefine HAVE_VFORK 1
+
+/* Define to 1 if you have the `wait' function. [Python 3.11] */
+#cmakedefine HAVE_WAIT 1
 
 /* Define to 1 if you have the `wait3' function. */
 #cmakedefine HAVE_WAIT3 1
@@ -1440,6 +1614,9 @@
 
 /* Define if the zlib library has inflateCopy */
 #cmakedefine HAVE_ZLIB_COPY 1
+
+/* Define to 1 if you have the <zlib.h> header file. [Python 3.11] */
+#cmakedefine HAVE_ZLIB_H 1
 
 /* Define to 1 if you have the `_getpty' function. */
 #cmakedefine HAVE__GETPTY 1
@@ -1668,6 +1845,9 @@
 
 /* Define to build the readline module against Editline. [Python 3.10] */
 #cmakedefine WITH_EDITLINE 1
+
+/* Define if you want to compile in object freelists optimization [Python 3.11] */
+#cmakedefine WITH_FREELISTS 1
 
 /* Define to 1 if libintl is needed for locale functions. */
 #cmakedefine WITH_LIBINTL 1

@@ -55,7 +55,7 @@ add_python_extension(_bisect ${WIN32_BUILTIN} SOURCES _bisectmodule.c)
 add_python_extension(cmath
     REQUIRES HAVE_LIBM ${WIN32_BUILTIN}
     SOURCES
-        _math.c
+        $<$<VERSION_LESS:${PY_VERSION},3.11>:_math.c>
         cmathmodule.c
     LIBRARIES
         ${M_LIBRARIES})
@@ -124,7 +124,7 @@ add_python_extension(math ${WIN32_BUILTIN}
     REQUIRES
         HAVE_LIBM
     SOURCES
-        _math.c
+        $<$<VERSION_LESS:${PY_VERSION},3.11>:_math.c>
         mathmodule.c
     LIBRARIES
         ${M_LIBRARIES}
@@ -199,7 +199,8 @@ add_python_extension(_pickle ${WIN32_BUILTIN} REQUIRES SOURCES _pickle.c)
 # Fredrik Lundh's new regular expressions
 add_python_extension(_sre BUILTIN
     SOURCES
-        _sre.c
+        $<$<VERSION_LESS:${PY_VERSION},3.11>:_sre.c>
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>:_sre/sre.c>
 )
 
 # stat.h interface
@@ -914,6 +915,7 @@ add_python_extension(_dbm
     SOURCES _dbmmodule.c
     DEFINITIONS
         HAVE_${NDBM_TAG}_H
+        USE_${NDBM_USE} # Python 3.11
     LIBRARIES
         ${GDBM_LIBRARY}
         ${GDBM_COMPAT_LIBRARY}
@@ -961,7 +963,9 @@ add_python_extension(readline
 add_python_extension(_sqlite3
     REQUIRES SQLite3_INCLUDE_DIRS SQLite3_LIBRARIES
     SOURCES
-        _sqlite/cache.c
+        # Removed in Python 3.11
+        $<$<VERSION_LESS:${PY_VERSION},3.11>:_sqlite/cache.c>
+
         _sqlite/connection.c
         _sqlite/cursor.c
         _sqlite/microprotocols.c
@@ -970,6 +974,10 @@ add_python_extension(_sqlite3
         _sqlite/row.c
         _sqlite/statement.c
         _sqlite/util.c
+
+        # Introduced in Python 3.11
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>:_sqlite/blob.c>
+
     DEFINITIONS
         MODULE_NAME="sqlite3"
         SQLITE_OMIT_LOAD_EXTENSION=1
