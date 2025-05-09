@@ -234,7 +234,10 @@ if(NOT DEFINED PLATFORM_TRIPLET)
     message(FATAL_ERROR "We could not determine the platform. Please clean the ${CMAKE_PROJECT_NAME} environment and try again...")
   endif()
 endif()
-set(SOABI "cpython-${PY_VERSION_MAJOR}${PY_VERSION_MINOR}${ABIFLAGS}-${PLATFORM_TRIPLET}")
+set(SOABI "cpython-${PY_VERSION_MAJOR}${PY_VERSION_MINOR}${ABIFLAGS}")
+if(PLATFORM_TRIPLET)
+  set(SOABI "${SOABI}-${PLATFORM_TRIPLET}")
+endif()
 
 message(STATUS "${_msg} - ${SOABI}")
 
@@ -244,7 +247,10 @@ if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
 # Release and debug (Py_DEBUG) ABI are compatible, but not Py_TRACE_REFS ABI
 if(Py_DEBUG AND NOT WITH_TRACE_REFS)
   string(REPLACE "d" "" ALT_ABIFLAGS "${ABIFLAGS}")
-  set(ALT_SOABI "cpython-${PY_VERSION_MAJOR}${PY_VERSION_MINOR}${ALT_ABIFLAGS}-${PLATFORM_TRIPLET}")
+  set(ALT_SOABI "cpython-${PY_VERSION_MAJOR}${PY_VERSION_MINOR}${ALT_ABIFLAGS}")
+  if(PLATFORM_TRIPLET)
+    set(ALT_SOABI "${ALT_SOABI}-${PLATFORM_TRIPLET}")
+  endif()
 endif()
 
 endif()
@@ -763,6 +769,11 @@ if(HAVE_LONG_LONG)
 
 endif()
 
+set(WITH_FREELISTS 0)
+if(PY_VERSION VERSION_GREATER_EQUAL "3.11")
+  set(WITH_FREELISTS 1)
+endif()
+
 
 set(CFG_HEADERS )
 
@@ -822,12 +833,15 @@ set(CFG_HEADERS ${CFG_HEADERS} time.h stdio.h math.h)
 check_symbol_exists(alarm        "${CFG_HEADERS}" HAVE_ALARM)
 check_symbol_exists(alloca       "${CFG_HEADERS}" HAVE_ALLOCA) # libffi and cpython
 check_symbol_exists(altzone      "${CFG_HEADERS}" HAVE_ALTZONE)
+check_symbol_exists(bind         "${CFG_HEADERS}" HAVE_BIND) # Python 3.11
 check_symbol_exists(bind_textdomain_codeset "${CFG_HEADERS}" HAVE_BIND_TEXTDOMAIN_CODESET)
 check_symbol_exists(chflags      "${CFG_HEADERS}" HAVE_CHFLAGS)
+check_symbol_exists(chmod        "${CFG_HEADERS}" HAVE_CHMOD) # Python 3.11
 check_symbol_exists(chown        "${CFG_HEADERS}" HAVE_CHOWN)
 check_symbol_exists(chroot       "${CFG_HEADERS}" HAVE_CHROOT)
 check_symbol_exists(clock        "${CFG_HEADERS}" HAVE_CLOCK)
 check_symbol_exists(confstr      "${CFG_HEADERS}" HAVE_CONFSTR)
+check_symbol_exists(connect      "${CFG_HEADERS}" HAVE_CONNECT) # Python 3.11
 check_symbol_exists(ctermid      "${CFG_HEADERS}" HAVE_CTERMID)
 check_symbol_exists(ctermid_r    "${CFG_HEADERS}" HAVE_CTERMID_R)
 check_symbol_exists(dup2         "${CFG_HEADERS}" HAVE_DUP2)
@@ -863,6 +877,9 @@ check_symbol_exists(ftello       "${CFG_HEADERS}" HAVE_FTELLO)
 check_symbol_exists(ftime        "${CFG_HEADERS}" HAVE_FTIME)
 check_symbol_exists(ftruncate    "${CFG_HEADERS}" HAVE_FTRUNCATE)
 check_symbol_exists(getc_unlocked   "${CFG_HEADERS}" HAVE_GETC_UNLOCKED)
+check_symbol_exists(getegid      "${CFG_HEADERS}" HAVE_GETEGID) # Python 3.11
+check_symbol_exists(geteuid      "${CFG_HEADERS}" HAVE_GETEUID) # Python 3.11
+check_symbol_exists(getgid       "${CFG_HEADERS}" HAVE_GETGID) # Python 3.11
 check_symbol_exists(getgroups       "${CFG_HEADERS}" HAVE_GETGROUPS)
 check_symbol_exists(getitimer    "${CFG_HEADERS}" HAVE_GETITIMER)
 check_symbol_exists(getloadavg   "${CFG_HEADERS}" HAVE_GETLOADAVG)
@@ -871,14 +888,18 @@ check_symbol_exists(getpagesize  "${CFG_HEADERS}" HAVE_GETPAGESIZE)
 check_symbol_exists(getpgid      "${CFG_HEADERS}" HAVE_GETPGID)
 check_symbol_exists(getpgrp      "${CFG_HEADERS}" HAVE_GETPGRP)
 check_symbol_exists(getpid       "${CFG_HEADERS}" HAVE_GETPID)
+check_symbol_exists(getppid      "${CFG_HEADERS}" HAVE_GETPPID) # Python 3.11
 python_check_function(getpriority HAVE_GETPRIORITY)
 check_symbol_exists(getpwent     "${CFG_HEADERS}" HAVE_GETPWENT)
 check_symbol_exists(getresgid    "${CFG_HEADERS}" HAVE_GETRESGID)
 check_symbol_exists(getresuid    "${CFG_HEADERS}" HAVE_GETRESUID)
+check_symbol_exists(getrusage    "${CFG_HEADERS}" HAVE_GETRUSAGE) # Python 3.11
 check_symbol_exists(getsid       "${CFG_HEADERS}" HAVE_GETSID)
+check_symbol_exists(getsockname  "${CFG_HEADERS}" HAVE_GETSOCKNAME) # Python 3.11
 check_symbol_exists(getspent     "${CFG_HEADERS}" HAVE_GETSPENT)
 check_symbol_exists(getspnam     "${CFG_HEADERS}" HAVE_GETSPNAM)
 check_symbol_exists(gettimeofday "${CFG_HEADERS}" HAVE_GETTIMEOFDAY)
+check_symbol_exists(getuid       "${CFG_HEADERS}" HAVE_GETUID) # Python 3.11
 check_symbol_exists(getwd        "${CFG_HEADERS}" HAVE_GETWD)
 check_symbol_exists(hypot        "${CFG_HEADERS}" HAVE_HYPOT)
 check_symbol_exists(initgroups   "${CFG_HEADERS}" HAVE_INITGROUPS)
@@ -889,6 +910,7 @@ check_symbol_exists(lchflags     "${CFG_HEADERS}" HAVE_LCHFLAGS)
 python_check_function(lchmod HAVE_LCHMOD)
 check_symbol_exists(lchown       "${CFG_HEADERS}" HAVE_LCHOWN)
 check_symbol_exists(link         "${CFG_HEADERS}" HAVE_LINK)
+check_symbol_exists(listen       "${CFG_HEADERS}" HAVE_LISTEN) # Python 3.11
 check_symbol_exists(lstat        "${CFG_HEADERS}" HAVE_LSTAT)
 check_symbol_exists(makedev      "${CFG_HEADERS}" HAVE_MAKEDEV)
 check_symbol_exists(memcpy       "${CFG_HEADERS}" HAVE_MEMCPY) # libffi and cpython
@@ -899,6 +921,7 @@ check_symbol_exists(mktime       "${CFG_HEADERS}" HAVE_MKTIME)
 check_symbol_exists(mmap         "${CFG_HEADERS}" HAVE_MMAP) # libffi and cpython
 check_symbol_exists(mremap       "${CFG_HEADERS}" HAVE_MREMAP)
 check_symbol_exists(nice         "${CFG_HEADERS}" HAVE_NICE)
+check_symbol_exists(opendir      "${CFG_HEADERS}" HAVE_OPENDIR) # Python 3.11
 check_symbol_exists(openpty      "${CFG_HEADERS}" HAVE_OPENPTY)
 check_symbol_exists(pathconf     "${CFG_HEADERS}" HAVE_PATHCONF)
 check_symbol_exists(pause        "${CFG_HEADERS}" HAVE_PAUSE)
@@ -907,7 +930,9 @@ check_symbol_exists(poll         "${CFG_HEADERS}" HAVE_POLL)
 check_symbol_exists(putenv       "${CFG_HEADERS}" HAVE_PUTENV)
 check_symbol_exists(readlink     "${CFG_HEADERS}" HAVE_READLINK)
 check_symbol_exists(realpath     "${CFG_HEADERS}" HAVE_REALPATH)
+check_symbol_exists(recvfrom     "${CFG_HEADERS}" HAVE_RECVFROM) # Python 3.11
 check_symbol_exists(select       "${CFG_HEADERS}" HAVE_SELECT)
+check_symbol_exists(sendto       "${CFG_HEADERS}" HAVE_SENDTO) # Python 3.11
 check_symbol_exists(setegid      "${CFG_HEADERS}" HAVE_SETEGID)
 check_symbol_exists(seteuid      "${CFG_HEADERS}" HAVE_SETEUID)
 check_symbol_exists(setgid       "${CFG_HEADERS}" HAVE_SETGID)
@@ -921,12 +946,15 @@ check_symbol_exists(setreuid     "${CFG_HEADERS}" HAVE_SETREUID)
 check_symbol_exists(setresgid    "${CFG_HEADERS}" HAVE_SETRESGID)
 check_symbol_exists(setresuid    "${CFG_HEADERS}" HAVE_SETRESUID)
 check_symbol_exists(setsid       "${CFG_HEADERS}" HAVE_SETSID)
+check_symbol_exists(setsockopt   "${CFG_HEADERS}" HAVE_SETSOCKOPT) # Python 3.11
 check_symbol_exists(setuid       "${CFG_HEADERS}" HAVE_SETUID)
 check_symbol_exists(setvbuf      "${CFG_HEADERS}" HAVE_SETVBUF)
+check_symbol_exists(shutdown     "${CFG_HEADERS}" HAVE_SHUTDOWN) # Python 3.11
 check_symbol_exists(sigaction    "${CFG_HEADERS}" HAVE_SIGACTION)
 check_symbol_exists(siginterrupt "${CFG_HEADERS}" HAVE_SIGINTERRUPT)
 check_symbol_exists(sigrelse     "${CFG_HEADERS}" HAVE_SIGRELSE)
 check_symbol_exists(snprintf     "${CFG_HEADERS}" HAVE_SNPRINTF)
+check_symbol_exists(socket       "${CFG_HEADERS}" HAVE_SOCKET) # Python 3.11
 check_symbol_exists(socketpair   "${CFG_HEADERS}" HAVE_SOCKETPAIR)
 check_symbol_exists(splice       "${CFG_HEADERS}" HAVE_SPLICE) # Python 3.10
 check_symbol_exists(statvfs      "${CFG_HEADERS}" HAVE_STATVFS)
@@ -934,6 +962,7 @@ check_symbol_exists(strdup       "${CFG_HEADERS}" HAVE_STRDUP)
 check_symbol_exists(strftime     "${CFG_HEADERS}" HAVE_STRFTIME)
 check_symbol_exists(symlink      "${CFG_HEADERS}" HAVE_SYMLINK)
 check_symbol_exists(sysconf      "${CFG_HEADERS}" HAVE_SYSCONF)
+check_symbol_exists(system       "${CFG_HEADERS}" HAVE_SYSTEM) # Python 3.11
 check_symbol_exists(tcgetpgrp    "${CFG_HEADERS}" HAVE_TCGETPGRP)
 check_symbol_exists(tcsetpgrp    "${CFG_HEADERS}" HAVE_TCSETPGRP)
 check_symbol_exists(tempnam      "${CFG_HEADERS}" HAVE_TEMPNAM)
@@ -943,15 +972,19 @@ check_symbol_exists(tmpfile      "${CFG_HEADERS}" HAVE_TMPFILE)
 check_symbol_exists(tmpnam       "${CFG_HEADERS}" HAVE_TMPNAM)
 check_symbol_exists(tmpnam_r     "${CFG_HEADERS}" HAVE_TMPNAM_R)
 check_symbol_exists(truncate     "${CFG_HEADERS}" HAVE_TRUNCATE)
+check_symbol_exists(ttyname      "${CFG_HEADERS}" HAVE_TTYNAME) # Python 3.11
+check_symbol_exists(umask        "${CFG_HEADERS}" HAVE_UMASK) # Python 3.11
 check_symbol_exists(uname        "${CFG_HEADERS}" HAVE_UNAME)
 check_symbol_exists(unsetenv     "${CFG_HEADERS}" HAVE_UNSETENV)
 check_symbol_exists(utimes       "${CFG_HEADERS}" HAVE_UTIMES)
+check_symbol_exists(wait         "${CFG_HEADERS}" HAVE_WAIT) # Python 3.11
 check_symbol_exists(wait3        "${CFG_HEADERS}" HAVE_WAIT3)
 check_symbol_exists(wait4        "${CFG_HEADERS}" HAVE_WAIT4)
 check_symbol_exists(waitpid      "${CFG_HEADERS}" HAVE_WAITPID)
 check_symbol_exists(wcscoll      "${CFG_HEADERS}" HAVE_WCSCOLL)
 check_symbol_exists(_getpty      "${CFG_HEADERS}" HAVE__GETPTY)
 
+check_symbol_exists(accept       "${CFG_HEADERS}" HAVE_ACCEPT) # Python 3.11
 check_symbol_exists(accept4      "${CFG_HEADERS}" HAVE_ACCEPT4)
 check_symbol_exists(close_range  "${CFG_HEADERS}" HAVE_CLOSE_RANGE) # Python 3.10
 check_symbol_exists(copy_file_range "${CFG_HEADERS}" HAVE_COPY_FILE_RANGE)
@@ -990,6 +1023,7 @@ check_symbol_exists(mkdirat      "${CFG_HEADERS}" HAVE_MKDIRAT)
 check_symbol_exists(mkfifoat     "${CFG_HEADERS}" HAVE_MKFIFOAT)
 check_symbol_exists(mknodat      "${CFG_HEADERS}" HAVE_MKNODAT)
 check_symbol_exists(openat       "${CFG_HEADERS}" HAVE_OPENAT)
+check_symbol_exists(pipe         "${CFG_HEADERS}" HAVE_PIPE) # Python 3.11
 check_symbol_exists(pipe2        "${CFG_HEADERS}" HAVE_PIPE2)
 check_symbol_exists(posix_fadvise          "${CFG_HEADERS}" HAVE_POSIX_FADVISE)
 check_symbol_exists(posix_fallocate        "${CFG_HEADERS}" HAVE_POSIX_FALLOCATE)
@@ -1856,8 +1890,12 @@ endif()
 
 check_symbol_exists(gai_strerror    "${CFG_HEADERS}" HAVE_GAI_STRERROR)
 check_symbol_exists(getaddrinfo     "${CFG_HEADERS}" HAVE_GETADDRINFO)
+check_symbol_exists(gethostname     "${CFG_HEADERS}" HAVE_GETHOSTNAME) # Python 3.11
 check_symbol_exists(getnameinfo     "${CFG_HEADERS}" HAVE_GETNAMEINFO)
+check_symbol_exists(gethostbyaddr   "${CFG_HEADERS}" HAVE_GETHOSTBYADDR) # Python 3.11
 check_symbol_exists(getpeername     "${CFG_HEADERS}" HAVE_GETPEERNAME)
+check_symbol_exists(getservbyname   "${CFG_HEADERS}" HAVE_GETSERVBYNAME) # Python 3.11
+check_symbol_exists(getservbyport   "${CFG_HEADERS}" HAVE_GETSERVBYPORT) # Python 3.11
 check_symbol_exists(hstrerror       "${CFG_HEADERS}" HAVE_HSTRERROR)
 check_symbol_exists(inet_aton       "${CFG_HEADERS}" HAVE_INET_ATON)
 if(NOT HAVE_INET_ATON)
