@@ -208,7 +208,7 @@ function(add_python_extension name)
             ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${ARCHIVEDIR}
             LIBRARY_OUTPUT_DIRECTORY ${EXTENSION_BUILD_DIR}
             RUNTIME_OUTPUT_DIRECTORY ${EXTENSION_BUILD_DIR}
-            OUTPUT_NAME "${name}"
+            OUTPUT_NAME "${name}$<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:.${SOABI}>"
             PREFIX ""
         )
         set_target_properties(${target_name} PROPERTIES
