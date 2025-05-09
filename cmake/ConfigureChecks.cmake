@@ -226,11 +226,13 @@ endif()
 message(STATUS "${_msg} - ${ABIFLAGS}")
 
 set(_msg "Checking SOABI")
-try_run(PLATFORM_RUN PLATFORM_COMPILE
-        ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR}/cmake/platform.c
-        RUN_OUTPUT_VARIABLE PLATFORM_TRIPLET)
-if(NOT PLATFORM_COMPILE)
-  message(FATAL_ERROR "We could not determine the platform. Please clean the ${CMAKE_PROJECT_NAME} environment and try again...")
+if(NOT DEFINED PLATFORM_TRIPLET)
+  try_run(PLATFORM_RUN PLATFORM_COMPILE
+          ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR}/cmake/platform.c
+          RUN_OUTPUT_VARIABLE PLATFORM_TRIPLET)
+  if(NOT PLATFORM_COMPILE)
+    message(FATAL_ERROR "We could not determine the platform. Please clean the ${CMAKE_PROJECT_NAME} environment and try again...")
+  endif()
 endif()
 set(SOABI "cpython-${PY_VERSION_MAJOR}${PY_VERSION_MINOR}${ABIFLAGS}-${PLATFORM_TRIPLET}")
 
