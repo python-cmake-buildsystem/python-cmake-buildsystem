@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20.6)
 
-set(PYTHON_VERSION "3.10.17" CACHE STRING "The version of Python to build.")
+set(PYTHON_VERSION "3.11.12" CACHE STRING "The version of Python to build.")
 
 string(REPLACE "." ";" VERSION_LIST ${PYTHON_VERSION})
 list(GET VERSION_LIST 0 PY_VERSION_MAJOR)
@@ -297,6 +297,20 @@ set(_download_3.10.14_md5 "f67d78c8323a18fe6b945914c51a7aa6")
 set(_download_3.10.15_md5 "b6a2b570ea75ef55f50bfe79d778eb01")
 set(_download_3.10.16_md5 "2515d8571c6fdd7fc620aa9e1cc6d202")
 set(_download_3.10.17_md5 "763324aa2b396ee10a51bfa6c645d8e9")
+# 3.11.x
+set(_download_3.11.0_md5 "c5f77f1ea256dc5bdb0897eeb4d35bb0")
+set(_download_3.11.1_md5 "5c986b2865979b393aa50a31c65b64e8")
+set(_download_3.11.2_md5 "f6b5226ccba5ae1ca9376aaba0b0f673")
+set(_download_3.11.3_md5 "016ba65bc80411f9ec20c614ab385e81")
+set(_download_3.11.4_md5 "bf6ec50f2f3bfa6ffbdb385286f2c628")
+set(_download_3.11.5_md5 "b628f21aae5e2c3006a12380905bb640")
+set(_download_3.11.6_md5 "ed23dadb9f1b9fd2e4e7d78619685c79")
+set(_download_3.11.7_md5 "ef61f81ec82c490484219c7f0ec96783")
+set(_download_3.11.8_md5 "7fb0bfaa2f6aae4aadcdb51abe957825")
+set(_download_3.11.9_md5 "bfd4d3bfeac4216ce35d7a503bf02d5c")
+set(_download_3.11.10_md5 "35c36069a43dd57a7e9915deba0f864e")
+set(_download_3.11.11_md5 "9a5b43fcc06810b8ae924b0a080e6569")
+set(_download_3.11.12_md5 "b8bb496014f05f5be180fab74810f40b")
 
 set(_extracted_dir "Python-${PY_VERSION}")
 
@@ -543,10 +557,13 @@ include_directories(${INCLUDE_BUILD_DIR})
 include_directories(${INCLUDE_BUILD_DIR}/internal)
 include_directories(${PYCONFIG_BUILD_DIR})
 include_directories(${SRC_DIR}/Python)
+include_directories(${SRC_DIR}) # Introduced in Python 3.11 for "Python/frozen_modules/.h"
 
 # Set cflags used by all components
 if(CMAKE_C_COMPILER_ID MATCHES GNU)
-    if(PY_VERSION VERSION_GREATER_EQUAL "3.6")
+    if(PY_VERSION VERSION_GREATER_EQUAL "3.11")
+        append_if_absent(CMAKE_C_FLAGS "-std=c11")
+    elseif(PY_VERSION VERSION_GREATER_EQUAL "3.6")
         append_if_absent(CMAKE_C_FLAGS "-std=c99")
     endif()
     append_if_absent(CMAKE_C_FLAGS "-Wall")
@@ -784,7 +801,9 @@ file(MAKE_DIRECTORY "${EXTENSION_BUILD_DIR}")
 install(DIRECTORY DESTINATION ${EXTENSION_INSTALL_DIR})
 
 if(BUILD_TESTING)
-    set(TESTOPTS -l)
+    # Command line option "-l/--findleaks" of regrtest is deprecated since Python 3.7 and
+    # removed in Python 3.11. It is superseded by --fail-env-changed.
+    set(TESTOPTS $<IF:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>,--fail-env-changed,-l>)
     set(TESTPROG ${PROJECT_BINARY_DIR}/${PYTHONHOME}/test/regrtest.py)
     set(TESTPYTHONOPTS )
       set(TESTPYTHON $<TARGET_FILE:python> ${TESTPYTHONOPTS})
