@@ -92,7 +92,35 @@ if(USE_SYSTEM_OpenSSL)
 endif()
 
 if(USE_SYSTEM_TCL)
-    find_package(TCL)
+    find_package(TCL ${_tcl_version})
+
+    if(TCL_FOUND)
+        set(tk_h_path "${TK_INCLUDE_PATH}/tk.h")
+
+        file(STRINGS "${tk_h_path}" tk_version_str REGEX "^#define[\t ]+TK_PATCH_LEVEL[\t ]+\".*\".*")
+        string(REGEX REPLACE "^#define[\t ]+TK_PATCH_LEVEL[\t ]+\"([^\"]*)\".*" "\\1" TK_PATCH_LEVEL "${tk_version_str}")
+
+        if(TK_PATCH_LEVEL)
+            message(STATUS "TK_PATCH_LEVEL: ${TK_PATCH_LEVEL}")
+
+            set(_tk_expected_version)
+            if(PY_VERSION VERSION_GREATER_EQUAL "3.5")
+                set(_tk_expected_version "8.4")
+            else()
+                set(_tk_expected_version "8.3.1")
+            endif()
+
+            if("${TK_PATCH_LEVEL}" VERSION_LESS "${_tk_expected_version}")
+                message(WARNING "TCL version check failed. Version ${TK_PATCH_LEVEL} was found, at least version ${_tk_expected_version} is required")
+                message(AUTHOR_WARNING "Unsetting cache variable TK_LIBRARY")
+                unset(TK_LIBRARY CACHE)
+                message(AUTHOR_WARNING "Unsetting cache variable TK_INCLUDE_PATH")
+                unset(TK_INCLUDE_PATH CACHE)
+            endif()
+        else()
+            message(WARNING "Could not find TK_PATCH_LEVEL in ${tk_h_path}")
+        endif()
+    endif()
 endif()
 
 if(UNIX)
