@@ -442,6 +442,8 @@ add_python_extension(_msi
         WIN32
     SOURCES
         ${SRC_DIR}/PC/_msi.c
+    DEFINITIONS
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>:NEEDS_PY_IDENTIFIER>
     LIBRARIES
         cabinet.lib
         msi.lib
