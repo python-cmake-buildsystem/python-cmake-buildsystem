@@ -1,0 +1,51 @@
+From 50a9d90c04eb672d35d516b32c802760a0736a23 Mon Sep 17 00:00:00 2001
+From: Jean-Christophe Fillion-Robin <jchris.fillionr@kitware.com>
+Date: Tue, 13 May 2025 20:36:35 -0400
+Subject: [PATCH] _bootstrap_python: Fix execution on windows disabling site
+ import
+
+This workaround the lack of `sys.winver` attribute addressing the following
+error:
+
+```
+ Generating C:/path/to/Python-3.11.12/Python/deepfreeze/deepfreeze.c
+CUSTOMBUILD : Fatal Python error : init_import_site: Failed to import the site module [C:\path\to\pycbs-3.11-build\CMakeBuild\libpython\libpython-shared.vcxproj]
+  Python runtime state: initialized
+  Traceback (most recent call last):
+    File "C:\path\to\pycbs-3.11-build\Lib\site.py", line 626, in <module>
+      main()
+    File "C:\path\to\pycbs-3.11-build\Lib\site.py", line 612, in main
+      known_paths = addusersitepackages(known_paths)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "C:\path\to\pycbs-3.11-build\Lib\site.py", line 350, in addusersitepackages
+      user_site = getusersitepackages()
+                  ^^^^^^^^^^^^^^^^^^^^^
+    File "C:\path\to\pycbs-3.11-build\Lib\site.py", line 337, in getusersitepackages
+      USER_SITE = _get_path(userbase)
+                  ^^^^^^^^^^^^^^^^^^^
+    File "C:\path\to\pycbs-3.11-build\Lib\site.py", line 302, in _get_path
+      ver_nodot = sys.winver.replace('.', '')
+                  ^^^^^^^^^^
+  AttributeError: module 'sys' has no attribute 'winver'
+```
+---
+ Programs/_bootstrap_python.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/Programs/_bootstrap_python.c b/Programs/_bootstrap_python.c
+index 6ecbf0c72b5..136c187758d 100644
+--- a/Programs/_bootstrap_python.c
++++ b/Programs/_bootstrap_python.c
+@@ -72,6 +72,9 @@ main(int argc, char **argv)
+     // add current script dir to sys.path
+     config.isolated = 0;
+     config.safe_path = 0;
++#ifdef MS_WINDOWS
++    config.site_import = 0;
++#endif
+ 
+ #ifdef MS_WINDOWS
+     status = PyConfig_SetArgv(&config, argc, argv);
+-- 
+2.48.1
+

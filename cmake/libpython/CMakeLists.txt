@@ -423,6 +423,25 @@ configure_file(
     ${PROJECT_BINARY_DIR}/CMakeFiles/config.c
     )
 
+if(WIN32 AND PY_VERSION VERSION_GREATER_EQUAL "3.11")
+set(config_inits "")
+set(minimal_builtin_extensions _codecs _collections _io _imp _sre _thread _tracemalloc _weakref errno faulthandler itertools time)
+if(WIN32)
+    list(APPEND minimal_builtin_extensions nt winreg)
+    set(config_inits "${config_inits}/* Define extern variables omitted from minimal builds */\n")
+    set(config_inits "${config_inits}void *PyWin_DLLhModule = NULL;\n\n")
+endif()
+set(config_entries "")
+foreach(ext IN LISTS minimal_builtin_extensions)
+    set(config_inits "${config_inits}extern ${init_return_type} ${init_prefix}${ext}(void);\n")
+    set(config_entries "${config_entries}    {\"${ext}\", ${init_prefix}${ext}},\n")
+endforeach()
+configure_file(
+    ${PROJECT_SOURCE_DIR}/cmake/config_${PY_VERSION_MAJOR}.c.in
+    ${PROJECT_BINARY_DIR}/CMakeFiles/config_minimal.c
+    )
+endif()
+
 # Collect libpython target libraries
 set(LIBPYTHON_TARGET_LIBRARIES
   ${builtin_link_libraries}
@@ -457,7 +476,7 @@ add_executable(_freeze_importlib
   # Introduced in Python 3.11
   $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>:${SRC_DIR}/Programs/_freeze_module.c>
   $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>:${SRC_DIR}/Modules/getpath_noop.c>
-  $<$<AND:$<BOOL:${WIN32}>,$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>>:${SRC_DIR}/PC/config_minimal.c>
+  $<$<AND:$<BOOL:${WIN32}>,$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>>:${PROJECT_BINARY_DIR}/CMakeFiles/config_minimal.c>
 
   ${LIBPYTHON_OMIT_FROZEN_SOURCES}
   )
@@ -704,7 +723,7 @@ if(PY_VERSION VERSION_GREATER_EQUAL "3.11")
 add_executable(_bootstrap_python
     ${SRC_DIR}/Programs/_bootstrap_python.c
     ${SRC_DIR}/Modules/getpath.c
-    $<$<BOOL:${WIN32}>:${SRC_DIR}/PC/config_minimal.c>
+    $<$<BOOL:${WIN32}>:${PROJECT_BINARY_DIR}/CMakeFiles/config_minimal.c>
     ${LIBPYTHON_OMIT_FROZEN_SOURCES}
     ${LIBPYTHON_FROZEN_SOURCES}
 )
