@@ -65,6 +65,8 @@ function(add_python_extension name)
     # libraries that we might want to link against (eg. readline)
     set(target_name extension_${pretty_name})
 
+    set_property(GLOBAL APPEND PROPERTY FUCKING_PYTHON_EXTENSION_TARGETS ${target_name})
+
     set(enable_default ON)
     if(ADD_PYTHON_EXTENSION_NEVER_BUILTIN AND WITH_STATIC_DEPENDENCIES)
         set(enable_default OFF)

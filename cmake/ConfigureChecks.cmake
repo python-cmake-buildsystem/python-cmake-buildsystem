@@ -2797,16 +2797,17 @@ endif()
 ##########################################################
 
 if(ZLIB_LIBRARIES)
-  cmake_push_check_state()
-  set(CFG_HEADERS_SAVE ${CFG_HEADERS})
+  #cmake_push_check_state()
+  #set(CFG_HEADERS_SAVE ${CFG_HEADERS})
 
-  set(CFG_HEADERS ${CFG_HEADERS} zlib.h)
-  add_cond(CMAKE_REQUIRED_INCLUDES ZLIB_INCLUDE_DIRS ${ZLIB_INCLUDE_DIRS})
-  add_cond(CMAKE_REQUIRED_LIBRARIES ZLIB_LIBRARIES ${ZLIB_LIBRARIES})
-  check_symbol_exists(inflateCopy      "${CFG_HEADERS}" HAVE_ZLIB_COPY)
+  #set(CFG_HEADERS ${CFG_HEADERS} zlib.h)
+  #add_cond(CMAKE_REQUIRED_INCLUDES ZLIB_INCLUDE_DIRS ${ZLIB_INCLUDE_DIRS})
+  #add_cond(CMAKE_REQUIRED_LIBRARIES ZLIB_LIBRARIES ${ZLIB_LIBRARIES})
+  #check_symbol_exists(inflateCopy      "${CFG_HEADERS}" HAVE_ZLIB_COPY)
+  set(HAVE_ZLIB_COPY ON CACHE BOOL "Assume Zlib have inflateCopy since checking inflateCopy would result in error during CMake configure" FORCE)
 
-  set(CFG_HEADERS ${CFG_HEADERS_SAVE})
-  cmake_pop_check_state()
+  #set(CFG_HEADERS ${CFG_HEADERS_SAVE})
+  #cmake_pop_check_state()
 endif()
 
 # Check if tirpc static library and its dependencies can be linked statically
