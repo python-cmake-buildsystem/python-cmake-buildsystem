@@ -1950,6 +1950,15 @@
    #define below would cause a syntax error. */
 /* #undef _UINT64_T */
 
+/* Define to 1 if you want to emulate getpid() on WASI [Python 3.11] */
+/* #undef _WASI_EMULATED_GETPID */
+
+/* Define to 1 if you want to emulate process clocks on WASI [Python 3.11] */
+/* #undef _WASI_EMULATED_PROCESS_CLOCKS */
+
+/* Define to 1 if you want to emulate signals on WASI [Python 3.11] */
+/* #undef _WASI_EMULATED_SIGNAL */
+
 /* Define to the level of X/Open that your system supports */
 #cmakedefine _XOPEN_SOURCE @_XOPEN_SOURCE@
 
