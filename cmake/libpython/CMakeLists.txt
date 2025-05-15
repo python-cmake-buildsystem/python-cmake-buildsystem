@@ -819,6 +819,11 @@ set(LIBPYTHON_SOURCES
     $<$<AND:$<BOOL:${WIN32}>,$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>>:${SRC_DIR}/PC/dl_nt.c>
 )
 if(WIN32 AND PY_VERSION VERSION_GREATER_EQUAL "3.11")
+    set(PYTHONPATH "${EXTRA_PYTHONPATH}\\\;${LIBDIR}\\\\lib-dynload")
+    set(PYTHONPATH "${PYTHONPATH}\\\;${LIBDIR}\\\\lib-dynload\\\\$<CONFIG>")
+
+    set(_wide_char_modifier "L")
+
     set_property(
         SOURCE ${SRC_DIR}/Modules/getpath.c
         PROPERTY COMPILE_DEFINITIONS
@@ -827,8 +832,8 @@ if(WIN32 AND PY_VERSION VERSION_GREATER_EQUAL "3.11")
             VERSION="${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}"
             VPATH="..\\\\.."
             PYDEBUGEXT="$<$<CONFIG:Debug>:_d>"
-            PLATLIBDIR="DLLs"
-            PYTHONPATH="Lib\\\\lib-dynload"
+            PLATLIBDIR="${LIBDIR}"
+            PYTHONPATH="${_wide_char_modifier}${PYTHONPATH}"
         )
     set_property(
         SOURCE ${SRC_DIR}/PC/dl_nt.c
