@@ -994,6 +994,9 @@
 /* Define to 1 if you have the `pthread_sigmask' function. */
 #cmakedefine HAVE_PTHREAD_SIGMASK 1
 
+/* Define if platform requires stubbed pthreads support [Python 3.11] */
+/* #undef HAVE_PTHREAD_STUBS */
+
 /* Define to 1 if you have the <pty.h> header file. */
 #cmakedefine HAVE_PTY_H 1
 
