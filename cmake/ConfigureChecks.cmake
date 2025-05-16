@@ -777,6 +777,9 @@ add_cond(CMAKE_EXTRA_INCLUDE_FILES HAVE_WCHAR_H wchar.h)
 
 TEST_BIG_ENDIAN(WORDS_BIGENDIAN)
 
+# Assume C89 semantics that RETSIGTYPE is always void
+set(RETSIGTYPE "void")
+
 check_type_size(double SIZEOF_DOUBLE) # libffi and cpython
 check_type_size(float SIZEOF_FLOAT)
 check_type_size(fpos_t SIZEOF_FPOS_T)
