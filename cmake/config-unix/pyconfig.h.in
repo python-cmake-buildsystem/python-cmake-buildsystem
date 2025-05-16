@@ -1709,6 +1709,9 @@
 /* Define if you want to enable tracing references for debugging purpose [Python 3.8] */
 #cmakedefine Py_TRACE_REFS 1
 
+/* assume C89 semantics that RETSIGTYPE is always void */
+#cmakedefine RETSIGTYPE
+
 /* Define if setpgrp() must be called as setpgrp(0, 0). */
 #cmakedefine SETPGRP_HAVE_ARG 1
 
