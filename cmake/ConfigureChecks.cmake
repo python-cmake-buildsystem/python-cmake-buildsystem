@@ -16,6 +16,9 @@ message(STATUS "The system processor is ${CMAKE_SYSTEM_PROCESSOR}")
 message(STATUS "The system version is ${CMAKE_SYSTEM_VERSION}")
 
 # Find any dependencies
+
+set(HAVE_LIBB2 0) # See https://github.com/python-cmake-buildsystem/python-cmake-buildsystem/issues/393
+
 if(USE_SYSTEM_BZip2)
     find_package(BZip2) # https://cmake.org/cmake/help/latest/module/FindBZip2.html
 endif()
