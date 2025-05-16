@@ -59,7 +59,7 @@ How to use this buildsystem:
 
 .. note::
 
-  By default, the build system will download the python 3.10.17 source from
+  By default, the build system will download the python 3.11.12 source from
   http://www.python.org/ftp/python/
 
 
@@ -72,7 +72,7 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
 
 ::
 
-  PYTHON_VERSION=major.minor.patch (defaults to 3.10.17)
+  PYTHON_VERSION=major.minor.patch (defaults to 3.11.12)
     The version of Python to build.
 
   PYTHON_APPLY_PATCHES=ON|OFF (defaults to ON)
