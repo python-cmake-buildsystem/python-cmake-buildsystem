@@ -15,6 +15,7 @@ Makefile
 
 # Ignore all dotfiles...
 .*
+!.git-blame-ignore-revs
 !.gitattributes
 !.circleci
 !.github/
