@@ -39,6 +39,13 @@ if(USE_SYSTEM_Curses)
       message(STATUS "${_msg} - not found")
     endif()
 
+    # Python 3.12
+    if(Curses_FOUND)
+      set(HAVE_NCURSESW 1)
+    else()
+      set(HAVE_NCURSESW 0)
+    endif()
+
     if(NOT Curses_FOUND)
       message(STATUS "")
       set(_msg "Looking for curses without Unicode support")
@@ -80,6 +87,7 @@ if(USE_SYSTEM_LibFFI)
     message(STATUS "LibFFI_INCLUDE_DIR=${LibFFI_INCLUDE_DIR}")
     message(STATUS "LibFFI_LIBRARY=${LibFFI_LIBRARY}")
 endif()
+set(HAVE_LIBFFI ${LibFFI_LIBRARY}) # Python 3.12
 
 if(USE_SYSTEM_LIBMPDEC)
     find_library(LIBMPDEC_LIBRARY NAMES mpdec libmpdec)
@@ -195,9 +203,11 @@ set(HAVE_LZMA_H ${LZMA_INCLUDE_PATH}) # Python 3.11
 if(USE_SYSTEM_READLINE)
     if(USE_LIBEDIT)
         find_path(READLINE_INCLUDE_PATH editline/readline.h)
+        set(HAVE_EDITLINE_READLINE_H ${READLINE_INCLUDE_PATH}) # Python 3.12
         find_library(READLINE_LIBRARY edit)
     else()
         find_path(READLINE_INCLUDE_PATH readline/readline.h)
+        set(HAVE_READLINE_READLINE_H ${READLINE_INCLUDE_PATH}) # Python 3.12
         find_library(READLINE_LIBRARY readline)
     endif()
 endif()
@@ -387,6 +397,7 @@ check_include_files(minix/config.h HAVE_MINIX_CONFIG_H)
 check_include_files(ncurses.h HAVE_NCURSES_H)
 check_include_files(ncurses/panel.h HAVE_NCURSES_PANEL_H)
 check_include_files(netdb.h HAVE_NETDB_H)
+check_include_files(net/ethernet.h HAVE_NET_ETHERNET_H) # Python 3.12
 check_include_files(netinet/in.h HAVE_NETINET_IN_H)
 check_include_files(netpacket/packet.h HAVE_NETPACKET_PACKET_H)
 check_include_files(panel.h HAVE_PANEL_H)
@@ -406,6 +417,7 @@ check_include_files(shadow.h HAVE_SHADOW_H)
 check_include_files(signal.h HAVE_SIGNAL_H)
 check_include_files(spawn.h HAVE_SPAWN_H)
 check_include_files(stdint.h HAVE_STDINT_H)   # libffi and cpython
+check_include_files(stdio.h HAVE_STDIO_H) # Python 3.12
 check_include_files(stdlib.h HAVE_STDLIB_H)   # libffi and cpython
 check_include_files(strings.h HAVE_STRINGS_H) # libffi and cpython
 check_include_files(string.h HAVE_STRING_H)   # libffi and cpython
@@ -428,6 +440,7 @@ set(MAJOR_IN_MKDEV ${HAVE_SYS_MKDEV_H})
 check_include_files(sys/mman.h HAVE_SYS_MMAN_H) # libffi and cpython
 check_include_files(sys/modem.h HAVE_SYS_MODEM_H)
 check_include_files(sys/param.h HAVE_SYS_PARAM_H)
+check_include_files(sys/pidfd.h HAVE_SYS_PIDFD_H) # Python 3.12
 check_include_files(sys/poll.h HAVE_SYS_POLL_H)
 check_include_files(sys/random.h HAVE_SYS_RANDOM_H)
 check_include_files(sys/resource.h HAVE_SYS_RESOURCE_H)
@@ -455,6 +468,7 @@ check_include_files(stdarg.h HAVE_STDARG_PROTOTYPES)
 
 check_include_files(endian.h HAVE_ENDIAN_H)
 check_include_files(sched.h HAVE_SCHED_H)
+check_include_files(linux/fs.h HAVE_LINUX_FS_H) # Python 3.12
 check_include_files(linux/limits.h HAVE_LINUX_LIMITS_H) # Python 3.11
 check_include_files(linux/memfd.h HAVE_LINUX_MEMFD_H)
 check_include_files(linux/random.h HAVE_LINUX_RANDOM_H)
@@ -839,6 +853,7 @@ check_type_size(ssize_t HAVE_SSIZE_T)
 check_type_size(time_t SIZEOF_TIME_T)
 check_type_size(uintptr_t SIZEOF_UINTPTR_T)
 set(HAVE_UINTPTR_T ${SIZEOF_UINTPTR_T})
+check_type_size(max_align_t ALIGNOF_MAX_ALIGN_T) # Python 3.12
 check_type_size("void *" SIZEOF_VOID_P)
 check_type_size(wchar_t SIZEOF_WCHAR_T)
 check_type_size(_Bool SIZEOF__BOOL)
@@ -920,6 +935,7 @@ add_cond(CFG_HEADERS HAVE_SYS_SYSMACROS_H sys/sysmacros.h)
 add_cond(CFG_HEADERS HAVE_SYS_TYPES_H sys/types.h)
 add_cond(CFG_HEADERS HAVE_SYS_TIME_H sys/time.h)
 add_cond(CFG_HEADERS HAVE_SYS_FILE_H sys/file.h)
+add_cond(CFG_HEADERS HAVE_SYS_PIDFD_H sys/pidfd.h)
 add_cond(CFG_HEADERS HAVE_SYS_POLL_H sys/poll.h)
 add_cond(CFG_HEADERS HAVE_SYS_STATVFS_H sys/statvfs.h)
 add_cond(CFG_HEADERS HAVE_SYS_STAT_H sys/stat.h)
@@ -941,6 +957,7 @@ add_cond(CFG_HEADERS HAVE_FCNTL_H fcntl.h)
 add_cond(CFG_HEADERS HAVE_PTY_H pty.h)
 add_cond(CFG_HEADERS HAVE_SIGNAL_H signal.h)
 add_cond(CFG_HEADERS HAVE_STDINT_H stdint.h)
+add_cond(CFG_HEADERS HAVE_STDIO_H stdio.h)
 add_cond(CFG_HEADERS HAVE_STDLIB_H stdlib.h)
 add_cond(CFG_HEADERS HAVE_STRING_H string.h)
 add_cond(CFG_HEADERS HAVE_UTIL_H util.h)
@@ -1113,6 +1130,7 @@ check_symbol_exists(tmpnam       "${CFG_HEADERS}" HAVE_TMPNAM)
 check_symbol_exists(tmpnam_r     "${CFG_HEADERS}" HAVE_TMPNAM_R)
 check_symbol_exists(truncate     "${CFG_HEADERS}" HAVE_TRUNCATE)
 check_symbol_exists(ttyname      "${CFG_HEADERS}" HAVE_TTYNAME) # Python 3.11
+check_symbol_exists(ttyname_r    "${CFG_HEADERS}" HAVE_TTYNAME_R) # Python 3.12
 check_symbol_exists(umask        "${CFG_HEADERS}" HAVE_UMASK) # Python 3.11
 check_symbol_exists(uname        "${CFG_HEADERS}" HAVE_UNAME)
 check_symbol_exists(unsetenv     "${CFG_HEADERS}" HAVE_UNSETENV)
@@ -1214,6 +1232,10 @@ check_symbol_exists(wcsftime               "${CFG_HEADERS}" HAVE_WCSFTIME)
 check_symbol_exists(wcsxfrm                "${CFG_HEADERS}" HAVE_WCSXFRM)
 check_symbol_exists(wmemcmp                "${CFG_HEADERS}" HAVE_WMEMCMP)
 check_symbol_exists(writev                 "${CFG_HEADERS}" HAVE_WRITEV)
+
+# check for namespace functions
+check_symbol_exists(setns                  "${CFG_HEADERS}" HAVE_SETNS) # Python 3.12
+check_symbol_exists(unshare                "${CFG_HEADERS}" HAVE_UNSHARE) # Python 3.12
 
 check_struct_has_member("struct stat" st_mtim.tv_nsec "${CFG_HEADERS}" HAVE_STAT_TV_NSEC)
 check_struct_has_member("struct stat" st_mtimespec.tv_nsec "${CFG_HEADERS}"    HAVE_STAT_TV_NSEC2)
@@ -1355,6 +1377,15 @@ python_platform_test(
   ${check_src}
   DIRECT
   )
+
+# Python 3.12
+cmake_push_check_state()
+add_cond(CMAKE_REQUIRED_LIBRARIES HAVE_LIBFFI ${LibFFI_LIBRARY})
+check_symbol_exists(ffi_call              "ffi.h" HAVE_FFI_CALL)
+check_symbol_exists(ffi_closure_alloc     "ffi.h" HAVE_FFI_CLOSURE_ALLOC)
+check_symbol_exists(ffi_prep_cif_var      "ffi.h" HAVE_FFI_PREP_CIF_VAR)
+check_symbol_exists(ffi_prep_closure_loc  "ffi.h" HAVE_FFI_PREP_CLOSURE_LOC)
+cmake_pop_check_state()
 
 # libffi specific: Cannot use PROT_EXEC on this target, so, we revert to alternative means
 # XXX In autoconf system, it was set to true if target matches *arm*-apple-darwin*
@@ -1998,6 +2029,7 @@ endif()
 cmake_push_check_state()
 set(CFG_HEADERS_SAVE ${CFG_HEADERS})
 add_cond(CFG_HEADERS HAVE_NETDB_H netdb.h)
+add_cond(CFG_HEADERS HAVE_NET_ETHERNET_H net/ethernet.h)
 add_cond(CFG_HEADERS HAVE_NETINET_IN_H netinet/in.h)
 add_cond(CFG_HEADERS HAVE_ARPA_INET_H arpa/inet.h)
 

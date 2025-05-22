@@ -1,0 +1,51 @@
+From ca2fd1a78562f904f4f5d7046cac9276c2ad2afa Mon Sep 17 00:00:00 2001
+From: Jean-Christophe Fillion-Robin <jchris.fillionr@kitware.com>
+Date: Tue, 13 May 2025 20:36:35 -0400
+Subject: [PATCH] _bootstrap_python: Fix execution on windows disabling site
+ import
+
+This works around the lack of `sys.winver` attribute addressing the following
+error:
+
+```
+ Generating C:/path/to/Python-3.12.10/Python/deepfreeze/deepfreeze.c
+CUSTOMBUILD : Fatal Python error : init_import_site: Failed to import the site module [C:\path	o\pycbs-3.12-build\CMakeBuild\libpython\libpython-shared.vcxproj]
+  Python runtime state: initialized
+  Traceback (most recent call last):
+    File "C:\path	o\pycbs-3.12-build\Lib\site.py", line 636, in <module>
+      main()
+    File "C:\path	o\pycbs-3.12-build\Lib\site.py", line 622, in main
+      known_paths = addusersitepackages(known_paths)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    File "C:\path	o\pycbs-3.12-build\Lib\site.py", line 361, in addusersitepackages
+      user_site = getusersitepackages()
+                  ^^^^^^^^^^^^^^^^^^^^^
+    File "C:\path	o\pycbs-3.12-build\Lib\site.py", line 348, in getusersitepackages
+      USER_SITE = _get_path(userbase)
+                  ^^^^^^^^^^^^^^^^^^^
+    File "C:\path	o\pycbs-3.12-build\Lib\site.py", line 313, in _get_path
+      ver_nodot = sys.winver.replace('.', '')
+                  ^^^^^^^^^^
+  AttributeError: module 'sys' has no attribute 'winver'
+```
+---
+ Programs/_bootstrap_python.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/Programs/_bootstrap_python.c b/Programs/_bootstrap_python.c
+index 6c388fc7033..edbe2847904 100644
+--- a/Programs/_bootstrap_python.c
++++ b/Programs/_bootstrap_python.c
+@@ -76,6 +76,9 @@ main(int argc, char **argv)
+     // add current script dir to sys.path
+     config.isolated = 0;
+     config.safe_path = 0;
++#ifdef MS_WINDOWS
++    config.site_import = 0;
++#endif
+ 
+ #ifdef MS_WINDOWS
+     status = PyConfig_SetArgv(&config, argc, argv);
+-- 
+2.48.1
+
