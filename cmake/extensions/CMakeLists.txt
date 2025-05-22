@@ -575,7 +575,9 @@ if(
             ${ctypes_COMMON_SOURCES}
         DEFINITIONS
             Py_BUILD_CORE_MODULE
-            FFI_BUILDING
+            # Starting with python/cpython@38f331d4656 ("bpo-45898: Remove duplicate symbols from _ctypes/cfield.c (GH-29791)", 2022-02-24), FFI_BUILDING is removed. Note that while the use of FFI_BUILDING seems
+            # to be specific to windows, backward compatibility is maintained defining it for all platforms.
+            $<$<VERSION_LESS:${PY_VERSION},3.11>:FFI_BUILDING>
         INCLUDEDIRS
             ${LibFFI_INCLUDE_DIR}
         LIBRARIES
