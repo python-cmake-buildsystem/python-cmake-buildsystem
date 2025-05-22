@@ -12,6 +12,10 @@ set(IS_PY_LESS_3_10 0)
 if(PY_VERSION VERSION_LESS "3.10")
     set(IS_PY_LESS_3_10 1)
 endif()
+set(IS_PY_LESS_3_12 0)
+if(PY_VERSION VERSION_LESS "3.12")
+    set(IS_PY_LESS_3_12 1)
+endif()
 
 set(IS_PY3_3_OR_GREATER 0)
 if(PY_VERSION VERSION_GREATER_EQUAL "3.3")
@@ -40,6 +44,10 @@ endif()
 set(IS_PY3_9_OR_GREATER 0)
 if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
     set(IS_PY3_9_OR_GREATER 1)
+endif()
+set(IS_PY3_12_OR_GREATER 0)
+if(PY_VERSION VERSION_GREATER_EQUAL "3.12")
+    set(IS_PY3_12_OR_GREATER 1)
 endif()
 
 add_python_extension(array ${WIN32_BUILTIN} SOURCES arraymodule.c)
@@ -143,6 +151,42 @@ add_python_extension(_struct ${WIN32_BUILTIN} SOURCES _struct.c)
 add_python_extension(_testcapi NEVER_BUILTIN
     SOURCES
         _testcapimodule.c
+
+        # Introduced in Python 3.12
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_testcapi/abstract.c>
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_testcapi/buffer.c>
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_testcapi/bytes.c>
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_testcapi/code.c>
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_testcapi/codec.c>
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_testcapi/complex.c>
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_testcapi/datetime.c>
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_testcapi/dict.c>
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_testcapi/docstring.c>
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_testcapi/exceptions.c>
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_testcapi/file.c>
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_testcapi/float.c>
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_testcapi/gc.c>
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_testcapi/getargs.c>
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_testcapi/heaptype.c>
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_testcapi/immortal.c>
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_testcapi/list.c>
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_testcapi/long.c>
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_testcapi/mem.c>
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_testcapi/numbers.c>
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_testcapi/set.c>
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_testcapi/structmember.c>
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_testcapi/tuple.c>
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_testcapi/unicode.c>
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_testcapi/vectorcall.c>
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_testcapi/watchers.c>
+
+        # Introduced in Python 3.12 and removed in 3.13
+        $<$<VERSION_EQUAL:${PY_VERSION_MAJOR}.${PY_VERSION_MINOR},3.12>:_testcapi/bytearray.c>
+        $<$<VERSION_EQUAL:${PY_VERSION_MAJOR}.${PY_VERSION_MINOR},3.12>:_testcapi/heaptype_relative.c>
+        $<$<VERSION_EQUAL:${PY_VERSION_MAJOR}.${PY_VERSION_MINOR},3.12>:_testcapi/pyos.c>
+        $<$<VERSION_EQUAL:${PY_VERSION_MAJOR}.${PY_VERSION_MINOR},3.12>:_testcapi/pytime.c>
+        $<$<VERSION_EQUAL:${PY_VERSION_MAJOR}.${PY_VERSION_MINOR},3.12>:_testcapi/sys.c>
+        $<$<VERSION_EQUAL:${PY_VERSION_MAJOR}.${PY_VERSION_MINOR},3.12>:_testcapi/vectorcall_limited.c>
 )
 
 set(thread_REQUIRES)
@@ -277,6 +321,7 @@ add_python_extension(_blake2 ${WIN32_BUILTIN}
 add_python_extension(_sha3 ${WIN32_BUILTIN}
     REQUIRES
         IS_PY3_6_OR_GREATER
+        IS_PY_LESS_3_12
     SOURCES
         _sha3/sha3module.c
 )
@@ -350,6 +395,14 @@ add_python_extension(_testclinic
         "PY_VERSION VERSION_GREATER_EQUAL 3.10.10"
     SOURCES
         _testclinic.c
+)
+
+# Python 3.12
+add_python_extension(_testsinglephase BUILTIN
+    REQUIRES
+        IS_PY3_12_OR_GREATER
+    SOURCES
+        _testsinglephase.c
 )
 
 # Python interface to subinterpreter C-API.
@@ -473,6 +526,17 @@ if(EXISTS ${module_src})
 endif()
 add_python_extension(_distutils_findvs REQUIRES WIN32 HAS_DISTUTILS_FINDVS_MODULE_SRC SOURCES ${module_src})
 
+add_python_extension(_wmi
+    REQUIRES
+        IS_PY3_12_OR_GREATER
+        WIN32
+    SOURCES
+        ${SRC_DIR}/PC/_wmimodule.cpp
+    LIBRARIES
+        propsys
+        wbemuuid
+)
+
 # Multiprocessing is different on unix and windows
 if(UNIX)
     set(_multiprocessing3_SOURCES )
@@ -527,6 +591,7 @@ if(WIN32)
             ws2_32
             ${M_LIBRARIES}
             $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:iphlpapi>
+            $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:Rpcrt4>
     )
 else()
     add_python_extension(_socket
@@ -859,18 +924,68 @@ endif()
 add_python_extension(_md5 ${WIN32_BUILTIN}
     SOURCES
         md5module.c
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_hacl/Hacl_Hash_MD5.c>
+    INCLUDEDIRS
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:${SRC_DIR}/Modules/_hacl/include>
 )
 add_python_extension(_sha1 ${WIN32_BUILTIN}
     SOURCES
         sha1module.c
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_hacl/Hacl_Hash_SHA1.c>
+    INCLUDEDIRS
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:${SRC_DIR}/Modules/_hacl/include>
 )
+
+# Removed in Python 3.12
 add_python_extension(_sha256 ${WIN32_BUILTIN}
+    REQUIRES
+        IS_PY_LESS_3_12
     SOURCES
         sha256module.c
 )
 add_python_extension(_sha512 ${WIN32_BUILTIN}
+    REQUIRES
+        IS_PY_LESS_3_12
     SOURCES
         sha512module.c
+)
+
+# Python 3.12
+add_python_extension(_sha2 ${WIN32_BUILTIN}
+    REQUIRES
+        IS_PY3_12_OR_GREATER
+    SOURCES
+        sha2module.c
+        _hacl/Hacl_Hash_SHA2.c
+    INCLUDEDIRS
+        ${SRC_DIR}/Modules/_hacl/include
+)
+add_python_extension(_sha3 ${WIN32_BUILTIN}
+    REQUIRES
+        IS_PY3_12_OR_GREATER
+    SOURCES
+        sha3module.c
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_hacl/Hacl_Hash_SHA3.c>
+    INCLUDEDIRS
+        $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:${SRC_DIR}/Modules/_hacl/include>
+)
+add_python_extension(_tokenize ALWAYS_BUILTIN
+    REQUIRES
+        IS_PY3_12_OR_GREATER
+    SOURCES
+        ${SRC_DIR}/Python/Python-tokenize.c
+)
+add_python_extension(_typing ALWAYS_BUILTIN
+    REQUIRES
+        IS_PY3_12_OR_GREATER
+    SOURCES
+        _typingmodule.c
+)
+add_python_extension(_xxinterpchannels ALWAYS_BUILTIN
+    REQUIRES
+        IS_PY3_12_OR_GREATER
+    SOURCES
+        _xxinterpchannelsmodule.c
 )
 
 # Extensions that depend on other libraries
