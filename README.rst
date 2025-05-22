@@ -72,7 +72,7 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
 
 ::
 
-  PYTHON_VERSION=major.minor.patch (defaults to 3.11.12)
+  PYTHON_VERSION=major.minor.patch (defaults to 3.12.10)
     The version of Python to build.
 
   PYTHON_APPLY_PATCHES=ON|OFF (defaults to ON)

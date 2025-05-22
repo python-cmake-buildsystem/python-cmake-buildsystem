@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20.6)
 
-set(PYTHON_VERSION "3.11.12" CACHE STRING "The version of Python to build.")
+set(PYTHON_VERSION "3.12.10" CACHE STRING "The version of Python to build.")
 
 string(REPLACE "." ";" VERSION_LIST ${PYTHON_VERSION})
 list(GET VERSION_LIST 0 PY_VERSION_MAJOR)
@@ -311,6 +311,18 @@ set(_download_3.11.9_md5 "bfd4d3bfeac4216ce35d7a503bf02d5c")
 set(_download_3.11.10_md5 "35c36069a43dd57a7e9915deba0f864e")
 set(_download_3.11.11_md5 "9a5b43fcc06810b8ae924b0a080e6569")
 set(_download_3.11.12_md5 "b8bb496014f05f5be180fab74810f40b")
+# 3.12.x
+set(_download_3.12.0_md5 "d6eda3e1399cef5dfde7c4f319b0596c")
+set(_download_3.12.1_md5 "51c5c22dcbc698483734dff5c8028606")
+set(_download_3.12.2_md5 "4e64a004f8ad9af1a75607cfd0d5a8c8")
+set(_download_3.12.3_md5 "3c5498a34d5226c9b746b1199f0bf2d9")
+set(_download_3.12.4_md5 "ead819dab6d165937138daa9e51ccb54")
+set(_download_3.12.5_md5 "d23d56b51d36a9d51b2b13d30c849d00")
+set(_download_3.12.6_md5 "c2f1dd5c8807ee50b778684b7958ee28")
+set(_download_3.12.7_md5 "5d0c0e4c6a022a87165a9addcd869109")
+set(_download_3.12.8_md5 "304473cf367fa65e450edf4b06b55fcc")
+set(_download_3.12.9_md5 "ce613c72fa9b32fb4f109762d61b249b")
+set(_download_3.12.10_md5 "35c03f014408e26e2b06d576c19cac54")
 
 set(_extracted_dir "Python-${PY_VERSION}")
 
