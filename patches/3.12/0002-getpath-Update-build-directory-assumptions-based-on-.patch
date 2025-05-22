@@ -1,0 +1,105 @@
+From b8d5fa3e61e2f1f8d07f8b8291c281cbdd02c4ad Mon Sep 17 00:00:00 2001
+From: Jean-Christophe Fillion-Robin <jchris.fillionr@kitware.com>
+Date: Fri, 30 May 2025 14:54:08 -0400
+Subject: [PATCH] getpath: Update build directory assumptions based on
+ python-cmake-buildsystem
+
+This ensures the following tests pass:
+- `test_sys` (`SysModuleTest.test_stdlib_dir`)
+- `test_frozen` (`TestFrozen.test_unfrozen_submodule_in_frozen_package`)
+---
+ Lib/test/test_getpath.py | 12 ++++++------
+ Modules/getpath.py       | 10 +++++++---
+ 2 files changed, 13 insertions(+), 9 deletions(-)
+
+diff --git a/Lib/test/test_getpath.py b/Lib/test/test_getpath.py
+index b9cbe1d92c4..374bfeef5f9 100644
+--- a/Lib/test/test_getpath.py
++++ b/Lib/test/test_getpath.py
+@@ -304,7 +304,7 @@ def test_buildpath_posix(self):
+         ns.add_known_xfile("/home/cpython/python")
+         ns.add_known_xfile("/usr/local/bin/python")
+         ns.add_known_file("/home/cpython/pybuilddir.txt", ["build/lib.linux-x86_64-9.8"])
+-        ns.add_known_file("/home/cpython/Lib/os.py")
++        ns.add_known_file("/home/cpython/lib/python9.8/os.py")
+         ns.add_known_dir("/home/cpython/lib-dynload")
+         expected = dict(
+             executable="/home/cpython/python",
+@@ -316,7 +316,7 @@ def test_buildpath_posix(self):
+             module_search_paths_set=1,
+             module_search_paths=[
+                 "/usr/local/lib/python98.zip",
+-                "/home/cpython/Lib",
++                "/home/cpython/lib/python9.8",
+                 "/home/cpython/build/lib.linux-x86_64-9.8",
+             ],
+         )
+@@ -492,7 +492,7 @@ def test_symlink_buildpath_posix(self):
+         ns.add_known_link("/linkfrom/python", "/home/cpython/python")
+         ns.add_known_xfile("/usr/local/bin/python")
+         ns.add_known_file("/home/cpython/pybuilddir.txt", ["build/lib.linux-x86_64-9.8"])
+-        ns.add_known_file("/home/cpython/Lib/os.py")
++        ns.add_known_file("/home/cpython/lib/python9.8/os.py")
+         ns.add_known_dir("/home/cpython/lib-dynload")
+         expected = dict(
+             executable="/linkfrom/python",
+@@ -504,7 +504,7 @@ def test_symlink_buildpath_posix(self):
+             module_search_paths_set=1,
+             module_search_paths=[
+                 "/usr/local/lib/python98.zip",
+-                "/home/cpython/Lib",
++                "/home/cpython/lib/python9.8",
+                 "/home/cpython/build/lib.linux-x86_64-9.8",
+             ],
+         )
+@@ -799,7 +799,7 @@ def test_symlink_buildpath_macos(self):
+         ns.add_known_link("/linkfrom/python", "/home/cpython/python")
+         ns.add_known_xfile("/usr/local/bin/python")
+         ns.add_known_file("/home/cpython/pybuilddir.txt", ["build/lib.macos-9.8"])
+-        ns.add_known_file("/home/cpython/Lib/os.py")
++        ns.add_known_file("/home/cpython/lib/python9.8/os.py")
+         ns.add_known_dir("/home/cpython/lib-dynload")
+         expected = dict(
+             executable="/linkfrom/python",
+@@ -811,7 +811,7 @@ def test_symlink_buildpath_macos(self):
+             module_search_paths_set=1,
+             module_search_paths=[
+                 "/usr/local/lib/python98.zip",
+-                "/home/cpython/Lib",
++                "/home/cpython/lib/python9.8",
+                 "/home/cpython/build/lib.macos-9.8",
+             ],
+         )
+diff --git a/Modules/getpath.py b/Modules/getpath.py
+index 9913fcba497..abe87164a4d 100644
+--- a/Modules/getpath.py
++++ b/Modules/getpath.py
+@@ -180,7 +180,7 @@
+     STDLIB_SUBDIR = f'{platlibdir}/python{VERSION_MAJOR}.{VERSION_MINOR}'
+     STDLIB_LANDMARKS = [f'{STDLIB_SUBDIR}/os.py', f'{STDLIB_SUBDIR}/os.pyc']
+     PLATSTDLIB_LANDMARK = f'{platlibdir}/python{VERSION_MAJOR}.{VERSION_MINOR}/lib-dynload'
+-    BUILDSTDLIB_LANDMARKS = ['Lib/os.py']
++    BUILDSTDLIB_LANDMARKS = [f'lib/python{VERSION_MAJOR}.{VERSION_MINOR}/os.py']
+     VENV_LANDMARK = 'pyvenv.cfg'
+     ZIP_LANDMARK = f'{platlibdir}/python{VERSION_MAJOR}{VERSION_MINOR}.zip'
+     DELIM = ':'
+@@ -510,10 +510,14 @@ def search_up(prefix, *landmarks, test=isfile):
+         else:
+             build_stdlib_prefix = search_up(build_prefix, *BUILDSTDLIB_LANDMARKS)
+         # Always use the build prefix for stdlib
++        if os_name == 'nt':
++            lib = 'Lib'
++        else:
++            lib = f'lib/python{VERSION_MAJOR}.{VERSION_MINOR}'
+         if build_stdlib_prefix:
+-            stdlib_dir = joinpath(build_stdlib_prefix, 'Lib')
++            stdlib_dir = joinpath(build_stdlib_prefix, lib)
+         else:
+-            stdlib_dir = joinpath(build_prefix, 'Lib')
++            stdlib_dir = joinpath(build_prefix, lib)
+         # Only use the build prefix for prefix if it hasn't already been set
+         if not prefix:
+             prefix = build_stdlib_prefix
+-- 
+2.48.1
+

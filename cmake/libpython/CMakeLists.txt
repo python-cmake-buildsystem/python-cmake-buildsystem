@@ -119,7 +119,9 @@ set(PARSER_COMMON_SOURCES # Equivalent to POBJS in Makefile.pre
 )
 
 set(OBJECT_COMMON_SOURCES # Equivalent to OBJECT_OBJS in Makefile.pre
-    ${SRC_DIR}/Objects/accu.c
+    # Removed in Python 3.12
+    $<$<VERSION_LESS:${PY_VERSION},3.12>:${SRC_DIR}/Objects/accu.c>
+
     ${SRC_DIR}/Objects/bytesobject.c
     $<$<C_COMPILER_ID:MSVC>:${SRC_DIR}/PC/invalid_parameter_handler.c>
     ${SRC_DIR}/Objects/abstract.c
@@ -176,6 +178,9 @@ set(OBJECT_COMMON_SOURCES # Equivalent to OBJECT_OBJS in Makefile.pre
 
     # Introduced in Python 3.10
     $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.10>:${SRC_DIR}/Objects/unionobject.c>
+
+    # Introduced in Python 3.12
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:${SRC_DIR}/Objects/typevarobject.c>
 )
 
 if(CMAKE_C_COMPILER_ID MATCHES GNU)
@@ -295,6 +300,16 @@ set(PYTHON_COMMON_SOURCES
     $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>:${SRC_DIR}/Python/Python-tokenize.c>
     $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>:${SRC_DIR}/Python/frame.c>
     $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>:${SRC_DIR}/Python/specialize.c>
+
+    # Introduced in Python 3.12
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:${SRC_DIR}/Python/assemble.c>
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:${SRC_DIR}/Python/ceval_gil.c>
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:${SRC_DIR}/Python/flowgraph.c>
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:${SRC_DIR}/Python/instrumentation.c>
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:${SRC_DIR}/Python/intrinsics.c>
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:${SRC_DIR}/Python/legacy_tracing.c>
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:${SRC_DIR}/Python/perf_trampoline.c>
+    $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:${SRC_DIR}/Python/tracemalloc.c>
 )
 
 if(UNIX)
@@ -426,6 +441,9 @@ configure_file(
 if(WIN32 AND PY_VERSION VERSION_GREATER_EQUAL "3.11")
 set(config_inits "")
 set(minimal_builtin_extensions _codecs _collections _io _imp _sre _thread _tracemalloc _weakref errno faulthandler itertools time)
+if(PY_VERSION VERSION_GREATER_EQUAL "3.12")
+  list(APPEND minimal_builtin_extensions _typing _winapi)
+endif()
 if(WIN32)
     list(APPEND minimal_builtin_extensions nt winreg)
     set(config_inits "${config_inits}/* Define extern variables omitted from minimal builds */\n")
@@ -737,7 +755,7 @@ list(APPEND LIBPYTHON_DEEPFREEZE_SOURCES
     ${SRC_DIR}/Python/deepfreeze/deepfreeze.c
 )
 
-set(DEEPFREEZE_PY ${SRC_DIR}/Tools/scripts/deepfreeze.py)
+set(DEEPFREEZE_PY ${SRC_DIR}/Tools/$<IF:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>,build,scripts>/deepfreeze.py)
 
 add_custom_command(
   OUTPUT ${LIBPYTHON_DEEPFREEZE_SOURCES}
