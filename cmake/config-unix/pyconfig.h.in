@@ -49,14 +49,14 @@
    significant word first [Python 3.8] */
 #cmakedefine FLOAT_WORDS_BIGENDIAN 1
 
-/* Define if flock needs to be linked with bsd library. */
+/* Define if flock needs to be linked with bsd library. [Python <= 3.10] */
 #cmakedefine FLOCK_NEEDS_LIBBSD 1
 
 /* Define if getpgrp() must be called as getpgrp(0). */
 #cmakedefine GETPGRP_HAVE_ARG 1
 
 /* Define if gettimeofday() does not have second (timezone) argument This is
-   the case on Motorola V4 (R40V4.2) */
+   the case on Motorola V4 (R40V4.2) [Python <= 3.8] */
 #cmakedefine GETTIMEOFDAY_NO_TZ 1
 
 /* Define to 1 if you have the `accept' function. [Python 3.11] */
@@ -132,7 +132,7 @@
 /* Has builtin atomics [Python 3] */
 #cmakedefine HAVE_BUILTIN_ATOMIC 1
 
-/* Define this if you have the type _Bool. */
+/* Define this if you have the type _Bool. [Python <= 3.5] */
 #cmakedefine HAVE_C99_BOOL 1
 
 /* Define to 1 if you have the <bzlib.h> header file. [Python 3.11] */
@@ -180,7 +180,7 @@
 /* Define to 1 if you have the `connect' function. [Python 3.11] */
 #cmakedefine HAVE_CONNECT 1
 
-/* Define to 1 if you have the `copysign' function. */
+/* Define to 1 if you have the `copysign' function. [Python <= 3.10] */
 #cmakedefine HAVE_COPYSIGN 1
 
 /* Define to 1 if you have the `copy_file_range' function. [Python 3.8] */
@@ -238,15 +238,15 @@
 #cmakedefine HAVE_DB_H 1
 
 /* Define to 1 if you have the declaration of `isfinite', and to 0 if you
-   don't. */
+   don't. [Python <= 3.10] */
 #cmakedefine HAVE_DECL_ISFINITE 1
 
 /* Define to 1 if you have the declaration of `isinf', and to 0 if you don't.
-   */
+   [Python <= 3.10] */
 #cmakedefine HAVE_DECL_ISINF 1
 
 /* Define to 1 if you have the declaration of `isnan', and to 0 if you don't.
-   */
+   [Python <= 3.10] */
 #cmakedefine HAVE_DECL_ISNAN 1
 
 /* Define to 1 if you have the declaration of `RTLD_DEEPBIND', and to 0 if you
@@ -394,7 +394,7 @@
 /* Define to 1 if you have the `fexecve' function. [Python 3] */
 #cmakedefine HAVE_FEXECVE 1
 
-/* Define to 1 if you have the `finite' function. */
+/* Define to 1 if you have the `finite' function. [Python <= 3.10] */
 #cmakedefine HAVE_FINITE 1
 
 /* Define to 1 if you have the `flock' function. */
@@ -451,7 +451,7 @@
 /* Define to 1 if you have the `gai_strerror' function. */
 #cmakedefine HAVE_GAI_STRERROR 1
 
-/* Define to 1 if you have the `gamma' function. */
+/* Define to 1 if you have the `gamma' function. [Python <= 3.10] */
 #cmakedefine HAVE_GAMMA 1
 
 /* Define if we can use gcc inline assembler to get and set mc68881 fpcr [Python 3] */
@@ -611,7 +611,7 @@
 /* Define to 1 if you have the `getspnam' function. */
 #cmakedefine HAVE_GETSPNAM 1
 
-/* Define to 1 if you have the `gettimeofday' function. */
+/* Define to 1 if you have the `gettimeofday' function. [Python <= 3.8] */
 #cmakedefine HAVE_GETTIMEOFDAY 1
 
 /* Define to 1 if you have the `getuid' function. [Python 3.11] */
@@ -633,7 +633,7 @@
 /* Define this if you have le64toh() [Python 3] */
 #cmakedefine HAVE_HTOLE64 1
 
-/* Define to 1 if you have the `hypot' function. */
+/* Define to 1 if you have the `hypot' function. [Python <= 3.10] */
 #cmakedefine HAVE_HYPOT 1
 
 /* Define to 1 if you have the <ieeefp.h> header file. */
@@ -654,10 +654,10 @@
 /* Define to 1 if you have the `initgroups' function. */
 #cmakedefine HAVE_INITGROUPS 1
 
-/* Define if your compiler provides int32_t. */
+/* Define if your compiler provides int32_t. [Python <= 3.5] */
 #cmakedefine HAVE_INT32_T 1
 
-/* Define if your compiler provides int64_t. */
+/* Define if your compiler provides int64_t. [Python <= 3.5] */
 #cmakedefine HAVE_INT64_T 1
 
 /* Define to 1 if you have the <inttypes.h> header file. */
@@ -702,7 +702,7 @@
 /* Define to 1 if you have the `db' library (-ldb). [Python 3.11] */
 #cmakedefine HAVE_LIBDB 1
 
-/* Define to 1 if you have the `lgamma' function. */
+/* Define to 1 if you have the `lgamma' function. [Python <= 3.10] */
 #cmakedefine HAVE_LGAMMA 1
 
 /* Define to 1 if you have the `dl' library (-ldl). */
@@ -723,7 +723,7 @@
 /* Define to 1 if you have the `ndbm' library (-lndbm). [Python 3.11] */
 #cmakedefine HAVE_LIBNDBM 1
 
-/* Define if you have the readline library (-lreadline). */
+/* Define if you have the readline library (-lreadline). [Python <= 3.11] */
 #cmakedefine HAVE_LIBREADLINE 1
 
 /* Define to 1 if you have the `resolv' library (-lresolv). */
@@ -813,7 +813,7 @@
 /* Define this if you have the type long double. */
 #cmakedefine HAVE_LONG_DOUBLE 1
 
-/* Define this if you have the type long long. */
+/* Define this if you have the type long long. [Python <= 3.5] */
 #cmakedefine HAVE_LONG_LONG 1
 
 /* Define to 1 if you have the `lstat' function. */
@@ -837,10 +837,10 @@
 /* Define if you have the 'memfd_create' function. [Python 3.8] */
 #cmakedefine HAVE_MEMFD_CREATE 1
 
-/* Define to 1 if you have the `memmove' function. */
+/* Define to 1 if you have the `memmove' function. [Python <= 3.6] */
 #cmakedefine HAVE_MEMMOVE 1
 
-/* Define to 1 if you have the <memory.h> header file. */
+/* Define to 1 if you have the <memory.h> header file. [Python <= 3.11] */
 #cmakedefine HAVE_MEMORY_H 1
 
 /* Define to 1 if you have the `memrchr' function. [Python 3] */
@@ -913,7 +913,7 @@
 /* Define to 1 if you have the `openpty' function. */
 #cmakedefine HAVE_OPENPTY 1
 
-/* Define if compiling using MacOS X 10.5 SDK or later. */
+/* Define if compiling using MacOS X 10.5 SDK or later. [Python <= 3.5] */
 #cmakedefine HAVE_OSX105_SDK 1
 
 /* Define to 1 if you have the `pathconf' function. */
@@ -970,7 +970,7 @@
 /* Define if your compiler supports function prototype */
 #cmakedefine HAVE_PROTOTYPES 1
 
-/* Define to 1 if you have the `pthread_atfork' function. */
+/* Define to 1 if you have the `pthread_atfork' function. [Python <= 3.6] */
 #cmakedefine HAVE_PTHREAD_ATFORK 1
 
 /* Define to 1 if you have the `pthread_condattr_setclock' function. [Python 3.8] */
@@ -1000,7 +1000,7 @@
 /* Define to 1 if you have the <pty.h> header file. */
 #cmakedefine HAVE_PTY_H 1
 
-/* Define to 1 if you have the `putenv' function. */
+/* Define to 1 if you have the `putenv' function. [Python <= 3.8] */
 #cmakedefine HAVE_PUTENV 1
 
 /* Define to 1 if you have the `pwrite' function. [Python 3] */
@@ -1012,7 +1012,7 @@
 /* Define to 1 if you have the `pwritev2' function. [Python 3.7] */
 #cmakedefine HAVE_PWRITEV2 1
 
-/* Define if the libcrypto has RAND_egd [Python 3] */
+/* Define if the libcrypto has RAND_egd [Python 3, Python <= 3.4] */
 #cmakedefine HAVE_RAND_EGD 1
 
 /* Define to 1 if you have the `readlink' function. */
@@ -1036,7 +1036,7 @@
 /* Define if readline supports append_history [Python 3] */
 #cmakedefine HAVE_RL_APPEND_HISTORY 1
 
-/* Define if you have readline 2.1 */
+/* Define if you have readline 2.1 [Python <= 3.6] */
 #cmakedefine HAVE_RL_CALLBACK 1
 
 /* Define if you can turn off readline's signal handling. */
@@ -1063,7 +1063,7 @@
 /* Define if you have readline 4.0 */
 #cmakedefine HAVE_RL_RESIZE_TERMINAL 1
 
-/* Define to 1 if you have the `round' function. */
+/* Define to 1 if you have the `round' function. [Python <= 3.10] */
 #cmakedefine HAVE_ROUND 1
 
 /* Define to 1 if you have the <rpc/rpc.h> header file. [Python 3.11] */
@@ -1090,7 +1090,7 @@
 /* Define to 1 if you have the `sched_setscheduler' function. [Python 3] */
 #cmakedefine HAVE_SCHED_SETSCHEDULER 1
 
-/* Define to 1 if you have the `select' function. */
+/* Define to 1 if you have the `select' function. [Python <= 3.6] */
 #cmakedefine HAVE_SELECT 1
 
 /* Define to 1 if you have the `sem_clockwait' function. [Python 3.9] */
@@ -1256,7 +1256,7 @@
 #cmakedefine HAVE_STAT_TV_NSEC2 1
 
 /* Define if your compiler supports variable length function prototypes (e.g.
-   void fprintf(FILE *, char *, ...);) *and* <stdarg.h> */
+   void fprintf(FILE *, char *, ...);) *and* <stdarg.h> [Python <= 3.11] */
 #cmakedefine HAVE_STDARG_PROTOTYPES 1
 
 /* Define to 1 if you have the <stdint.h> header file. */
@@ -1268,7 +1268,7 @@
 /* Has stdatomic.h, atomic_int and _Atomic void* types work [Python 3] */
 #cmakedefine HAVE_STD_ATOMIC 1
 
-/* Define to 1 if you have the `strdup' function. */
+/* Define to 1 if you have the `strdup' function. [Python <= 3.9] */
 #cmakedefine HAVE_STRDUP 1
 
 /* Define to 1 if you have the `strftime' function. */
@@ -1317,7 +1317,7 @@
 #cmakedefine HAVE_STRUCT_TM_TM_ZONE 1
 
 /* Define to 1 if your `struct stat' has `st_blocks'. Deprecated, use
-   `HAVE_STRUCT_STAT_ST_BLOCKS' instead. */
+   `HAVE_STRUCT_STAT_ST_BLOCKS' instead. [Python <= 3.5.1] */
 #cmakedefine HAVE_ST_BLOCKS 1
 
 /* Define if you have the 'symlink' function. */
@@ -1481,7 +1481,7 @@
 /* Define to 1 if you have the <term.h> header file. */
 #cmakedefine HAVE_TERM_H 1
 
-/* Define to 1 if you have the `tgamma' function. */
+/* Define to 1 if you have the `tgamma' function. [Python <= 3.10] */
 #cmakedefine HAVE_TGAMMA 1
 
 /* Define to 1 if you have the `timegm' function. */
@@ -1513,16 +1513,16 @@
    `tzname'. */
 #cmakedefine HAVE_TZNAME 1
 
-/* Define this if you have tcl and TCL_UTF_MAX==6 */
+/* Define this if you have tcl and TCL_UTF_MAX==6 [Python <= 3.10] */
 #cmakedefine HAVE_UCS4_TCL 1
 
-/* Define if your compiler provides uint32_t. */
+/* Define if your compiler provides uint32_t. [Python <= 3.5] */
 #cmakedefine HAVE_UINT32_T 1
 
-/* Define if your compiler provides uint64_t. */
+/* Define if your compiler provides uint64_t. [Python <= 3.5] */
 #cmakedefine HAVE_UINT64_T 1
 
-/* Define to 1 if the system has the type `uintptr_t'. */
+/* Define to 1 if the system has the type `uintptr_t'. [Python <= 3.5] */
 #cmakedefine HAVE_UINTPTR_T 1
 
 /* Define to 1 if you have the `umask' function. [Python 3.11] */
@@ -1537,7 +1537,7 @@
 /* Define to 1 if you have the `unlinkat' function. [Python 3] */
 #cmakedefine HAVE_UNLINKAT 1
 
-/* Define to 1 if you have the `unsetenv' function. */
+/* Define to 1 if you have the `unsetenv' function. [Python <= 3.8] */
 #cmakedefine HAVE_UNSETENV 1
 
 /* Define if you have a useable wchar_t type defined in wchar.h; useable means
@@ -1615,7 +1615,7 @@
 /* Define to 1 if you have the `writev' function. [Python 3] */
 #cmakedefine HAVE_WRITEV 1
 
-/* Define if libssl has X509_VERIFY_PARAM_set1_host and related function [Python 3.7] */
+/* Define if libssl has X509_VERIFY_PARAM_set1_host and related function [Python >= 3.7, <= 3.9] */
 #cmakedefine HAVE_X509_VERIFY_PARAM_SET1_HOST 1
 
 /* Define if the zlib library has inflateCopy */
@@ -1785,13 +1785,13 @@
    (which you can't on SCO ODT 3.0). */
 #cmakedefine SYS_SELECT_WITH_SYS_TIME 1
 
-/* Define if tanh(-0.) is -0., or if platform doesn't have signed zeros */
+/* Define if tanh(-0.) is -0., or if platform doesn't have signed zeros [Python <= 3.6] */
 #cmakedefine TANH_PRESERVES_ZERO_SIGN 1
 
 /* Library needed by timemodule.c: librt may be needed for clock_gettime() */
 #cmakedefine TIMEMODULE_LIB 1
 
-/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
+/* Define to 1 if you can safely include both <sys/time.h> and <time.h>. [Python <= 3.11] */
 #cmakedefine TIME_WITH_SYS_TIME 1
 
 /* Define to 1 if your <sys/time.h> declares `struct tm'. */
