@@ -29,7 +29,9 @@ WIN32 is still required for the locale module.
 #  define Py_BUILD_CORE
 #endif /* USE_DL_EXPORT */
 
+/* Define if you have the `hypot' function. [Python <= 3.10] */
 #define HAVE_HYPOT
+
 #define HAVE_STRFTIME
 #define DONT_HAVE_SIG_ALARM
 #define DONT_HAVE_SIG_PAUSE
@@ -143,6 +145,7 @@ WIN32 is still required for the locale module.
 #include <stdio.h>
 
 /* 64 bit ints are usually spelt __int64 unless compiler has overridden */
+/* Define this if you have the type long long. [Python <= 3.5] */
 #define HAVE_LONG_LONG 1
 #ifndef PY_LONG_LONG
 #  define PY_LONG_LONG __int64
@@ -220,7 +223,9 @@ Py_NO_ENABLE_SHARED to find out.  Also support MS_NO_COREDLL for b/w compat */
 #define SIZEOF_DOUBLE 8
 #define SIZEOF_FLOAT 4
 
+/* Define to 1 if the system has the type `uintptr_t'. [Python <= 3.5] */
 #define HAVE_UINTPTR_T 1
+
 #define HAVE_INTPTR_T 1
 
 #endif /* MS_WIN32 */
@@ -229,9 +234,11 @@ Py_NO_ENABLE_SHARED to find out.  Also support MS_NO_COREDLL for b/w compat */
    implementation of Python long integers. */
 #ifndef PY_UINT32_T
 #if SIZEOF_INT == 4
+/* Define if your compiler provides uint32_t. [Python <= 3.5] */
 #define HAVE_UINT32_T 1
 #define PY_UINT32_T unsigned int
 #elif SIZEOF_LONG == 4
+/* Define if your compiler provides uint32_t. [Python <= 3.5] */
 #define HAVE_UINT32_T 1
 #define PY_UINT32_T unsigned long
 #endif
@@ -239,6 +246,7 @@ Py_NO_ENABLE_SHARED to find out.  Also support MS_NO_COREDLL for b/w compat */
 
 #ifndef PY_UINT64_T
 #if SIZEOF_LONG_LONG == 8
+/* Define if your compiler provides uint64_t. [Python <= 3.5] */
 #define HAVE_UINT64_T 1
 #define PY_UINT64_T unsigned PY_LONG_LONG
 #endif
@@ -246,9 +254,11 @@ Py_NO_ENABLE_SHARED to find out.  Also support MS_NO_COREDLL for b/w compat */
 
 #ifndef PY_INT32_T
 #if SIZEOF_INT == 4
+/* Define if your compiler provides int32_t. [Python <= 3.5] */
 #define HAVE_INT32_T 1
 #define PY_INT32_T int
 #elif SIZEOF_LONG == 4
+/* Define if your compiler provides int32_t. [Python <= 3.5] */
 #define HAVE_INT32_T 1
 #define PY_INT32_T long
 #endif
@@ -263,16 +273,16 @@ Py_NO_ENABLE_SHARED to find out.  Also support MS_NO_COREDLL for b/w compat */
 
 /* Fairly standard from here! */
 
-/* Define to 1 if you have the `copysign' function. */
+/* Define to 1 if you have the `copysign' function. [Python <= 3.10] */
 #define HAVE_COPYSIGN 1
 
-/* Define to 1 if you have the `round' function. */
+/* Define to 1 if you have the `round' function. [Python <= 3.10] */
 #define HAVE_ROUND 1
 
-/* Define to 1 if you have the `isinf' macro. */
+/* Define to 1 if you have the `isinf' macro. [Python <= 3.10] */
 #define HAVE_DECL_ISINF 1
 
-/* Define to 1 if you have the `isnan' function. */
+/* Define to 1 if you have the `isnan' function. [Python <= 3.10] */
 #define HAVE_DECL_ISNAN 1
 
 /* Define if on AIX 3.
@@ -342,7 +352,7 @@ Py_NO_ENABLE_SHARED to find out.  Also support MS_NO_COREDLL for b/w compat */
 /* Define if you don't have dirent.h, but have sys/ndir.h.  */
 /* #undef SYSNDIR */
 
-/* Define if you can safely include both <sys/time.h> and <time.h>.  */
+/* Define if you can safely include both <sys/time.h> and <time.h>. [Python <= 3.11] */
 /* #undef TIME_WITH_SYS_TIME */
 
 /* Define if your <sys/time.h> declares struct tm.  */
@@ -361,7 +371,7 @@ Py_NO_ENABLE_SHARED to find out.  Also support MS_NO_COREDLL for b/w compat */
 /* Define this if your time.h defines altzone */
 /* #define HAVE_ALTZONE */
 
-/* Define if you have the putenv function.  */
+/* Define if you have the putenv function. [Python <= 3.8] */
 #define HAVE_PUTENV
 
 /* Define if your compiler supports function prototypes */
@@ -408,7 +418,7 @@ Py_NO_ENABLE_SHARED to find out.  Also support MS_NO_COREDLL for b/w compat */
 /* Define if you have getpid.  */
 #define HAVE_GETPID
 
-/* Define if you have gettimeofday.  */
+/* Define if you have gettimeofday. [Python <= 3.8] */
 /* #undef HAVE_GETTIMEOFDAY */
 
 /* Define if you have getwd.  */
@@ -426,7 +436,7 @@ Py_NO_ENABLE_SHARED to find out.  Also support MS_NO_COREDLL for b/w compat */
 /* Define if you have readlink.  */
 /* #undef HAVE_READLINK */
 
-/* Define if you have select.  */
+/* Define if you have select. [Python <= 3.6] */
 /* #undef HAVE_SELECT */
 
 /* Define if you have setpgid.  */
@@ -483,7 +493,7 @@ Py_NO_ENABLE_SHARED to find out.  Also support MS_NO_COREDLL for b/w compat */
 /* Define to 1 if you have the <signal.h> header file. */
 #define HAVE_SIGNAL_H 1
 
-/* Define if you have the <stdarg.h> prototypes.  */
+/* Define if you have the <stdarg.h> prototypes. [Python <= 3.11] */
 #define HAVE_STDARG_PROTOTYPES
 
 /* Define if you have the <stddef.h> header file.  */
