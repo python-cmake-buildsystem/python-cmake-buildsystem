@@ -1929,7 +1929,8 @@ if(HAVE_GETHOSTBYNAME_R)
 
   # Checking gethostbyname_r with 6 args
   set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_gethostbyname_r_6_arg.c)
-  file(WRITE ${check_src} "int main() {
+  file(WRITE ${check_src} "#include <netdb.h>
+int main() {
     char *name;
     struct hostent *he, *res;
     char buffer[2048];
@@ -1951,7 +1952,8 @@ if(HAVE_GETHOSTBYNAME_R)
   else()
     # Checking gethostbyname_r with 5 args
     set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_gethostbyname_r_5_arg.c)
-    file(WRITE ${check_src} "int main() {
+    file(WRITE ${check_src} "#include <netdb.h>
+int main() {
     char *name;
     struct hostent *he;
     char buffer[2048];
@@ -1971,9 +1973,10 @@ if(HAVE_GETHOSTBYNAME_R)
     if(HAVE_GETHOSTBYNAME_R_5_ARG)
       set(HAVE_GETHOSTBYNAME_R 1)
     else()
-      # Checking gethostbyname_r with 5 args
+      # Checking gethostbyname_r with 3 args
       set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_gethostbyname_r_3_arg.c)
-      file(WRITE ${check_src} "int main() {
+      file(WRITE ${check_src} "#include <netdb.h>
+int main() {
     char *name;
     struct hostent *he;
     struct hostent_data data;
