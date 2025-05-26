@@ -1696,9 +1696,6 @@
 /* Define as the size of the unicode type. [Python 2.7 to 3.2] */
 #cmakedefine Py_UNICODE_SIZE @Py_UNICODE_SIZE@
 
-/* assume C89 semantics that RETSIGTYPE is always void */
-#define RETSIGTYPE void
-
 /* Define hash algorithm for str, bytes and memoryview. SipHash24: 1, FNV: 2,
    externally defined: 0 [Python 3] */
 #cmakedefine Py_HASH_ALGORITHM 1
