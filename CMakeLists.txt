@@ -635,6 +635,14 @@ if(BUILD_WININST)
     add_subdirectory(cmake/PC/bdist_wininst CMakeBuild/bdist_wininst)
 endif()
 
+# Ensure the "_testcapi" extension introduced in Python 3.12 can find
+# find "Python3.lib" as it is specified in "PC/pyconfig." using
+# `pragma comment(lib,"python3.lib")`.
+if(WIN32 AND TARGET extension_testcapi)
+    set(libpython_output_dir "${PROJECT_BINARY_DIR}/CMakeBuild/libpython/$<CONFIG>")
+    target_link_directories(extension_testcapi PRIVATE ${libpython_output_dir})
+endif()
+
 # Add target to run "Argument Clinic" over all source files
 add_custom_target(clinic
     COMMAND python ${SRC_DIR}/Tools/clinic/clinic.py --make
