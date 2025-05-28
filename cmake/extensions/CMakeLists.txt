@@ -944,6 +944,9 @@ add_python_extension(_md5 ${WIN32_BUILTIN}
         $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_hacl/Hacl_Hash_MD5.c>
     INCLUDEDIRS
         $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:${SRC_DIR}/Modules/_hacl/include>
+    DEFINITIONS
+        $<$<AND:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>,$<BOOL:${UNIX}>>:_BSD_SOURCE>
+        $<$<AND:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>,$<BOOL:${UNIX}>>:_DEFAULT_SOURCE>
 )
 add_python_extension(_sha1 ${WIN32_BUILTIN}
     SOURCES
@@ -951,6 +954,9 @@ add_python_extension(_sha1 ${WIN32_BUILTIN}
         $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_hacl/Hacl_Hash_SHA1.c>
     INCLUDEDIRS
         $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:${SRC_DIR}/Modules/_hacl/include>
+    DEFINITIONS
+        $<$<AND:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>,$<BOOL:${UNIX}>>:_BSD_SOURCE>
+        $<$<AND:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>,$<BOOL:${UNIX}>>:_DEFAULT_SOURCE>
 )
 
 # Removed in Python 3.12
@@ -976,6 +982,9 @@ add_python_extension(_sha2 ${WIN32_BUILTIN}
         _hacl/Hacl_Hash_SHA2.c
     INCLUDEDIRS
         ${SRC_DIR}/Modules/_hacl/include
+    DEFINITIONS
+        $<$<BOOL:${UNIX}>:_BSD_SOURCE>
+        $<$<BOOL:${UNIX}>:_DEFAULT_SOURCE>
 )
 add_python_extension(_sha3 ${WIN32_BUILTIN}
     REQUIRES
@@ -985,6 +994,9 @@ add_python_extension(_sha3 ${WIN32_BUILTIN}
         $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:_hacl/Hacl_Hash_SHA3.c>
     INCLUDEDIRS
         $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:${SRC_DIR}/Modules/_hacl/include>
+    DEFINITIONS
+        $<$<BOOL:${UNIX}>:_BSD_SOURCE>
+        $<$<BOOL:${UNIX}>:_DEFAULT_SOURCE>
 )
 add_python_extension(_tokenize ALWAYS_BUILTIN
     REQUIRES
