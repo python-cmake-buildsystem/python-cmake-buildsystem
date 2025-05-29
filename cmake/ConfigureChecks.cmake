@@ -826,7 +826,6 @@ check_type_size(float SIZEOF_FLOAT)
 check_type_size(fpos_t SIZEOF_FPOS_T)
 check_type_size(int SIZEOF_INT)
 check_type_size(long SIZEOF_LONG)
-check_type_size(long ALIGNOF_LONG) # Python 3.10
 check_type_size("long double" SIZEOF_LONG_DOUBLE)
 set(HAVE_LONG_DOUBLE ${SIZEOF_LONG_DOUBLE}) # libffi and cpython
 check_type_size("long long" SIZEOF_LONG_LONG)
@@ -836,7 +835,6 @@ check_type_size(pid_t SIZEOF_PID_T)
 check_type_size(pthread_t SIZEOF_PTHREAD_T)
 check_type_size(short SIZEOF_SHORT)
 check_type_size(size_t SIZEOF_SIZE_T)
-check_type_size(size_t ALIGNOF_SIZE_T) # Python 3.10
 check_type_size(ssize_t HAVE_SSIZE_T)
 check_type_size(time_t SIZEOF_TIME_T)
 check_type_size(uintptr_t SIZEOF_UINTPTR_T)
@@ -844,6 +842,42 @@ set(HAVE_UINTPTR_T ${SIZEOF_UINTPTR_T})
 check_type_size("void *" SIZEOF_VOID_P)
 check_type_size(wchar_t SIZEOF_WCHAR_T)
 check_type_size(_Bool SIZEOF__BOOL)
+
+function(_check_type_alignof type)
+  string(TOUPPER "${type}" type_upper)
+
+  if(NOT DEFINED ALIGNOF_${type_upper})
+    foreach(alignment IN ITEMS 1 2 4 8 16 32 64)
+      set(check_src "${PROJECT_BINARY_DIR}/CMakeFiles/check_alignof_${type}_${alignment}.c")
+      file(WRITE "${check_src}" "
+        #include <stdalign.h> // For alignof
+        #include <stddef.h> // For max_align_t
+        _Static_assert(alignof(${type}) == ${alignment}, \"alignof(${type}) != ${alignment}\");
+        int main(void) { return 0; }
+      ")
+      try_compile(ALIGNOF_${type_upper}_${alignment}_COMPILED
+        "${CMAKE_CURRENT_BINARY_DIR}"
+        "${check_src}"
+        C_STANDARD 11
+      )
+
+      set(description "Checking alignof(${type}) == ${alignment}")
+      message(STATUS "${description}")
+
+      if(ALIGNOF_${type_upper}_${alignment}_COMPILED)
+        message(STATUS "${description} - yes")
+        set(ALIGNOF_${type_upper} ${alignment} CACHE INTERNAL "Detected alignment of ${type}")
+        break()
+      else()
+        message(STATUS "${description} - no")
+      endif()
+    endforeach()
+  endif()
+endfunction()
+
+_check_type_alignof(long) # Python 3.10
+_check_type_alignof(size_t) # Python 3.10
+
 set(HAVE_C99_BOOL ${SIZEOF__BOOL})
 
 # libffi specific: Check whether more than one size of the long double type is supported
