@@ -1191,7 +1191,7 @@ check_struct_has_member("struct stat" st_rdev    "${CFG_HEADERS}"    HAVE_STRUCT
 check_struct_has_member("struct passwd" pw_gecos  "${CFG_HEADERS}" HAVE_STRUCT_PASSWD_PW_GECOS)
 check_struct_has_member("struct passwd" pw_passwd "${CFG_HEADERS}" HAVE_STRUCT_PASSWD_PW_PASSWD)
 
-check_struct_has_member("struct siginfo_t" si_band "${CFG_HEADERS}" HAVE_SIGINFO_T_SI_BAND)
+check_struct_has_member("siginfo_t" si_band "${CFG_HEADERS}" HAVE_SIGINFO_T_SI_BAND)
 
 #######################################################################
 #
