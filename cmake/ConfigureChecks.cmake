@@ -2445,7 +2445,10 @@ python_platform_test(
 
 # Check if the Linux getrandom() syscall is available
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_getrandom_syscall.c)
-file(WRITE ${check_src} "#include <sys/syscall.h>
+file(WRITE ${check_src} "#include <stddef.h>
+#include <unistd.h>
+#include <sys/syscall.h>
+#include <linux/random.h>
 int main() {
   char buffer[1];
   const size_t buflen = sizeof(buffer);
