@@ -777,6 +777,44 @@ add_cond(CMAKE_EXTRA_INCLUDE_FILES HAVE_WCHAR_H wchar.h)
 
 TEST_BIG_ENDIAN(WORDS_BIGENDIAN)
 
+# Checking whether float word ordering is bigendian
+if(NOT FLOAT_WORDS_BIGENDIAN_COMPILED)
+  set(description "Checking whether float word ordering is bigendian")
+  message(STATUS "${description}")
+
+  set(check_executable ${PROJECT_BINARY_DIR}/CMakeFiles/ax_cv_c_float_words_bigendian)
+  set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/ax_cv_c_float_words_bigendian.c)
+  file(WRITE ${check_src} [==[#include <stdlib.h>
+  static double m[] = {9.090423496703681e+223, 0.0};
+  int main (int argc, char *argv[])
+  {
+      m[atoi (argv[1])] += atof (argv[2]);
+      return m[atoi (argv[3])] > 0.0;
+  }
+  ]==]
+  )
+  try_compile(FLOAT_WORDS_BIGENDIAN_COMPILED
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${check_src}
+    COPY_FILE ${check_executable}
+    )
+  if(NOT FLOAT_WORDS_BIGENDIAN_COMPILED)
+    message(WARNING "Failed to compile FLOAT_WORDS_BIGENDIAN executable")
+  else()
+    file(STRINGS ${check_executable} output REGEX "(noonsees|seesnoon)")
+    if("${output}" STREQUAL "noonsees")
+      message(STATUS "${description} - yes")
+      set(FLOAT_WORDS_BIGENDIAN 1)
+    elseif("${output}" STREQUAL "seesnoon")
+      message(STATUS "${description} - no")
+      set(FLOAT_WORDS_BIGENDIAN 0)
+    endif()
+  endif()
+  if(NOT DEFINED FLOAT_WORDS_BIGENDIAN)
+    message(FATAL_ERROR "Unknown float word ordering. You need to manually set FLOAT_WORDS_BIGENDIAN CMake option to 0 or 1 according to your system.")
+  endif()
+endif()
+
 # Assume C89 semantics that RETSIGTYPE is always void
 set(RETSIGTYPE "void")
 
