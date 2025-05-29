@@ -459,6 +459,7 @@ check_include_files(linux/limits.h HAVE_LINUX_LIMITS_H) # Python 3.11
 check_include_files(linux/memfd.h HAVE_LINUX_MEMFD_H)
 check_include_files(linux/random.h HAVE_LINUX_RANDOM_H)
 check_include_files(linux/soundcard.h HAVE_LINUX_SOUNDCARD_H) # Python 3.11
+check_include_files(linux/wait.h HAVE_LINUX_WAIT_H)
 check_include_files(sys/devpoll.h HAVE_SYS_DEVPOLL_H)
 check_include_files(sys/endian.h HAVE_SYS_ENDIAN_H)
 check_include_files(sys/ioctl.h HAVE_SYS_IOCTL_H)
