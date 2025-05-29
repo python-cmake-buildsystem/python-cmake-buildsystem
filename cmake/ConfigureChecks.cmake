@@ -879,6 +879,7 @@ endif()
 set(CFG_HEADERS )
 
 add_cond(CFG_HEADERS HAVE_SYS_EPOLL_H sys/epoll.h)
+add_cond(CFG_HEADERS HAVE_SYS_EVENTFD_H sys/eventfd.h)
 add_cond(CFG_HEADERS HAVE_SYS_EVENT_H sys/event.h)
 add_cond(CFG_HEADERS HAVE_SYS_RANDOM_H sys/random.h)
 add_cond(CFG_HEADERS HAVE_SYS_SYSMACROS_H sys/sysmacros.h)
