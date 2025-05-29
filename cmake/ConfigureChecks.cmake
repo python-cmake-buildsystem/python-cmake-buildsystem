@@ -853,7 +853,6 @@ check_type_size(ssize_t HAVE_SSIZE_T)
 check_type_size(time_t SIZEOF_TIME_T)
 check_type_size(uintptr_t SIZEOF_UINTPTR_T)
 set(HAVE_UINTPTR_T ${SIZEOF_UINTPTR_T})
-check_type_size(max_align_t ALIGNOF_MAX_ALIGN_T) # Python 3.12
 check_type_size("void *" SIZEOF_VOID_P)
 check_type_size(wchar_t SIZEOF_WCHAR_T)
 check_type_size(_Bool SIZEOF__BOOL)
@@ -892,6 +891,7 @@ endfunction()
 
 _check_type_alignof(long) # Python 3.10
 _check_type_alignof(size_t) # Python 3.10
+_check_type_alignof(max_align_t) # Python 3.12
 
 set(HAVE_C99_BOOL ${SIZEOF__BOOL})
 
