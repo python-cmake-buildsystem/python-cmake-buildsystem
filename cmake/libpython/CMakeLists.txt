@@ -499,12 +499,12 @@ set(LIBPYTHON_FROZEN_SOURCES
 add_custom_command(
   OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
   COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+    _freeze_importlib
       $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:importlib._bootstrap_external>
       ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
       ${SRC_DIR}/Python/importlib_external.h
   COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+    _freeze_importlib
       $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:importlib._bootstrap>
       ${SRC_DIR}/Lib/importlib/_bootstrap.py
       ${SRC_DIR}/Python/importlib.h
@@ -518,7 +518,7 @@ if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
   add_custom_command(
     OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
     COMMAND
-      ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+      _freeze_importlib
         zipimport
         ${SRC_DIR}/Lib/zipimport.py
         ${SRC_DIR}/Python/importlib_zipimport.h
@@ -561,122 +561,122 @@ set(LIBPYTHON_FROZEN_SOURCES
 add_custom_command(
   OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
   COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+    _freeze_importlib
       importlib._bootstrap
       ${SRC_DIR}/Lib/importlib/_bootstrap.py
       ${SRC_DIR}/Python/frozen_modules/importlib._bootstrap.h
   COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+    _freeze_importlib
       importlib._bootstrap_external
       ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
       ${SRC_DIR}/Python/frozen_modules/importlib._bootstrap_external.h
   COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+    _freeze_importlib
       zipimport
       ${SRC_DIR}/Lib/zipimport.py
       ${SRC_DIR}/Python/frozen_modules/zipimport.h
   COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+    _freeze_importlib
       abc
       ${SRC_DIR}/Lib/abc.py
       ${SRC_DIR}/Python/frozen_modules/abc.h
   COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+    _freeze_importlib
       codecs
       ${SRC_DIR}/Lib/codecs.py
       ${SRC_DIR}/Python/frozen_modules/codecs.h
   COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+    _freeze_importlib
       io
       ${SRC_DIR}/Lib/io.py
       ${SRC_DIR}/Python/frozen_modules/io.h
   COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+    _freeze_importlib
       _collections_abc
       ${SRC_DIR}/Lib/_collections_abc.py
       ${SRC_DIR}/Python/frozen_modules/_collections_abc.h
   COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+    _freeze_importlib
       _sitebuiltins
       ${SRC_DIR}/Lib/_sitebuiltins.py
       ${SRC_DIR}/Python/frozen_modules/_sitebuiltins.h
   COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+    _freeze_importlib
       genericpath
       ${SRC_DIR}/Lib/genericpath.py
       ${SRC_DIR}/Python/frozen_modules/genericpath.h
   COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+    _freeze_importlib
       ntpath
       ${SRC_DIR}/Lib/ntpath.py
       ${SRC_DIR}/Python/frozen_modules/ntpath.h
   COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+    _freeze_importlib
       posixpath
       ${SRC_DIR}/Lib/posixpath.py
       ${SRC_DIR}/Python/frozen_modules/posixpath.h
   COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+    _freeze_importlib
       os
       ${SRC_DIR}/Lib/os.py
       ${SRC_DIR}/Python/frozen_modules/os.h
   COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+    _freeze_importlib
       site
       ${SRC_DIR}/Lib/site.py
       ${SRC_DIR}/Python/frozen_modules/site.h
   COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+    _freeze_importlib
       stat
       ${SRC_DIR}/Lib/stat.py
       ${SRC_DIR}/Python/frozen_modules/stat.h
   COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+    _freeze_importlib
       importlib.util
       ${SRC_DIR}/Lib/importlib/util.py
       ${SRC_DIR}/Python/frozen_modules/importlib.util.h
   COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+    _freeze_importlib
       importlib.machinery
       ${SRC_DIR}/Lib/importlib/machinery.py
       ${SRC_DIR}/Python/frozen_modules/importlib.machinery.h
   COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+    _freeze_importlib
       runpy
       ${SRC_DIR}/Lib/runpy.py
       ${SRC_DIR}/Python/frozen_modules/runpy.h
   COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+    _freeze_importlib
       __hello__
       ${SRC_DIR}/Lib/__hello__.py
       ${SRC_DIR}/Python/frozen_modules/__hello__.h
   COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+    _freeze_importlib
       __phello__
       ${SRC_DIR}/Lib/__phello__/__init__.py
       ${SRC_DIR}/Python/frozen_modules/__phello__.h
   COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+    _freeze_importlib
       __phello__.ham
       ${SRC_DIR}/Lib/__phello__/ham/__init__.py
       ${SRC_DIR}/Python/frozen_modules/__phello__.ham.h
   COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+    _freeze_importlib
       __phello__.ham.eggs
       ${SRC_DIR}/Lib/__phello__/ham/eggs.py
       ${SRC_DIR}/Python/frozen_modules/__phello__.ham.eggs.h
   COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+    _freeze_importlib
       __phello__.spam
       ${SRC_DIR}/Lib/__phello__/spam.py
       ${SRC_DIR}/Python/frozen_modules/__phello__.spam.h
   COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+    _freeze_importlib
       frozen_only
       ${SRC_DIR}/Tools/freeze/flag.py
       ${SRC_DIR}/Python/frozen_modules/frozen_only.h
   COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_freeze_importlib>
+    _freeze_importlib
       getpath
       ${SRC_DIR}/Modules/getpath.py
       ${SRC_DIR}/Python/frozen_modules/getpath.h
@@ -742,7 +742,7 @@ set(DEEPFREEZE_PY ${SRC_DIR}/Tools/scripts/deepfreeze.py)
 add_custom_command(
   OUTPUT ${LIBPYTHON_DEEPFREEZE_SOURCES}
   COMMAND
-    ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:_bootstrap_python>
+    _bootstrap_python
       ${DEEPFREEZE_PY}
         "${SRC_DIR}/Python/frozen_modules/importlib._bootstrap.h:importlib._bootstrap"
         "${SRC_DIR}/Python/frozen_modules/importlib._bootstrap_external.h:importlib._bootstrap_external"
