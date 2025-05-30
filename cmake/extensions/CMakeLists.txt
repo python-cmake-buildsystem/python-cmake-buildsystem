@@ -238,7 +238,7 @@ add_python_extension(_weakref ALWAYS_BUILTIN SOURCES _weakref.c)
 math(EXPR _limited_api_version "${PY_VERSION_MAJOR} * 100 + ${PY_VERSION_MINOR}")
 add_python_extension(xxlimited REQUIRES BUILD_TESTING
     SOURCES xxlimited.c
-    DEFINITIONS Py_LIMITED_API=0x${_limited_api_version}0000
+    DEFINITIONS $<$<VERSION_LESS:${PY_VERSION},3.10>:Py_LIMITED_API=0x${_limited_api_version}0000>
     NO_INSTALL
 )
 add_python_extension(xxsubtype BUILTIN SOURCES xxsubtype.c)
