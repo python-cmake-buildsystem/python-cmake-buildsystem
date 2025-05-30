@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        runs-on: [macos-latest]
+        runs-on: [macos-latest, windows-11-arm]
         python-version: [3.7.17, 3.8.20, 3.9.22, 3.10.17, 3.11.12]
         include:
           - runs-on: macos-latest
