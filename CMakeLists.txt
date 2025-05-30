@@ -625,7 +625,7 @@ endif()
 
 # Add target to run "Argument Clinic" over all source files
 add_custom_target(clinic
-    COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> ${SRC_DIR}/Tools/clinic/clinic.py --make
+    COMMAND python ${SRC_DIR}/Tools/clinic/clinic.py --make
     DEPENDS python
     WORKING_DIRECTORY ${SRC_DIR}
     COMMENT "Running 'Argument Clinic' over all source files"
@@ -634,12 +634,12 @@ add_custom_target(clinic
 
 # Add target to generate 'Include/graminit.h' and 'Python/graminit.c'
 if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
-    set(generate_graminit_command $<TARGET_FILE:python> -m Parser.pgen)
+    set(generate_graminit_command python -m Parser.pgen)
 else()
-    set(generate_graminit_command $<TARGET_FILE:pgen>)
+    set(generate_graminit_command pgen)
 endif()
 add_custom_target(generate_graminit
-    COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} ${generate_graminit_command}
+    COMMAND ${generate_graminit_command}
         ${SRC_DIR}/Grammar/Grammar
         $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:${SRC_DIR}/Grammar/Tokens>
         ${PROJECT_BINARY_DIR}/CMakeFiles/graminit.h
@@ -693,7 +693,7 @@ endif()
 
 # Add target to generate 'opcode.h' header file
 add_custom_target(generate_opcode_h
-    COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> ${SRC_DIR}/Tools/scripts/generate_opcode_h.py
+    COMMAND python ${SRC_DIR}/Tools/scripts/generate_opcode_h.py
         ${SRC_DIR}/Lib/opcode.py
         ${PROJECT_BINARY_DIR}/CMakeFiles/opcode.h
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
@@ -707,7 +707,7 @@ add_custom_target(generate_opcode_h
 
 # Add target to generate 'Include/Python-ast.h' from 'Python.asdl'
 add_custom_target(generate_python_ast_h
-    COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> ${SRC_DIR}/Parser/asdl_c.py
+    COMMAND python ${SRC_DIR}/Parser/asdl_c.py
         -h ${SRC_DIR}/Include
         ${SRC_DIR}/Parser/Python.asdl
     DEPENDS python
@@ -718,7 +718,7 @@ add_custom_target(generate_python_ast_h
 
 # Add target to generate 'Python/Python-ast.c' from 'Python.asdl'
 add_custom_target(generate_python_ast_c
-    COMMAND ${CMAKE_CROSSCOMPILING_EMULATOR} $<TARGET_FILE:python> ${SRC_DIR}/Parser/asdl_c.py
+    COMMAND python ${SRC_DIR}/Parser/asdl_c.py
         -c ${SRC_DIR}/Python
         ${SRC_DIR}/Parser/Python.asdl
     DEPENDS python
