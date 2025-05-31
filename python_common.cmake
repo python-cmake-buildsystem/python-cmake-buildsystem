@@ -364,6 +364,8 @@ while(NOT dashboard_done)
   set(CTEST_CHECKOUT_COMMAND) # checkout on first iteration only
   safe_message("Found ${count} changed files")
 
+  ctest_submit(PARTS Update)
+
   # Always build if the tree is fresh.
   set(dashboard_fresh 0)
   if(NOT EXISTS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt")
@@ -421,8 +423,11 @@ while(NOT dashboard_done)
       ctest_configure()
     endif()
 
-    ctest_submit(PARTS Update Configure Notes)
+    ctest_submit(PARTS Configure)
     ctest_read_custom_files(${CTEST_BINARY_DIRECTORY})
+
+    # Submit files associated with the CTEST_NOTES_FILES variables
+    ctest_submit(PARTS Notes)
 
     if(COMMAND dashboard_hook_build)
       dashboard_hook_build()
