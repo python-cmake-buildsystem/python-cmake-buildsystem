@@ -134,8 +134,8 @@ endif()
 if(dashboard_bootstrap)
   # Launchers do not work during bootstrap: no ctest available.
   set(CTEST_USE_LAUNCHERS 0)
-elseif(NOT "${CTEST_CMAKE_GENERATOR}" MATCHES "Make")
-  # Launchers work only with Makefile generators.
+elseif(NOT "${CTEST_CMAKE_GENERATOR}" MATCHES "Make|Ninja")
+  # Launchers work only with Makefile and Ninja generators.
   set(CTEST_USE_LAUNCHERS 0)
 elseif(NOT DEFINED CTEST_USE_LAUNCHERS)
   # The setting is ignored by CTest < 2.8 so we need no version test.
@@ -295,7 +295,7 @@ set(ENV{LC_ALL} C)
 macro(write_cache)
   set(cache_build_type "")
   set(cache_make_program "")
-  if(CTEST_CMAKE_GENERATOR MATCHES "Make")
+  if(CTEST_CMAKE_GENERATOR MATCHES "Make|Ninja")
     set(cache_build_type CMAKE_BUILD_TYPE:STRING=${CTEST_CONFIGURATION_TYPE})
     if(CMAKE_MAKE_PROGRAM)
       set(cache_make_program CMAKE_MAKE_PROGRAM:FILEPATH=${CMAKE_MAKE_PROGRAM})
