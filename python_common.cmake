@@ -320,7 +320,8 @@ ${dashboard_cache}
 endmacro(write_cache)
 
 # Start with a fresh build tree.
-if(NOT "${CTEST_SOURCE_DIRECTORY}" STREQUAL "${CTEST_BINARY_DIRECTORY}")
+if(EXISTS "${CTEST_BINARY_DIRECTORY}" AND
+    NOT "${CTEST_SOURCE_DIRECTORY}" STREQUAL "${CTEST_BINARY_DIRECTORY}")
   message("Clearing build tree...")
   ctest_empty_binary_directory(${CTEST_BINARY_DIRECTORY})
 endif()
