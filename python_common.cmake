@@ -358,6 +358,11 @@ while(NOT dashboard_done)
     dashboard_hook_started()
   endif()
 
+  # Look for updates.
+  ctest_update(RETURN_VALUE count)
+  set(CTEST_CHECKOUT_COMMAND) # checkout on first iteration only
+  safe_message("Found ${count} changed files")
+
   # Always build if the tree is fresh.
   set(dashboard_fresh 0)
   if(NOT EXISTS "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt")
@@ -365,11 +370,6 @@ while(NOT dashboard_done)
     safe_message("Starting fresh build...")
     write_cache()
   endif()
-
-  # Look for updates.
-  ctest_update(RETURN_VALUE count)
-  set(CTEST_CHECKOUT_COMMAND) # checkout on first iteration only
-  safe_message("Found ${count} changed files")
 
   # Additional CMake configure options can be specified in a commit message
   # using one or multiple line of the form "[cmake <ARGUMENT1>;<ARGUMENT2>;...]".
