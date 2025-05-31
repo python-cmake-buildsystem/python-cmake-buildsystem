@@ -32,6 +32,7 @@
 #   dashboard_source_name  = Name of source directory (default: python-cmake-buildsystem)
 #   dashboard_binary_name  = Name of binary directory (default: python-cmake-buildsystem-build)
 #   dashboard_cache        = Initial CMakeCache.txt file content
+#   dashboard_no_test      = True to disable tests
 #   dashboard_do_coverage  = True to enable coverage (ex: gcov)
 #   dashboard_do_memcheck  = True to enable memcheck (ex: valgrind)
 #   CTEST_CHECKOUT_COMMAND = Custom source tree checkout comamnd (primarilly
@@ -432,8 +433,10 @@ while(NOT dashboard_done)
     if(COMMAND dashboard_hook_test)
       dashboard_hook_test()
     endif()
-    ctest_test(${CTEST_TEST_ARGS} APPEND)
-    ctest_submit(PARTS Test)
+    if(NOT dashboard_no_test)
+      ctest_test(${CTEST_TEST_ARGS} APPEND)
+      ctest_submit(PARTS Test)
+    endif()
     set(safe_message_skip 1) # Block further messages
 
     if(dashboard_do_coverage)
