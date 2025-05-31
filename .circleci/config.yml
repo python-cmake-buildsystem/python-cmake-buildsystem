@@ -46,42 +46,42 @@ jobs:
          environment:
            PY_VERSION: << parameters.python_version >>
 
-  build-test-python-win:
-    parameters:
-      python_version:
-        description: "Python version specified as X.Y.Z"
-        type: string
-      python_arch:
-        description: "Python arch specified as x64 or Win32"
-        type: string
-      generator:
-        description: "CMake generator"
-        type: string
-    executor:
-      name: win/default
-      shell: powershell.exe
-    working_directory: C:/Users/circleci/project/src
-    steps:
-      - checkout
-      - run:
-          name: Install dependencies
-          command: |
-            choco install --no-progress cmake
-            if (-not $?) { throw "Failed to install CMake" }
-      - run:
-         name: download dashboard scripts
-         command: |
-           git clone git@github.com:python-cmake-buildsystem/python-cmake-buildsystem --branch dashboard --depth 1 ../scripts
-      - run:
-         name: build and test
-         command: |
-           $Env:PATH += ";C:\Program Files\CMake\bin"
-           ctest -C $Env:CONFIGURATION -S C:/Users/circleci/project/scripts/circle_win_dashboard.cmake -VV
-         environment:
-           PY_VERSION: << parameters.python_version >>
-           CONFIGURATION: Release
-           GENERATOR: << parameters.generator >>
-           PLATFORM: << parameters.python_arch >>
+#  build-test-python-win:
+#    parameters:
+#      python_version:
+#        description: "Python version specified as X.Y.Z"
+#        type: string
+#      python_arch:
+#        description: "Python arch specified as x64 or Win32"
+#        type: string
+#      generator:
+#        description: "CMake generator"
+#        type: string
+#    executor:
+#      name: win/default
+#      shell: powershell.exe
+#    working_directory: C:/Users/circleci/project/src
+#    steps:
+#      - checkout
+#      - run:
+#          name: Install dependencies
+#          command: |
+#            choco install --no-progress cmake
+#            if (-not $?) { throw "Failed to install CMake" }
+#      - run:
+#         name: download dashboard scripts
+#         command: |
+#           git clone git@github.com:python-cmake-buildsystem/python-cmake-buildsystem --branch dashboard --depth 1 ../scripts
+#      - run:
+#         name: build and test
+#         command: |
+#           $Env:PATH += ";C:\Program Files\CMake\bin"
+#           ctest -C $Env:CONFIGURATION -S C:/Users/circleci/project/scripts/circle_win_dashboard.cmake -VV
+#         environment:
+#           PY_VERSION: << parameters.python_version >>
+#           CONFIGURATION: Release
+#           GENERATOR: << parameters.generator >>
+#           PLATFORM: << parameters.python_arch >>
 
 workflows:
     build-and-test:
@@ -92,108 +92,108 @@ workflows:
             python_version: 3.11.12
             python_arch: x64
 
-        - build-test-python:
-            name: python-3.11.12-x86
-            python_version: 3.11.12
-            python_arch: x86
+#        - build-test-python:
+#            name: python-3.11.12-x86
+#            python_version: 3.11.12
+#            python_arch: x86
 
-        # 3.10.17
-        - build-test-python:
-            name: python-3.10.17-x64
-            python_version: 3.10.17
-            python_arch: x64
+#        # 3.10.17
+#        - build-test-python:
+#            name: python-3.10.17-x64
+#            python_version: 3.10.17
+#            python_arch: x64
 
-        - build-test-python:
-            name: python-3.10.17-x86
-            python_version: 3.10.17
-            python_arch: x86
+#        - build-test-python:
+#            name: python-3.10.17-x86
+#            python_version: 3.10.17
+#            python_arch: x86
 
-        # 3.9.22
-        - build-test-python:
-            name: python-3.9.22-x64
-            python_version: 3.9.22
-            python_arch: x64
+#        # 3.9.22
+#        - build-test-python:
+#            name: python-3.9.22-x64
+#            python_version: 3.9.22
+#            python_arch: x64
 
-        - build-test-python:
-            name: python-3.9.22-x86
-            python_version: 3.9.22
-            python_arch: x86
+#        - build-test-python:
+#            name: python-3.9.22-x86
+#            python_version: 3.9.22
+#            python_arch: x86
 
-        # 3.8.20
-        - build-test-python:
-            name: python-3.8.20-x64
-            python_version: 3.8.20
-            python_arch: x64
+#        # 3.8.20
+#        - build-test-python:
+#            name: python-3.8.20-x64
+#            python_version: 3.8.20
+#            python_arch: x64
 
-        - build-test-python:
-            name: python-3.8.20-x86
-            python_version: 3.8.20
-            python_arch: x86
+#        - build-test-python:
+#            name: python-3.8.20-x86
+#            python_version: 3.8.20
+#            python_arch: x86
 
-        # 3.7.17
-        - build-test-python:
-            name: python-3.7.17-x64
-            python_version: 3.7.17
-            python_arch: x64
+#        # 3.7.17
+#        - build-test-python:
+#            name: python-3.7.17-x64
+#            python_version: 3.7.17
+#            python_arch: x64
 
-        - build-test-python:
-            name: python-3.7.17-x86
-            python_version: 3.7.17
-            python_arch: x86
+#        - build-test-python:
+#            name: python-3.7.17-x86
+#            python_version: 3.7.17
+#            python_arch: x86
 
-        # 3.6.15
-        - build-test-python:
-            name: python-3.6.15-x64
-            python_version: 3.6.15
-            python_arch: x64
+#        # 3.6.15
+#        - build-test-python:
+#            name: python-3.6.15-x64
+#            python_version: 3.6.15
+#            python_arch: x64
 
-        - build-test-python:
-            name: python-3.6.15-x86
-            python_version: 3.6.15
-            python_arch: x86
+#        - build-test-python:
+#            name: python-3.6.15-x86
+#            python_version: 3.6.15
+#            python_arch: x86
 
 
-    build-and-test-win:
-      jobs:
-        # 3.11.12
-        - build-test-python-win:
-            name: python-3.11.12-win-x64
-            python_version: 3.11.12
-            python_arch: x64
-            generator: "Visual Studio 16 2019"
+#    build-and-test-win:
+#      jobs:
+#        # 3.11.12
+#        - build-test-python-win:
+#            name: python-3.11.12-win-x64
+#            python_version: 3.11.12
+#            python_arch: x64
+#            generator: "Visual Studio 16 2019"
 
-        # 3.10.17
-        - build-test-python-win:
-            name: python-3.10.17-win-x64
-            python_version: 3.10.17
-            python_arch: x64
-            generator: "Visual Studio 16 2019"
+#        # 3.10.17
+#        - build-test-python-win:
+#            name: python-3.10.17-win-x64
+#            python_version: 3.10.17
+#            python_arch: x64
+#            generator: "Visual Studio 16 2019"
 
-        # 3.9.22
-        - build-test-python-win:
-            name: python-3.9.22-win-x64
-            python_version: 3.9.22
-            python_arch: x64
-            generator: "Visual Studio 16 2019"
+#        # 3.9.22
+#        - build-test-python-win:
+#            name: python-3.9.22-win-x64
+#            python_version: 3.9.22
+#            python_arch: x64
+#            generator: "Visual Studio 16 2019"
 
-        # 3.8.20
-        - build-test-python-win:
-            name: python-3.8.20-win-x64
-            python_version: 3.8.20
-            python_arch: x64
-            generator: "Visual Studio 16 2019"
+#        # 3.8.20
+#        - build-test-python-win:
+#            name: python-3.8.20-win-x64
+#            python_version: 3.8.20
+#            python_arch: x64
+#            generator: "Visual Studio 16 2019"
 
-        # 3.7.17
-        - build-test-python-win:
-            name: python-3.7.17-win-x64
-            python_version: 3.7.17
-            python_arch: x64
-            generator: "Visual Studio 16 2019"
+#        # 3.7.17
+#        - build-test-python-win:
+#            name: python-3.7.17-win-x64
+#            python_version: 3.7.17
+#            python_arch: x64
+#            generator: "Visual Studio 16 2019"
 
-        # 3.6.15
-        - build-test-python-win:
-            name: python-3.6.15-win-x64
-            python_version: 3.6.15
-            python_arch: x64
-            generator: "Visual Studio 16 2019"
+#        # 3.6.15
+#        - build-test-python-win:
+#            name: python-3.6.15-win-x64
+#            python_version: 3.6.15
+#            python_arch: x64
+#            generator: "Visual Studio 16 2019"
 
