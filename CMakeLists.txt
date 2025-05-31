@@ -801,9 +801,18 @@ file(MAKE_DIRECTORY "${EXTENSION_BUILD_DIR}")
 install(DIRECTORY DESTINATION ${EXTENSION_INSTALL_DIR})
 
 if(BUILD_TESTING)
-    # Command line option "-l/--findleaks" of regrtest is deprecated since Python 3.7 and
-    # removed in Python 3.11. It is superseded by --fail-env-changed.
-    set(TESTOPTS $<IF:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>,--fail-env-changed,-l> -u network)
+    set(SUPPORTED_TEST_RESOURCES network)
+    message(STATUS "Supported test resources: ${SUPPORTED_TEST_RESOURCES}")
+
+    list(JOIN SUPPORTED_TEST_RESOURCES "," regrtest_resources)
+
+    set(TESTOPTS
+      # Command line option "-l/--findleaks" of regrtest is deprecated since Python 3.7 and
+      # removed in Python 3.11. It is superseded by --fail-env-changed.
+      $<IF:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>,--fail-env-changed,-l>
+      # Comma-separated list of words indicating the resources to test
+      -u ${regrtest_resources}
+    )
     set(TESTPROG ${PROJECT_BINARY_DIR}/${PYTHONHOME}/test/regrtest.py)
     set(TESTPYTHONOPTS )
       set(TESTPYTHON $<TARGET_FILE:python> ${TESTPYTHONOPTS})
