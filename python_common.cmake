@@ -267,6 +267,12 @@ foreach(req
   endif()
 endforeach(req)
 
+# Workaround for a CDash issue where colons (:) in CTEST_SITE cause Update and
+# Configure/Build/Test submissions to appear as separate rows. Replace colons
+# with underscores to ensure all parts are grouped under a single entry.
+# See: https://github.com/Kitware/CDash/issues/2905
+string(REPLACE ":" "_" CTEST_SITE "${CTEST_SITE}")
+
 # Print summary information.
 set(vars "")
 foreach(v
