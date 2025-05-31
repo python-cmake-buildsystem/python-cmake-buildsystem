@@ -27,13 +27,15 @@
 #   dashboard_model        = Nightly | Experimental | Continuous
 #   dashboard_track        = Optional track to submit dashboard to
 #   dashboard_disable_loop = For continuous dashboards, disable loop.
-#   dashboard_root_name    = Change name of "MyTests" directory
-#   dashboard_source_name  = Name of source directory (python-cmake-buildsystem)
-#   dashboard_binary_name  = Name of binary directory (python-cmake-buildsystem-build)
+#   dashboard_root_name    = Change name of "MyTests" directory. This is
+#                            ignored if CTEST_DASHBOARD_ROOT is set.
+#   dashboard_source_name  = Name of source directory (default: python-cmake-buildsystem)
+#   dashboard_binary_name  = Name of binary directory (default: python-cmake-buildsystem-build)
 #   dashboard_cache        = Initial CMakeCache.txt file content
 #   dashboard_do_coverage  = True to enable coverage (ex: gcov)
 #   dashboard_do_memcheck  = True to enable memcheck (ex: valgrind)
-#   CTEST_GIT_COMMAND      = path to git command-line client
+#   CTEST_CHECKOUT_COMMAND = Custom source tree checkout comamnd (primarilly
+#                            for if the VCS is not git).
 #   CTEST_BUILD_FLAGS      = build tool arguments (ex: -j2)
 #   CTEST_DASHBOARD_ROOT   = Where to put source and build trees
 #   CTEST_TEST_CTEST       = Whether to run long CTestTest* tests
@@ -41,10 +43,21 @@
 #   CTEST_TEST_ARGS        = ctest_test args (ex: PARALLEL_LEVEL 4)
 #   CMAKE_MAKE_PROGRAM     = Path to "make" tool to use
 #
-# Options to configure builds from experimental git repository:
+# Options to configure Git:
+#   CTEST_GIT_COMMAND      = Path to the git command-line client.
 #   dashboard_git_url      = Custom git clone url
 #   dashboard_git_branch   = Custom remote branch to track
 #   dashboard_git_crlf     = Value of core.autocrlf for repository
+#
+# The following macros will be invoked before the corresponding step if they
+# are defined:
+#
+#   dashboard_hook_init     = End of initialization, before loop
+#   dashboard_hook_start    = Start of loop body, before ctest_start
+#   dashboard_hook_started  = Start of loop body, after ctest_start
+#   dashboard_hook_build    = Before ctest_build
+#   dashboard_hook_test     = Before ctest_test
+#   dashboard_hook_end      = End of body loop, after ctest_submit.
 #
 # For Makefile generators the script may be executed from an
 # environment already configured to use the desired compilers.
@@ -70,10 +83,9 @@
 #   notice, this list of conditions and the following disclaimer in the
 #   documentation and/or other materials provided with the distribution.
 #
-# * Neither the names of Kitware, Inc., the Insight Software Consortium,
-#   nor the names of their contributors may be used to endorse or promote
-#   products derived from this software without specific prior written
-#   permission.
+# * Neither the name of Kitware, Inc. nor the names of its contributors
+#   may be used to endorse or promote products derived from this
+#   software without specific prior written permission.
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
