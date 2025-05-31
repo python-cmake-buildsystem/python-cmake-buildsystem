@@ -461,10 +461,6 @@ while(NOT dashboard_done)
       ctest_submit(PARTS MemCheck)
     endif()
 
-    if(COMMAND dashboard_hook_submit)
-      dashboard_hook_submit()
-    endif()
-
     if(COMMAND dashboard_hook_end)
       dashboard_hook_end()
     endif()
