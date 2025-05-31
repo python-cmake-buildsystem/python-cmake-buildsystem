@@ -367,14 +367,7 @@ while(NOT dashboard_done)
   endif()
 
   # Look for updates.
-  set(count 0)
-  set(_skip_ctest_update 0) # XXX Required for CMake < 3.1.0
-  if(CMAKE_VERSION VERSION_LESS "3.1.0" AND CTEST_UPDATE_VERSION_ONLY)
-    set(_skip_ctest_update 1)
-  endif()
-  if(NOT _skip_ctest_update)
-    ctest_update(RETURN_VALUE count)
-  endif()
+  ctest_update(RETURN_VALUE count)
   set(CTEST_CHECKOUT_COMMAND) # checkout on first iteration only
   safe_message("Found ${count} changed files")
 
