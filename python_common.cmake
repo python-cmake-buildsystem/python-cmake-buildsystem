@@ -344,7 +344,6 @@ while(NOT dashboard_done)
   if(dashboard_continuous)
     set(START_TIME ${CTEST_ELAPSED_TIME})
   endif()
-  set(ENV{HOME} "${dashboard_user_home}")
 
   # Start a new submission.
   if(COMMAND dashboard_hook_start)
@@ -474,5 +473,7 @@ while(NOT dashboard_done)
     # Not continuous, so we are done.
     set(dashboard_done 1)
   endif()
+
+  set(ENV{HOME} "${dashboard_user_home}")
 endwhile()
 
