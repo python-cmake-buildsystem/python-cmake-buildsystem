@@ -1,0 +1,45 @@
+From 8880127d669a170e0dad55631bc2fa03ceed51dd Mon Sep 17 00:00:00 2001
+From: Victor Stinner <vstinner@redhat.com>
+Date: Mon, 17 Dec 2018 22:06:10 +0100
+Subject: [PATCH] bpo-35519: Rename test.bisect to test.bisect_cmd (GH-11200)
+
+Rename test.bisect module to test.bisect_cmd to avoid conflict with
+bisect module when running directly a test like
+"./python Lib/test/test_xmlrpc.py".
+---
+ Lib/test/{bisect.py => bisect_cmd.py}                          | 0
+ Lib/test/support/__init__.py                                   | 2 +-
+ .../NEWS.d/next/Tests/2018-12-17-16-41-45.bpo-35519.RR3L_w.rst | 3 +++
+ 3 files changed, 4 insertions(+), 1 deletion(-)
+ rename Lib/test/{bisect.py => bisect_cmd.py} (100%)
+ create mode 100644 Misc/NEWS.d/next/Tests/2018-12-17-16-41-45.bpo-35519.RR3L_w.rst
+
+diff --git a/Lib/test/bisect.py b/Lib/test/bisect_cmd.py
+similarity index 100%
+rename from Lib/test/bisect.py
+rename to Lib/test/bisect_cmd.py
+diff --git a/Lib/test/support/__init__.py b/Lib/test/support/__init__.py
+index 66c0fed8411..b40135bc8b9 100644
+--- a/Lib/test/support/__init__.py
++++ b/Lib/test/support/__init__.py
+@@ -1972,7 +1972,7 @@ def set_match_tests(patterns):
+         patterns = ()
+     elif all(map(_is_full_match_test, patterns)):
+         # Simple case: all patterns are full test identifier.
+-        # The test.bisect utility only uses such full test identifiers.
++        # The test.bisect_cmd utility only uses such full test identifiers.
+         func = set(patterns).__contains__
+     else:
+         regex = '|'.join(map(fnmatch.translate, patterns))
+diff --git a/Misc/NEWS.d/next/Tests/2018-12-17-16-41-45.bpo-35519.RR3L_w.rst b/Misc/NEWS.d/next/Tests/2018-12-17-16-41-45.bpo-35519.RR3L_w.rst
+new file mode 100644
+index 00000000000..e108dd877e1
+--- /dev/null
++++ b/Misc/NEWS.d/next/Tests/2018-12-17-16-41-45.bpo-35519.RR3L_w.rst
+@@ -0,0 +1,3 @@
++Rename :mod:`test.bisect` module to :mod:`test.bisect_cmd` to avoid conflict
++with :mod:`bisect` module when running directly a test like
++``./python Lib/test/test_xmlrpc.py``.
+-- 
+2.48.1
+
