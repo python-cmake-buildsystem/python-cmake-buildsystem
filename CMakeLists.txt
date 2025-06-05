@@ -641,6 +641,8 @@ endif()
 if(WIN32 AND TARGET extension_testcapi)
     set(libpython_output_dir "${PROJECT_BINARY_DIR}/CMakeBuild/libpython/$<CONFIG>")
     target_link_directories(extension_testcapi PRIVATE ${libpython_output_dir})
+    # Ensure import library is generated before linking the extension
+    add_dependencies(extension_testcapi libpython3-shared)
 endif()
 
 # Add target to run "Argument Clinic" over all source files
