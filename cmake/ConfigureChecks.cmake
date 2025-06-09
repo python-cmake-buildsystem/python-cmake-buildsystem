@@ -1381,6 +1381,7 @@ python_platform_test(
 # Python 3.12
 cmake_push_check_state()
 add_cond(CMAKE_REQUIRED_LIBRARIES HAVE_LIBFFI ${LibFFI_LIBRARY})
+add_cond(CMAKE_REQUIRED_INCLUDES LibFFI_INCLUDE_DIR ${LibFFI_INCLUDE_DIR})
 check_symbol_exists(ffi_call              "ffi.h" HAVE_FFI_CALL)
 check_symbol_exists(ffi_closure_alloc     "ffi.h" HAVE_FFI_CLOSURE_ALLOC)
 check_symbol_exists(ffi_prep_cif_var      "ffi.h" HAVE_FFI_PREP_CIF_VAR)
