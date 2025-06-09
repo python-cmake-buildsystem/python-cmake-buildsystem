@@ -631,13 +631,10 @@ if(
     OR
     (APPLE AND PY_VERSION VERSION_GREATER_EQUAL "3.12")
   )
-    # If installed, build ctypes using the system ffi
+    # If found, build ctypes against ffi library
     # * on Windows for python >= 3.8
     # * on Linux for python >= 3.7
     # * on macOS for python >= 3.12
-    if(NOT USE_SYSTEM_LibFFI)
-        message(AUTHOR_WARNING "Disabling USE_SYSTEM_LibFFI option is *NOT* supported with Python >= 3.8 on windows, Python >= 3.7 on Linux, Python >= 3.12 on macOS. Current version is ${PY_VERSION}")
-    endif()
     set(ctypes_malloc_closure 0)
     if(APPLE AND PY_VERSION VERSION_GREATER_EQUAL "3.12")
       set(ctypes_malloc_closure 1)
