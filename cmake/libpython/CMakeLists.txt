@@ -407,6 +407,9 @@ foreach(name ${builtin_extensions})
     if(extension_${name}_definitions)
         set_property(SOURCE ${extension_${name}_sources}
             APPEND PROPERTY COMPILE_DEFINITIONS ${extension_${name}_definitions})
+        # Workaround for CMake issue #26993 (https://gitlab.kitware.com/cmake/cmake/-/issues/26993):
+        # Generator expressions are not supported in the SOURCE argument of set_property().
+        # Collect compile definitions here to propagate them via target_compile_definitions().
         if(NOT ${name} STREQUAL "xxlimited")
             list(APPEND builtin_compile_definitions_without_py_limited_api ${extension_${name}_definitions})
         endif()
@@ -500,6 +503,9 @@ add_executable(_freeze_importlib
   )
 target_link_libraries(_freeze_importlib ${LIBPYTHON_TARGET_LIBRARIES})
 if(builtin_compile_definitions_without_py_limited_api)
+  # Workaround for CMake issue #26993 (https://gitlab.kitware.com/cmake/cmake/-/issues/26993):
+  # Explicitly propagate built-in extension definitions to this target.
+  # These would otherwise be lost due to generator expression limitations in set_property().
   target_compile_definitions(_freeze_importlib PRIVATE ${builtin_compile_definitions_without_py_limited_api})
 endif()
 target_compile_definitions(_freeze_importlib
@@ -746,6 +752,12 @@ add_executable(_bootstrap_python
     ${LIBPYTHON_FROZEN_SOURCES}
 )
 target_link_libraries(_bootstrap_python ${LIBPYTHON_TARGET_LIBRARIES})
+if(builtin_compile_definitions_without_py_limited_api)
+  # Workaround for CMake issue #26993 (https://gitlab.kitware.com/cmake/cmake/-/issues/26993):
+  # Explicitly propagate built-in extension definitions to this target.
+  # These would otherwise be lost due to generator expression limitations in set_property().
+  target_compile_definitions(_bootstrap_python PRIVATE ${builtin_compile_definitions_without_py_limited_api})
+endif()
 target_compile_definitions(_bootstrap_python
     PUBLIC
         Py_NO_ENABLE_SHARED
@@ -819,6 +831,9 @@ add_executable(pgen
     $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.3>:${SRC_DIR}/Parser/parsetok_pgen.c>
 )
 if(builtin_compile_definitions_without_py_limited_api)
+  # Workaround for CMake issue #26993 (https://gitlab.kitware.com/cmake/cmake/-/issues/26993):
+  # Explicitly propagate built-in extension definitions to this target.
+  # These would otherwise be lost due to generator expression limitations in set_property().
   target_compile_definitions(pgen PRIVATE ${builtin_compile_definitions_without_py_limited_api})
 endif()
 endif()
@@ -882,6 +897,13 @@ function(add_libpython name type install component)
     set_target_properties(${name} PROPERTIES
         POSITION_INDEPENDENT_CODE ON
     )
+
+    if(builtin_compile_definitions_without_py_limited_api)
+        # Workaround for CMake issue #26993 (https://gitlab.kitware.com/cmake/cmake/-/issues/26993):
+        # Explicitly propagate built-in extension definitions to this target.
+        # These would otherwise be lost due to generator expression limitations in set_property().
+        target_compile_definitions(${name} PRIVATE ${builtin_compile_definitions_without_py_limited_api})
+    endif()
 
     # Export target
     set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS ${name})
