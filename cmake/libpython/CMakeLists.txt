@@ -500,7 +500,7 @@ add_executable(_freeze_importlib
   )
 target_link_libraries(_freeze_importlib ${LIBPYTHON_TARGET_LIBRARIES})
 if(builtin_compile_definitions_without_py_limited_api)
-  target_compile_definitions(_freeze_importlib PUBLIC ${builtin_compile_definitions_without_py_limited_api})
+  target_compile_definitions(_freeze_importlib PRIVATE ${builtin_compile_definitions_without_py_limited_api})
 endif()
 target_compile_definitions(_freeze_importlib
   PUBLIC
@@ -819,7 +819,7 @@ add_executable(pgen
     $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.3>:${SRC_DIR}/Parser/parsetok_pgen.c>
 )
 if(builtin_compile_definitions_without_py_limited_api)
-  target_compile_definitions(pgen PUBLIC ${builtin_compile_definitions_without_py_limited_api})
+  target_compile_definitions(pgen PRIVATE ${builtin_compile_definitions_without_py_limited_api})
 endif()
 endif()
 
