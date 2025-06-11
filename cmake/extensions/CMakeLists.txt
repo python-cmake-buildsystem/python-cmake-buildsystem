@@ -640,8 +640,15 @@ if(
       set(ctypes_malloc_closure 1)
     endif()
     set(_ctypes_REQUIRES)
-    if(PY_VERSION VERSION_GREATER_EQUAL "3.12")
+    if(UNIX AND PY_VERSION VERSION_GREATER_EQUAL "3.12")
       list(APPEND _ctypes_REQUIRES HAVE_FFI_CALL)
+    endif()
+    set(ffi_building 0)
+    get_filename_component(_ffi_library_name ${LibFFI_LIBRARY} NAME)
+    # Linking against the static library on Windows requires defining "FFI_BUILDING".
+    # See ffi.h for more details.
+    if(WIN32 AND _ffi_library_name MATCHES "^ffi_static")
+      set(ffi_building 1)
     endif()
     add_python_extension(_ctypes
         REQUIRES
@@ -654,9 +661,7 @@ if(
         DEFINITIONS
             Py_BUILD_CORE_MODULE
             $<$<BOOL:${ctypes_malloc_closure}>:USING_MALLOC_CLOSURE_DOT_C=1>
-            # Starting with python/cpython@38f331d4656 ("bpo-45898: Remove duplicate symbols from _ctypes/cfield.c (GH-29791)", 2022-02-24), FFI_BUILDING is removed. Note that while the use of FFI_BUILDING seems
-            # to be specific to windows, backward compatibility is maintained defining it for all platforms.
-            $<$<VERSION_LESS:${PY_VERSION},3.11>:FFI_BUILDING>
+            $<$<BOOL:${ffi_building}>:FFI_BUILDING>
         INCLUDEDIRS
             ${LibFFI_INCLUDE_DIR}
         LIBRARIES
