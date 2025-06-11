@@ -139,3 +139,131 @@ endfunction()
 if(TEST_python_extract_version_info)
     python_extract_version_info_test()
 endif()
+
+# Compute the "Field3" value from a Python version's patch, release level, and serial.
+#
+# The Field3 value is defined as:
+#   Field3 = patch * 1000 + release_level_number * 10 + release_serial
+#
+# Where release_level_number is:
+#   - 10 for alpha (a)
+#   - 11 for beta (b)
+#   - 12 for release candidate (rc)
+#   - 15 for final (no pre-release tag)
+#
+# Arguments:
+#   VERSION_PATCH    - Patch version (Z in X.Y.Z)
+#   RELEASE_LEVEL    - One of 'a', 'b', 'rc', or empty
+#   RELEASE_SERIAL   - An integer (or empty for final)
+#
+# Output:
+#   Sets variable PY_FIELD3_VALUE in the caller's scope.
+function(python_compute_release_field3_value)
+    set(options)
+    set(oneValueArgs
+        VERSION_PATCH
+        RELEASE_LEVEL
+        RELEASE_SERIAL
+        )
+    set(multiValueArgs)
+    cmake_parse_arguments(MY
+        "${options}"
+        "${oneValueArgs}"
+        "${multiValueArgs}"
+        ${ARGN}
+        )
+
+    # Default ReleaseLevelNumber = 15 (final release)
+    set(_level_number 15)
+
+    # Map release level string to numeric code
+    if(MY_RELEASE_LEVEL STREQUAL "a")
+        set(_level_number 10)
+    elseif(MY_RELEASE_LEVEL STREQUAL "b")
+        set(_level_number 11)
+    elseif(MY_RELEASE_LEVEL STREQUAL "rc")
+        set(_level_number 12)
+    endif()
+
+    # Fallback for empty serial
+    if("${MY_RELEASE_SERIAL}" STREQUAL "")
+        set(MY_RELEASE_SERIAL 0)
+    endif()
+
+    # Convert to integers
+    set(_patch "${MY_VERSION_PATCH}")
+    set(_serial "${MY_RELEASE_SERIAL}")
+    math(EXPR _field3 "${_patch} * 1000 + ${_level_number} * 10 + ${_serial}")
+
+    # Return in the variable specified by caller
+    set(PY_FIELD3_VALUE "${_field3}" PARENT_SCOPE)
+endfunction()
+
+#
+# cmake -DTEST_python_compute_release_field3_value:BOOL=ON -P PythonExtractVersionInfo.cmake
+#
+function(python_compute_release_field3_value_test)
+
+    function(display_field3_test_values)
+        message("  PATCH: ${patch}")
+        message("  LEVEL: ${level}")
+        message("  SERIAL: ${serial}")
+        message("  Expected: ${expected}")
+        message("  Computed: ${PY_FIELD3_VALUE}")
+    endfunction()
+
+    set(id 1)
+    set(case${id}_patch   2)
+    set(case${id}_level   "")     # final release
+    set(case${id}_serial  "")     # default to 0
+    set(case${id}_expected 2150)  # 2*1000 + 15*10 + 0
+
+    set(id 2)
+    set(case${id}_patch   2)
+    set(case${id}_level   a)
+    set(case${id}_serial  1)
+    set(case${id}_expected 2101)  # 2*1000 + 10*10 + 1
+
+    set(id 3)
+    set(case${id}_patch   5)
+    set(case${id}_level   b)
+    set(case${id}_serial  0)
+    set(case${id}_expected 5110)  # 5*1000 + 11*10 + 0
+
+    set(id 4)
+    set(case${id}_patch   14)
+    set(case${id}_level   rc)
+    set(case${id}_serial  3)
+    set(case${id}_expected 14123)  # 14*1000 + 12*10 + 3
+
+    set(id 5)
+    set(case${id}_patch   0)
+    set(case${id}_level   "")    # final
+    set(case${id}_serial  "")    # default 0
+    set(case${id}_expected 150)  # 0 * 1000 + 15 * 10 + 0
+
+    foreach(caseid RANGE 1 ${id})
+        set(patch   "${case${caseid}_patch}")
+        set(level   "${case${caseid}_level}")
+        set(serial  "${case${caseid}_serial}")
+        set(expected "${case${caseid}_expected}")
+
+        python_compute_release_field3_value(
+            VERSION_PATCH "${patch}"
+            RELEASE_LEVEL "${level}"
+            RELEASE_SERIAL "${serial}"
+        )
+
+        if(NOT "${PY_FIELD3_VALUE}" STREQUAL "${expected}")
+            message("FAILED: case ${caseid}")
+            display_field3_test_values()
+            message(FATAL_ERROR "Test failed at case ${caseid}")
+        endif()
+    endforeach()
+
+    message("SUCCESS")
+endfunction()
+
+if(TEST_python_compute_release_field3_value)
+    python_compute_release_field3_value_test()
+endif()
