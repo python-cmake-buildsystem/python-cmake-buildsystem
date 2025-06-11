@@ -386,6 +386,14 @@ python_extract_version_info(
 message(STATUS "PY_VERSION     : ${PY_VERSION}")
 message(STATUS "PY_VERSION_LONG: ${PY_VERSION_LONG}")
 
+# Extract "Field3" value and set variable PY_FIELD3_VALUE
+python_compute_release_field3_value(
+    VERSION_PATCH "${PY_VERSION_PATCH}"
+    RELEASE_LEVEL "${PY_RELEASE_LEVEL}"
+    RELEASE_SERIAL "${PY_RELEASE_SERIAL}"
+)
+message(STATUS "PY_FIELD3_VALUE: ${PY_FIELD3_VALUE}")
+
 # Check version
 if(NOT DEFINED _download_${PY_VERSION_LONG}_md5)
     message(WARNING "warning: selected python version '${PY_VERSION_LONG}' is not tested.")
@@ -859,6 +867,10 @@ if(BUILD_TESTING)
     endfunction()
     add_cmakescript_test(
         python_extract_version_info
+        cmake/PythonExtractVersionInfo.cmake
+        )
+    add_cmakescript_test(
+        python_compute_release_field3_value
         cmake/PythonExtractVersionInfo.cmake
         )
 endif()
