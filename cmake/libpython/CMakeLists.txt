@@ -66,15 +66,14 @@ if(WIN32 AND PY_VERSION VERSION_LESS "3.11")
         set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${PYTHONHOME_ESCAPED}\\\\lib-tk")
     endif()
 
-    set(_wide_char_modifier)
-        set(_wide_char_modifier "L")
+    set(_wide_char_modifier "L")
 
     set_property(
         SOURCE ${SRC_DIR}/PC/getpathp.c
         PROPERTY COMPILE_DEFINITIONS
             "LANDMARK=${_wide_char_modifier}\"${PYTHONHOME_ESCAPED}\\\\os.py\""
             "PYTHONPATH=${_wide_char_modifier}\"${PYTHONPATH}\""
-            "PY3_DLLNAME=\"python3$<$<CONFIG:Debug>:_d>\""
+            "PY3_DLLNAME=${_wide_char_modifier}\"python3$<$<CONFIG:Debug>:_d>\""
     )
 endif()
 
@@ -217,10 +216,11 @@ elseif(WIN32)
             Py_ENABLE_SHARED
             MS_DLL_ID="${ms_dll_id}"
         )
+    set(_wide_char_modifier "L")
     set_property(
         SOURCE ${SRC_DIR}/Python/dynload_win.c
         PROPERTY COMPILE_DEFINITIONS
-            "PY3_DLLNAME=\"python3$<$<CONFIG:Debug>:_d>\"" # Python 3.11
+            "PY3_DLLNAME=${_wide_char_modifier}\"python3$<$<CONFIG:Debug>:_d>\"" # Python 3.11
         )
 endif()
 
@@ -341,10 +341,11 @@ endif()
 
 # Introduced in Python 3.10 and removed in Python 3.11
 if(WIN32 AND "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}" VERSION_EQUAL "3.10")
+    set(_wide_char_modifier "L")
     set_property(
         SOURCE ${SRC_DIR}/Python/pathconfig.c
         PROPERTY COMPILE_DEFINITIONS
-            "PY3_DLLNAME=\"python3$<$<CONFIG:Debug>:_d>\""
+            "PY3_DLLNAME=${_wide_char_modifier}\"python3$<$<CONFIG:Debug>:_d>\""
         )
 endif()
 

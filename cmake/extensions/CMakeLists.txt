@@ -374,13 +374,14 @@ add_python_extension(_xxtestfuzz
 )
 
 # Python 3.8
+set(_wide_char_modifier "L")
 add_python_extension(_testinternalcapi
     REQUIRES
         IS_PY3_8_OR_GREATER
     SOURCES
         _testinternalcapi.c
     DEFINITIONS
-        "PY3_DLLNAME=\"python3$<$<CONFIG:Debug>:_d>\""
+        "PY3_DLLNAME=${_wide_char_modifier}\"python3$<$<CONFIG:Debug>:_d>\""
 )
 
 # Python 3.9
