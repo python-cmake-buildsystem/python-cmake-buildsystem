@@ -1,21 +1,23 @@
 
-function(_add_executable_without_windows)
-  set(_saved_c_flags "${CMAKE_C_FLAGS}")
+function(_add_executable_without_windows target_name)
+  # Work around the lack of a "target_remove_definitions()" CMake command by
+  # explicitly undefining _WINDOWS. The following alternatives are either ineffective
+  # or not applicable:
+  #
+  # (1) Modifying and restoring CMAKE_C_FLAGS does not work reliably, as CMake appears
+  #     to apply cached values during the generation step after the function executes.
+  #
+  # (2) Using get_target_property/set_property to manipulate COMPILE_DEFINITIONS
+  #     is ineffective, since /D_WINDOWS is introduced via CMAKE_C_FLAGS and not
+  #     associated with the target's properties.
+  #
+  # See: https://gitlab.kitware.com/cmake/cmake/-/issues/19796
 
-  # Workaround the lack of "target_remove_definitions()" CMake command by
-  # forcing flags. Note that attempting to update the COMPILE_DEFINITIONS
-  # target property using get_target_property/set_property does not apply here
-  # as the definition to remove is associated with CMAKE_C_FLAGS cache variable.
-  # See https://gitlab.kitware.com/cmake/cmake/-/issues/19796
+  add_executable(${target_name} ${ARGN})
 
-  # Remove /D_WINDOWS
-  string(REPLACE "/D_WINDOWS" "" _c_flags "${CMAKE_C_FLAGS}")
-  set(CMAKE_C_FLAGS "${_c_flags}" CACHE STRING "CMake C Flags" FORCE)
-
-  add_executable(${ARGN})
-
-  # Restore original flags
-  set(CMAKE_C_FLAGS "${_saved_c_flags}" CACHE STRING "CMake C Flags" FORCE)
+  # Note: /U_WINDOWS overrides the implicit /D_WINDOWS flag, resulting in MSVC warning D9025.
+  # This warning is harmless and cannot be suppressed directly.
+  target_compile_options(${target_name} PRIVATE /U_WINDOWS)
 endfunction()
 
 # Install tree directory
