@@ -642,6 +642,9 @@ add_subdirectory(cmake/tools CMakeBuild/tools)
 if(BUILD_WININST)
     add_subdirectory(cmake/PC/bdist_wininst CMakeBuild/bdist_wininst)
 endif()
+if(WIN32)
+    add_subdirectory(cmake/PC/launcher CMakeBuild/launcher)
+endif()
 
 # Ensure the "_testcapi" extension introduced in Python 3.12 can find
 # find "Python3.lib" as it is specified in "PC/pyconfig." using
