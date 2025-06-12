@@ -29,7 +29,10 @@ set(LAUNCHER_BUILD_DIR ${PROJECT_BINARY_DIR}/${LAUNCHER_INSTALL_DIR})
 set(launcher_targets)
 
 set(build_venvlauncher 0)
-if(PY_VERSION VERSION_GREATER_EQUAL "3.3")
+# While support for building "venvlauncher" was introduced in Python 3.3,
+# we require at least Python 3.9 to avoid the need to generate "pythonnt_rc.h",
+# which was removed in python/cpython@4efc3360c9a ("bpo-41054: Simplify resource compilation on Windows (GH-21004)", 2020-06-24).
+if(PY_VERSION VERSION_GREATER_EQUAL "3.9")
   set(build_venvlauncher 1)
 endif()
 
