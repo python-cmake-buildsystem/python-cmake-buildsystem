@@ -192,9 +192,7 @@ add_python_extension(_testcapi NEVER_BUILTIN
         $<$<VERSION_EQUAL:${PY_VERSION_MAJOR}.${PY_VERSION_MINOR},3.12>:_testcapi/sys.c>
         $<$<VERSION_EQUAL:${PY_VERSION_MAJOR}.${PY_VERSION_MINOR},3.12>:_testcapi/vectorcall_limited.c>
 
-    # TODO: Has limited API in 3.12, but since 3.13 it's no longer limited
-    # and as limited API files moved to new `_testlimitedcapi` module.
-    # https://github.com/python/cpython/blob/3.13/Modules/_testlimitedcapi/heaptype_relative.c
+    # Limited API in 3.12, but in 3.13 all limited API files were moved to `_testlimitedcapi`.
     DEFINITIONS $<$<VERSION_EQUAL:${PY_VERSION},3.12>:Py_LIMITED_API=0x${_limited_api_version}0000>
 )
 
