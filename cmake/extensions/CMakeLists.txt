@@ -195,7 +195,7 @@ add_python_extension(_testcapi NEVER_BUILTIN
     # TODO: Has limited API in 3.12, but since 3.13 it's no longer limited
     # and as limited API files moved to new `_testlimitedcapi` module.
     # https://github.com/python/cpython/blob/3.13/Modules/_testlimitedcapi/heaptype_relative.c
-    DEFINITIONS $<$<VERSION_LESS:${PY_VERSION},3.12>:Py_LIMITED_API=0x${_limited_api_version}0000>
+    DEFINITIONS $<$<VERSION_EQUAL:${PY_VERSION},3.12>:Py_LIMITED_API=0x${_limited_api_version}0000>
 )
 
 set(thread_REQUIRES)
