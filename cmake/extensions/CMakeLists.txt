@@ -645,11 +645,15 @@ if(
       list(APPEND _ctypes_REQUIRES HAVE_FFI_CALL)
     endif()
     set(ffi_building 0)
+    set(ffi_static_build 0)
     get_filename_component(_ffi_library_name ${LibFFI_LIBRARY} NAME)
-    # Linking against the static library on Windows requires defining "FFI_BUILDING".
+    # Linking against the static library on Windows requires defining "FFI_BUILDING"
     # See ffi.h for more details.
+    # As of Libffi v3.4.5, linking against the static library on Windows requires defining "FFI_STATIC_BUILD"
+    # See ffi.h.in for more details.
     if(WIN32 AND _ffi_library_name MATCHES "^ffi_static")
       set(ffi_building 1)
+      set(ffi_static_build 1)
     endif()
     add_python_extension(_ctypes
         REQUIRES
@@ -663,6 +667,7 @@ if(
             Py_BUILD_CORE_MODULE
             $<$<BOOL:${ctypes_malloc_closure}>:USING_MALLOC_CLOSURE_DOT_C=1>
             $<$<BOOL:${ffi_building}>:FFI_BUILDING>
+            $<$<BOOL:${ffi_static_build}>:FFI_STATIC_BUILD>
         INCLUDEDIRS
             ${LibFFI_INCLUDE_DIR}
         LIBRARIES
