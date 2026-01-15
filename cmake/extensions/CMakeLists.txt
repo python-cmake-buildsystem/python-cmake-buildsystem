@@ -1141,6 +1141,7 @@ add_python_extension(_sqlite3
         ${SQLite3_INCLUDE_DIRS}
     LIBRARIES
         ${SQLite3_LIBRARIES}
+        $<$<PLATFORM_ID:Windows>:Rpcrt4>  # For supporting when SQLITE_WIN32_USE_UUID is enabled
 )
 if(ENABLE_SQLITE3 AND CMAKE_C_COMPILER_ID MATCHES GNU)
     set_property(SOURCE ${SRC_DIR}/Modules/_sqlite/module.c PROPERTY COMPILE_FLAGS -Wno-deprecated-declarations)
