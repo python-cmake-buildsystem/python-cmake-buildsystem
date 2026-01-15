@@ -59,8 +59,9 @@ How to use this buildsystem:
 
 .. note::
 
-  By default, the build system will download the python 3.11.12 source from
-  http://www.python.org/ftp/python/
+  By default, the build system will download the python source from
+  http://www.python.org/ftp/python/ based on the version in `PYTHON_VERSION`
+  (see default version below).
 
 
 CMake Options
