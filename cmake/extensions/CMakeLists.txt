@@ -49,6 +49,7 @@ set(IS_PY3_12_OR_GREATER 0)
 if(PY_VERSION VERSION_GREATER_EQUAL "3.12")
     set(IS_PY3_12_OR_GREATER 1)
 endif()
+math(EXPR _limited_api_version "${PY_VERSION_MAJOR} * 100 + ${PY_VERSION_MINOR}")
 
 add_python_extension(array ${WIN32_BUILTIN} SOURCES arraymodule.c)
 add_python_extension(audioop ${WIN32_BUILTIN}
@@ -190,6 +191,9 @@ add_python_extension(_testcapi NEVER_BUILTIN
         $<$<VERSION_EQUAL:${PY_VERSION_MAJOR}.${PY_VERSION_MINOR},3.12>:_testcapi/pytime.c>
         $<$<VERSION_EQUAL:${PY_VERSION_MAJOR}.${PY_VERSION_MINOR},3.12>:_testcapi/sys.c>
         $<$<VERSION_EQUAL:${PY_VERSION_MAJOR}.${PY_VERSION_MINOR},3.12>:_testcapi/vectorcall_limited.c>
+
+    # Limited API in 3.12, but in 3.13 all limited API files were moved to `_testlimitedcapi`.
+    DEFINITIONS $<$<VERSION_EQUAL:${PY_VERSION},3.12>:Py_LIMITED_API=0x${_limited_api_version}0000>
 )
 
 set(thread_REQUIRES)
@@ -282,7 +286,6 @@ add_python_extension(_tracemalloc ALWAYS_BUILTIN
        _tracemalloc.c
 )
 add_python_extension(_weakref ALWAYS_BUILTIN SOURCES _weakref.c)
-math(EXPR _limited_api_version "${PY_VERSION_MAJOR} * 100 + ${PY_VERSION_MINOR}")
 add_python_extension(xxlimited REQUIRES BUILD_TESTING
     SOURCES xxlimited.c
     DEFINITIONS $<$<VERSION_LESS:${PY_VERSION},3.10>:Py_LIMITED_API=0x${_limited_api_version}0000>
