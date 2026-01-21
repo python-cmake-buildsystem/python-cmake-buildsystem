@@ -57,6 +57,9 @@ jobs:
       generator:
         description: "CMake generator"
         type: string
+      builtin:
+        description: "Default all modules as builtin to libpython"
+        type: boolean
     executor:
       name: win/default
       shell: powershell.exe
@@ -76,7 +79,7 @@ jobs:
          name: build and test
          command: |
            $Env:PATH += ";C:\Program Files\CMake\bin"
-           ctest -C $Env:CONFIGURATION -S C:/Users/circleci/project/scripts/circle_win_dashboard.cmake -VV
+           ctest -DBUILD_EXTENSIONS_AS_BUILTIN=<< parameters.builtin >> -C $Env:CONFIGURATION -S C:/Users/circleci/project/scripts/circle_win_dashboard.cmake -VV
          environment:
            PY_VERSION: << parameters.python_version >>
            CONFIGURATION: Release
@@ -172,6 +175,7 @@ workflows:
             python_version: 3.12.10
             python_arch: x64
             generator: "Visual Studio 16 2019"
+            builtin: OFF
 
         # 3.11.12
         - build-test-python-win:
@@ -179,6 +183,7 @@ workflows:
             python_version: 3.11.12
             python_arch: x64
             generator: "Visual Studio 16 2019"
+            builtin: OFF
 
         # 3.10.17
         - build-test-python-win:
@@ -207,6 +212,7 @@ workflows:
             python_version: 3.7.17
             python_arch: x64
             generator: "Visual Studio 16 2019"
+            builtin: OFF
 
         # 3.6.15
         - build-test-python-win:
@@ -214,4 +220,37 @@ workflows:
             python_version: 3.6.15
             python_arch: x64
             generator: "Visual Studio 16 2019"
+            builtin: OFF
+
+        # 3.9.10
+        - build-test-python-win:
+            name: python-3.9.10-win-x64
+            python_version: 3.9.10
+            python_arch: x64
+            generator: "Visual Studio 16 2019"
+            builtin: ON
+
+        # 3.8.12
+        - build-test-python-win:
+            name: python-3.8.12-win-x64
+            python_version: 3.8.12
+            python_arch: x64
+            generator: "Visual Studio 16 2019"
+            builtin: ON
+
+        # 3.7.12
+        - build-test-python-win:
+            name: python-3.7.12-win-x64
+            python_version: 3.7.12
+            python_arch: x64
+            generator: "Visual Studio 16 2019"
+            builtin: ON
+
+        # 3.6.15
+        - build-test-python-win:
+            name: python-3.6.15-win-x64
+            python_version: 3.6.15
+            python_arch: x64
+            generator: "Visual Studio 16 2019"
+            builtin: ON
 
