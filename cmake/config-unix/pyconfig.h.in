@@ -1956,8 +1956,12 @@
 #cmakedefine _INCLUDE__STDC_A1_SOURCE 1
 
 /* This must be defined on some systems to enable large file support. */
-#ifndef _LARGEFILE_SOURCE
-#cmakedefine _LARGEFILE_SOURCE @_LARGEFILE_SOURCE@
+#cmakedefine _PY_LARGEFILE_SOURCE @_LARGEFILE_SOURCE@
+#if _LARGEFILE_SOURCE != _PY_LARGEFILE_SOURCE
+# error "_LARGEFILE_SOURCE is inconsistently defined"
+#endif
+#if defined(_PY_LARGEFILE_SOURCE) && !defined(_LARGEFILE_SOURCE)
+# define _LARGEFILE_SOURCE _PY_LARGEFILE_SOURCE
 #endif
 
 /* This must be defined on AIX systems to enable large file support. */
