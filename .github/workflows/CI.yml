@@ -37,33 +37,159 @@ jobs:
       with:
         version: 1.10.0
 
-    - name: Download dashboard script
-      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-      with:
-        repository: 'python-cmake-buildsystem/python-cmake-buildsystem'
-        ref: dashboard
-        fetch-depth: 0
-        path: scripts
-
     - name: Writing initial dashboard cache
       shell: bash
       run: |
-        cat > scripts/initial-dashboard-cache.txt << EOF
+        cat > src/.github/dashboard/initial-dashboard-cache.txt << EOF
         ${{ matrix.initial-dashboard-cache }}
         EOF
-        cat scripts/initial-dashboard-cache.txt
+        cat src/.github/dashboard/initial-dashboard-cache.txt
 
     - name: Build & Test
-      run: ctest --timeout 360 -S scripts/github_actions_dashboard.cmake -VV
+      run: ctest --timeout 360 -S src/.github/dashboard/github_actions_dashboard.cmake -VV
       env:
         PY_VERSION: ${{ matrix.python-version }}
         CC: ${{ matrix.c-compiler }}
         CXX: ${{ matrix.cxx-compiler }}
 
+  tests-android:
+    runs-on: ${{ matrix.host }}
+    strategy:
+      matrix:
+        ndk-arch: [x86_64, arm64-v8a, x86, armeabi-v7a]
+        host: [ubuntu-24.04]
+        python-version: [3.8.20, 3.9.22, 3.10.17, 3.11.12]
+    name: python-android-${{ matrix.ndk-arch }}-${{ matrix.python-version }}-${{ matrix.host }}
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        fetch-depth: 0
+        path: src
+    - name: Enable KVM
+      run: |
+        echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+        sudo udevadm control --reload-rules
+        sudo udevadm trigger --name-match=kvm
+    - name: Make build and prefix directories
+      run: |
+        mkdir build
+        mkdir install-prefix
+        mkdir bootstrap-build
+        mkdir bootstrap-install-prefix
+    - name: Check for bootstrap needed
+      id: check-bootstrap
+      shell: cmake -P {0}
+      run: |
+        string(REPLACE "." ";" VERSION_LIST "${{ matrix.python-version }}")
+        list(GET VERSION_LIST 0 PY_VERSION_MAJOR)
+        list(GET VERSION_LIST 1 PY_VERSION_MINOR)
+        list(GET VERSION_LIST 2 PY_VERSION_PATCH)
+        set(PY_VERSION "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.${PY_VERSION_PATCH}")
+        if(PY_VERSION VERSION_GREATER_EQUAL "3.11")
+          file(APPEND "$ENV{GITHUB_OUTPUT}" "needed=yes")
+        endif()
+    - name: Bootstrap
+      if: steps.check-bootstrap.outputs.needed == 'yes'
+      run: |
+        cd bootstrap-build
+        cmake -DCMAKE_INSTALL_PREFIX:PATH=../bootstrap-install-prefix -DPYTHON_VERSION=${{ matrix.python-version }} $(pwd)/../src/
+        cmake --build . -- VERBOSE=1
+        cmake --build . --target install
+    - name: run action
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: ${{ startsWith(matrix.ndk-arch, 'x86') && 21 || 30 }}
+        target: ${{ startsWith(matrix.ndk-arch, 'x86') && 'default' || 'google_apis' }}
+        arch: ${{ matrix.ndk-arch == 'x86' && 'x86' || 'x86_64' }}
+        profile: Galaxy Nexus
+        cores: 2
+        ram-size: 2048M
+        sdcard-path-or-size: 100M
+        emulator-build: 7425822 # https://github.com/ReactiveCircus/android-emulator-runner/issues/160
+        avd-name: test
+        force-avd-creation: false
+        emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+        disable-animations: true
+        working-directory: build/
+        ndk: 23.0.7421159
+        channel: beta
+        script: |
+          adb devices
+          cmake -DANDROID_NDK=/usr/local/lib/android/sdk/ndk/23.0.7421159/ -DCMAKE_INSTALL_PREFIX:PATH=../install-prefix -DCMAKE_TOOLCHAIN_FILE=/usr/local/lib/android/sdk/ndk/23.0.7421159/build/cmake/android.toolchain.cmake -DANDROID_ABI=${{ matrix.ndk-arch }} -DCMAKE_CROSSCOMPILING_EMULATOR=$(pwd)/../src/.github/workflows/adb-emu.sh -DANDROID_ALLOW_UNDEFINED_SYMBOLS=On -DENABLE_DECIMAL=Off -DENABLE_CTYPES=Off -DENABLE_CODECS_JP=OFF -DENABLE_CODECS_KR=OFF -DENABLE_CODECS_TW=OFF -DENABLE_MULTIBYTECODEC=OFF -DENABLE_CODECS_CN=OFF -DENABLE_CODECS_HK=OFF -DENABLE_CODECS_ISO2022=OFF -DBUILD_EXTENSIONS_AS_BUILTIN=On -DANDROID_PLATFORM=android-21 -DPYTHON_VERSION=${{ matrix.python-version }} -DBUILD_PYTHON=../bootstrap-install-prefix/bin/python $(pwd)/../src/
+          cmake --build . -- VERBOSE=1
+          cmake --build . --target install
+
+  tests-linux:
+    name: python-linux-${{ matrix.python-arch }}-${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-arch: [x64, x86]
+        python-version: [3.6.15, 3.7.17, 3.8.20, 3.9.22, 3.10.17, 3.11.12, 3.12.10]
+    container:
+      image: dockcross/linux-${{ matrix.python-arch }}
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        fetch-depth: 0
+        path: src
+    - run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          libbz2-dev \
+          libdb-dev \
+          libffi-dev \
+          libgdbm-compat-dev \
+          libgdbm-dev \
+          liblzma-dev \
+          libncursesw5-dev \
+          libreadline-dev \
+          libsqlite3-dev \
+          libssl-dev \
+          tcl-dev \
+          tk-dev
+    - name: Writing initial dashboard cache
+      shell: bash
+      run: |
+        cat > src/.github/dashboard/initial-dashboard-cache.txt << EOF
+        ${{ matrix.initial-dashboard-cache }}
+        EOF
+        cat src/.github/dashboard/initial-dashboard-cache.txt
+    - name: Build & Test
+      run: ctest --timeout 360 -S src/.github/dashboard/github_actions_dashboard.cmake -VV
+      env:
+        PY_VERSION: ${{ matrix.python-version }}
+
+  tests-windows:
+    name: python-${{ matrix.python-version }}-win-${{ matrix.python-arch }}
+    runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        python-arch: [x64]
+        python-version: [3.6.15, 3.7.17, 3.8.20, 3.9.22, 3.10.17, 3.11.12, 3.12.10]
+        generator: ["Visual Studio 17 2022"]
+    steps:
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        fetch-depth: 0
+        path: src
+    - name: Build & Test
+      run: ctest -C $Env:CONFIGURATION -S src/.github/dashboard/github_actions_win_dashboard.cmake -VV
+      env:
+           PY_VERSION: ${{ matrix.python-version }}
+           CONFIGURATION: Release
+           GENERATOR: ${{ matrix.generator }}
+           PLATFORM: ${{ matrix.python-arch }}
+
   pass: # This job does nothing and is only used for the branch protection
     if: always()
     needs:
     - tests
+    - tests-android
+    - tests-linux
+    - tests-windows
 
     runs-on: ubuntu-latest
 
