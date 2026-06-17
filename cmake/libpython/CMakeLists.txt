@@ -222,6 +222,9 @@ elseif(WIN32)
         PROPERTY COMPILE_DEFINITIONS
             "PY3_DLLNAME=${_wide_char_modifier}\"python3$<$<CONFIG:Debug>:_d>\"" # Python 3.11
         )
+    if(MSVC)
+        add_compile_options(/wd4101 /wd4018 /wd4244 /wd4996)
+    endif()
 endif()
 
 set(PYTHON_COMMON_SOURCES
@@ -893,7 +896,6 @@ function(add_libpython name type install component)
         OUTPUT_NAME ${LIBPYTHON}${ABIFLAGS}
         LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR}
         RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_LIBDIR}
-        INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/${LIBPYTHON_LIBDIR}
     )
     set_target_properties(${name} PROPERTIES
         POSITION_INDEPENDENT_CODE ON
@@ -909,13 +911,41 @@ function(add_libpython name type install component)
     # Export target
     set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS ${name})
 
+    if(BUILD_FRAMEWORK)
+        set_target_properties(${name} PROPERTIES
+            FRAMEWORK TRUE
+            FRAMEWORK_VERSION "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}"
+            MACOSX_FRAMEWORK_IDENTIFIER org.python.python
+            MACOSX_FRAMEWORK_SHORT_VERSION_STRING "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}"
+            MACOSX_FRAMEWORK_BUNDLE_VERSION "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}"
+            MACOSX_RPATH ON
+            OUTPUT_NAME ${FRAMEWORK_NAME}
+        )
+    else()
+        set_target_properties(${name} PROPERTIES
+            INSTALL_NAME_DIR ${CMAKE_INSTALL_PREFIX}/${LIBPYTHON_LIBDIR}
+        )
+    endif()
+
     if(install)
-        install(TARGETS ${name} EXPORT PythonTargets
+        install(TARGETS ${name}
             ARCHIVE DESTINATION ${LIBPYTHON_ARCHIVEDIR}
             LIBRARY DESTINATION ${LIBPYTHON_LIBDIR}
             RUNTIME DESTINATION ${LIBPYTHON_LIBDIR}
+            FRAMEWORK DESTINATION ${CMAKE_INSTALL_PREFIX}
             COMPONENT ${component}
         )
+	if(BUILD_FRAMEWORK)
+	    install(CODE "
+		message(STATUS \"Creating Python library framework symlinks...\")
+		execute_process(
+		    COMMAND
+			\${CMAKE_COMMAND} -E create_symlink \"../${FRAMEWORK_NAME}\" libpython${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}.dylib
+		    WORKING_DIRECTORY
+			\"${CMAKE_INSTALL_PREFIX}/${FRAMEWORK_DIR_PREFIX}/lib\"
+		)
+	    ")
+	endif()
     endif()
 endfunction()
 
@@ -924,6 +954,15 @@ if(BUILD_LIBPYTHON_SHARED)
     set_target_properties(libpython-shared PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}
     )
+
+    if((MSVC_VERSION GREATER 1500) AND (NOT CMAKE_VERSION VERSION_LESS "3.1"))
+        install(
+            FILES $<TARGET_PDB_FILE:libpython-shared>
+            DESTINATION ${LIBPYTHON_ARCHIVEDIR}
+            CONFIGURATIONS Debug RelWithDebInfo
+        )
+    endif()
+
     if(APPLE)
         # HACK For python <= 2.7.3, this fix link error related to undefined _environ symbol and
         #      is equivalent to solution implemented in commit http://hg.python.org/cpython/rev/864b983
@@ -1000,6 +1039,14 @@ if(BUILD_LIBPYTHON_SHARED)
                 PROPERTY COMPILE_DEFINITIONS
                     "PYTHON_DLL_NAME=\"python${PY_VERSION_MAJOR}${PY_VERSION_MINOR}$<$<CONFIG:Debug>:_d>\""
                 )
+        endif()
+        
+        if((MSVC_VERSION GREATER 1500) AND (NOT CMAKE_VERSION VERSION_LESS "3.1"))
+            install(
+                FILES $<TARGET_PDB_FILE:libpython3-shared>
+                DESTINATION ${LIBPYTHON_ARCHIVEDIR}
+                CONFIGURATIONS Debug RelWithDebInfo
+            )
         endif()
     endif()
 

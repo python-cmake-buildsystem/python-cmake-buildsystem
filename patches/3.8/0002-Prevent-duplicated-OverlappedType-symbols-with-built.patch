@@ -1,0 +1,65 @@
+From d96bfdc9f531eaefdab931f6b2830278c2dc0226 Mon Sep 17 00:00:00 2001
+From: Jean-Christophe Fillion-Robin <jchris.fillionr@kitware.com>
+Date: Mon, 6 Nov 2017 10:37:50 -0500
+Subject: [PATCH 2/3] Prevent duplicated OverlappedType symbols with built-in
+ extension on windows
+
+This commit improves support for building python with built-in extensions
+on windows where the symbol from overlapped.c would clash with the one
+from _winapi.c
+---
+ Modules/_winapi.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/Modules/_winapi.c b/Modules/_winapi.c
+index 1606f0d..d81215f 100644
+--- a/Modules/_winapi.c
++++ b/Modules/_winapi.c
+@@ -147,7 +147,7 @@ overlapped_dealloc(OverlappedObject *self)
+ 
+ /*[clinic input]
+ module _winapi
+-class _winapi.Overlapped "OverlappedObject *" "&OverlappedType"
++class _winapi.Overlapped "OverlappedObject *" "&WinApiOverlappedType"
+ [clinic start generated code]*/
+ /*[clinic end generated code: output=da39a3ee5e6b4b0d input=c13d3f5fd1dabb84]*/
+ 
+@@ -295,7 +295,7 @@ static PyMemberDef overlapped_members[] = {
+     {NULL}
+ };
+ 
+-PyTypeObject OverlappedType = {
++PyTypeObject WinApiOverlappedType = {
+     PyVarObject_HEAD_INIT(NULL, 0)
+     /* tp_name           */ "_winapi.Overlapped",
+     /* tp_basicsize      */ sizeof(OverlappedObject),
+@@ -341,7 +341,7 @@ new_overlapped(HANDLE handle)
+ {
+     OverlappedObject *self;
+ 
+-    self = PyObject_New(OverlappedObject, &OverlappedType);
++    self = PyObject_New(OverlappedObject, &WinApiOverlappedType);
+     if (!self)
+         return NULL;
+     self->handle = handle;
+@@ -1537,7 +1537,7 @@ PyInit__winapi(void)
+     PyObject *d;
+     PyObject *m;
+ 
+-    if (PyType_Ready(&OverlappedType) < 0)
++    if (PyType_Ready(&WinApiOverlappedType) < 0)
+         return NULL;
+ 
+     m = PyModule_Create(&winapi_module);
+@@ -1545,7 +1545,7 @@ PyInit__winapi(void)
+         return NULL;
+     d = PyModule_GetDict(m);
+ 
+-    PyDict_SetItemString(d, "Overlapped", (PyObject *) &OverlappedType);
++    PyDict_SetItemString(d, "Overlapped", (PyObject *) &WinApiOverlappedType);
+ 
+     /* constants */
+     WINAPI_CONSTANT(F_DWORD, CREATE_NEW_CONSOLE);
+-- 
+2.5.0
+
