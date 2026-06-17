@@ -196,7 +196,7 @@ function(add_python_extension name)
             )
         endif()
 
-        if(APPLE)
+        if(APPLE OR ANDROID)
             set_target_properties(${target_name} PROPERTIES
                 LINK_FLAGS -Wl,-undefined,dynamic_lookup
                 SUFFIX .so

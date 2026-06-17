@@ -744,6 +744,7 @@ set(LIBPYTHON_DEEPFREEZE_SOURCES )
 
 if(PY_VERSION VERSION_GREATER_EQUAL "3.11")
 
+if(NOT ANDROID)
 # Build _bootstrap_python executable
 add_executable(_bootstrap_python
     ${SRC_DIR}/Programs/_bootstrap_python.c
@@ -763,6 +764,7 @@ target_compile_definitions(_bootstrap_python
     PUBLIC
         Py_NO_ENABLE_SHARED
 )
+endif()
 
 list(APPEND LIBPYTHON_DEEPFREEZE_SOURCES
     ${SRC_DIR}/Python/deepfreeze/deepfreeze.c
@@ -773,7 +775,7 @@ set(DEEPFREEZE_PY ${SRC_DIR}/Tools/$<IF:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.
 add_custom_command(
   OUTPUT ${LIBPYTHON_DEEPFREEZE_SOURCES}
   COMMAND
-    _bootstrap_python
+    $<IF:$<BOOL:${ANDROID}>,${BUILD_PYTHON},_bootstrap_python>
       ${DEEPFREEZE_PY}
         "${SRC_DIR}/Python/frozen_modules/importlib._bootstrap.h:importlib._bootstrap"
         "${SRC_DIR}/Python/frozen_modules/importlib._bootstrap_external.h:importlib._bootstrap_external"
