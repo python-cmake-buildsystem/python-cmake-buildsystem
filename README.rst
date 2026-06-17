@@ -81,7 +81,7 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
     coresponding to the target system are applied.
     Patches can be found in "patches" directory.
 
-  CMAKE_BUILD_TYPE=Debug|Release
+  CMAKE_BUILD_TYPE=Debug|Release (defaults to Release)
     Build with debugging symbols or with optimisations.
 
   CMAKE_INSTALL_PREFIX=<path>   (defaults to /usr/local)
