@@ -88,46 +88,46 @@ workflows:
       jobs:
         # 3.12.10
         - build-test-python:
-            name: python-3.12.10-x64
-            python_version: 3.12.10
+            name: python-3.12.11-x64
+            python_version: 3.12.11
             python_arch: x64
 
         - build-test-python:
-            name: python-3.12.10-x86
-            python_version: 3.12.10
+            name: python-3.12.11-x86
+            python_version: 3.12.11
             python_arch: x86
 
         # 3.11.12
         - build-test-python:
-            name: python-3.11.12-x64
-            python_version: 3.11.12
+            name: python-3.11.13-x64
+            python_version: 3.11.13
             python_arch: x64
 
         - build-test-python:
-            name: python-3.11.12-x86
-            python_version: 3.11.12
+            name: python-3.11.13-x86
+            python_version: 3.11.13
             python_arch: x86
 
         # 3.10.17
         - build-test-python:
-            name: python-3.10.17-x64
-            python_version: 3.10.17
+            name: python-3.10.18-x64
+            python_version: 3.10.18
             python_arch: x64
 
         - build-test-python:
-            name: python-3.10.17-x86
-            python_version: 3.10.17
+            name: python-3.10.18-x86
+            python_version: 3.10.18
             python_arch: x86
 
         # 3.9.22
         - build-test-python:
-            name: python-3.9.22-x64
-            python_version: 3.9.22
+            name: python-3.9.23-x64
+            python_version: 3.9.23
             python_arch: x64
 
         - build-test-python:
-            name: python-3.9.22-x86
-            python_version: 3.9.22
+            name: python-3.9.23-x86
+            python_version: 3.9.23
             python_arch: x86
 
         # 3.8.20
@@ -168,29 +168,29 @@ workflows:
       jobs:
         # 3.12.10
         - build-test-python-win:
-            name: python-3.12.10-win-x64
-            python_version: 3.12.10
+            name: python-3.12.11-win-x64
+            python_version: 3.12.11
             python_arch: x64
             generator: "Visual Studio 16 2019"
 
         # 3.11.12
         - build-test-python-win:
-            name: python-3.11.12-win-x64
-            python_version: 3.11.12
+            name: python-3.11.13-win-x64
+            python_version: 3.11.13
             python_arch: x64
             generator: "Visual Studio 16 2019"
 
         # 3.10.17
         - build-test-python-win:
-            name: python-3.10.17-win-x64
-            python_version: 3.10.17
+            name: python-3.10.18-win-x64
+            python_version: 3.10.18
             python_arch: x64
             generator: "Visual Studio 16 2019"
 
         # 3.9.22
         - build-test-python-win:
-            name: python-3.9.22-win-x64
-            python_version: 3.9.22
+            name: python-3.9.23-win-x64
+            python_version: 3.9.23
             python_arch: x64
             generator: "Visual Studio 16 2019"
 

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20.6)
 
-set(PYTHON_VERSION "3.12.10" CACHE STRING "The version of Python to build.")
+set(PYTHON_VERSION "3.12.11" CACHE STRING "The version of Python to build.")
 
 string(REPLACE "." ";" VERSION_LIST ${PYTHON_VERSION})
 list(GET VERSION_LIST 0 PY_VERSION_MAJOR)
@@ -278,6 +278,7 @@ set(_download_3.9.19_md5 "b4d723903d0a8266b110c3da2f992416")
 set(_download_3.9.20_md5 "896c19e5815ba990a3d1261502ea9f83")
 set(_download_3.9.21_md5 "e61b3568082b57d55fd74cfc7ca020b4")
 set(_download_3.9.22_md5 "8fe76e248a0e149ac23e8e4886397475")
+set(_download_3.9.23_md5 "e6c3c5ba679cc6a1e2932b2fdcafbc3d")
 # 3.10.x
 set(_download_3.10.0_md5 "729e36388ae9a832b01cf9138921b383")
 set(_download_3.10.1_md5 "91822157a97da16203877400c810d93e")
@@ -297,6 +298,7 @@ set(_download_3.10.14_md5 "f67d78c8323a18fe6b945914c51a7aa6")
 set(_download_3.10.15_md5 "b6a2b570ea75ef55f50bfe79d778eb01")
 set(_download_3.10.16_md5 "2515d8571c6fdd7fc620aa9e1cc6d202")
 set(_download_3.10.17_md5 "763324aa2b396ee10a51bfa6c645d8e9")
+set(_download_3.10.18_md5 "035ff701ad6c9183dc4c6de817924892")
 # 3.11.x
 set(_download_3.11.0_md5 "c5f77f1ea256dc5bdb0897eeb4d35bb0")
 set(_download_3.11.1_md5 "5c986b2865979b393aa50a31c65b64e8")
@@ -311,6 +313,7 @@ set(_download_3.11.9_md5 "bfd4d3bfeac4216ce35d7a503bf02d5c")
 set(_download_3.11.10_md5 "35c36069a43dd57a7e9915deba0f864e")
 set(_download_3.11.11_md5 "9a5b43fcc06810b8ae924b0a080e6569")
 set(_download_3.11.12_md5 "b8bb496014f05f5be180fab74810f40b")
+set(_download_3.11.13_md5 "8abf1b1a9237f01b54572e2ecb246262")
 # 3.12.x
 set(_download_3.12.0_md5 "d6eda3e1399cef5dfde7c4f319b0596c")
 set(_download_3.12.1_md5 "51c5c22dcbc698483734dff5c8028606")
@@ -323,6 +326,7 @@ set(_download_3.12.7_md5 "5d0c0e4c6a022a87165a9addcd869109")
 set(_download_3.12.8_md5 "304473cf367fa65e450edf4b06b55fcc")
 set(_download_3.12.9_md5 "ce613c72fa9b32fb4f109762d61b249b")
 set(_download_3.12.10_md5 "35c03f014408e26e2b06d576c19cac54")
+set(_download_3.12.11_md5 "45bda920329568dd6650b0ac556d17db")
 
 set(_extracted_dir "Python-${PY_VERSION}")
 
