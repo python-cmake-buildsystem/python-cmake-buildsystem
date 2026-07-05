@@ -471,6 +471,14 @@ set(LIBPYTHON_TARGET_LIBRARIES
 if(HAVE_LIBDL)
   list(APPEND LIBPYTHON_TARGET_LIBRARIES ${HAVE_LIBDL})
 endif()
+if(HAVE_LIBINTL)
+  # _localemodule uses libintl_* (bindtextdomain, dcgettext, ...) when
+  # HAVE_LIBINTL_H is set. Where libintl is a separate library (e.g. macOS
+  # gettext), link it so those symbols resolve; mirrors CPython configure's
+  # `LIBS += -lintl`. On glibc the functions are in libc and HAVE_LIBINTL is
+  # unset, so this is a no-op there.
+  list(APPEND LIBPYTHON_TARGET_LIBRARIES ${HAVE_LIBINTL})
+endif()
 if(WITH_THREAD OR PY_VERSION VERSION_GREATER_EQUAL "3.7")
     list(APPEND LIBPYTHON_TARGET_LIBRARIES ${CMAKE_THREAD_LIBS_INIT})
 endif()
