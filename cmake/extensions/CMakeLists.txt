@@ -807,7 +807,7 @@ else()
         $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.9>:_decimal/libmpdec/mpalloc.c>
     )
     if(WIN32)
-        if(${CMAKE_SIZEOF_VOID_P} EQUAL 8)
+        if(${CMAKE_SIZEOF_VOID_P} EQUAL 8 AND NOT CMAKE_C_COMPILER_ARCHITECTURE_ID STREQUAL "ARM64")
             enable_language(ASM_MASM)
             list(APPEND _decimal_EXTRA_SOURCES
                 _decimal/libmpdec/vcdiv64.asm
@@ -869,8 +869,11 @@ endif()
 
 if(WIN32)
     list(APPEND libmpdec_config_${libmpdec_config}
-        _CRT_SECURE_NO_WARNINGS MASM
+        _CRT_SECURE_NO_WARNINGS
     )
+    if(NOT CMAKE_C_COMPILER_ARCHITECTURE_ID STREQUAL "ARM64")
+        list(APPEND libmpdec_config_${libmpdec_config} MASM)
+    endif()
 endif()
 
 # Uncomment for extra functionality:
