@@ -373,16 +373,18 @@ add_python_extension(_xxtestfuzz
         _xxtestfuzz/fuzzer.c
 )
 
-# Python 3.8
-set(_wide_char_modifier "L")
-add_python_extension(_testinternalcapi
-    REQUIRES
-        IS_PY3_8_OR_GREATER
-    SOURCES
-        _testinternalcapi.c
-    DEFINITIONS
-        "PY3_DLLNAME=${_wide_char_modifier}\"python3$<$<CONFIG:Debug>:_d>\""
-)
+if (NOT ANDROID)
+    # Python 3.8
+    set(_wide_char_modifier "L")
+    add_python_extension(_testinternalcapi
+        REQUIRES
+            IS_PY3_8_OR_GREATER
+        SOURCES
+            _testinternalcapi.c
+        DEFINITIONS
+            "PY3_DLLNAME=${_wide_char_modifier}\"python3$<$<CONFIG:Debug>:_d>\""
+    )
+endif()
 
 # Python 3.9
 add_python_extension(_peg_parser ALWAYS_BUILTIN
@@ -417,9 +419,11 @@ add_python_extension(_xxsubinterpreters ${WIN32_BUILTIN}
         _xxsubinterpretersmodule.c
 )
 
-# UNIX-only extensions
-add_python_extension(fcntl REQUIRES UNIX SOURCES fcntlmodule.c)
-add_python_extension(grp REQUIRES UNIX SOURCES grpmodule.c)
+if(NOT ANDROID)
+    # UNIX-only extensions
+    add_python_extension(fcntl REQUIRES UNIX SOURCES fcntlmodule.c)
+    add_python_extension(grp REQUIRES UNIX SOURCES grpmodule.c)
+endif()
 
 set(nis_REQUIRES UNIX HAVE_LIBNSL)
 set(nis_LIBRARIES ${HAVE_LIBNSL})
@@ -834,6 +838,7 @@ elseif(${CMAKE_SIZEOF_VOID_P} EQUAL 4)
     if(HAVE_GCC_ASM_FOR_X87 AND
         (CMAKE_C_COMPILER_ID MATCHES "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
         AND NOT CMAKE_SYSTEM MATCHES SunOS
+        AND NOT ANDROID
     )
         # solaris: problems with register allocation.
         # icc >= 11.0 works as well.
