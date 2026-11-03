@@ -650,8 +650,14 @@ endif()
 # find "Python3.lib" as it is specified in "PC/pyconfig." using
 # `pragma comment(lib,"python3.lib")`.
 if(WIN32 AND TARGET extension_testcapi)
-    set(libpython_output_dir "${PROJECT_BINARY_DIR}/CMakeBuild/libpython/$<CONFIG>")
-    target_link_directories(extension_testcapi PRIVATE ${libpython_output_dir})
+    # Ask CMake where the target's import library actually is instead of
+    # reconstructing the path. Hardcoding ".../CMakeBuild/libpython/$<CONFIG>"
+    # is only correct for multi-config generators, which append the
+    # configuration to the archive output directory themselves. Single-config
+    # generators (Ninja, NMake Makefiles) do not, and libpython3-shared sets no
+    # ARCHIVE_OUTPUT_DIRECTORY, so python3.lib lands directly in the libpython
+    # binary directory -- one level above where the $<CONFIG> form looked.
+    target_link_directories(extension_testcapi PRIVATE $<TARGET_LINKER_FILE_DIR:libpython3-shared>)
     # Ensure import library is generated before linking the extension
     add_dependencies(extension_testcapi libpython3-shared)
 endif()
