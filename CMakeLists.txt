@@ -650,7 +650,12 @@ endif()
 # find "Python3.lib" as it is specified in "PC/pyconfig." using
 # `pragma comment(lib,"python3.lib")`.
 if(WIN32 AND TARGET extension_testcapi)
-    set(libpython_output_dir "${PROJECT_BINARY_DIR}/CMakeBuild/libpython/$<CONFIG>")
+    get_property(is_multi_config GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
+    if(is_multi_config)
+        set(libpython_output_dir "${PROJECT_BINARY_DIR}/CMakeBuild/libpython/$<CONFIG>")
+    else()
+        set(libpython_output_dir "${PROJECT_BINARY_DIR}/CMakeBuild/libpython")
+    endif()
     target_link_directories(extension_testcapi PRIVATE ${libpython_output_dir})
     # Ensure import library is generated before linking the extension
     add_dependencies(extension_testcapi libpython3-shared)
