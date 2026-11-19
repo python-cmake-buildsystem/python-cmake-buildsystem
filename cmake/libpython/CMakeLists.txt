@@ -861,10 +861,22 @@ set(LIBPYTHON_SOURCES
     $<$<AND:$<BOOL:${WIN32}>,$<VERSION_GREATER_EQUAL:${PY_VERSION},3.11>>:${SRC_DIR}/PC/dl_nt.c>
 )
 if(WIN32 AND PY_VERSION VERSION_GREATER_EQUAL "3.11")
-    set(PYTHONPATH "${EXTRA_PYTHONPATH}\\\;${LIBDIR}\\\\lib-dynload")
-    set(PYTHONPATH "${PYTHONPATH}\\\;${LIBDIR}\\\\lib-dynload\\\\$<CONFIG>")
-
-    set(_wide_char_modifier "L")
+    # Entries are separated using the octal escape sequence "\073" (';') so that
+    # the compile definition contains no literal semicolon. The Visual Studio
+    # generators write it as "%3B"; when MSBuild compiles using the
+    # MultiToolTask (UseMultiToolTask=true), PreprocessorDefinitions are split
+    # on it, which truncated the macro to '"L' and caused "error C7772: invalid
+    # string literal" (or "error C2001: newline in constant"). The value is a
+    # narrow string as expected by getpath.c.
+    set(_pythonpath_entries)
+    if(NOT "${EXTRA_PYTHONPATH}" STREQUAL "")
+        list(APPEND _pythonpath_entries "${EXTRA_PYTHONPATH}")
+    endif()
+    list(APPEND _pythonpath_entries
+        "${LIBDIR}\\\\lib-dynload"
+        "${LIBDIR}\\\\lib-dynload\\\\$<CONFIG>"
+        )
+    list(JOIN _pythonpath_entries "\\073" PYTHONPATH)
 
     set_property(
         SOURCE ${SRC_DIR}/Modules/getpath.c
@@ -875,7 +887,7 @@ if(WIN32 AND PY_VERSION VERSION_GREATER_EQUAL "3.11")
             VPATH="..\\\\.."
             PYDEBUGEXT="$<$<CONFIG:Debug>:_d>"
             PLATLIBDIR="${LIBDIR}"
-            PYTHONPATH="${_wide_char_modifier}${PYTHONPATH}"
+            PYTHONPATH="${PYTHONPATH}"
         )
     set_property(
         SOURCE ${SRC_DIR}/PC/dl_nt.c
