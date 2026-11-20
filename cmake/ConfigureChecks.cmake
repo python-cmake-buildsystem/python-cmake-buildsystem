@@ -1082,7 +1082,12 @@ check_symbol_exists(kill         "${CFG_HEADERS}" HAVE_KILL)
 check_symbol_exists(killpg       "${CFG_HEADERS}" HAVE_KILLPG)
 check_symbol_exists(kqueue       "${CFG_HEADERS}" HAVE_KQUEUE)
 check_symbol_exists(lchflags     "${CFG_HEADERS}" HAVE_LCHFLAGS)
-python_check_function(lchmod HAVE_LCHMOD)
+# Linux does not allow changing the mode of symbolic links, and some C libraries
+# have an lchmod that always fails, so lchmod is not used on Linux (as in
+# CPython's configure script).
+if(NOT CMAKE_SYSTEM_NAME MATCHES "^(Linux|Android)$")
+  python_check_function(lchmod HAVE_LCHMOD)
+endif()
 check_symbol_exists(lchown       "${CFG_HEADERS}" HAVE_LCHOWN)
 check_symbol_exists(link         "${CFG_HEADERS}" HAVE_LINK)
 check_symbol_exists(listen       "${CFG_HEADERS}" HAVE_LISTEN) # Python 3.11
