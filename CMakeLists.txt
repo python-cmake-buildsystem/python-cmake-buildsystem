@@ -69,6 +69,12 @@ if(WIN32)
 else()
   set(INSTALL_WINDOWS_TRADITIONAL OFF)
 endif()
+if(MSVC)
+  set(PYTHON_APPLICATION_MANIFEST "CPYTHON" CACHE STRING
+    "Application manifest that is embedded in the python executable: CPYTHON (the manifest of CPython), NONE, or the path of a manifest file")
+else()
+  set(PYTHON_APPLICATION_MANIFEST "NONE")
+endif()
 
 if(WIN32 AND PY_VERSION VERSION_GREATER_EQUAL "3.10")
   if(DEFINED BUILD_WININST)
