@@ -163,6 +163,28 @@ else()
     set(WITH_STATIC_DEPENDENCIES 0)
 endif()
 
+if(ANDROID AND PY_VERSION VERSION_GREATER_EQUAL "3.11")
+    set(BUILD_PYTHON "" CACHE PATH "path to build ``python`` binary for cross compiling")
+    if(NOT BUILD_PYTHON)
+        message(FATAL_ERROR "Cross compiling requires -DBUILD_PYTHON=<PATH>")
+    endif()
+    if(NOT EXISTS ${BUILD_PYTHON})
+        message(FATAL_ERROR "invalid or missing build python binary ${BUILD_PYTHON}")
+    endif()
+    execute_process(
+        COMMAND ${BUILD_PYTHON} -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')"
+        OUTPUT_VARIABLE BUILD_PYTHON_VER
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        RESULT_VARIABLE BUILD_PYTHON_EXEC_RESULT
+    )
+    if(NOT BUILD_PYTHON_EXEC_RESULT EQUAL 0)
+        message(FATAL_ERROR "can not execute build python binary ${BUILD_PYTHON}")
+    endif()
+    if(NOT "${BUILD_PYTHON_VER}" STREQUAL "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}")
+        message(FATAL_ERROR "\"${BUILD_PYTHON}\" has incompatible version ${BUILD_PYTHON_VER} (expected: ${PY_VERSION_MAJOR}.${PY_VERSION_MINOR})")
+    endif()
+endif()
+
 # Detect source directory
 set(_landmark "pyconfig.h.in") # CMake will look for this file.
 if(NOT (SRC_DIR AND EXISTS ${SRC_DIR}/${_landmark}))
@@ -799,7 +821,7 @@ if(UNIX)
 
     # Makefile
     set(MAKEFILE_LDSHARED_FLAGS "-shared")
-    if(APPLE)
+    if(APPLE OR ANDROID)
         set(MAKEFILE_LDSHARED_FLAGS "-dynamiclib -headerpad_max_install_names -undefined dynamic_lookup")
     endif()
     configure_file(cmake/makefile-variables.in

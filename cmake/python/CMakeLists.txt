@@ -47,7 +47,7 @@ if(WIN32)
         )
 endif()
 
-if(UNIX)
+if(UNIX AND NOT ANDROID)
     # Setup landmark allowing to run the interpreter from a build tree. See 'getpath.c' for details.
     set(_sysconfigdata_py "_sysconfigdata.py")
     if("${PY_VERSION}" VERSION_GREATER_EQUAL "3.6.0")
