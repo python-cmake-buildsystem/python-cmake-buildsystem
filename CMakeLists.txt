@@ -808,6 +808,24 @@ if(UNIX)
     if(APPLE)
         set(MAKEFILE_LDSHARED_FLAGS "-dynamiclib -headerpad_max_install_names -undefined dynamic_lookup")
     endif()
+    # C flags that Python is built with, including the flags of the build type
+    # (for example "-O3 -DNDEBUG"). They are reported by sysconfig, which is
+    # how it is known whether assertions are enabled, and they are used for
+    # building extension modules.
+    set(MAKEFILE_C_FLAGS "${CMAKE_C_FLAGS}")
+    set(_makefile_build_type "${CMAKE_BUILD_TYPE}")
+    if(NOT _makefile_build_type)
+        # With a multi-config generator the build type is only known at
+        # configure time if there is a single configuration.
+        list(LENGTH CMAKE_CONFIGURATION_TYPES _makefile_configuration_count)
+        if(_makefile_configuration_count EQUAL 1)
+            list(GET CMAKE_CONFIGURATION_TYPES 0 _makefile_build_type)
+        endif()
+    endif()
+    if(_makefile_build_type)
+        string(TOUPPER "${_makefile_build_type}" _makefile_build_type)
+        string(STRIP "${MAKEFILE_C_FLAGS} ${CMAKE_C_FLAGS_${_makefile_build_type}}" MAKEFILE_C_FLAGS)
+    endif()
     configure_file(cmake/makefile-variables.in
                    ${BIN_BUILD_DIR}/Makefile @ONLY)
     if(INSTALL_DEVELOPMENT)
