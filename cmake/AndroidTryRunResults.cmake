@@ -1,0 +1,51 @@
+# Results of the configuration checks that run a program on the target, for
+# cross-compiling for Android without a device or an emulator.
+#
+# Usage:
+#
+#   cmake -C <python-cmake-buildsystem>/cmake/AndroidTryRunResults.cmake \
+#     -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK}/build/cmake/android.toolchain.cmake ...
+#
+# The values were obtained by running the checks (using run_on_android.sh as
+# CMAKE_CROSSCOMPILING_EMULATOR) on Android emulators for the x86_64, x86,
+# arm64-v8a and armeabi-v7a ABIs, with minimum API level 21. They are the same
+# for all of these ABIs and for Python 3.8 to 3.12.
+#
+# Values of checks performed using python_platform_test_run() are the exit code
+# of the test program (0 means the test program succeeded). The corresponding
+# <var>_COMPILED variables indicate that the test program could be compiled.
+
+set(DOUBLE_IS_LITTLE_ENDIAN_IEEE754 0 CACHE INTERNAL "")
+set(DOUBLE_IS_LITTLE_ENDIAN_IEEE754_COMPILED TRUE CACHE INTERNAL "")
+set(DOUBLE_IS_BIG_ENDIAN_IEEE754 1 CACHE INTERNAL "")
+set(DOUBLE_IS_BIG_ENDIAN_IEEE754_COMPILED TRUE CACHE INTERNAL "")
+set(DOUBLE_IS_ARM_MIXED_ENDIAN_IEEE754 1 CACHE INTERNAL "")
+set(DOUBLE_IS_ARM_MIXED_ENDIAN_IEEE754_COMPILED TRUE CACHE INTERNAL "")
+set(X87_DOUBLE_ROUNDING 0 CACHE INTERNAL "")
+set(X87_DOUBLE_ROUNDING_COMPILED TRUE CACHE INTERNAL "")
+set(TANH_PRESERVES_ZERO_SIGN 0 CACHE INTERNAL "")
+set(TANH_PRESERVES_ZERO_SIGN_COMPILED TRUE CACHE INTERNAL "")
+set(LOG1P_DROPS_ZERO_SIGN 0 CACHE INTERNAL "")
+set(LOG1P_DROPS_ZERO_SIGN_COMPILED TRUE CACHE INTERNAL "")
+set(POSIX_SEMAPHORES_NOT_ENABLED 1 CACHE INTERNAL "")
+set(POSIX_SEMAPHORES_NOT_ENABLED_COMPILED TRUE CACHE INTERNAL "")
+set(HAVE_BROKEN_SEM_GETVALUE 1 CACHE INTERNAL "")
+set(HAVE_BROKEN_SEM_GETVALUE_COMPILED TRUE CACHE INTERNAL "")
+set(HAVE_WORKING_TZSET 0 CACHE INTERNAL "")
+set(HAVE_WORKING_TZSET_COMPILED TRUE CACHE INTERNAL "")
+set(HAVE_ALIGNED_REQUIRED 0 CACHE INTERNAL "")
+set(HAVE_ALIGNED_REQUIRED_COMPILED TRUE CACHE INTERNAL "")
+set(HAVE_BROKEN_MBSTOWCS 0 CACHE INTERNAL "")
+set(HAVE_BROKEN_MBSTOWCS_COMPILED TRUE CACHE INTERNAL "")
+set(HAVE_COMPUTED_GOTOS 0 CACHE INTERNAL "")
+set(HAVE_COMPUTED_GOTOS_COMPILED TRUE CACHE INTERNAL "")
+set(HAVE_GLIBC_MEMMOVE_BUG 0 CACHE INTERNAL "")
+set(HAVE_GLIBC_MEMMOVE_BUG_COMPILED TRUE CACHE INTERNAL "")
+set(HAVE_LONG_LONG_FORMAT 0 CACHE INTERNAL "")
+set(HAVE_LONG_LONG_FORMAT_COMPILED TRUE CACHE INTERNAL "")
+set(HAVE_SIZE_T_FORMAT 0 CACHE INTERNAL "")
+set(HAVE_SIZE_T_FORMAT_COMPILED TRUE CACHE INTERNAL "")
+
+# Checks performed using check_c_source_runs() (empty means the check failed)
+set(HAVE_BROKEN_NICE "" CACHE INTERNAL "")
+set(HAVE_BROKEN_POLL "" CACHE INTERNAL "")
