@@ -99,6 +99,25 @@ endif()
 
 if(USE_SYSTEM_OpenSSL)
     find_package(OpenSSL 0.9.7) # https://cmake.org/cmake/help/latest/module/FindOpenSSL.html
+    # Do not use a version of OpenSSL that is too recent for the Python version:
+    # - Python 3.7 and older do not support OpenSSL 3: the ssl module can be
+    #   built, but it does not work correctly.
+    # - None of the Python versions that this build system supports can be
+    #   built with OpenSSL 4.
+    if(OPENSSL_FOUND AND OPENSSL_VERSION)
+        set(_openssl_unsupported_version 4)
+        if(PY_VERSION VERSION_LESS "3.8")
+            set(_openssl_unsupported_version 3)
+        endif()
+        if(NOT OPENSSL_VERSION VERSION_LESS _openssl_unsupported_version)
+            message(WARNING "OpenSSL ${OPENSSL_VERSION} is not used, because Python ${PY_VERSION} "
+                "requires a version of OpenSSL older than ${_openssl_unsupported_version}: "
+                "the _ssl and _hashlib extensions will not be built. "
+                "Set OPENSSL_ROOT_DIR to the location of a supported version to build them.")
+            set(OPENSSL_INCLUDE_DIR "")
+            set(OPENSSL_LIBRARIES "")
+        endif()
+    endif()
     message(STATUS "OPENSSL_LIBRARIES=${OPENSSL_LIBRARIES}")
     message(STATUS "OPENSSL_INCLUDE_DIR=${OPENSSL_INCLUDE_DIR}")
 endif()
