@@ -57,8 +57,13 @@ if(WIN32 AND PY_VERSION VERSION_LESS "3.11")
     endif()
     string(REPLACE "/" "\\\\" PYTHONHOME_ESCAPED ${PYTHONHOME})
     string(REPLACE "/" "\\\\" EXTENSION_INSTALL_DIR_ESCAPED ${EXTENSION_INSTALL_DIR})
-    set(PYTHONPATH "${EXTRA_PYTHONPATH}")
-    set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${PYTHONHOME_ESCAPED}")
+    # An empty entry in PYTHONPATH is the current directory, so do not start
+    # the list with a separator if EXTRA_PYTHONPATH is empty: the current
+    # directory would be in sys.path, even in isolated mode (python -I).
+    set(PYTHONPATH ".\\\\${PYTHONHOME_ESCAPED}")
+    if(NOT "${EXTRA_PYTHONPATH}" STREQUAL "")
+        set(PYTHONPATH "${EXTRA_PYTHONPATH}${PATHSEP}${PYTHONPATH}")
+    endif()
     set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${EXTENSION_INSTALL_DIR_ESCAPED}")
     set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${EXTENSION_INSTALL_DIR_ESCAPED}\\\\${CMAKE_CFG_INTDIR}")
     set(PYTHONPATH "${PYTHONPATH}${PATHSEP}.\\\\${PYTHONHOME_ESCAPED}\\\\plat-${PY_PLATFORM}")
