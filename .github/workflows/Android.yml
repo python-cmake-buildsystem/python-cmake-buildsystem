@@ -1,0 +1,63 @@
+name: Android
+
+on:
+  pull_request:
+  push:
+    branches:
+    - master
+  workflow_dispatch:
+
+jobs:
+  android:
+    # Hardware-accelerated Android emulator is only available for x86_64 images
+    # on x86_64 Linux runners with KVM.
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.12.10]
+        android-abi: [x86_64]
+        android-api-level: [34]
+        include:
+          # Python for the build host must have the same major.minor version
+          - python-version: 3.12.10
+            python-for-build-version: "3.12"
+
+    name: python-${{ matrix.python-version }}-android-${{ matrix.android-abi }}-api${{ matrix.android-api-level }}
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+    - name: Setup ninja
+      uses: ashutoshvarma/setup-ninja@66ad2db9ed7d211c065daeeb849e9c8c895773c9 # master
+      with:
+        version: 1.10.0
+
+    # Python of the same version for the build host, used to generate frozen modules
+    - name: Setup Python for build
+      id: python-for-build
+      uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+      with:
+        python-version: ${{ matrix.python-for-build-version }}
+
+    - name: Enable KVM
+      run: |
+        echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+        sudo udevadm control --reload-rules
+        sudo udevadm trigger --name-match=kvm
+
+    # The emulator must be running during configuration, as configuration checks
+    # are executed on the target using "run_on_android.sh".
+    - name: Build & Test
+      uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+      env:
+        ANDROID_ABI: ${{ matrix.android-abi }}
+        ANDROID_PLATFORM: 24
+        PY_VERSION: ${{ matrix.python-version }}
+        PYTHON_FOR_BUILD: ${{ steps.python-for-build.outputs.python-path }}
+      with:
+        api-level: ${{ matrix.android-api-level }}
+        arch: ${{ matrix.android-abi }}
+        target: default
+        disable-animations: true
+        emulator-options: -no-window -no-snapshot -noaudio -no-boot-anim -gpu swiftshader_indirect
+        script: ANDROID_NDK=$ANDROID_NDK_LATEST_HOME bash .github/scripts/android_build_and_test.sh
