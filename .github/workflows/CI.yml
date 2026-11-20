@@ -116,13 +116,25 @@ jobs:
   # Same builds as the "build-test-python-win" jobs of .circleci/config.yml,
   # with a newer version of Visual Studio.
   tests-windows:
-    runs-on: windows-2022
+    runs-on: ${{ matrix.runs-on }}
     strategy:
       fail-fast: false
       matrix:
+        runs-on: [windows-2022]
         python-arch: [x64]
         python-version: [3.6.15, 3.7.17, 3.8.20, 3.9.22, 3.10.17, 3.11.12, 3.12.10]
         generator: ["Visual Studio 17 2022"]
+        include:
+          # Windows on ARM: CPython supports it since Python 3.11.
+          # The runner provides Visual Studio 2026.
+          - runs-on: windows-11-arm
+            python-arch: ARM64
+            python-version: 3.11.12
+            generator: "Visual Studio 18 2026"
+          - runs-on: windows-11-arm
+            python-arch: ARM64
+            python-version: 3.12.10
+            generator: "Visual Studio 18 2026"
 
     name: python-${{ matrix.python-version }}-windows-${{ matrix.python-arch }}
     steps:
