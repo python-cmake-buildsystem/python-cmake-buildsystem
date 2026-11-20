@@ -26,6 +26,37 @@ if(MSVC)
     set_target_properties(python PROPERTIES LINK_FLAGS /STACK:2000000)
 endif()
 
+# Embed an application manifest in the executable. Without a manifest that
+# declares the supported versions of Windows, Windows runs the interpreter in
+# a compatibility mode in which it reports an old version of itself
+# (sys.getwindowsversion() returns 6.2, which is Windows 8), and long paths are
+# not enabled. PYTHON_APPLICATION_MANIFEST selects the manifest of CPython (the
+# default), no manifest, or a manifest file.
+if(PYTHON_APPLICATION_MANIFEST STREQUAL "CPYTHON")
+    set(_python_manifest "${SRC_DIR}/PC/python.manifest")
+    if(NOT EXISTS "${_python_manifest}")
+        set(_python_manifest "")
+    endif()
+elseif(PYTHON_APPLICATION_MANIFEST STREQUAL "NONE" OR PYTHON_APPLICATION_MANIFEST STREQUAL "")
+    set(_python_manifest "")
+else()
+    get_filename_component(_python_manifest "${PYTHON_APPLICATION_MANIFEST}"
+        ABSOLUTE BASE_DIR "${CMAKE_BINARY_DIR}")
+    if(NOT EXISTS "${_python_manifest}" OR IS_DIRECTORY "${_python_manifest}")
+        message(FATAL_ERROR "PYTHON_APPLICATION_MANIFEST is set to '${PYTHON_APPLICATION_MANIFEST}', "
+            "which is not CPYTHON, NONE or an existing file.")
+    endif()
+endif()
+if(_python_manifest)
+    # The file needs the ".manifest" extension for CMake to pass it to the
+    # manifest tool, so a file with another name is copied.
+    if(NOT _python_manifest MATCHES "\\.manifest$")
+        configure_file("${_python_manifest}" "${CMAKE_CURRENT_BINARY_DIR}/python_custom.manifest" COPYONLY)
+        set(_python_manifest "${CMAKE_CURRENT_BINARY_DIR}/python_custom.manifest")
+    endif()
+    target_sources(python PRIVATE "${_python_manifest}")
+endif()
+
 # Export target
 set_property(GLOBAL APPEND PROPERTY PYTHON_TARGETS python)
 

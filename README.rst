@@ -121,6 +121,18 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
     If enabled, always build 'Windows Installer' program for distutils even
     if it is already provided in the source tree.
 
+  PYTHON_APPLICATION_MANIFEST=CPYTHON|NONE|<file> (only for Visual Studio,
+                                                   defaults to CPYTHON)
+    Application manifest that is embedded in the python executable.
+    CPYTHON: the manifest of CPython (PC/python.manifest in the sources), as
+    in the official builds. It declares the supported versions of Windows (so
+    that sys.getwindowsversion() returns the real version), enables long
+    paths and uses version 6 of the common controls.
+    NONE: only the default manifest of the linker.
+    <file>: path of a manifest file to embed instead.
+    The manifest only applies to the python executable. An application that
+    embeds Python is governed by the manifest of its own executable.
+
   INSTALL_DEVELOPMENT=ON|OFF (defaults to ON)
     If enabled, install files required to develop C extensions.
 
