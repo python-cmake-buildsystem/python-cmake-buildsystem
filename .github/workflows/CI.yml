@@ -65,10 +65,94 @@ jobs:
         CC: ${{ matrix.c-compiler }}
         CXX: ${{ matrix.cxx-compiler }}
 
+  # Same builds as the "build-test-python" jobs of .circleci/config.yml
+  tests-linux:
+    runs-on: ubuntu-24.04
+    container:
+      image: dockcross/linux-${{ matrix.python-arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-arch: [x64, x86]
+        python-version: [3.6.15, 3.7.17, 3.8.20, 3.9.22, 3.10.17, 3.11.12, 3.12.10]
+
+    name: python-${{ matrix.python-version }}-linux-${{ matrix.python-arch }}
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        fetch-depth: 0
+        path: src
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          libbz2-dev \
+          libdb-dev \
+          libffi-dev \
+          libgdbm-compat-dev \
+          libgdbm-dev \
+          liblzma-dev \
+          libncursesw5-dev \
+          libreadline-dev \
+          libsqlite3-dev \
+          libssl-dev \
+          tcl-dev \
+          tk-dev
+
+    - name: Download dashboard script
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        repository: 'python-cmake-buildsystem/python-cmake-buildsystem'
+        ref: dashboard
+        fetch-depth: 0
+        path: scripts
+
+    - name: Build & Test
+      run: ctest --timeout 360 -S src/.github/dashboard/github_actions_linux_dashboard.cmake -VV
+      env:
+        PY_VERSION: ${{ matrix.python-version }}
+
+  # Same builds as the "build-test-python-win" jobs of .circleci/config.yml,
+  # with a newer version of Visual Studio.
+  tests-windows:
+    runs-on: windows-2022
+    strategy:
+      fail-fast: false
+      matrix:
+        python-arch: [x64]
+        python-version: [3.6.15, 3.7.17, 3.8.20, 3.9.22, 3.10.17, 3.11.12, 3.12.10]
+        generator: ["Visual Studio 17 2022"]
+
+    name: python-${{ matrix.python-version }}-windows-${{ matrix.python-arch }}
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        fetch-depth: 0
+        path: src
+
+    - name: Download dashboard script
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      with:
+        repository: 'python-cmake-buildsystem/python-cmake-buildsystem'
+        ref: dashboard
+        fetch-depth: 0
+        path: scripts
+
+    - name: Build & Test
+      run: ctest -C Release -S src/.github/dashboard/github_actions_windows_dashboard.cmake -VV
+      env:
+        PY_VERSION: ${{ matrix.python-version }}
+        CONFIGURATION: Release
+        GENERATOR: ${{ matrix.generator }}
+        PLATFORM: ${{ matrix.python-arch }}
+
   pass: # This job does nothing and is only used for the branch protection
     if: always()
     needs:
     - tests
+    - tests-linux
+    - tests-windows
 
     runs-on: ubuntu-latest
 
