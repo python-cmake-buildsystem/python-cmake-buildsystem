@@ -1,0 +1,43 @@
+From de2c387f6734745b5b5d0df0ee9291c2821174a9 Mon Sep 17 00:00:00 2001
+From: Jean-Christophe Fillion-Robin <jchris.fillionr@kitware.com>
+Date: Mon, 6 Nov 2017 10:37:50 -0500
+Subject: [PATCH 2/3] Prevent duplicated OverlappedType symbols with built-in
+ extension on windows
+
+This commit improves support for building python with built-in extensions
+on windows where the symbol from overlapped.c would clash with the one
+from _winapi.c
+---
+ Modules/_winapi.c    | 2 +-
+ Modules/overlapped.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Modules/_winapi.c b/Modules/_winapi.c
+index f6bb07f..5164899 100644
+--- a/Modules/_winapi.c
++++ b/Modules/_winapi.c
+@@ -175,7 +175,7 @@ overlapped_dealloc(OverlappedObject *self)
+ 
+ /*[clinic input]
+ module _winapi
+-class _winapi.Overlapped "OverlappedObject *" "&OverlappedType"
++class _winapi.Overlapped "OverlappedObject *" "&WinApiOverlappedType"
+ [clinic start generated code]*/
+ /*[clinic end generated code: output=da39a3ee5e6b4b0d input=c13d3f5fd1dabb84]*/
+ 
+diff --git a/Modules/overlapped.c b/Modules/overlapped.c
+index b9ca86c..ae0d96c 100644
+--- a/Modules/overlapped.c
++++ b/Modules/overlapped.c
+@@ -62,7 +62,7 @@ class BOOL_converter(CConverter):
+ 
+ /*[clinic input]
+ module _overlapped
+-class _overlapped.Overlapped "OverlappedObject *" "&OverlappedType"
++class _overlapped.Overlapped "OverlappedObject *" "&WinApiOverlappedType"
+ [clinic start generated code]*/
+ /*[clinic end generated code: output=da39a3ee5e6b4b0d input=92e5a799db35b96c]*/
+ 
+-- 
+2.47.2
+
