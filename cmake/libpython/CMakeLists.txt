@@ -949,6 +949,18 @@ if(BUILD_LIBPYTHON_SHARED)
     set_target_properties(libpython-shared PROPERTIES
         ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}
     )
+    if(WIN32 AND CMAKE_CONFIGURATION_TYPES)
+        # Extension modules that are built using the interpreter of the build
+        # tree (by distutils or setuptools) look for the import library in
+        # "<prefix>/libs", but multi-config generators put it into a subfolder
+        # named after the configuration.
+        add_custom_command(TARGET libpython-shared POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                $<TARGET_LINKER_FILE:libpython-shared>
+                ${PROJECT_BINARY_DIR}/${LIBPYTHON_ARCHIVEDIR}/$<TARGET_LINKER_FILE_NAME:libpython-shared>
+            COMMENT "Copying the import library of Python to '${LIBPYTHON_ARCHIVEDIR}'"
+            )
+    endif()
     if(APPLE)
         # HACK For python <= 2.7.3, this fix link error related to undefined _environ symbol and
         #      is equivalent to solution implemented in commit http://hg.python.org/cpython/rev/864b983
