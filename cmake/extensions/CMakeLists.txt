@@ -1009,9 +1009,10 @@ add_python_extension(_sha3 ${WIN32_BUILTIN}
         $<$<BOOL:${UNIX}>:_BSD_SOURCE>
         $<$<BOOL:${UNIX}>:_DEFAULT_SOURCE>
 )
+# Introduced in Python 3.11
 add_python_extension(_tokenize ALWAYS_BUILTIN
     REQUIRES
-        IS_PY3_12_OR_GREATER
+        "PY_VERSION VERSION_GREATER_EQUAL 3.11"
     SOURCES
         ${SRC_DIR}/Python/Python-tokenize.c
 )
