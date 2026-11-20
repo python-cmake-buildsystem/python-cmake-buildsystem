@@ -98,6 +98,11 @@ endif()
 option(INSTALL_DEVELOPMENT "Install files required to develop C extensions" ON)
 option(INSTALL_MANUAL "Install man files" ON)
 option(INSTALL_TEST "Install test files" ON)
+if(WIN32)
+  option(INSTALL_OPENSSL_DLLS "Install the OpenSSL DLLs next to the extension modules that use them" OFF)
+else()
+  set(INSTALL_OPENSSL_DLLS OFF)
+endif()
 
 # Append an item to a string if it does not already contain it.  Any additional
 # arguments are treated as extra "set" arguments

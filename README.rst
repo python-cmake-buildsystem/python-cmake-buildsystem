@@ -130,6 +130,15 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
   INSTALL_TEST=ON|OFF (defaults to ON)
     If enabled, install test files.
 
+  INSTALL_OPENSSL_DLLS=ON|OFF (only for windows, defaults to OFF)
+    If enabled and OpenSSL is a shared library, install the OpenSSL DLLs next
+    to the extension modules that use them (as the installers of CPython do),
+    so that the ssl and hashlib modules of the installed Python work without
+    further setup. Leave it disabled if the DLLs are provided by other means,
+    for example by the application that embeds Python: they then have to be
+    in the folder of the executable or in a folder that is registered with
+    os.add_dll_directory().
+
   ENABLE_<extension>=ON|OFF     (defaults to ON)
   BUILTIN_<extension>=ON|OFF    (defaults to OFF except for POSIX, PWD and
                                  NT extensions which are builtin by default)

@@ -1165,6 +1165,35 @@ add_python_extension(_ssl
     LIBRARIES ${_ssl_LIBRARIES}
     INCLUDEDIRS ${OPENSSL_INCLUDE_DIR}
 )
+if(WIN32 AND OPENSSL_INCLUDE_DIR)
+    # Since Python 3.8, the DLLs that an extension module depends on are not
+    # searched in PATH anymore. The DLLs of OpenSSL are copied next to the
+    # extension modules that use them, so that the interpreter of the build
+    # tree can load them (the Visual Studio solution of CPython does the same).
+    # They are only installed if INSTALL_OPENSSL_DLLS is enabled, because an
+    # application that embeds Python usually provides these DLLs itself.
+    # If OpenSSL is linked statically then there are no DLLs to copy.
+    get_filename_component(_openssl_root "${OPENSSL_INCLUDE_DIR}" DIRECTORY)
+    file(GLOB _openssl_dlls
+        "${_openssl_root}/bin/libcrypto*.dll"
+        "${_openssl_root}/bin/libssl*.dll"
+        "${_openssl_root}/bin/libeay32.dll"
+        "${_openssl_root}/bin/ssleay32.dll"
+        )
+    set(_openssl_dlls_installed 0)
+    foreach(_openssl_extension IN ITEMS extension_ssl extension_hashlib)
+        if(_openssl_dlls AND TARGET ${_openssl_extension})
+            add_custom_command(TARGET ${_openssl_extension} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${_openssl_dlls} $<TARGET_FILE_DIR:${_openssl_extension}>
+                COMMENT "Copying OpenSSL DLLs next to the extension modules"
+                )
+            if(INSTALL_OPENSSL_DLLS AND NOT _openssl_dlls_installed)
+                install(FILES ${_openssl_dlls} DESTINATION ${EXTENSION_INSTALL_DIR})
+                set(_openssl_dlls_installed 1)
+            endif()
+        endif()
+    endforeach()
+endif()
 set(_tkinter_REQUIRES TCL_LIBRARY TK_LIBRARY TCL_INCLUDE_PATH TK_INCLUDE_PATH)
 set(_tkinter_LIBRARIES ${TCL_LIBRARY} ${TK_LIBRARY})
 set(_tkinter_INCLUDEDIRS ${TCL_INCLUDE_PATH} ${TK_INCLUDE_PATH})

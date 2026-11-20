@@ -10,6 +10,18 @@ set_property(
 target_compile_definitions(python PRIVATE Py_BUILD_CORE)
 add_definitions(-DPy_BUILD_CORE)
 
+if(WIN32 AND ENABLE_SSL AND OPENSSL_LIBRARIES AND EXISTS "${OPENSSL_INCLUDE_DIR}/openssl/applink.c")
+    # OpenSSL DLLs that are built with the "uplink" feature (the default) access
+    # the C runtime library of the application through the OPENSSL_Applink
+    # function, which they look up in the executable, not in the _ssl extension
+    # module. Without it, functions of the ssl module that pass a file to
+    # OpenSSL (such as SSLContext.load_dh_params) abort the interpreter with
+    # the message "no OPENSSL_Applink".
+    target_sources(python PRIVATE ${OPENSSL_INCLUDE_DIR}/openssl/applink.c)
+    set_property(SOURCE ${OPENSSL_INCLUDE_DIR}/openssl/applink.c
+        APPEND PROPERTY COMPILE_DEFINITIONS _CRT_SECURE_NO_WARNINGS)
+endif()
+
 # Link against the shared libpython if it was built, otherwise use the static
 # version.
 if(BUILD_LIBPYTHON_SHARED)
