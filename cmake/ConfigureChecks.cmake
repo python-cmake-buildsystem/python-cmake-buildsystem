@@ -1082,6 +1082,7 @@ check_symbol_exists(getc_unlocked   "${CFG_HEADERS}" HAVE_GETC_UNLOCKED)
 check_symbol_exists(getegid      "${CFG_HEADERS}" HAVE_GETEGID) # Python 3.11
 check_symbol_exists(geteuid      "${CFG_HEADERS}" HAVE_GETEUID) # Python 3.11
 check_symbol_exists(getgid       "${CFG_HEADERS}" HAVE_GETGID) # Python 3.11
+check_symbol_exists(getgrent     "${CFG_HEADERS}" HAVE_GETGRENT) # grp module (Android API level >= 26)
 check_symbol_exists(getgroups       "${CFG_HEADERS}" HAVE_GETGROUPS)
 check_symbol_exists(getitimer    "${CFG_HEADERS}" HAVE_GETITIMER)
 check_symbol_exists(getloadavg   "${CFG_HEADERS}" HAVE_GETLOADAVG)

@@ -419,7 +419,7 @@ add_python_extension(_xxsubinterpreters ${WIN32_BUILTIN}
 
 # UNIX-only extensions
 add_python_extension(fcntl REQUIRES UNIX SOURCES fcntlmodule.c)
-add_python_extension(grp REQUIRES UNIX SOURCES grpmodule.c)
+add_python_extension(grp REQUIRES UNIX HAVE_GETGRENT SOURCES grpmodule.c)
 
 set(nis_REQUIRES UNIX HAVE_LIBNSL)
 set(nis_LIBRARIES ${HAVE_LIBNSL})
