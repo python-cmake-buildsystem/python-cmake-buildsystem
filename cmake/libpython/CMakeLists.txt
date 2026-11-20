@@ -502,6 +502,42 @@ endif()
 
 set(LIBPYTHON_FROZEN_SOURCES )
 
+# The _freeze_importlib and _bootstrap_python executables are built for the target and
+# run on the build host (using CMAKE_CROSSCOMPILING_EMULATOR if set), which is possible
+# only if the build host can execute them (e.g. when building for x86 on a x86_64 host).
+# When cross-compiling, similarly to CPython "--with-build-python" configure option,
+# a Python interpreter of the same version running on the build host (PYTHON_FOR_BUILD)
+# can be used instead to generate the frozen modules.
+set(_use_python_for_build OFF)
+if(CMAKE_CROSSCOMPILING AND PY_VERSION VERSION_GREATER_EQUAL "3.11")
+  set(PYTHON_FOR_BUILD "" CACHE FILEPATH "Python ${PY_VERSION_MAJOR}.${PY_VERSION_MINOR} interpreter running on the build host, used to generate frozen modules when cross-compiling")
+  if(ANDROID AND NOT PYTHON_FOR_BUILD)
+    message(FATAL_ERROR "PYTHON_FOR_BUILD must be set to a Python ${PY_VERSION_MAJOR}.${PY_VERSION_MINOR} interpreter running on the build host when cross-compiling for Android")
+  endif()
+  if(PYTHON_FOR_BUILD)
+    execute_process(
+      COMMAND ${PYTHON_FOR_BUILD} -c "import sys; print('%d.%d' % sys.version_info[:2])"
+      OUTPUT_VARIABLE _python_for_build_version
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      RESULT_VARIABLE _python_for_build_result
+      )
+    if(NOT _python_for_build_result EQUAL 0 OR NOT _python_for_build_version STREQUAL "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}")
+      message(FATAL_ERROR "PYTHON_FOR_BUILD [${PYTHON_FOR_BUILD}] version is [${_python_for_build_version}], expected ${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}")
+    endif()
+    set(_use_python_for_build ON)
+  endif()
+endif()
+if(_use_python_for_build)
+  set(_freeze_module_command ${PYTHON_FOR_BUILD} ${SRC_DIR}/Programs/_freeze_module.py)
+  set(_freeze_module_depends ${SRC_DIR}/Programs/_freeze_module.py)
+  set(_bootstrap_python_command ${PYTHON_FOR_BUILD})
+else()
+  set(_freeze_module_command _freeze_importlib)
+  set(_freeze_module_depends _freeze_importlib)
+  set(_bootstrap_python_command _bootstrap_python)
+endif()
+
+if(NOT _use_python_for_build)
 # Build _freeze_importlib executable
 add_executable(_freeze_importlib
 
@@ -526,6 +562,7 @@ target_compile_definitions(_freeze_importlib
   PUBLIC
     Py_NO_ENABLE_SHARED
 )
+endif()
 
 # Freeze modules for Python < 3.11
 if(PY_VERSION VERSION_LESS "3.11")
@@ -534,6 +571,9 @@ set(LIBPYTHON_FROZEN_SOURCES
   ${SRC_DIR}/Python/importlib.h
   $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.8>:${SRC_DIR}/Python/importlib_zipimport.h>
 )
+# Executables built for Android cannot be run on the build host,
+# therefore the frozen modules distributed with the sources are used.
+if(NOT ANDROID)
 add_custom_command(
   OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
   COMMAND
@@ -564,6 +604,7 @@ if(PY_VERSION VERSION_GREATER_EQUAL "3.8")
       ${SRC_DIR}/Lib/zipimport.py
     APPEND
   )
+endif()
 endif()
 endif()
 
@@ -599,127 +640,127 @@ set(LIBPYTHON_FROZEN_SOURCES
 add_custom_command(
   OUTPUT ${LIBPYTHON_FROZEN_SOURCES}
   COMMAND
-    _freeze_importlib
+    ${_freeze_module_command}
       importlib._bootstrap
       ${SRC_DIR}/Lib/importlib/_bootstrap.py
       ${SRC_DIR}/Python/frozen_modules/importlib._bootstrap.h
   COMMAND
-    _freeze_importlib
+    ${_freeze_module_command}
       importlib._bootstrap_external
       ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
       ${SRC_DIR}/Python/frozen_modules/importlib._bootstrap_external.h
   COMMAND
-    _freeze_importlib
+    ${_freeze_module_command}
       zipimport
       ${SRC_DIR}/Lib/zipimport.py
       ${SRC_DIR}/Python/frozen_modules/zipimport.h
   COMMAND
-    _freeze_importlib
+    ${_freeze_module_command}
       abc
       ${SRC_DIR}/Lib/abc.py
       ${SRC_DIR}/Python/frozen_modules/abc.h
   COMMAND
-    _freeze_importlib
+    ${_freeze_module_command}
       codecs
       ${SRC_DIR}/Lib/codecs.py
       ${SRC_DIR}/Python/frozen_modules/codecs.h
   COMMAND
-    _freeze_importlib
+    ${_freeze_module_command}
       io
       ${SRC_DIR}/Lib/io.py
       ${SRC_DIR}/Python/frozen_modules/io.h
   COMMAND
-    _freeze_importlib
+    ${_freeze_module_command}
       _collections_abc
       ${SRC_DIR}/Lib/_collections_abc.py
       ${SRC_DIR}/Python/frozen_modules/_collections_abc.h
   COMMAND
-    _freeze_importlib
+    ${_freeze_module_command}
       _sitebuiltins
       ${SRC_DIR}/Lib/_sitebuiltins.py
       ${SRC_DIR}/Python/frozen_modules/_sitebuiltins.h
   COMMAND
-    _freeze_importlib
+    ${_freeze_module_command}
       genericpath
       ${SRC_DIR}/Lib/genericpath.py
       ${SRC_DIR}/Python/frozen_modules/genericpath.h
   COMMAND
-    _freeze_importlib
+    ${_freeze_module_command}
       ntpath
       ${SRC_DIR}/Lib/ntpath.py
       ${SRC_DIR}/Python/frozen_modules/ntpath.h
   COMMAND
-    _freeze_importlib
+    ${_freeze_module_command}
       posixpath
       ${SRC_DIR}/Lib/posixpath.py
       ${SRC_DIR}/Python/frozen_modules/posixpath.h
   COMMAND
-    _freeze_importlib
+    ${_freeze_module_command}
       os
       ${SRC_DIR}/Lib/os.py
       ${SRC_DIR}/Python/frozen_modules/os.h
   COMMAND
-    _freeze_importlib
+    ${_freeze_module_command}
       site
       ${SRC_DIR}/Lib/site.py
       ${SRC_DIR}/Python/frozen_modules/site.h
   COMMAND
-    _freeze_importlib
+    ${_freeze_module_command}
       stat
       ${SRC_DIR}/Lib/stat.py
       ${SRC_DIR}/Python/frozen_modules/stat.h
   COMMAND
-    _freeze_importlib
+    ${_freeze_module_command}
       importlib.util
       ${SRC_DIR}/Lib/importlib/util.py
       ${SRC_DIR}/Python/frozen_modules/importlib.util.h
   COMMAND
-    _freeze_importlib
+    ${_freeze_module_command}
       importlib.machinery
       ${SRC_DIR}/Lib/importlib/machinery.py
       ${SRC_DIR}/Python/frozen_modules/importlib.machinery.h
   COMMAND
-    _freeze_importlib
+    ${_freeze_module_command}
       runpy
       ${SRC_DIR}/Lib/runpy.py
       ${SRC_DIR}/Python/frozen_modules/runpy.h
   COMMAND
-    _freeze_importlib
+    ${_freeze_module_command}
       __hello__
       ${SRC_DIR}/Lib/__hello__.py
       ${SRC_DIR}/Python/frozen_modules/__hello__.h
   COMMAND
-    _freeze_importlib
+    ${_freeze_module_command}
       __phello__
       ${SRC_DIR}/Lib/__phello__/__init__.py
       ${SRC_DIR}/Python/frozen_modules/__phello__.h
   COMMAND
-    _freeze_importlib
+    ${_freeze_module_command}
       __phello__.ham
       ${SRC_DIR}/Lib/__phello__/ham/__init__.py
       ${SRC_DIR}/Python/frozen_modules/__phello__.ham.h
   COMMAND
-    _freeze_importlib
+    ${_freeze_module_command}
       __phello__.ham.eggs
       ${SRC_DIR}/Lib/__phello__/ham/eggs.py
       ${SRC_DIR}/Python/frozen_modules/__phello__.ham.eggs.h
   COMMAND
-    _freeze_importlib
+    ${_freeze_module_command}
       __phello__.spam
       ${SRC_DIR}/Lib/__phello__/spam.py
       ${SRC_DIR}/Python/frozen_modules/__phello__.spam.h
   COMMAND
-    _freeze_importlib
+    ${_freeze_module_command}
       frozen_only
       ${SRC_DIR}/Tools/freeze/flag.py
       ${SRC_DIR}/Python/frozen_modules/frozen_only.h
   COMMAND
-    _freeze_importlib
+    ${_freeze_module_command}
       getpath
       ${SRC_DIR}/Modules/getpath.py
       ${SRC_DIR}/Python/frozen_modules/getpath.h
   DEPENDS
-      _freeze_importlib
+      ${_freeze_module_depends}
       ${SRC_DIR}/Lib/importlib/_bootstrap.py
       ${SRC_DIR}/Lib/importlib/_bootstrap_external.py
       ${SRC_DIR}/Lib/zipimport.py
@@ -757,6 +798,7 @@ set(LIBPYTHON_DEEPFREEZE_SOURCES )
 
 if(PY_VERSION VERSION_GREATER_EQUAL "3.11")
 
+if(NOT _use_python_for_build)
 # Build _bootstrap_python executable
 add_executable(_bootstrap_python
     ${SRC_DIR}/Programs/_bootstrap_python.c
@@ -776,6 +818,7 @@ target_compile_definitions(_bootstrap_python
     PUBLIC
         Py_NO_ENABLE_SHARED
 )
+endif()
 
 list(APPEND LIBPYTHON_DEEPFREEZE_SOURCES
     ${SRC_DIR}/Python/deepfreeze/deepfreeze.c
@@ -786,7 +829,7 @@ set(DEEPFREEZE_PY ${SRC_DIR}/Tools/$<IF:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.
 add_custom_command(
   OUTPUT ${LIBPYTHON_DEEPFREEZE_SOURCES}
   COMMAND
-    _bootstrap_python
+    ${_bootstrap_python_command}
       ${DEEPFREEZE_PY}
         "${SRC_DIR}/Python/frozen_modules/importlib._bootstrap.h:importlib._bootstrap"
         "${SRC_DIR}/Python/frozen_modules/importlib._bootstrap_external.h:importlib._bootstrap_external"

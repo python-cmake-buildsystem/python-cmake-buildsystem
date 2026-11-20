@@ -196,10 +196,19 @@ function(add_python_extension name)
             )
         endif()
 
-        if(APPLE OR ANDROID)
+        if(APPLE)
             set_target_properties(${target_name} PROPERTIES
                 LINK_FLAGS -Wl,-undefined,dynamic_lookup
                 SUFFIX .so
+            )
+        endif()
+
+        if(ANDROID)
+            # Python symbols are resolved at runtime from the python executable,
+            # therefore undefined symbols must be allowed (the NDK toolchain
+            # disallows them by default).
+            set_target_properties(${target_name} PROPERTIES
+                LINK_FLAGS -Wl,-z,undefs
             )
         endif()
 
