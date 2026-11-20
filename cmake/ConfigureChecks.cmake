@@ -3170,6 +3170,15 @@ if(CMAKE_SYSTEM MATCHES Linux)
   endif()
 endif()
 
+if(ANDROID)
+  # Python >= 3.13 identifies Android as a separate platform
+  if(PY_VERSION VERSION_LESS 3.13)
+    set(PY_PLATFORM linux)
+  else()
+    set(PY_PLATFORM android)
+  endif()
+endif()
+
 if(CMAKE_SYSTEM MATCHES Darwin)
   set(PY_PLATFORM darwin)
 endif()

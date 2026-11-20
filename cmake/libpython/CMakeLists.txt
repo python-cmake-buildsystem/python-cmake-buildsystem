@@ -507,10 +507,11 @@ set(LIBPYTHON_FROZEN_SOURCES )
 # only if the build host can execute them (e.g. when building for x86 on a x86_64 host).
 # When cross-compiling, similarly to CPython "--with-build-python" configure option,
 # a Python interpreter of the same version running on the build host (PYTHON_FOR_BUILD)
-# can be used instead to generate the frozen modules.
+# can be used instead to generate the frozen modules (Python >= 3.11) and the sysconfig
+# data module. It is required when targeting Android.
 set(_use_python_for_build OFF)
-if(CMAKE_CROSSCOMPILING AND PY_VERSION VERSION_GREATER_EQUAL "3.11")
-  set(PYTHON_FOR_BUILD "" CACHE FILEPATH "Python ${PY_VERSION_MAJOR}.${PY_VERSION_MINOR} interpreter running on the build host, used to generate frozen modules when cross-compiling")
+if(CMAKE_CROSSCOMPILING)
+  set(PYTHON_FOR_BUILD "" CACHE FILEPATH "Python ${PY_VERSION_MAJOR}.${PY_VERSION_MINOR} interpreter running on the build host, used to generate frozen modules and sysconfig data when cross-compiling")
   if(ANDROID AND NOT PYTHON_FOR_BUILD)
     message(FATAL_ERROR "PYTHON_FOR_BUILD must be set to a Python ${PY_VERSION_MAJOR}.${PY_VERSION_MINOR} interpreter running on the build host when cross-compiling for Android")
   endif()
@@ -524,7 +525,9 @@ if(CMAKE_CROSSCOMPILING AND PY_VERSION VERSION_GREATER_EQUAL "3.11")
     if(NOT _python_for_build_result EQUAL 0 OR NOT _python_for_build_version STREQUAL "${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}")
       message(FATAL_ERROR "PYTHON_FOR_BUILD [${PYTHON_FOR_BUILD}] version is [${_python_for_build_version}], expected ${PY_VERSION_MAJOR}.${PY_VERSION_MINOR}")
     endif()
-    set(_use_python_for_build ON)
+    if(PY_VERSION VERSION_GREATER_EQUAL "3.11")
+      set(_use_python_for_build ON)
+    endif()
   endif()
 endif()
 if(_use_python_for_build)
