@@ -31,7 +31,7 @@
 #cmakedefine ALT_SOABI 1
 
 /* The Android API level. [Python 3.7] */
-#cmakedefine ANDROID_API_LEVEL 1
+#cmakedefine ANDROID_API_LEVEL @ANDROID_API_LEVEL@
 
 /* Define if C doubles are 64-bit IEEE 754 binary format, stored in ARM
    mixed-endian order (byte order 45670123) */

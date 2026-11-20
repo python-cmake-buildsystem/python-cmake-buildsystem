@@ -419,7 +419,7 @@ add_python_extension(_xxsubinterpreters ${WIN32_BUILTIN}
 
 # UNIX-only extensions
 add_python_extension(fcntl REQUIRES UNIX SOURCES fcntlmodule.c)
-add_python_extension(grp REQUIRES UNIX SOURCES grpmodule.c)
+add_python_extension(grp REQUIRES UNIX HAVE_GETGRENT SOURCES grpmodule.c)
 
 set(nis_REQUIRES UNIX HAVE_LIBNSL)
 set(nis_LIBRARIES ${HAVE_LIBNSL})
@@ -774,7 +774,7 @@ set(libmpdec_config_x64          CONFIG_64 ASM)
 set(libmpdec_config_uint128      CONFIG_64 ANSI HAVE_UINT128_T)
 set(libmpdec_config_ansi64       CONFIG_64 ANSI)
 set(libmpdec_config_ppro         CONFIG_32 PPRO ASM)
-set(libmpdec_config_ansi32       CONFIG_32 PPRO) # XXX Is ANSI needed here ?
+set(libmpdec_config_ansi32       CONFIG_32 ANSI)
 set(libmpdec_config_ansi_legacy  CONFIG_32 ANSI LEGACY_COMPILER)
 set(libmpdec_config_universal    UNIVERSAL)
 
@@ -868,6 +868,10 @@ if(NOT WITH_THREAD AND PY_VERSION VERSION_LESS "3.7")
 endif()
 
 if(WIN32)
+    if(libmpdec_config STREQUAL "ansi32")
+        # Same as PCbuild/_decimal.vcxproj: 64-bit arithmetic uses MASM intrinsics
+        set(libmpdec_config_ansi32 CONFIG_32 PPRO)
+    endif()
     list(APPEND libmpdec_config_${libmpdec_config}
         _CRT_SECURE_NO_WARNINGS
     )
