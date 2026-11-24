@@ -59,6 +59,17 @@ How to use this buildsystem:
 
 .. note::
 
+  On Windows x86 and x64, use an OpenSSL built with ``no-uplink``, as CPython
+  does (for example the OpenSSL that CPython's ``PCbuild\get_externals.bat``
+  downloads from https://github.com/python/cpython-bin-deps). OpenSSL enables
+  "uplink" by default on these platforms, and so do some binary distributions
+  of it: such an OpenSSL requires the executable to export
+  ``OPENSSL_Applink``, which ``python`` does not, and functions taking a
+  ``FILE*`` (such as ``ssl.SSLContext.load_dh_params()``) abort with
+  "no OPENSSL_Applink".
+
+.. note::
+
   By default, the build system will download the python source from
   http://www.python.org/ftp/python/ based on the version in `PYTHON_VERSION`
   (see default version below).
