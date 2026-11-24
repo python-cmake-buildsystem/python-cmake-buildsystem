@@ -143,6 +143,25 @@ jobs:
         fetch-depth: 0
         path: src
 
+    # The x64 OpenSSL of the runner is built with "uplink", which requires the
+    # executable to export OPENSSL_Applink. Use the OpenSSL of CPython instead
+    # (see PCbuild/get_externals.bat), which is built with "no-uplink".
+    - name: Download the OpenSSL of CPython
+      if: matrix.python-arch == 'x64'
+      shell: pwsh
+      env:
+        OPENSSL_BIN_VERSION: 3.0.16.2
+        OPENSSL_BIN_SHA256: 8686b76cbd4192143ed73bc60719efdb080bcdb8f887bdb7d66c5fecd2b6a36f
+      run: |
+        $archive = "openssl-bin-$env:OPENSSL_BIN_VERSION.zip"
+        Invoke-WebRequest -OutFile $archive `
+          "https://github.com/python/cpython-bin-deps/archive/refs/tags/openssl-bin-$env:OPENSSL_BIN_VERSION.zip"
+        if ((Get-FileHash $archive -Algorithm SHA256).Hash -ne $env:OPENSSL_BIN_SHA256) {
+          throw "Unexpected SHA256 of $archive"
+        }
+        Expand-Archive $archive -DestinationPath .
+        Rename-Item "cpython-bin-deps-openssl-bin-$env:OPENSSL_BIN_VERSION" openssl-bin
+
     - name: Download dashboard script
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
@@ -158,6 +177,7 @@ jobs:
         CONFIGURATION: Release
         GENERATOR: ${{ matrix.generator }}
         PLATFORM: ${{ matrix.python-arch }}
+        OPENSSL_ROOT_DIR: ${{ matrix.python-arch == 'x64' && format('{0}\openssl-bin\amd64', github.workspace) || '' }}
 
   pass: # This job does nothing and is only used for the branch protection
     if: always()
