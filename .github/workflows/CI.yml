@@ -135,6 +135,13 @@ jobs:
             python-arch: ARM64
             python-version: 3.12.10
             generator: "Visual Studio 18 2026"
+          # ARM64EC (x64 compatible code running natively on ARM64) is supported
+          # for Python 3.12 (see patches/3.12). ARM64EC binaries can only run on
+          # Windows ARM64.
+          - runs-on: windows-11-arm
+            python-arch: ARM64EC
+            python-version: 3.12.10
+            generator: "Visual Studio 18 2026"
 
     name: python-${{ matrix.python-version }}-windows-${{ matrix.python-arch }}
     steps:
@@ -142,6 +149,62 @@ jobs:
       with:
         fetch-depth: 0
         path: src
+
+    - name: Install the MSVC ARM64EC build tools if missing
+      if: matrix.python-arch == 'ARM64EC'
+      shell: pwsh
+      run: |
+        $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+        $component = "Microsoft.VisualStudio.Component.VC.Tools.ARM64EC"
+        $installPath = & $vswhere -latest -products * -property installationPath
+        if (& $vswhere -latest -products * -requires $component -property installationPath) {
+          Write-Host "$component is installed in $installPath"
+          exit 0
+        }
+        Write-Host "Installing $component in $installPath"
+        $installer = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe"
+        $process = Start-Process -FilePath $installer -Wait -PassThru -ArgumentList `
+          "modify", "--installPath", "`"$installPath`"", "--add", $component, "--quiet", "--norestart", "--nocache"
+        if (-not (& $vswhere -latest -products * -requires $component -property installationPath)) {
+          throw "Failed to install $component (installer exit code $($process.ExitCode))"
+        }
+
+    # The OpenSSL of the runner is ARM64, which cannot be linked into ARM64EC
+    # binaries. OpenSSL has no ARM64EC target, but its portable C code (no-asm)
+    # can be built as ARM64EC. Build it as static libraries, so that the
+    # extension modules do not depend on OpenSSL DLLs.
+    - name: Restore the ARM64EC build of OpenSSL
+      if: matrix.python-arch == 'ARM64EC'
+      id: cache-openssl
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: openssl-install
+        key: openssl-3.5.9-windows-ARM64EC-static
+
+    - name: Build OpenSSL for ARM64EC
+      if: matrix.python-arch == 'ARM64EC' && steps.cache-openssl.outputs.cache-hit != 'true'
+      shell: pwsh
+      env:
+        OPENSSL_VERSION: 3.5.9
+        OPENSSL_SHA256: 603f5602e2eef00d77fbd429d34dcd5822bb301757a1bc9cdb24c670f1eb859a
+        CL: /arm64EC
+      run: |
+        $archive = "openssl-$env:OPENSSL_VERSION.tar.gz"
+        Invoke-WebRequest -OutFile $archive `
+          "https://github.com/openssl/openssl/releases/download/openssl-$env:OPENSSL_VERSION/$archive"
+        if ((Get-FileHash $archive -Algorithm SHA256).Hash -ne $env:OPENSSL_SHA256) {
+          throw "Unexpected SHA256 of $archive"
+        }
+        tar -xzf $archive
+        $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+        $vcvarsall = "$(& $vswhere -latest -products * -property installationPath)\VC\Auxiliary\Build\vcvarsall.bat"
+        $prefix = "$env:GITHUB_WORKSPACE\openssl-install"
+        Set-Location "openssl-$env:OPENSSL_VERSION"
+        perl -v | Select-String "This is perl"
+        cmd /c "`"$vcvarsall`" arm64 && perl Configure VC-WIN64A no-asm no-uplink no-shared no-tests `"ARFLAGS=/nologo /MACHINE:ARM64EC`" --prefix=`"$prefix`" --openssldir=`"$prefix\ssl`" && nmake build_libs && nmake install_dev"
+        if ($LASTEXITCODE) {
+          throw "Failed to build OpenSSL (exit code $LASTEXITCODE)"
+        }
 
     # The x64 OpenSSL of the runner is built with "uplink", which requires the
     # executable to export OPENSSL_Applink. Use the OpenSSL of CPython instead
@@ -177,7 +240,20 @@ jobs:
         CONFIGURATION: Release
         GENERATOR: ${{ matrix.generator }}
         PLATFORM: ${{ matrix.python-arch }}
-        OPENSSL_ROOT_DIR: ${{ matrix.python-arch == 'x64' && format('{0}\openssl-bin\amd64', github.workspace) || '' }}
+        OPENSSL_ROOT_DIR: ${{ matrix.python-arch == 'ARM64EC' && format('{0}\openssl-install', github.workspace) || matrix.python-arch == 'x64' && format('{0}\openssl-bin\amd64', github.workspace) || '' }}
+
+    # The dashboard script reports build and test results to CDash without
+    # failing the job, so check the ARM64EC specific results here: the binaries
+    # are ARM64EC, and the modules affected by the ARM64EC fixes and the
+    # ARM64EC build of OpenSSL work (HACL* hash functions, atomics, x64
+    # assembly of _decimal, _hashlib, _ssl).
+    - name: Check ARM64EC build
+      if: matrix.python-arch == 'ARM64EC'
+      run: |
+        # test_ssl is skipped, and thus passes, if the ssl module is missing
+        build\bin\Release\python.exe -c "import ssl, _hashlib; print(ssl.OPENSSL_VERSION)"
+        if ($LASTEXITCODE) { exit $LASTEXITCODE }
+        ctest -C Release --test-dir build --output-on-failure --no-tests=error --timeout 360 -R "^(check_arm64ec|test_hashlib|test_decimal|test_threading|test_sys|test_ssl)$"
 
   pass: # This job does nothing and is only used for the branch protection
     if: always()
