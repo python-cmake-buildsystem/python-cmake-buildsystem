@@ -1089,11 +1089,16 @@ add_python_extension(_gdbm
     LIBRARIES ${GDBM_LIBRARY}
     INCLUDEDIRS ${GDBM_INCLUDE_PATH}
 )
+set(_hashlib_LIBRARIES ${OPENSSL_LIBRARIES})
+if(WIN32)
+    # Required by static OpenSSL libraries
+    list(APPEND _hashlib_LIBRARIES Crypt32 ws2_32)
+endif()
 add_python_extension(_hashlib
     REQUIRES OPENSSL_INCLUDE_DIR OPENSSL_LIBRARIES
       IS_PY3_5_OR_GREATER
     SOURCES _hashopenssl.c
-    LIBRARIES ${OPENSSL_LIBRARIES}
+    LIBRARIES ${_hashlib_LIBRARIES}
     INCLUDEDIRS ${OPENSSL_INCLUDE_DIR}
 )
 if(ENABLE_HASHLIB AND CMAKE_C_COMPILER_ID MATCHES GNU)
