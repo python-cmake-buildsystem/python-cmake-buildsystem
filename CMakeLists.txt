@@ -960,6 +960,26 @@ if(BUILD_TESTING)
         python_compute_release_field3_value
         cmake/PythonExtractVersionInfo.cmake
         )
+
+    # On Windows ARM64EC, check that the interpreter, its libraries and the
+    # extension modules are ARM64EC (an ARM64EC process cannot load ARM64
+    # binaries) and that the interpreter identifies as "win-amd64".
+    if(CMAKE_C_COMPILER_ARCHITECTURE_ID STREQUAL "ARM64EC")
+        set(arm64ec_binaries $<TARGET_FILE:python>)
+        foreach(target IN ITEMS libpython-shared libpython3-shared)
+            if(TARGET ${target})
+                list(APPEND arm64ec_binaries $<TARGET_FILE:${target}>)
+            endif()
+        endforeach()
+        add_test(NAME check_arm64ec
+            COMMAND ${TESTPYTHON} ${PROJECT_SOURCE_DIR}/cmake/tests/check_arm64ec.py
+                ${arm64ec_binaries} ${EXTENSION_BUILD_DIR}
+        )
+        set_tests_properties(check_arm64ec PROPERTIES
+            PASS_REGULAR_EXPRESSION "SUCCESS"
+            FAIL_REGULAR_EXPRESSION "ERROR"
+        )
+    endif()
 endif()
 
 include(CMakePackageConfigHelpers)

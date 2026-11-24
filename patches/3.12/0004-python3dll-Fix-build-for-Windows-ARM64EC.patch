@@ -1,0 +1,52 @@
+From dcaeef8d7755401aaeee4897d5adc73bd762bdb0 Mon Sep 17 00:00:00 2001
+From: Andras Lasso <lasso@queensu.ca>
+Date: Tue, 27 Oct 2026 15:06:18 -0400
+Subject: [PATCH 4/4] python3dll: Fix build for Windows ARM64EC
+
+The ARM64EC linker requires the targets of forwarded exports to exist,
+but _Py_NegativeRefcount and _Py_RefTotal (only defined in debug builds)
+and PyOS_CheckStack (only defined if USE_STACKCHECK is set) are not
+defined in the release build. Do not export them on ARM64EC.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ PC/python3dll.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/PC/python3dll.c b/PC/python3dll.c
+index 505feef..318b3f2 100644
+--- a/PC/python3dll.c
++++ b/PC/python3dll.c
+@@ -18,7 +18,9 @@ EXPORT_FUNC(_Py_CheckRecursiveCall)
+ EXPORT_FUNC(_Py_Dealloc)
+ EXPORT_FUNC(_Py_DecRef)
+ EXPORT_FUNC(_Py_IncRef)
++#ifndef _M_ARM64EC /* not defined in python3XX.dll in this configuration */
+ EXPORT_FUNC(_Py_NegativeRefcount)
++#endif
+ EXPORT_FUNC(_Py_VaBuildValue_SizeT)
+ EXPORT_FUNC(_PyArg_Parse_SizeT)
+ EXPORT_FUNC(_PyArg_ParseTuple_SizeT)
+@@ -492,7 +494,9 @@ EXPORT_FUNC(PyObject_Str)
+ EXPORT_FUNC(PyObject_Type)
+ EXPORT_FUNC(PyObject_Vectorcall)
+ EXPORT_FUNC(PyObject_VectorcallMethod)
++#ifndef _M_ARM64EC
+ EXPORT_FUNC(PyOS_CheckStack)
++#endif
+ EXPORT_FUNC(PyOS_double_to_string)
+ EXPORT_FUNC(PyOS_FSPath)
+ EXPORT_FUNC(PyOS_getsig)
+@@ -742,7 +746,9 @@ EXPORT_DATA(_Py_EllipsisObject)
+ EXPORT_DATA(_Py_FalseStruct)
+ EXPORT_DATA(_Py_NoneStruct)
+ EXPORT_DATA(_Py_NotImplementedStruct)
++#ifndef _M_ARM64EC
+ EXPORT_DATA(_Py_RefTotal)
++#endif
+ EXPORT_DATA(_Py_SwappedOp)
+ EXPORT_DATA(_Py_TrueStruct)
+ EXPORT_DATA(_PyWeakref_CallableProxyType)
+-- 
+2.56.0.windows.2
+
