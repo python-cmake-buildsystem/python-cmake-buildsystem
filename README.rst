@@ -153,6 +153,17 @@ options on the commandline with `-DOPTION=VALUE`, or use the "ccmake" gui.
   INSTALL_TEST=ON|OFF (defaults to ON)
     If enabled, install test files.
 
+  COPY_OpenSSL_DLLS=ON|OFF (defaults to OFF, Windows only)
+    If enabled, copy the OpenSSL DLLs next to the _ssl and _hashlib extension
+    modules, or next to the python executable if these modules are builtin,
+    in the build tree and in the install tree, as CPython does. Python 3.8 and
+    later do not search PATH for the DLLs that extension modules depend on, so
+    with a shared OpenSSL, enable it unless the DLLs are made available
+    otherwise, for example by an application embedding Python. The DLLs are
+    libcrypto-*.dll and libssl-*.dll of the "bin" directory of OpenSSL (or of
+    its root directory, if it has no "bin" directory), or those listed in
+    OPENSSL_DLLS.
+
   ENABLE_<extension>=ON|OFF     (defaults to ON)
   BUILTIN_<extension>=ON|OFF    (defaults to OFF except for POSIX, PWD and
                                  NT extensions which are builtin by default)
