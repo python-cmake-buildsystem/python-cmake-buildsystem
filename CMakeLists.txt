@@ -66,7 +66,9 @@ option(BUILD_EXTENSIONS_AS_BUILTIN "Default all modules as builtin to libpython"
 option(USE_LIB64 "Search for dependencies and install to prefix/lib64 instead of prefix/lib" OFF)
 if(WIN32)
   option(INSTALL_WINDOWS_TRADITIONAL "Install the executable and extensions in the traditional location" OFF)
+  option(COPY_OpenSSL_DLLS "Copy the OpenSSL DLLs next to the modules that depend on them, in the build and install trees" OFF)
 else()
+  set(COPY_OpenSSL_DLLS OFF)
   set(INSTALL_WINDOWS_TRADITIONAL OFF)
 endif()
 if(MSVC)
@@ -650,6 +652,58 @@ if(BUILD_WININST)
 endif()
 if(WIN32)
     add_subdirectory(cmake/PC/launcher CMakeBuild/launcher)
+endif()
+
+# On Windows, the OpenSSL DLLs must be next to the module that depends on them:
+# Python 3.8 and newer do not search PATH for the DLLs that extension modules
+# depend on. If COPY_OpenSSL_DLLS is enabled, put them next to the _ssl and
+# _hashlib extension modules, as CPython does, or next to the python executable
+# if these modules are builtin, in the build tree and in the install tree.
+# Static OpenSSL libraries do not require any DLL.
+if(COPY_OpenSSL_DLLS AND OPENSSL_INCLUDE_DIR AND OPENSSL_LIBRARIES)
+    if(NOT DEFINED OPENSSL_DLLS)
+        get_filename_component(_openssl_dll_dir ${OPENSSL_INCLUDE_DIR} DIRECTORY)
+        # An OpenSSL install has the DLLs in "bin", the OpenSSL of CPython
+        # (cpython-bin-deps) in its root directory
+        if(IS_DIRECTORY ${_openssl_dll_dir}/bin)
+            set(_openssl_dll_dir ${_openssl_dll_dir}/bin)
+        endif()
+        file(GLOB OPENSSL_DLLS
+            ${_openssl_dll_dir}/libcrypto-*.dll
+            ${_openssl_dll_dir}/libssl-*.dll
+        )
+    endif()
+    message(STATUS "OPENSSL_DLLS=${OPENSSL_DLLS}")
+    # Targets next to which the DLLs are copied in the build tree, and the
+    # corresponding install directories
+    get_property(_builtin_extensions GLOBAL PROPERTY builtin_extensions)
+    set(_openssl_dll_targets)
+    set(_openssl_dll_install_dirs)
+    foreach(_name IN ITEMS ssl hashlib)
+        if(TARGET extension_${_name})
+            list(APPEND _openssl_dll_targets extension_${_name})
+            list(APPEND _openssl_dll_install_dirs ${EXTENSION_INSTALL_DIR})
+        elseif("_${_name}" IN_LIST _builtin_extensions)
+            list(APPEND _openssl_dll_targets python)
+            list(APPEND _openssl_dll_install_dirs ${BIN_INSTALL_DIR})
+        endif()
+    endforeach()
+    if(OPENSSL_DLLS AND _openssl_dll_targets)
+        list(REMOVE_DUPLICATES _openssl_dll_targets)
+        list(REMOVE_DUPLICATES _openssl_dll_install_dirs)
+        set(_copy_commands)
+        foreach(_target IN LISTS _openssl_dll_targets)
+            list(APPEND _copy_commands
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${OPENSSL_DLLS} $<TARGET_FILE_DIR:${_target}>)
+        endforeach()
+        add_custom_target(copy_openssl_dlls ALL ${_copy_commands}
+            COMMENT "Copying the OpenSSL DLLs"
+        )
+        add_dependencies(copy_openssl_dlls ${_openssl_dll_targets})
+        foreach(_dir IN LISTS _openssl_dll_install_dirs)
+            install(FILES ${OPENSSL_DLLS} DESTINATION ${_dir} COMPONENT Runtime)
+        endforeach()
+    endif()
 endif()
 
 # Ensure the "_testcapi" extension introduced in Python 3.12 can find
