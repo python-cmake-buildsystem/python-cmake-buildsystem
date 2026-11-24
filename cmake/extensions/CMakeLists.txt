@@ -946,6 +946,13 @@ else()
     )
 endif()
 
+# On Windows ARM64EC, intrin.h includes softintrin.h from the Windows SDK, whose
+# widemath.h defines a uint128_t type conflicting with the one defined by HACL*.
+set(hacl_definitions)
+if(CMAKE_C_COMPILER_ARCHITECTURE_ID STREQUAL "ARM64EC")
+    set(hacl_definitions _DISABLE_SOFTINTRIN_)
+endif()
+
 # We always compile these even when OpenSSL is available (issue #14693).
 # It's harmless and the object code is tiny (40-50 KB per module,
 # only loaded when actually used).
@@ -956,6 +963,7 @@ add_python_extension(_md5 ${WIN32_BUILTIN}
     INCLUDEDIRS
         $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:${SRC_DIR}/Modules/_hacl/include>
     DEFINITIONS
+        ${hacl_definitions}
         $<$<AND:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>,$<BOOL:${UNIX}>>:_BSD_SOURCE>
         $<$<AND:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>,$<BOOL:${UNIX}>>:_DEFAULT_SOURCE>
 )
@@ -966,6 +974,7 @@ add_python_extension(_sha1 ${WIN32_BUILTIN}
     INCLUDEDIRS
         $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:${SRC_DIR}/Modules/_hacl/include>
     DEFINITIONS
+        ${hacl_definitions}
         $<$<AND:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>,$<BOOL:${UNIX}>>:_BSD_SOURCE>
         $<$<AND:$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>,$<BOOL:${UNIX}>>:_DEFAULT_SOURCE>
 )
@@ -994,6 +1003,7 @@ add_python_extension(_sha2 ${WIN32_BUILTIN}
     INCLUDEDIRS
         ${SRC_DIR}/Modules/_hacl/include
     DEFINITIONS
+        ${hacl_definitions}
         $<$<BOOL:${UNIX}>:_BSD_SOURCE>
         $<$<BOOL:${UNIX}>:_DEFAULT_SOURCE>
 )
@@ -1006,6 +1016,7 @@ add_python_extension(_sha3 ${WIN32_BUILTIN}
     INCLUDEDIRS
         $<$<VERSION_GREATER_EQUAL:${PY_VERSION},3.12>:${SRC_DIR}/Modules/_hacl/include>
     DEFINITIONS
+        ${hacl_definitions}
         $<$<BOOL:${UNIX}>:_BSD_SOURCE>
         $<$<BOOL:${UNIX}>:_DEFAULT_SOURCE>
 )

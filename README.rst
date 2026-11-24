@@ -59,6 +59,22 @@ How to use this buildsystem:
 
 .. note::
 
+  On Windows ARM64, Python can also be built as ARM64EC (``-A ARM64EC``,
+  supported for Python 3.12). An ARM64EC Python runs natively, identifies
+  itself as ``win-amd64``, and can load x64 extension modules (for example
+  pre-built x64 wheels), which run emulated. It cannot load ARM64 extension
+  modules. Libraries linked into Python must be ARM64EC or x64: libffi has no
+  ARM64EC support, so use an x64 build of it. OpenSSL has no ARM64EC target,
+  but its x64 target without assembly code can be built as ARM64EC from an
+  "ARM64" Visual Studio command prompt (see ``.github/workflows/CI.yml``)::
+
+    set CL=/arm64EC
+    perl Configure VC-WIN64A no-asm no-uplink "ARFLAGS=/nologo /MACHINE:ARM64EC"
+
+  An x64 build of OpenSSL can also be used (see the next note).
+
+.. note::
+
   On Windows x86 and x64, use an OpenSSL built with ``no-uplink``, as CPython
   does (for example the OpenSSL that CPython's ``PCbuild\get_externals.bat``
   downloads from https://github.com/python/cpython-bin-deps). OpenSSL enables
