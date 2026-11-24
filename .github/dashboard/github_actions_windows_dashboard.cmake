@@ -54,7 +54,15 @@ set(dashboard_track GitHub-Actions)
 
 set(dashboard_cache "BUILD_LIBPYTHON_SHARED:BOOL=ON
 PYTHON_VERSION:STRING=${PY_VERSION}
+COPY_OpenSSL_DLLS:BOOL=ON
 ")
+# Use the OpenSSL provided by the workflow (see CI.yml), if any, instead of
+# the one installed on the runner
+if(NOT "$ENV{OPENSSL_ROOT_DIR}" STREQUAL "")
+  file(TO_CMAKE_PATH "$ENV{OPENSSL_ROOT_DIR}" _openssl_root_dir)
+  string(APPEND dashboard_cache "OPENSSL_ROOT_DIR:PATH=${_openssl_root_dir}
+")
+endif()
 
 # Include driver script
 include(${_workspace}/scripts/python_common.cmake)
