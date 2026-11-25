@@ -96,5 +96,10 @@ android_tests() {
     ignored+=('*NoneInfoExtractTests*' '*test_create_connection_service_name*' '*test_devstdin_input*')
     # Changing the mode of a symbolic link is not supported by old kernels
     ignored+=('*test_cleanup_with_symlink_modes*')
+    # The dynamic linker of Android 5 cannot run executables whose path is longer than
+    # 128 characters, such as the interpreter of the virtual environments of these tests
+    ignored+=('*test_config_vars_depend_on_site_initialization*' '*test_config_vars_recalculation_after_site_initialization*')
+    # The child process occasionally does not exit on the Android 5 x86 image
+    ignored+=('*test_is_alive_after_fork*')
   fi
 }
