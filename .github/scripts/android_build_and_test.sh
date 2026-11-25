@@ -105,13 +105,26 @@ fi
 echo "::endgroup::"
 
 unit_tests=${UNIT_TESTS:-all}
+if [[ "${unit_tests}" == "all" ]]; then
+  echo "::group::Virtual environment"
+  # The interpreter of a virtual environment finds the standard library from the base installation
+  run_python -m venv --without-pip venv
+  adb shell "cd ${device_dir} && HOME=${device_dir} TMPDIR=${device_dir} ./venv/bin/python -c 'import sys, decimal; print(sys.prefix, sys.base_prefix); assert sys.prefix != sys.base_prefix'; echo \"@@exit=\$?@@\"" | tr -d '\r' | tee "${build_dir}/venv.log"
+  grep -q "^@@exit=0@@$" "${build_dir}/venv.log"
+  echo "::endgroup::"
+fi
+
 if [[ "${unit_tests}" != "none" ]]; then
   echo "::group::Unit tests (${unit_tests})"
   device_api_level=$(adb shell getprop ro.build.version.sdk | tr -d '\r')
   py_version=$(run_python -c "'import sys; print(\"%d.%d\" % sys.version_info[:2])'" | head -n 1)
   # shellcheck source=android_tests.sh
   source "${src_dir}/.github/scripts/android_tests.sh"
-  android_tests "${unit_tests}" "${device_api_level}" "${py_version}"
+  builtin=0
+  if [[ "${EXTRA_CMAKE_ARGS:-}" == *BUILD_EXTENSIONS_AS_BUILTIN:BOOL=ON* ]]; then
+    builtin=1
+  fi
+  android_tests "${unit_tests}" "${device_api_level}" "${py_version}" "${builtin}"
   echo "Device API level: ${device_api_level}, Python ${py_version}"
   echo "Tests: ${tests[*]}"
   echo "Ignored: ${ignored[*]}"
