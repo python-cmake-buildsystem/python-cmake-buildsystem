@@ -25,9 +25,13 @@ jobs:
           - { python-version: 3.12.10, python-for-build-version: "3.12", android-abi: x86_64, emulator-arch: x86_64, emulator-api-level: 34, emulator-target: default }
           # ABIs
           - { python-version: 3.12.10, python-for-build-version: "3.12", android-abi: x86, emulator-arch: x86, emulator-api-level: 30, emulator-target: google_apis }
-          # ARM executables run using binary translation, which does not support fork(): only the smoke test is run
-          - { python-version: 3.12.10, python-for-build-version: "3.12", android-abi: arm64-v8a, emulator-arch: x86_64, emulator-api-level: 31, emulator-target: google_apis, skip-unit-tests: true }
-          - { python-version: 3.12.10, python-for-build-version: "3.12", android-abi: armeabi-v7a, emulator-arch: x86_64, emulator-api-level: 30, emulator-target: google_apis, skip-unit-tests: true }
+          # ARM executables run using binary translation, which does not support fork(): only the tests that do not start processes are run
+          - { python-version: 3.12.10, python-for-build-version: "3.12", android-abi: arm64-v8a, emulator-arch: x86_64, emulator-api-level: 31, emulator-target: google_apis, unit-tests: in-process }
+          - { python-version: 3.12.10, python-for-build-version: "3.12", android-abi: armeabi-v7a, emulator-arch: x86_64, emulator-api-level: 30, emulator-target: google_apis, unit-tests: in-process }
+          # Minimum API level: the configuration checks cannot be run on the device, because "adb shell"
+          # does not return the exit code before API level 24, so the results are taken from AndroidTryRunResults.cmake
+          - { python-version: 3.12.10, python-for-build-version: "3.12", android-abi: x86_64, emulator-arch: x86_64, emulator-api-level: 21, emulator-target: default, cache-preset: cmake/AndroidTryRunResults.cmake, name-suffix: "-api21" }
+          - { python-version: 3.12.10, python-for-build-version: "3.12", android-abi: x86, emulator-arch: x86, emulator-api-level: 21, emulator-target: default, cache-preset: cmake/AndroidTryRunResults.cmake, name-suffix: "-api21" }
           # Extensions built into the interpreter
           - { python-version: 3.12.10, python-for-build-version: "3.12", android-abi: x86_64, emulator-arch: x86_64, emulator-api-level: 34, emulator-target: default, extra-cmake-args: "-DBUILD_EXTENSIONS_AS_BUILTIN:BOOL=ON", name-suffix: "-builtin" }
 
@@ -64,7 +68,8 @@ jobs:
         PY_VERSION: ${{ matrix.python-version }}
         PYTHON_FOR_BUILD: ${{ steps.python-for-build.outputs.python-path }}
         EXTRA_CMAKE_ARGS: ${{ matrix.extra-cmake-args }}
-        RUN_UNIT_TESTS: ${{ matrix.skip-unit-tests && '0' || '1' }}
+        UNIT_TESTS: ${{ matrix.unit-tests || 'all' }}
+        CACHE_PRESET: ${{ matrix.cache-preset }}
       with:
         api-level: ${{ matrix.emulator-api-level }}
         arch: ${{ matrix.emulator-arch }}
@@ -104,4 +109,5 @@ jobs:
         PY_VERSION: ${{ matrix.python-version }}
         PYTHON_FOR_BUILD: ${{ steps.python-for-build.outputs.python-path }}
         CACHE_PRESET: cmake/AndroidTryRunResults.cmake
+        NO_DEVICE: 1
       run: ANDROID_NDK=$ANDROID_NDK_LATEST_HOME bash .github/scripts/android_build_and_test.sh

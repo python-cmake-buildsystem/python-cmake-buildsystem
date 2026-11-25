@@ -11,9 +11,14 @@
 #   PY_VERSION        Python version to build (default: build system default)
 #   EXTRA_CMAKE_ARGS  Additional CMake configuration arguments
 #   CACHE_PRESET      Initial cache file providing the results of the configuration
-#                     checks that run on the target. If set, no device is used: the
-#                     project is only built and installed.
-#   RUN_UNIT_TESTS    Set to 0 to only run the smoke test on the device (default: 1)
+#                     checks that run on the target. If set, no device is used during
+#                     configuration.
+#   NO_DEVICE         Set to 1 to only build and install, without testing on a device
+#   UNIT_TESTS        Unit tests to run on the device:
+#                       all         all the tests listed in android_tests.sh (default)
+#                       in-process  only the tests that do not start processes, for
+#                                   devices that cannot fork() (e.g. ARM binary translation)
+#                       none        only run the smoke test
 
 set -euo pipefail
 
@@ -65,8 +70,8 @@ echo "::group::Install"
 cmake --install "${build_dir}"
 echo "::endgroup::"
 
-if [[ -n "${CACHE_PRESET:-}" ]]; then
-  echo "Configured using ${CACHE_PRESET}: no device available, skipping tests"
+if [[ "${NO_DEVICE:-0}" == "1" ]]; then
+  echo "No device available, skipping tests"
   exit 0
 fi
 
@@ -77,8 +82,15 @@ adb push "${src_dir}/.github/scripts/android_smoke_test.py" "${device_dir}/" > /
 adb shell chmod 755 "${device_dir}/bin/python*"
 echo "::endgroup::"
 
+# "adb shell" does not return the exit code of the command before Android 7.0 (API
+# level 24), so the exit code is printed and parsed instead.
 run_python() {
-  adb shell "cd ${device_dir} && HOME=${device_dir} TMPDIR=${device_dir} PYTHONHOME=${device_dir} ./bin/python $*"
+  local output status
+  output=$(mktemp)
+  adb shell "cd ${device_dir} && HOME=${device_dir} TMPDIR=${device_dir} PYTHONHOME=${device_dir} ./bin/python $*; echo \"@@exit=\$?@@\"" | tr -d '\r' | tee "${output}"
+  status=$(sed -n 's/^@@exit=\([0-9]*\)@@$/\1/p' "${output}" | tail -n 1)
+  rm -f "${output}"
+  return "${status:-1}"
 }
 
 echo "::group::Smoke test"
@@ -92,15 +104,21 @@ if ! run_python android_smoke_test.py "${api_level}"; then
 fi
 echo "::endgroup::"
 
-if [[ "${RUN_UNIT_TESTS:-1}" == "1" ]]; then
-  echo "::group::Unit tests"
-  # Creating named pipes is denied by SELinux on Android (skipped by Python >= 3.13 test suite)
-  ignore_args="--ignore '*test_walk_named_pipe*'"
-  device_api_level=$(adb shell getprop ro.build.version.sdk | tr -d '')
-  if [[ "${device_api_level}" -le 30 ]]; then
-    # Time zone rules given in the TZ environment variable are not applied as expected on Android 11 images
-    ignore_args+=" --ignore '*test_timestamp_naive*'"
-  fi
-  run_python -m test -u none --verbose2 ${ignore_args} test_math test_json test_re test_zlib test_decimal test_os test_unicode test_string test_struct test_datetime
+unit_tests=${UNIT_TESTS:-all}
+if [[ "${unit_tests}" != "none" ]]; then
+  echo "::group::Unit tests (${unit_tests})"
+  device_api_level=$(adb shell getprop ro.build.version.sdk | tr -d '\r')
+  py_version=$(run_python -c "'import sys; print(\"%d.%d\" % sys.version_info[:2])'" | head -n 1)
+  # shellcheck source=android_tests.sh
+  source "${src_dir}/.github/scripts/android_tests.sh"
+  android_tests "${unit_tests}" "${device_api_level}" "${py_version}"
+  echo "Device API level: ${device_api_level}, Python ${py_version}"
+  echo "Tests: ${tests[*]}"
+  echo "Ignored: ${ignored[*]}"
+  ignore_args=""
+  for pattern in "${ignored[@]}"; do
+    ignore_args+=" --ignore '${pattern}'"
+  done
+  run_python -m test -u none --timeout 900 --verbose2 ${ignore_args} "${tests[@]}"
   echo "::endgroup::"
 fi
