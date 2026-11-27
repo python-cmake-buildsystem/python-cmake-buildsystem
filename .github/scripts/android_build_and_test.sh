@@ -117,7 +117,7 @@ fi
 if [[ "${unit_tests}" != "none" ]]; then
   echo "::group::Unit tests (${unit_tests})"
   device_api_level=$(adb shell getprop ro.build.version.sdk | tr -d '\r')
-  py_version=$(run_python -c "'import sys; print(\"%d.%d\" % sys.version_info[:2])'" | head -n 1)
+  py_version=$(run_python -c "'import sys; print(\"%d.%d\" % sys.version_info[:2])'" | sed -n 1p)
   # shellcheck source=android_tests.sh
   source "${src_dir}/.github/scripts/android_tests.sh"
   builtin=0

@@ -72,7 +72,8 @@ android_tests() {
   if [[ "${py_minor}" -eq 11 ]]; then
     # Copying extended attributes fails with EACCES because of SELinux: ignored by Python >= 3.12
     ignored+=('*test_shutil.TestCopy.*' '*test_shutil.TestCopyTree.*' '*test_shutil.TestMove.*')
-    # Binding the Unix sockets fails, because the path chosen by the test helper is not writable
+    # Binding Unix sockets in a temporary directory intermittently fails with ENOENT (Python >= 3.12
+    # binds them using a short path relative to the current directory instead)
     ignored+=('*UnixStreamTest.*' '*SCMRightsStreamTest.*')
   fi
   if [[ "${py_minor}" -eq 12 ]]; then
