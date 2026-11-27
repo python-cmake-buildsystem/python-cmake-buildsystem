@@ -102,5 +102,8 @@ android_tests() {
     ignored+=('*test_config_vars_depend_on_site_initialization*' '*test_config_vars_recalculation_after_site_initialization*')
     # The child process occasionally does not exit on the Android 5 x86 image
     ignored+=('*test_is_alive_after_fork*')
+    # A very low switch interval makes Python hang on Android emulators (CPython issue 26939):
+    # the minimum interval enforced by test.support.setswitchinterval() is not enough on Android 5
+    ignored+=('*test_lru_cache_threaded*')
   fi
 }
