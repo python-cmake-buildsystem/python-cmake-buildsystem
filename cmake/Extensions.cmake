@@ -203,6 +203,15 @@ function(add_python_extension name)
             )
         endif()
 
+        if(ANDROID)
+            # Python symbols are resolved at runtime from the python executable,
+            # therefore undefined symbols must be allowed (the NDK toolchain
+            # disallows them by default).
+            set_target_properties(${target_name} PROPERTIES
+                LINK_FLAGS -Wl,-z,undefs
+            )
+        endif()
+
         # Turn off the "lib" prefix and add any compiler definitions
         set_target_properties(${target_name} PROPERTIES
             ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/${ARCHIVEDIR}

@@ -306,11 +306,26 @@ message(STATUS "${_msg} - ${ABIFLAGS}")
 
 set(_msg "Checking SOABI")
 if(NOT DEFINED PLATFORM_TRIPLET)
-  try_run(PLATFORM_RUN PLATFORM_COMPILE
-          ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR}/cmake/platform.c
-          RUN_OUTPUT_VARIABLE PLATFORM_TRIPLET)
-  if(NOT PLATFORM_COMPILE)
-    message(FATAL_ERROR "We could not determine the platform. Please clean the ${CMAKE_PROJECT_NAME} environment and try again...")
+  if(ANDROID)
+    # Use the same target triplets as CPython (see Android/android-env.sh)
+    if(CMAKE_ANDROID_ARCH_ABI STREQUAL "arm64-v8a")
+      set(PLATFORM_TRIPLET "aarch64-linux-android")
+    elseif(CMAKE_ANDROID_ARCH_ABI STREQUAL "x86_64")
+      set(PLATFORM_TRIPLET "x86_64-linux-android")
+    elseif(CMAKE_ANDROID_ARCH_ABI STREQUAL "armeabi-v7a")
+      set(PLATFORM_TRIPLET "arm-linux-androideabi")
+    elseif(CMAKE_ANDROID_ARCH_ABI STREQUAL "x86")
+      set(PLATFORM_TRIPLET "i686-linux-android")
+    else()
+      message(FATAL_ERROR "Unsupported Android ABI: ${CMAKE_ANDROID_ARCH_ABI}")
+    endif()
+  else()
+    try_run(PLATFORM_RUN PLATFORM_COMPILE
+            ${PROJECT_BINARY_DIR} ${PROJECT_SOURCE_DIR}/cmake/platform.c
+            RUN_OUTPUT_VARIABLE PLATFORM_TRIPLET)
+    if(NOT PLATFORM_COMPILE)
+      message(FATAL_ERROR "We could not determine the platform. Please clean the ${CMAKE_PROJECT_NAME} environment and try again...")
+    endif()
   endif()
 endif()
 set(SOABI "cpython-${PY_VERSION_MAJOR}${PY_VERSION_MINOR}${ABIFLAGS}")
@@ -341,6 +356,13 @@ macro(ADD_COND var cond item)
 endmacro()
 
 set(CMAKE_REQUIRED_DEFINITIONS )
+
+if(ANDROID)
+  # When _FORTIFY_SOURCE is enabled (as done by the Android NDK toolchain), the
+  # Android C library declares some functions (e.g. umask, openat) as overloaded
+  # inline functions, which makes check_symbol_exists() fail to detect them.
+  set(CMAKE_REQUIRED_FLAGS "-U_FORTIFY_SOURCE")
+endif()
 
 # Convenient macro allowing to conditonally update CMAKE_REQUIRED_DEFINITIONS
 macro(set_required_def var value)
@@ -375,7 +397,12 @@ check_include_files(grp.h HAVE_GRP_H)
 check_include_files(ieeefp.h HAVE_IEEEFP_H)
 check_include_files(inttypes.h HAVE_INTTYPES_H) # libffi and cpython
 check_include_files(io.h HAVE_IO_H)
-check_include_files(langinfo.h HAVE_LANGINFO_H)
+if (ANDROID)
+  set(HAVE_LANGINFO_H 0) # Android cann't link functions from langinfo.h
+else()
+  check_include_files(langinfo.h HAVE_LANGINFO_H)
+endif()
+
 check_include_files(libintl.h HAVE_LIBINTL_H)
 check_include_files(libutil.h HAVE_LIBUTIL_H)
 check_include_files(linux/tipc.h HAVE_LINUX_TIPC_H)
@@ -551,7 +578,7 @@ find_library(HAVE_LIBTERMCAP termcap)
 set(LIBUTIL_LIBRARIES )
 set(LIBUTIL_EXPECTED 1)
 
-if(CMAKE_SYSTEM MATCHES "VxWorks\\-7$")
+if((CMAKE_SYSTEM MATCHES "VxWorks\\-7$") OR ANDROID)
   set(LIBUTIL_EXPECTED 0)
   set(HAVE_LIBUTIL 0)
 endif()
@@ -1055,6 +1082,7 @@ check_symbol_exists(getc_unlocked   "${CFG_HEADERS}" HAVE_GETC_UNLOCKED)
 check_symbol_exists(getegid      "${CFG_HEADERS}" HAVE_GETEGID) # Python 3.11
 check_symbol_exists(geteuid      "${CFG_HEADERS}" HAVE_GETEUID) # Python 3.11
 check_symbol_exists(getgid       "${CFG_HEADERS}" HAVE_GETGID) # Python 3.11
+check_symbol_exists(getgrent     "${CFG_HEADERS}" HAVE_GETGRENT) # grp module (Android API level >= 26)
 check_symbol_exists(getgroups       "${CFG_HEADERS}" HAVE_GETGROUPS)
 check_symbol_exists(getitimer    "${CFG_HEADERS}" HAVE_GETITIMER)
 check_symbol_exists(getloadavg   "${CFG_HEADERS}" HAVE_GETLOADAVG)
@@ -1534,8 +1562,9 @@ check_c_source_compiles("
 int main() {int a = MAP_ANONYMOUS;}"
 HAVE_MMAP_ANON)
 
-# libffi specific: Check for /dev/zero support for anonymous memory maps
-check_c_source_runs("
+# libffi specific: Check for /dev/zero support as a fallback for anonymous memory maps
+if(NOT HAVE_MMAP_ANON)
+    check_c_source_runs("
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/mman.h>
@@ -1553,6 +1582,7 @@ int main(void) {
   }
   exit(0);
 }" HAVE_MMAP_DEV_ZERO)
+endif()
 
 # Check whether we can use gcc inline assembler to get and set mc68881 fpcr
 set(check_src ${PROJECT_BINARY_DIR}/CMakeFiles/have_gcc_asm_for_mc68881.c)
@@ -3145,6 +3175,24 @@ if(CMAKE_SYSTEM MATCHES Linux)
     set(PY_PLATFORM linux2)
   else()
     set(PY_PLATFORM linux)
+  endif()
+endif()
+
+if(ANDROID)
+  # Minimum Android API level (also enables sys.getandroidapilevel()).
+  # ANDROID_PLATFORM_LEVEL is set by the NDK toolchain file, which sets
+  # CMAKE_SYSTEM_VERSION to 1. CMAKE_SYSTEM_VERSION is the API level when
+  # using the Android support built into CMake.
+  if(ANDROID_PLATFORM_LEVEL)
+    set(ANDROID_API_LEVEL ${ANDROID_PLATFORM_LEVEL})
+  else()
+    set(ANDROID_API_LEVEL ${CMAKE_SYSTEM_VERSION})
+  endif()
+  # Python >= 3.13 identifies Android as a separate platform
+  if(PY_VERSION VERSION_LESS 3.13)
+    set(PY_PLATFORM linux)
+  else()
+    set(PY_PLATFORM android)
   endif()
 endif()
 
