@@ -487,6 +487,8 @@ add_python_extension(_posixshmem
     REQUIRES
         IS_PY3_8_OR_GREATER
         UNIX
+        HAVE_SHM_OPEN
+        HAVE_SHM_UNLINK
     SOURCES
         _multiprocessing/posixshmem.c
     LIBRARIES
